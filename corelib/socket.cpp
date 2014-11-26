@@ -3481,10 +3481,20 @@ int Socket::family(socket_t so)
     socklen_t len = sizeof(us.saddr);
     struct sockaddr *addr = (struct sockaddr *)(&us.saddr);
 
+#ifndef _MSWINDOWS_
     if(_getsockname_(so, addr, &len))
         return AF_UNSPEC;
 
     return us.inaddr.sin_family;
+#else
+    // getsockname doesn't work on unbound windows sockets
+    WSAPROTOCOL_INFO info;
+    len = sizeof(info);
+    if(getsockopt(so, SOL_SOCKET, SO_PROTOCOL_INFO, (char *) &info, &len))
+        return AF_UNSPEC;
+
+    return info.iAddressFamily;
+#endif
 }
 
 bool Socket::is_null(const char *str)
