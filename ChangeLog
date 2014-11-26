@@ -1,3 +1,6 @@
+Changes from 6.2.2 to 6.2.3
+- a few socket fixes, mostly windows related...
+
 Changes from 6.2.1 to 6.2.2
 - bumped gnutls to 3.0.0 or later...
 - lots of bug fixes and general cleanup
