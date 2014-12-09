@@ -80,7 +80,7 @@ extern "C" __EXPORT void *cpr_memassign(size_t size, caddr_t address, size_t kno
  */
 extern "C" __EXPORT void cpr_memswap(void *mem1, void *mem2, size_t size);
 
-#ifdef UCOMMON_RUNTIME
+#ifdef UCOMMON_SYSRUNTIME
 /**
  * Our generic new operator.  Uses our heap memory allocator.
  * @param size of object being constructed.
@@ -96,7 +96,7 @@ __EXPORT void *operator new(size_t size);
 __EXPORT void *operator new[](size_t size);
 #endif
 
-#ifdef UCOMMON_RUNTIME
+#ifdef UCOMMON_SYSRUNTIME
 /**
  * A placement new array operator where we assume the size of memory is good.
  * We construct the array at a specified place in memory which we assume is
@@ -119,7 +119,7 @@ __EXPORT void *operator new[](size_t size, void *address);
 __EXPORT void *operator new[](size_t size, void *address, size_t known);
 #endif
 
-#ifdef UCOMMON_RUNTIME
+#ifdef UCOMMON_SYSRUNTIME
 /**
  * Delete an object from the heap.
  * @param object to delete.

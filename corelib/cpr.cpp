@@ -181,7 +181,7 @@ extern "C" void *cpr_memassign(size_t size, caddr_t addr, size_t max)
     return addr;
 }
 
-#ifdef UCOMMON_RUNTIME
+#ifdef UCOMMON_SYSRUNTIME
 
 #ifdef  __GNUC__
 
