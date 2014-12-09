@@ -80,7 +80,7 @@ extern "C" __EXPORT void *cpr_memassign(size_t size, caddr_t address, size_t kno
  */
 extern "C" __EXPORT void cpr_memswap(void *mem1, void *mem2, size_t size);
 
-#ifndef _UCOMMON_EXTENDED_
+#ifdef UCOMMON_RUNTIME
 /**
  * Our generic new operator.  Uses our heap memory allocator.
  * @param size of object being constructed.
@@ -96,7 +96,7 @@ __EXPORT void *operator new(size_t size);
 __EXPORT void *operator new[](size_t size);
 #endif
 
-#ifndef _UCOMMON_EXTENDED_
+#ifdef UCOMMON_RUNTIME
 /**
  * A placement new array operator where we assume the size of memory is good.
  * We construct the array at a specified place in memory which we assume is
@@ -105,7 +105,7 @@ __EXPORT void *operator new[](size_t size);
  * @param address where to place object array.
  * @return memory we placed object array.
  */
-__EXPORT void *operator new[](size_t size, caddr_t address);
+__EXPORT void *operator new[](size_t size, void *address);
 
 /**
  * A placement new array operator where we know the allocated size.  We
@@ -116,43 +116,10 @@ __EXPORT void *operator new[](size_t size, caddr_t address);
  * @param known size of location we are placing array.
  * @return memory we placed object array.
  */
-__EXPORT void *operator new[](size_t size, caddr_t address, size_t known);
+__EXPORT void *operator new[](size_t size, void *address, size_t known);
 #endif
 
-/**
- * Overdraft new to allocate extra memory for object from heap.  This is
- * used for objects that must have a known class size but store extra data
- * behind the class.  The last member might be an unsized or 0 element
- * array, and the actual size needed from the heap is hence not the size of
- * the class itself but is known by the routine allocating the object.
- * @param size of object.
- * @param extra heap space needed for data.
- */
-__EXPORT void *operator new(size_t size, size_t extra);
-
-/**
- * A placement new operator where we assume the size of memory is good.
- * We construct the object at a specified place in memory which we assume is
- * valid for our needs.
- * @param size of memory needed for object.
- * @param address where to place object.
- * @return memory we placed object.
- */
-__EXPORT void *operator new(size_t size, caddr_t address);
-
-/**
- * A placement new operator where we know the allocated size.  We
- * find out how much memory is needed by the new and can prevent the object
- * from exceeding the available space we are placing the object.
- * @param size of memory needed for object.
- * @param address where to place object.
- * @param known size of location we are placing object.
- * @return memory we placed object.
- */
-
-__EXPORT void *operator new(size_t size, caddr_t address, size_t known);
-
-#ifndef _UCOMMON_EXTENDED_
+#ifdef UCOMMON_RUNTIME
 /**
  * Delete an object from the heap.
  * @param object to delete.

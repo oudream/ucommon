@@ -340,10 +340,13 @@ typedef void (*sighandler_t)(int);  /**< Convenient typedef for signal handlers.
 #endif
 typedef unsigned long timeout_t;    /**< Typedef for millisecond timer values. */
 
-#include <stdlib.h>
-#include <ctype.h>
-#include <limits.h>
-#include <errno.h>
+#include <cstdlib>
+#include <cctype>
+#include <climits>
+#include <cerrno>
+#ifndef UCOMMON_RUNTIME
+#include <new>
+#endif
 
 #ifdef  _MSWINDOWS_
 #ifndef ENETDOWN
@@ -433,7 +436,7 @@ typedef void (*cpr_service_t)(int argc, char **argv);
  */
 template<class T>
 inline T *init(T *memory)
-    {return ((memory) ? new(((caddr_t)memory)) T : NULL);}
+    {return ((memory) ? new(((void *)memory)) T : NULL);}
 
 typedef long Integer;
 typedef unsigned long Unsigned;

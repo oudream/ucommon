@@ -132,6 +132,9 @@ public:
 
     class __EXPORT cstring : public CountedObject
     {
+    protected:
+        void dealloc(void);
+
     public:
 #pragma pack(1)
         strsize_t max;  /**< Allocated size of cstring text */

@@ -40,7 +40,8 @@ Vector::array::array(vectorsize_t size)
 void Vector::array::dealloc(void)
 {
     purge();
-    CountedObject::dealloc();
+    this->array::~array();
+    ::free(this);
 }
 
 void Vector::array::purge(void)
@@ -227,7 +228,8 @@ Vector::array *Vector::create(vectorsize_t size) const
 {
     assert(size > 0);
 
-    return new((size_t)size) array(size);
+    void *mem = ::malloc((size_t)size);
+    return new(mem) array(size);
 }
 
 void Vector::release(void)
@@ -443,7 +445,7 @@ MemVector::MemVector(void *mem, vectorsize_t size)
     assert(mem != NULL);
     assert(size > 0);
 
-    data = new((caddr_t)mem) array(size);
+    data = new(mem) array(size);
 }
 
 MemVector::~MemVector()

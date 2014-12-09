@@ -181,6 +181,8 @@ extern "C" void *cpr_memassign(size_t size, caddr_t addr, size_t max)
     return addr;
 }
 
+#ifdef UCOMMON_RUNTIME
+
 #ifdef  __GNUC__
 
 // here we have one of those magic things in gcc, and what to do when
@@ -194,8 +196,6 @@ extern "C" void __cxa_pure_virtual(void)
 
 #endif
 
-#ifndef _UCOMMON_EXTENDED_
-
 void *operator new(size_t size)
 {
     return cpr_memalloc(size);
@@ -206,12 +206,12 @@ void *operator new[](size_t size)
     return cpr_memalloc(size);
 }
 
-void *operator new[](size_t size, caddr_t address)
+void *operator new[](size_t size, void *address)
 {
     return cpr_memassign(size, address, size);
 }
 
-void *operator new[](size_t size, caddr_t address, size_t known)
+void *operator new[](size_t size, void *address, size_t known)
 {
     return cpr_memassign(size, address, known);
 }
@@ -235,20 +235,5 @@ void operator delete[](void *array) noexcept(true)
 }
 
 #endif
-
-void *operator new(size_t size, size_t extra)
-{
-    return cpr_memalloc(size + extra);
-}
-
-void *operator new(size_t size, caddr_t address)
-{
-    return cpr_memassign(size, address, size);
-}
-
-void *operator new(size_t size, caddr_t address, size_t known)
-{
-    return cpr_memassign(size, address, known);
-}
 
 

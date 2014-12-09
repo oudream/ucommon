@@ -500,11 +500,11 @@ bool Queue::post(ObjectProtocol *object, timeout_t timeout)
     if(freelist) {
         mem = freelist;
         freelist = freelist->getNext();
-        new((caddr_t)mem) member(this, object);
+        new((void *)mem) member(this, object);
     }
     else {
         if(pager)
-            new((caddr_t)(pager->alloc(sizeof(member)))) member(this, object);
+            new((void *)(pager->alloc(sizeof(member)))) member(this, object);
         else
             new member(this, object);
     }
@@ -714,11 +714,11 @@ bool Stack::push(ObjectProtocol *object, timeout_t timeout)
     if(freelist) {
         mem = freelist;
         freelist = freelist->getNext();
-        new((caddr_t)mem) member(this, object);
+        new((void *)mem) member(this, object);
     }
     else {
         if(pager) {
-            caddr_t ptr = (caddr_t)pager->alloc(sizeof(member));
+            void *ptr = (caddr_t)pager->alloc(sizeof(member));
             new(ptr) member(this, object);
         }
         else

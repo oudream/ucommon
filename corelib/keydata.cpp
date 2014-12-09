@@ -90,7 +90,7 @@ void keydata::set(const char *key, const char *value)
 {
     assert(key != NULL);
 
-    caddr_t mem = (caddr_t)root->alloc(sizeof(keydata::keyvalue));
+    void *mem = root->alloc(sizeof(keydata::keyvalue));
     keydata::iterator keys = begin();
 
     while(is(keys)) {
@@ -152,7 +152,7 @@ keydata *keyfile::create(const char *id)
 {
     assert(id != NULL);
 
-    caddr_t mem = (caddr_t)alloc(sizeof(keydata));
+    void *mem = alloc(sizeof(keydata));
     keydata *old = get(id);
 
     if(old)
@@ -265,7 +265,7 @@ void keyfile::load(const keyfile *copy)
         vp = copy->defaults->begin();
 
     if(copy->defaults && !defaults) {
-        caddr_t mem = (caddr_t)alloc(sizeof(keydata));
+        void *mem = alloc(sizeof(keydata));
         defaults = new(mem) keydata(this);
     }
 
@@ -377,7 +377,7 @@ void keyfile::load(const char *path)
     }
 
     if(!defaults) {
-        caddr_t mem = (caddr_t)alloc(sizeof(keydata));
+        void *mem = alloc(sizeof(keydata));
         defaults = new(mem) keydata(this);
     }
 

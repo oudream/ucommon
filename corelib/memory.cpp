@@ -302,7 +302,7 @@ void *ObjectPager::pull(void)
 
 void *ObjectPager::push(void)
 {
-    caddr_t mem = (caddr_t)memalloc::_alloc(sizeof(member));
+    void *mem = memalloc::_alloc(sizeof(member));
 
     member *node;
 
@@ -352,7 +352,7 @@ void *ObjectPager::invalid(void) const
 
 void *ObjectPager::add(void)
 {
-    caddr_t mem = (caddr_t)memalloc::_alloc(sizeof(member));
+    void *mem = memalloc::_alloc(sizeof(member));
     member *node;
 
     index = NULL;
@@ -574,7 +574,7 @@ void StringPager::push(const char *text)
         text = "";
 
     size_t size = strlen(text) + 1;
-    caddr_t mem = (caddr_t)memalloc::_alloc(sizeof(member));
+    void *mem = memalloc::_alloc(sizeof(member));
     char *str = (char *)memalloc::_alloc(size);
 
     strcpy(str, text);
@@ -623,7 +623,7 @@ void StringPager::add(const char *text)
         text = "";
 
     size_t size = strlen(text) + 1;
-    caddr_t mem = (caddr_t)memalloc::_alloc(sizeof(member));
+    void *mem = memalloc::_alloc(sizeof(member));
     char *str = (char *)memalloc::_alloc(size);
 
     strcpy(str, text);
@@ -840,7 +840,7 @@ PagerObject *PagerPool::get(size_t size)
     pthread_mutex_unlock(&mutex);
 
     if(!ptr)
-        ptr = new((caddr_t)(_alloc(size))) PagerObject;
+        ptr = new((_alloc(size))) PagerObject;
     else
         ptr->reset();
     ptr->pager = this;
@@ -954,15 +954,15 @@ void *keyassoc::allocate(const char *id, size_t dsize)
         _unlock();
         return NULL;
     }
-    caddr_t ptr = NULL;
+    void *ptr = NULL;
     size /= 8;
     if(list && list[size]) {
         obj = list[size];
         list[size] = obj->getNext();
-        ptr = (caddr_t)obj;
+        ptr = obj;
     }
     if(ptr == NULL) {
-        ptr = (caddr_t)memalloc::_alloc(sizeof(keydata) + size * 8);
+        ptr = memalloc::_alloc(sizeof(keydata) + size * 8);
         dp = memalloc::_alloc(dsize);
     }
     else
@@ -992,15 +992,15 @@ bool keyassoc::create(const char *id, void *data)
         _unlock();
         return false;
     }
-    caddr_t ptr = NULL;
+    void *ptr = NULL;
     size /= 8;
     if(list && list[size]) {
         obj = list[size];
         list[size] = obj->getNext();
-        ptr = (caddr_t)obj;
+        ptr = obj;
     }
     if(ptr == NULL)
-        ptr = (caddr_t)memalloc::_alloc(sizeof(keydata) + size * 8);
+        ptr = memalloc::_alloc(sizeof(keydata) + size * 8);
     kd = new(ptr) keydata(this, id, paths, 8 + size * 8);
     kd->data = data;
     ++keycount;

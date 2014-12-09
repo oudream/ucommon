@@ -340,10 +340,17 @@ String String::get(strsize_t offset, strsize_t len) const
 
 String::cstring *String::create(strsize_t size, char fill) const
 {
-    if(fill)
-        return new((size_t)size) cstring(size, fill);
+    void *mem = ::malloc(size + sizeof(cstring));
+    if(fill) 
+        return new(mem) cstring(size, fill);
     else
-        return new((size_t)size) cstring(size);
+        return new(mem) cstring(size);
+}
+
+void String::cstring::dealloc(void)
+{
+    this->cstring::~cstring();
+    ::free(this);
 }
 
 void String::retain(void)
@@ -1345,7 +1352,7 @@ memstring::memstring(void *mem, strsize_t size, char fill)
     assert(mem != NULL);
     assert(size > 0);
 
-    str = new((caddr_t)mem) cstring(size, fill);
+    str = new(mem) cstring(size, fill);
     str->set("");
 }
 
@@ -1358,16 +1365,16 @@ memstring *memstring::create(strsize_t size, char fill)
 {
     assert(size > 0);
 
-    caddr_t mem = (caddr_t)cpr_memalloc(size + sizeof(memstring) + sizeof(cstring));
-    return new(mem) memstring(mem + sizeof(memstring), size, fill);
+    void *mem = ::malloc(size + sizeof(memstring) + sizeof(cstring));
+    return new(mem) memstring((caddr_t)mem + sizeof(memstring), size, fill);
 }
 
 memstring *memstring::create(MemoryProtocol *mpager, strsize_t size, char fill)
 {
     assert(size > 0);
 
-    caddr_t mem = (caddr_t)mpager->alloc(size + sizeof(memstring) + sizeof(cstring));
-    return new(mem) memstring(mem + sizeof(memstring), size, fill);
+    void *mem = mpager->alloc(size + sizeof(memstring) + sizeof(cstring));
+    return new(mem) memstring((caddr_t)mem + sizeof(memstring), size, fill);
 }
 
 void memstring::release(void)
