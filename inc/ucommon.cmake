@@ -33,15 +33,8 @@ if (NOT UCOMMON_LIBS AND NOT UCOMMON_FLAGS)
     endif()
 
     # see if we are building with or without std c++ libraries...
-    if (BUILD_STDLIB)
-        # for now we assume only newer libstdc++ library
-        set(UCOMMON_FLAGS ${UCOMMON_FLAGS} -DNEW_STDCPP)
-        MESSAGE( STATUS "Configuring full ANSI C++ runtime")
-    elseif (BUILD_OLDLIB)
-        # for really old libstdc++ libraries...
-        set(UCOMMON_FLAGS ${UCOMMON_FLAGS} -DOLD_STDCPP)
-        MESSAGE( STATUS "Configuring compatible C++ runtime")
-    else()
+    if (NOT BUILD_STDLIB)
+        set(UCOMMON_FLAGS ${UCOMMON_FLAGS} -DUCOMMON_SYSRUNTIME)
         MESSAGE( STATUS "Configuring minimal C++ runtime")
         if(CMAKE_COMPILER_IS_GNUCXX)
             set(CHECK_FLAGS ${CHECK_FLAGS} -fno-exceptions -fno-rtti -fno-enforce-eh-specs)
