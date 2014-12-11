@@ -30,7 +30,6 @@ AC_C_RESTRICT
 AC_C_VOLATILE
 AC_C_INLINE
 
-UCOMMON_VISIBILITY="0"
 UCOMMON_FLAGS=""
 UCOMMON_MODEL="CXX"
 UCOMMON_LIBC="-lc"
@@ -189,7 +188,6 @@ AC_CHECK_HEADER(regex.h, [
 AC_CHECK_LIB(msvcrt, fopen, [
     threading="msw"
     clib="msvcrt"
-    UCOMMON_VISIBILITY="0"
     UCOMMON_LIBS="--enable-stdcall-fixup $UCOMMON_LIBS -lmingwex -lmingw32 -lcrypt32 -ladvapi32 -luser32 -lws2_32 -lwsock32 -lkernel32"
     UCOMMON_LIBC="-lmsvcrt -lgcc"
     OPENSSL_LINK="-lgdi32"
@@ -479,25 +477,11 @@ if test "$UCOMMON_MODEL" = "CC" ; then
     ])
 fi
 
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-COMPILER_FLAGS=""
-
 if test "x$GCC" = "xyes" ; then
     UCOMMON_FLAGS="$UCOMMON_FLAGS -Wno-long-long" ; fi
 
-for flag in $CXXFLAGS ; do
-    case "$flag" in
-    -fvisibility=*)
-        VISIBLE_FLAGS=""
-        COMPILER_FLAGS="$COMPILER_FLAGS $flag"
-        ;;
-    *)
-        COMPILER_FLAGS="$COMPILER_FLAGS $flag"
-        ;;
-    esac
-done
-export CXXFLAGS="$COMPILER_FLAGS"
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
 
 if test ! -z "$PTHREAD_FLAGS" ; then
     for flag in $PTHREAD_FLAGS ; do
@@ -512,8 +496,6 @@ if test ! -z "$PTHREAD_FLAGS" ; then
         fi
     done
 fi
-
-export CXXFLAGS
 
 # libstdc++ on some targets broken badly if inlines hidden.  Might be
 # deeper issue with ansi c++ library model...
@@ -534,11 +516,9 @@ done
 AC_MSG_CHECKING([whether ${CXX} supports visibility])
 echo 'void f(){}' >conftest.cpp
 if test -z "`${CXX} -fvisibility=hidden -c conftest.cpp 2>&1`"; then
-    UCOMMON_FLAGS="$UCOMMON_FLAGS -fvisibility=hidden -DUCOMMON_VISIBILITY=1"
+    UCOMMON_FLAGS="$UCOMMON_FLAGS -fvisibility=hidden"
     AC_MSG_RESULT(yes)
-    UCOMMON_VISIBILITY="1"
 else
-    UCOMMON_FLAGS="$UCOMMON_FLAGS -DUCOMMON_VISIBILITY=0"
     AC_MSG_RESULT(no)
 fi
 rm -f conftest*
@@ -677,7 +657,6 @@ AC_SUBST(DOXYGEN)
 AC_SUBST(CHECKFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(MODULE_FLAGS)
-AC_SUBST(UCOMMON_VISIBILITY)
 AC_SUBST(UCOMMON_INCLUDES)
 AC_SUBST(UCOMMON_LOCALE)
 AC_SUBST(UCOMMON_FLAGS)

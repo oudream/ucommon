@@ -171,14 +171,10 @@ typedef int pid_t;
 #define __SHARED __EXPORT
 #endif
 
-#elif UCOMMON_VISIBILITY > 0
+#else
 #define __EXPORT    __attribute__ ((visibility("default")))
 #define __LOCAL     __attribute__ ((visibility("hidden")))
 #define __SHARED    __attribute__ ((visibility("default")))
-#else
-#define __EXPORT
-#define __LOCAL
-#define __SHARED
 #endif
 
 #ifdef  _MSWINDOWS_
