@@ -28,14 +28,11 @@
 #include <ucommon/cpr.h>
 #endif
 
-#include <stdlib.h>
-#include <string.h>
-
-#ifdef  NEW_STDCPP
+#include <cstdlib>
+#include <cstring>
 #include <stdexcept>
-#endif
 
-#if defined(NEW_STDCPP) || defined(OLD_STDCPP)
+#ifndef UCOMMON_SYSRUNTIME
 #define THROW(x)    throw x
 #define THROWS(x)   throw(x)
 #define THROWS_ANY  throw()

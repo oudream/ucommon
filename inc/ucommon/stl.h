@@ -20,11 +20,10 @@
  * @file ucommon/stl.h
  */
 
-#if defined(OLD_STDCPP) || defined(NEW_STDCPP)
+#ifndef	UCOMMON_SYSRUNTIME
 #if !defined(_MSC_VER) || _MSC_VER >= 1400
 #ifndef _UCOMMON_STL_H_
 #define _UCOMMON_STL_H_
-#define _UCOMMON_STL_EXTENDED_
 
 #ifndef _UCOMMON_PLATFORM_H_
 #include <ucommon/platform.h>

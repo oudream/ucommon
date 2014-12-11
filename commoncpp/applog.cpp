@@ -34,7 +34,7 @@
 // If you do not wish that, delete this exception notice.
 //
 
-#ifdef  NEW_STDCPP
+#ifndef UCOMMON_SYSRUNTIME
 
 #include <ucommon-config.h>
 #include <commoncpp/config.h>

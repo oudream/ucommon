@@ -110,7 +110,7 @@
 #include <ucommon/shell.h>
 #include <ucommon/xml.h>
 
-#ifdef  _UCOMMON_EXTENDED_
+#ifndef  UCOMMON_SYSRUNTIME
 #include <ucommon/stream.h>
 #include <ucommon/persist.h>
 #include <ucommon/stl.h>

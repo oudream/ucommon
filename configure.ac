@@ -33,7 +33,6 @@ AC_C_INLINE
 UCOMMON_VISIBILITY="0"
 UCOMMON_FLAGS=""
 UCOMMON_MODEL="CXX"
-UCOMMON_CLINK=""
 UCOMMON_LIBC="-lc"
 UCOMMON_LIBS=""
 OPENSSL_LINK=""
@@ -476,7 +475,6 @@ UCOMMON_LIBS="$socket_lib $posix4_lib $rt_lib $UCOMMON_LIBS $UCOMMON_LIBC"
 
 if test "$UCOMMON_MODEL" = "CC" ; then
     AC_CHECK_LIB(Systemstubs, printf, [
-        UCOMMON_CLINK="$UCOMMON_CLINK -lSystemstubs"
         UCOMMON_LIBC="$UCOMMON_LIBC -lgcc"
     ])
 fi
@@ -490,10 +488,6 @@ if test "x$GCC" = "xyes" ; then
 
 for flag in $CXXFLAGS ; do
     case "$flag" in
-    -f*exceptions|-f*rtti|-f*check-new|-f*enforce-eh-specs|-finline|-f*except)
-        if test "$UCOMMON_MODEL" = "CXX" ; then
-            UCOMMON_FLAGS="$UCOMMON_FLAGS $flag" ; fi
-        ;;
     -fvisibility=*)
         VISIBLE_FLAGS=""
         COMPILER_FLAGS="$COMPILER_FLAGS $flag"
@@ -504,72 +498,6 @@ for flag in $CXXFLAGS ; do
     esac
 done
 export CXXFLAGS="$COMPILER_FLAGS"
-
-if test "$UCOMMON_MODEL" = "CC" ; then
-    UCOMMON_FLAGS="$UCOMMON_FLAGS"
-
-    if test x"$GCC" = "xyes" ; then
-        ucflags="-fno-exceptions -fno-rtti -fno-enforce-eh-specs"
-        lcflags="-nodefaultlibs -nostdinc++"
-    else
-        ucflags="-library=no%Cstd -features=no%except -features=namespace -features=no%rtti"
-        lcflags=""
-    fi
-
-    for flag in $ucflags ; do
-        AC_MSG_CHECKING([whether ${CXX} supports $flag])
-        echo 'void f(){}' >conftest.cpp
-        if test -z "`${CXX} $flag -c conftest.cpp 2>&1`"; then
-            UCOMMON_FLAGS="$UCOMMON_FLAGS $flag"
-            AC_MSG_RESULT(yes)
-            if test "$flag" = "-library=no%Cstd" ; then
-                UCOMMON_MODEL="CXX" ; fi
-        else
-            AC_MSG_RESULT(no)
-        fi
-        rm -f conftest*
-    done
-
-    for flag in $lcflags ; do
-        AC_MSG_CHECKING([whether ${CXX} supports $flag])
-        echo 'void f(){}' >conftest.cpp
-        if test -z "`${CXX} $flag -c conftest.cpp 2>&1`"; then
-            UCOMMON_CLINK="$UCOMMON_CLINK $flag"
-            AC_MSG_RESULT(yes)
-        else
-            AC_MSG_RESULT(no)
-        fi
-        rm -f conftest*
-    done
-else
-    ac_save_CXXFLAGS="$CXXFLAGS"
-    CXXFLAGS=""
-    AC_LANG_SAVE
-    AC_LANG_CPLUSPLUS
-    AC_CHECK_HEADERS(stdexcept)
-    AC_MSG_CHECKING(for old style iostream)
-    AC_TRY_COMPILE([
-        #include <iostream>
-        using namespace std;
-
-        class mystr : public streambuf, public iostream
-        {
-            mystr();
-        };
-
-        mystr::mystr() : streambuf(), iostream((streambuf *)this)
-        {
-        }
-    ],[return 0;],[
-        AC_MSG_RESULT(no)
-        UCOMMON_FLAGS="$UCOMMON_FLAGS -DNEW_STDCPP"
-    ],[
-        AC_MSG_RESULT(yes)
-        UCOMMON_FLAGS="$UCOMMON_FLAGS -DOLD_STDCPP"
-    ])
-    AC_LANG_RESTORE
-    CXXFLAGS="$ac_save_CXXFLAGS"
-fi
 
 if test ! -z "$PTHREAD_FLAGS" ; then
     for flag in $PTHREAD_FLAGS ; do
@@ -590,11 +518,6 @@ export CXXFLAGS
 # libstdc++ on some targets broken badly if inlines hidden.  Might be
 # deeper issue with ansi c++ library model...
 flags="-fno-check-new -finline"
-if test "$UCOMMON_MODEL" = "CC" ; then
-    if test "$enable_shared" != "no" ; then
-        flags="$flags -fvisibility-inlines-hidden"
-    fi
-fi
 
 for flag in $flags ; do
     AC_MSG_CHECKING([whether ${CXX} supports $flag])
@@ -642,15 +565,6 @@ case "$includes" in
 esac
 
 case "$target_os" in
-*bsd*)
-    if test "$UCOMMON_MODEL" = "CC" ; then
-        if test "$GCC" = "yes" -a "$UCOMMON_LIBC" = "-lc" ; then
-            UCOMMON_LIBC="-Wl,-lc"
-        elif test "$GCC" = "yes" -a "$UCOMMON_LIBC" = "-lc_r" ; then
-            UCOMMON_LIBC="-Wl,-lc_r"
-        fi
-    fi
-    ;;
 osf*)
     UCOMMON_FLAGS="$UCOMMON_FLAGS -D_POSIX_C_SOURCE=1 -D_OSF_SOURCE=1 -D__USE_STD_IOSTREAM"
     ;;
@@ -659,8 +573,6 @@ cygwin*|mingw*)
     UCOMMON_LIBS="$UCOMMON_LIBS -no-undefined"
     ;;
 esac
-
-UCOMMON_CLINK="$UCOMMON_CLINK $UCOMMON_LIBC"
 
 if test -z "$UCOMMON_SSLSTACK" ; then
     UCOMMON_SSLSTACK="$sslstack" ; fi
@@ -727,10 +639,6 @@ AC_MSG_RESULT([$SECURE])
 
 SECURE_LOCAL="../$SECURE/libusecure.la $SECURE_LIBS"
 
-LT_GENERIC="${LIBTOOL}"
-if test "$UCOMMON_MODEL" = "CC" ; then
-    LIBTOOL='$(SHELL) $(top_srcdir)/cmodel.sh'" ${LIBTOOL}" ; fi
-
 includes='${includedir}/ucommon'
 
 if test "$sysconfdir" = '${prefix}/etc' ; then
@@ -772,10 +680,8 @@ AC_SUBST(MODULE_FLAGS)
 AC_SUBST(UCOMMON_VISIBILITY)
 AC_SUBST(UCOMMON_INCLUDES)
 AC_SUBST(UCOMMON_LOCALE)
-AC_SUBST(UCOMMON_LINKED)
-AC_SUBST(UCOMMON_MODEL)
 AC_SUBST(UCOMMON_FLAGS)
-AC_SUBST(UCOMMON_CLINK)
+AC_SUBST(UCOMMON_LINKED)
 AC_SUBST(UCOMMON_LIBC)
 AC_SUBST(UCOMMON_LIBS)
 AC_SUBST(SECURE_LOCAL)
@@ -787,7 +693,6 @@ AC_SUBST(COMPAT_CONFIG)
 AC_SUBST(OPENSSL_LIBS)
 AC_SUBST(GNUTLS_LIBS)
 AC_SUBST(LT_VERSION)
-AC_SUBST(LT_GENERIC)
 AC_SUBST(localedir)
 
 AC_OUTPUT(Makefile corelib/Makefile commoncpp/Makefile

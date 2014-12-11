@@ -63,16 +63,8 @@ using std::ios;
 Slog slog;
 
 Slog::Slog(void) :
-streambuf()
-#ifdef  OLD_IOSTREAM
-,ostream()
-#else
-,ostream((streambuf *)this)
-#endif
+streambuf() ,ostream((streambuf *)this)
 {
-#ifdef  OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
     _enable = true;
     _level = levelDebug;
     _clogEnable = true;

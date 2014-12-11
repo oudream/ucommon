@@ -15,7 +15,7 @@ AM_CXXFLAGS = -I$(top_srcdir)/inc @UCOMMON_FLAGS@
 noinst_HEADERS = local.h md5.h sha1.h
 lib_LTLIBRARIES = libusecure.la
 
-libusecure_la_LDFLAGS = ../corelib/libucommon.la @SECURE_LIBS@ @UCOMMON_LIBS@ @UCOMMON_CLINK@ $(RELEASE)
+libusecure_la_LDFLAGS = ../corelib/libucommon.la @SECURE_LIBS@ @UCOMMON_LIBS@ $(RELEASE)
 libusecure_la_SOURCES = secure.cpp ssl.cpp digest.cpp random.cpp cipher.cpp \
     hmac.cpp sstream.cpp md5.cpp sha1.cpp common.cpp
 

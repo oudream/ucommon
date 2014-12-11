@@ -56,7 +56,7 @@
 #define NAMESPACE_COMMONCPP namespace ost {
 #define TIMEOUT_INF ucommon::Timer::inf
 
-#ifdef  _UCOMMON_EXTENDED_
+#ifndef	UCOMMON_SYSRUNTIME
 #define CCXX_EXCEPTIONS
 #endif
 

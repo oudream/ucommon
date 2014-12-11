@@ -19,11 +19,7 @@
 #include <ucommon/export.h>
 #include <ucommon/cpr.h>
 
-#if !defined(NEW_STDCPP) && !defined(OLD_STDCPP)
-#undef  HAVE_STDEXCEPT
-#endif
-
-#ifdef  HAVE_STDEXCEPT
+#ifndef  UCOMMON_SYSRUNTIME
 #include <stdexcept>
 #endif
 
@@ -62,7 +58,7 @@ void cpr_runtime_error(const char *str)
 {
     assert(str != NULL);
 
-#ifdef  HAVE_STDEXCEPT
+#ifndef UCOMMON_SYSRUNTIME
     throw std::runtime_error(str);
 #endif
     abort();

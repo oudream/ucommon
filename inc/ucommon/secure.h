@@ -726,7 +726,7 @@ inline void zerofill(void *addr, size_t size)
     ::memset(addr, 0, size);
 }
 
-#if defined(OLD_STDCPP) || defined(NEW_STDCPP)
+#ifndef UCOMMON_SYSRUNTIME
 
 /**
  * Secure socket using std::iostream.  This class is similar to SSLBuffer

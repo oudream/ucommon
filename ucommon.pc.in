@@ -1,5 +1,3 @@
-clink=@UCOMMON_CLINK@
-model=@UCOMMON_MODEL@
 includes=@UCOMMON_INCLUDES@
 minimal="-lucommon @UCOMMON_LINKED@"
 

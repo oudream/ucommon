@@ -10,7 +10,7 @@
 
 MAINTAINERCLEANFILES = Makefile.in Makefile
 AM_CXXFLAGS = -I$(top_srcdir)/inc $(UCOMMON_FLAGS) $(CHECKFLAGS)
-LDADD = ../corelib/libucommon.la @UCOMMON_LIBS@ @UCOMMON_CLINK@
+LDADD = ../corelib/libucommon.la @UCOMMON_LIBS@
 EXTRA_DIST = *.cpp keydata.conf CMakeLists.txt
 
 TESTS = ucommonLinked ucommonSocket ucommonStrings ucommonThreads \

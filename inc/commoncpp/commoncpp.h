@@ -57,7 +57,7 @@
 #include <commoncpp/object.h>
 #include <commoncpp/misc.h>
 
-#ifdef  NEW_STDCPP
+#ifndef	UCOMMON_SYSRUNTIME
 #include <commoncpp/applog.h>
 #endif
 

@@ -407,21 +407,13 @@ void TCPV6Socket::reject(void)
 #endif
 
 TCPStream::TCPStream(TCPSocket &server, bool throwflag, timeout_t to) :
-    streambuf(), Socket(accept(server.getSocket(), NULL, NULL)),
-#ifdef  OLD_IOSTREAM
-    iostream()
-#else
-    iostream((streambuf *)this)
-#endif
+    streambuf(), Socket(accept(server.getSocket(), NULL, NULL))
+    ,iostream((streambuf *)this)
     ,bufsize(0)
     ,gbuf(NULL)
     ,pbuf(NULL) {
     tpport_t port;
     family = IPV4;
-
-#ifdef  OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
 
     timeout = to;
     setError(throwflag);
@@ -439,22 +431,14 @@ TCPStream::TCPStream(TCPSocket &server, bool throwflag, timeout_t to) :
 
 #ifdef  CCXX_IPV6
 TCPStream::TCPStream(TCPV6Socket &server, bool throwflag, timeout_t to) :
-    streambuf(), Socket(accept(server.getSocket(), NULL, NULL)),
-#ifdef  OLD_IOSTREAM
-    iostream()
-#else
-    iostream((streambuf *)this)
-#endif
+    streambuf(), Socket(accept(server.getSocket(), NULL, NULL))
+    ,iostream((streambuf *)this)
     ,bufsize(0)
     ,gbuf(NULL)
     ,pbuf(NULL) {
     tpport_t port;
 
     family = IPV6;
-
-#ifdef  OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
 
     timeout = to;
     setError(throwflag);
@@ -472,16 +456,9 @@ TCPStream::TCPStream(TCPV6Socket &server, bool throwflag, timeout_t to) :
 #endif
 
 TCPStream::TCPStream(const IPV4Host &host, tpport_t port, unsigned size, bool throwflag, timeout_t to) :
-    streambuf(), Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP),
-#ifdef  OLD_IOSTREAM
-    iostream(),
-#else
-    iostream((streambuf *)this),
-#endif
+    streambuf(), Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
+    ,iostream(),
     bufsize(0),gbuf(NULL),pbuf(NULL) {
-#ifdef  OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
     family = IPV4;
     timeout = to;
     setError(throwflag);
@@ -491,17 +468,10 @@ TCPStream::TCPStream(const IPV4Host &host, tpport_t port, unsigned size, bool th
 #ifdef  CCXX_IPV6
 TCPStream::TCPStream(const IPV6Host &host, tpport_t port, unsigned size, bool throwflag, timeout_t to) :
     streambuf(), Socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP),
-#ifdef OLD_IOSTREAM
-    iostream(),
-#else
     iostream((streambuf *)this),
-#endif
     bufsize(0),gbuf(NULL),pbuf(NULL) {
     family = IPV6;
 
-#ifdef  OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
     timeout = to;
     setError(throwflag);
     connect(host, port, size);
@@ -783,34 +753,20 @@ void TCPStream::connect(const IPV6Host &host, tpport_t port, unsigned mss)
 
 TCPStream::TCPStream(const char *target, Family fam, unsigned mss, bool throwflag, timeout_t to) :
 streambuf(), Socket(PF_INET, SOCK_STREAM, IPPROTO_TCP),
-#ifdef  OLD_IOSTREAM
-iostream(),
-#else
 iostream((streambuf *)this),
-#endif
 timeout(to), bufsize(0),gbuf(NULL),pbuf(NULL)
 {
     family = fam;
-#ifdef  OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
     setError(throwflag);
     connect(target, mss);
 }
 
 TCPStream::TCPStream(Family fam, bool throwflag, timeout_t to) :
 streambuf(), Socket(PF_INET, SOCK_STREAM, IPPROTO_TCP),
-#ifdef  OLD_IOSTREAM
-iostream(),
-#else
 iostream((streambuf *)this),
-#endif
 timeout(to), bufsize(0),gbuf(NULL),pbuf(NULL)
 {
     family = fam;
-#ifdef  OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
     setError(throwflag);
 }
 

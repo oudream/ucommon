@@ -28,6 +28,13 @@
 #define _UCOMMON_PLATFORM_H_
 #define UCOMMON_ABI 6
 
+#ifndef UCOMMON_SYSRUNTIME
+#ifndef NEW_STDCPP
+#define NEW_STDCPP
+#endif
+#define _UCOMMON_EXTENDED_
+#endif
+
 /**
  * Common namespace for all ucommon objects.
  * We are using a common namespace to easily separate ucommon from other
@@ -82,12 +89,6 @@
 #ifdef  NDEBUG
 #undef  NDEBUG
 #endif
-#endif
-
-// see if we are building for or using extended stdc++ runtime library support
-
-#if defined(__ANDROID__) || defined(NEW_STDCPP) || defined(OLD_STDCPP)
-#define _UCOMMON_EXTENDED_
 #endif
 
 // see if targeting legacy Microsoft windows platform
@@ -188,12 +189,8 @@ typedef int pid_t;
 #include <io.h>
 
 // gcc c++11 support on mingw requires pthread support library
-#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)) && defined(_UCOMMON_EXTENDED_) && defined(__MINGW_WINPTHREAD__)
+#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)) && !defined(UCOMMON_SYSRUNTIME) && defined(__MINGW_WINPTHREAD__)
 #include <pthread.h>   // gnu libstdc++ now requires a win pthread
-#ifdef OLD_STDCPP
-#undef OLD_STDCPP
-#define NEW_STDCPP
-#endif
 #undef  _MSCONDITIONALS_
 #else   
 #define _MSTHREADS_

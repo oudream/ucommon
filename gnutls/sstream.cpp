@@ -17,7 +17,7 @@
 
 #include "local.h"
 
-#if defined(OLD_STDCPP) || defined(NEW_STDCPP)
+#ifndef UCOMMON_SYSRUNTIME
 
 namespace ucommon {
 

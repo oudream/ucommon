@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
-#if defined(OLD_STDCPP) || defined(NEW_STDCPP)
+#ifndef UCOMMON_SYSRUNTIME
 #if !defined(_MSC_VER) || _MSC_VER >= 1400
 
 #include <ucommon-config.h>

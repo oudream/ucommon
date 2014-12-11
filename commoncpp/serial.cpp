@@ -1018,15 +1018,8 @@ bool Serial::isPending(Pending pending, timeout_t timeout)
 TTYStream::TTYStream(const char *filename, timeout_t to)
     :   streambuf(),
         Serial(filename),
-#ifdef  HAVE_OLD_IOSTREAM
-        iostream()
-#else
         iostream((streambuf *)this)
-#endif
 {
-#ifdef  HAVE_OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
     gbuf = pbuf = NULL;
     timeout = to;
 
@@ -1037,15 +1030,8 @@ TTYStream::TTYStream(const char *filename, timeout_t to)
 TTYStream::TTYStream()
     :   streambuf(),
         Serial(),
-#ifdef  HAVE_OLD_IOSTREAM
-        iostream()
-#else
         iostream((streambuf *)this)
-#endif
 {
-#ifdef  HAVE_OLD_IOSTREAM
-    init((streambuf *)this);
-#endif
     timeout = 0;
     gbuf = pbuf = NULL;
 }

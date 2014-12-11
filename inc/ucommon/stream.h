@@ -21,7 +21,7 @@
  * @file ucommon/stream.h
  */
 
-#if defined(OLD_STDCPP) || defined(NEW_STDCPP)
+#ifndef UCOMMON_SYSRUNTIME
 #ifndef _UCOMMON_STREAM_H_
 #define _UCOMMON_STREAM_H_
 
