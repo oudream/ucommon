@@ -1,3 +1,10 @@
+ucommon (1:6.3.0-1) UNRELEASED; urgency=medium
+
+  * Cleanup memory operators
+  * Modernize library usage
+
+ -- David Sugar <dyfet@gnutelephony.org>  Fri, 12 Dec 2014 14:01:19 -0400
+
 ucommon (1:6.2.2-1) UNRELEASED; urgency=medium
 
   * Lots of bug fixes and code cleanup
