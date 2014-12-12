@@ -24,7 +24,7 @@ bool Digest::has(const char *id)
     if(eq_case(id, "md5"))
         return true;
 
-    if(eq_case(id, "sha1") || eq_case(id, "sha"))
+    if(eq_case(id, "sha1") || eq_case(id, "sha") || eq_case(id, "sha160"))
         return true;
 
     return false;

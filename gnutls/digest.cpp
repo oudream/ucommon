@@ -33,7 +33,7 @@ void Digest::release(void)
 
 int __context::map_digest(const char *type)
 {
-    if(eq_case(type, "sha") || eq_case(type, "sha1")) 
+    if(eq_case(type, "sha") || eq_case(type, "sha1") || eq_case(type, "sha160")) 
         return GNUTLS_DIG_SHA1;
     else if(eq_case(type, "sha256"))
         return GNUTLS_DIG_SHA256;

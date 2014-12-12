@@ -56,7 +56,7 @@ void Cipher::Key::set(const char *cipher, const char *digest)
     set(cipher);
 
     // never use sha0...
-    if(eq_case(digest, "sha"))
+    if(eq_case(digest, "sha") || eq_case(digest, "sha160"))
         digest = "sha1";
 
     hashtype = EVP_get_digestbyname(digest);
