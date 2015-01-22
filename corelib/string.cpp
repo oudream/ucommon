@@ -1727,6 +1727,23 @@ char *String::strip(char *str, const char *clist)
     return str;
 }
 
+bool String::check(const char *str, size_t max, size_t min)
+{
+    unsigned count = 0;
+
+    if(!str)
+        return false;
+
+    while(*str) {
+        if(++count > max)
+            return false;
+        ++str;
+    }
+    if(count < min)
+        return false;
+    return true;
+}
+
 void String::upper(char *str)
 {
     while(str && *str) {

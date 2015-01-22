@@ -86,6 +86,9 @@ extern "C" int main()
     assert(eq(paste_test, "foobar"));
     assert(eq(paste_test_empty, "bar"));
 
+    assert(String::check("xxx", 3));
+    assert(!String::check("xxxx", 3));
+
     delete[] test;
     delete[] cdup;
 

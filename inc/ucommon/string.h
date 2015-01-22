@@ -981,6 +981,15 @@ public:
     static void fix(String& object);
 
     /**
+     * Check if string is valid and in specific constraints.
+     * @param string to check.
+     * @param maximum size allowed.
+     * @param minimum size required.
+     * @return true if string is valid.
+     */
+    static bool check(const char *string, size_t maximum, size_t minimum = 0);
+
+    /**
      * Erase string memory.  Often used to clear out passwords.
      * @param text string to erase.
      */
