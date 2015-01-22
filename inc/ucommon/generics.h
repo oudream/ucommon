@@ -125,20 +125,25 @@ public:
         return *this;
     }
 
-    inline ~pointer()
-        {release();}
+    inline ~pointer() {
+        release();
+    }
 
-    inline T& operator*() const
-        {return *object;}
+    inline T& operator*() const {
+        return *object;
+    }
 
-    inline T* operator->() const
-        {return object;}
+    inline T* operator->() const {
+        return object;
+    }
 
-    inline bool operator!() const
-        {return (counter == NULL);}
+    inline bool operator!() const {
+        return (counter == NULL);
+    }
 
-    inline operator bool() const
-        {return counter != NULL;}
+    inline operator bool() const {
+        return counter != NULL;
+    }
 };
 
 /**
@@ -222,23 +227,29 @@ public:
         return *this;
     }
 
-    inline ~array_pointer()
-        {release();}
+    inline ~array_pointer() {
+        release();
+    }
 
-    inline T* operator*() const
-        {return array;}
+    inline T* operator*() const {
+        return array;
+    }
 
-    inline T& operator[](size_t offset) const
-        {return array[offset];}
+    inline T& operator[](size_t offset) const {
+        return array[offset];
+    }
 
-    inline T* operator()(size_t offset) const
-        {return &array[offset];}
+    inline T* operator()(size_t offset) const {
+        return &array[offset];
+    }
 
-    inline bool operator!() const
-        {return (counter == NULL);}
+    inline bool operator!() const {
+        return (counter == NULL);
+    }
 
-    inline operator bool() const
-        {return counter != NULL;}
+    inline operator bool() const {
+        return counter != NULL;
+    }
 };
 
 /**
@@ -261,20 +272,23 @@ public:
     /**
      * Construct a temporary object, create our stack frame reference.
      */
-    inline temporary()
-        {object = NULL;}
+    inline temporary() {
+        object = NULL;
+    }
 
     /**
      * Disable copy constructor.
      */
-    temporary(const temporary<T>&)
-        {::abort();}
+    temporary(const temporary<T>&) {
+        ::abort();
+    }
 
     /**
      * Construct an assigned pointer.
      */
-    inline temporary(T *ptr)
-        {object = ptr;}
+    inline temporary(T *ptr) {
+        object = ptr;
+    }
 
     /**
      * Assign a temporary object.  This adds a pointer to an existing
@@ -305,21 +319,25 @@ public:
      * Access heap object through our temporary directly.
      * @return reference to heap resident object.
      */
-    inline T& operator*() const
-        {return *object;}
+    inline T& operator*() const {
+        return *object;
+    }
 
     /**
      * Access members of our heap object through our temporary.
      * @return member reference of heap object.
      */
-    inline T* operator->() const
-        {return object;}
+    inline T* operator->() const {
+        return object;
+    }
 
-    inline operator bool() const
-        {return object != NULL;}
+    inline operator bool() const {
+        return object != NULL;
+    }
 
-    inline bool operator!() const
-        {return object == NULL;}
+    inline bool operator!() const {
+        return object == NULL;
+    }
 
     inline ~temporary() {
         if(object)
@@ -350,8 +368,9 @@ public:
     /**
      * Construct a temporary object, create our stack frame reference.
      */
-    inline temp_array(size_t s)
-        {array =  new T[s]; size = s;}
+    inline temp_array(size_t s) {
+        array =  new T[s]; size = s;
+    }
 
     /**
      * Construct a temporary object with a copy of some initial value.
@@ -364,8 +383,9 @@ public:
             array[p] = initial;
     }
 
-    inline void reset(size_t s)
-        {delete[] array; array = new T[s]; size = s;}
+    inline void reset(size_t s) {
+        delete[] array; array = new T[s]; size = s;
+    }
 
     inline void reset(const T& initial, size_t s) {
         if(array)
@@ -384,14 +404,17 @@ public:
     /**
      * Disable copy constructor.
      */
-    temp_array(const temp_array<T>&)
-        {::abort();}
+    temp_array(const temp_array<T>&) {
+        ::abort();
+    }
 
-    inline operator bool() const
-        {return array != NULL;}
+    inline operator bool() const {
+        return array != NULL;
+    }
 
-    inline bool operator!() const
-        {return array == NULL;}
+    inline bool operator!() const {
+        return array == NULL;
+    }
 
     inline ~temp_array() {
         if(array)
@@ -427,14 +450,16 @@ public:
      * Save object into local copy and keep reference to the original object.
      * @param object to save.
      */
-    inline save_restore(T& object)
-        {original = &object; temp = object;}
+    inline save_restore(T& object) {
+        original = &object; temp = object;
+    }
 
     /**
      * Restore original when stack frame is released.
      */
-    inline ~save_restore()
-        {*original = temp;}
+    inline ~save_restore() {
+        *original = temp;
+    }
 };
 
 /**
@@ -443,8 +468,9 @@ public:
  * @return true if object valid.
  */
 template<class T>
-inline bool is(T& object)
-    {return object.operator bool();}
+inline bool is(T& object) {
+    return object.operator bool();
+}
 
 /**
  * Convenience function to test pointer object.  This solves issues where
@@ -453,8 +479,9 @@ inline bool is(T& object)
  * @return true if object points to NULL.
  */
 template<typename T>
-inline bool isnull(T& object)
-    {return (bool)(object.operator*() == NULL);}
+inline bool isnull(T& object) {
+    return (bool)(object.operator*() == NULL);
+}
 
 /**
  * Convenience function to test pointer-pointer object.  This solves issues
@@ -463,8 +490,9 @@ inline bool isnull(T& object)
  * @return true if object points to NULL.
  */
 template<typename T>
-inline bool isnullp(T *object)
-    {return (bool)(object->operator*() == NULL);}
+inline bool isnullp(T *object) {
+    return (bool)(object->operator*() == NULL);
+}
 
 /**
  * Convenience function to duplicate object pointer to heap.
@@ -472,36 +500,42 @@ inline bool isnullp(T *object)
  * @return heap pointer instance.
  */
 template<typename T>
-inline T* dup(const T& object)
-    {return new T(object);}
+inline T* dup(const T& object) {
+    return new T(object);
+}
 
 template<typename T>
-inline void dupfree(T object)
-    {delete object;}
+inline void dupfree(T object) {
+    delete object;
+}
 
 template<>
-inline char *dup<char>(const char& object)
-    {return strdup(&object);}
+inline char *dup<char>(const char& object) {
+    return strdup(&object);
+}
 
 template<>
-inline void dupfree<char*>(char* object)
-    {::free(object);}
+inline void dupfree<char*>(char* object) {
+    ::free(object);
+}
 
 /**
  * Convenience function to reset an existing object.
  * @param object type to reset.
  */
 template<typename T>
-inline void reset_unsafe(T& object)
-    {new((caddr_t)&object) T;}
+inline void reset_unsafe(T& object) {
+    new((caddr_t)&object) T;
+}
 
 /**
  * Convenience function to zero an object and restore type info.
  * @param object to zero in memory.
  */
 template<typename T>
-inline void zero_unsafe(T& object)
-    {memset((void *)&object, 0, sizeof(T)); new((caddr_t)&object) T;}
+inline void zero_unsafe(T& object) {
+    memset((void *)&object, 0, sizeof(T)); new((caddr_t)&object) T;
+}
 
 /**
  * Convenience function to copy class.
@@ -509,8 +543,9 @@ inline void zero_unsafe(T& object)
  * @param source to copy from.
  */
 template<typename T>
-inline void copy_unsafe(T* target, const T* source)
-    {memcpy((void *)target, (void *)source, sizeof(T));}
+inline void copy_unsafe(T* target, const T* source) {
+    memcpy((void *)target, (void *)source, sizeof(T));
+}
 
 /**
  * Convenience function to store object pointer into object.
@@ -518,8 +553,9 @@ inline void copy_unsafe(T* target, const T* source)
  * @param source to copy from.
  */
 template<typename T>
-inline void store_unsafe(T& target, const T* source)
-    {memcpy((void *)&target, (void *)source, sizeof(T));}
+inline void store_unsafe(T& target, const T* source) {
+    memcpy((void *)&target, (void *)source, sizeof(T));
+}
 
 /**
  * Convenience function to swap objects.
@@ -527,8 +563,25 @@ inline void store_unsafe(T& target, const T* source)
  * @param o2 to swap.
  */
 template<typename T>
-inline void swap(T& o1, T& o2)
-    {cpr_memswap(&o1, &o2, sizeof(T));}
+inline void swap(T& o1, T& o2) {
+    cpr_memswap(&o1, &o2, sizeof(T));
+}
+
+/**
+ * Convenience function to check memory arrays.
+ * @param pointer to validate.
+ * @param base address of array.
+ * @param count of objects.
+ * @return true if in boundry.
+ */
+template<typename T>
+inline bool bound(const T* pointer, const T* base, size_t count) {
+    if(pointer < base || pointer >= &base[count])
+        return false;
+    if(((size_t)pointer) % sizeof(T))
+        return false;
+    return true;
+}
 
 /**
  * Convenience function to return max of two objects.
@@ -537,8 +590,7 @@ inline void swap(T& o1, T& o2)
  * @return max object.
  */
 template<typename T>
-inline T& (max)(T& o1, T& o2)
-{
+inline T& (max)(T& o1, T& o2) {
     return o1 > o2 ? o1 : o2;
 }
 
@@ -549,8 +601,7 @@ inline T& (max)(T& o1, T& o2)
  * @return min object.
  */
 template<typename T>
-inline T& (min)(T& o1, T& o2)
-{
+inline T& (min)(T& o1, T& o2) {
     return o1 < o2 ? o1 : o2;
 }
 
@@ -562,8 +613,7 @@ inline T& (min)(T& o1, T& o2)
  * @return adjusted value.
  */
 template<typename T>
-inline T& (limit)(T& value, T& low, T& high)
-{
+inline T& (limit)(T& value, T& low, T& high) {
     return (value < low) ? low : ((value > high) ? high : value);
 }
 
