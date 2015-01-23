@@ -141,8 +141,9 @@ protected:
      * End of document check.
      * @return true if end of document.
      */
-    bool end(void) const
-        {return state == END;}
+    bool end(void) const {
+        return state == END;
+    }
 };
 
 } // namespace ucommon
