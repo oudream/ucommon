@@ -1729,7 +1729,7 @@ char *String::strip(char *str, const char *clist)
 
 bool String::check(const char *str, size_t max, size_t min)
 {
-    unsigned count = 0;
+    size_t count = 0;
 
     if(!str)
         return false;
