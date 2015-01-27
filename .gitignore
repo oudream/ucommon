@@ -77,4 +77,5 @@ utils/sockaddr
 utils/zerofill
 utils/scrub-files
 utils/pdetach
+m4/
 TAGS
