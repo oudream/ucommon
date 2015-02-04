@@ -33,6 +33,9 @@ endif()
 
 set(SOVERSION ${LIB_VERSION})
 STRING(REGEX REPLACE "[.].*$" "" SOVERSION ${SOVERSION})
+if(ABI_MAJORONLY)
+    set(LIB_VERSION ${SOVERSION})
+endif()
 
 # when we override default install prefix, assume full path is used...
 
