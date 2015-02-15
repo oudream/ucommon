@@ -47,6 +47,7 @@ doxy.config
 directive
 *.zip
 *.changes
+*.deb
 *.dsc
 *.a
 *.o
