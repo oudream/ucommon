@@ -56,8 +56,9 @@ add_test(NAME ucommonShell COMMAND test-ucommonShell)
 add_executable(test-ucommonCipher cipher.cpp)
 target_link_libraries(test-ucommonCipher usecure ucommon)
 add_test(NAME ucommonCipher COMMAND test-ucommonCipher)
+add_dependencies(test-ucommonCipher usecure ucommon)
 
 add_executable(test-ucommonDigest digest.cpp)
 target_link_libraries(test-ucommonDigest usecure ucommon)
 add_test(NAME ucommonDigest COMMAND test-ucommonDigest)
-
+add_dependencies(test-ucommonDigest usecure ucommon)
