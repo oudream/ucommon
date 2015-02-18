@@ -219,7 +219,7 @@ static void scan(String path, bool top = true)
     scrub(path);
 }
 
-PROGRAM_MAIN(argc, argv)
+int main(int argc, char **argv)
 {
     shell::bind("scrub");
     shell args(argc, argv);
@@ -242,11 +242,11 @@ PROGRAM_MAIN(argc, argv)
         printf("%s\n", _TEXT("Options:"));
         shell::help();
         printf("\n%s\n", _TEXT("Report bugs to dyfet@gnu.org"));
-        PROGRAM_EXIT(0);
+        return 0;
     }
 
     if(!args())
-        PROGRAM_EXIT(0);
+        return 0;
 
     secure::init();
 
@@ -257,6 +257,6 @@ PROGRAM_MAIN(argc, argv)
             scrub(args[count++]);
     }
 
-    PROGRAM_EXIT(exit_code);
+    return exit_code;
 }
 

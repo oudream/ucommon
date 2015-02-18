@@ -25,7 +25,7 @@ static shell::stringopt error('e', "--error", _TEXT("stderr path to use"), "file
 static shell::stringopt input('i', "--input", _TEXT("stdin path to use"), "filename");
 static shell::stringopt output('o', "--output", _TEXT("stdout path to use"), "filename");
 
-PROGRAM_MAIN(argc, argv)
+int main(int argc, char **argv)
 {
     fd_t stdio[3] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
     const char *argv0;
@@ -39,7 +39,7 @@ PROGRAM_MAIN(argc, argv)
         printf("%s\n", _TEXT("Options:"));
         shell::help();
         printf("\n%s\n", _TEXT("Report bugs to dyfet@gnu.org"));
-        PROGRAM_EXIT(0);
+        return 0;
     }
 
     if(!args())
@@ -73,6 +73,6 @@ PROGRAM_MAIN(argc, argv)
         shell::errexit(-1, "*** pdetach: %s: %s",
             argv0, _TEXT("failed to execute"));
 
-    PROGRAM_EXIT(0);
+    return 0;
 }
 
