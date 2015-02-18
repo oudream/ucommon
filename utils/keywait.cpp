@@ -73,7 +73,7 @@ static void keyflush(void)
 #endif
 }
 
-PROGRAM_MAIN(argc, argv)
+int main(int argc, char **argv)
 {
     shell::bind("keywait");
     shell args(argc, argv);
@@ -88,7 +88,7 @@ PROGRAM_MAIN(argc, argv)
         printf("%s\n", _TEXT("Options:"));
         shell::help();
         printf("\n%s\n", _TEXT("Report bugs to dyfet@gnutelephony.org"));
-        PROGRAM_EXIT(0);
+        return 0;
     }
 
     while(count < args()) {
@@ -151,6 +151,6 @@ PROGRAM_MAIN(argc, argv)
     if(nl)
         shell::printf("\n");
 
-    PROGRAM_EXIT(excode);
+    return excode;
 }
 

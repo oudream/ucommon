@@ -23,7 +23,7 @@ static shell::flagopt helpflag('h',"--help",    _TEXT("display this list"));
 static shell::flagopt althelp('?', NULL, NULL);
 static shell::flagopt udp('u', "--udp", _TEXT("lookup udp service"));
 
-PROGRAM_MAIN(argc, argv)
+int main(int argc, char **argv)
 {
     unsigned type = SOCK_STREAM;
     unsigned port;
@@ -38,7 +38,7 @@ PROGRAM_MAIN(argc, argv)
         printf("%s\n", _TEXT("Options:"));
         shell::help();
         printf("\n%s\n", _TEXT("Report bugs to dyfet@gnu.org"));
-        PROGRAM_EXIT(0);
+        return 0;
     }
 
     const char *host = args[0];
@@ -78,6 +78,6 @@ PROGRAM_MAIN(argc, argv)
         ap.next();
     }
 
-    PROGRAM_EXIT(0);
+    return 0;
 }
 

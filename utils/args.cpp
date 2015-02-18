@@ -69,7 +69,7 @@ static void dirpath(bool middle, String path, bool top = true)
         output(middle, path);
 }
 
-PROGRAM_MAIN(argc, argv)
+int main(int argc, char **argv)
 {
     unsigned count = 0;
     char *ep;
@@ -84,11 +84,11 @@ PROGRAM_MAIN(argc, argv)
         printf("%s\n", _TEXT("Options:"));
         shell::help();
         printf("\n%s\n", _TEXT("Report bugs to dyfet@gnu.org"));
-        PROGRAM_EXIT(0);
+        return 0;
     }
 
     if(!args())
-        PROGRAM_EXIT(0);
+        return 0;
 
     if(quote[0]) {
         if(!quote[1]) {
@@ -137,6 +137,6 @@ PROGRAM_MAIN(argc, argv)
     if(!lines)
         file::cout << "\n";
 
-    PROGRAM_EXIT(0);
+    return 0;
 }
 

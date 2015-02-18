@@ -158,7 +158,7 @@ static void scan(String path, bool top = true)
     }
 }
 
-PROGRAM_MAIN(argc, argv)
+int main(int argc, char **argv)
 {
     shell::bind("mdsum");
     shell args(argc, argv);
@@ -173,7 +173,7 @@ PROGRAM_MAIN(argc, argv)
         printf("%s\n", _TEXT("Options:"));
         shell::help();
         printf("\n%s\n", _TEXT("Report bugs to dyfet@gnu.org"));
-        PROGRAM_EXIT(0);
+        return 0;
     }
 
     secure::init();
@@ -196,6 +196,6 @@ PROGRAM_MAIN(argc, argv)
             digest(args[count++]);
     }
 
-    PROGRAM_EXIT(exit_code);
+    return exit_code;
 }
 

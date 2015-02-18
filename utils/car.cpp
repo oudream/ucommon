@@ -412,7 +412,7 @@ static void scan(string_t path, string_t prefix)
     }
 }
 
-PROGRAM_MAIN(argc, argv)
+int main(int argc, char **argv)
 {
     shell::bind("car");
     shell args(argc, argv);
@@ -430,7 +430,7 @@ PROGRAM_MAIN(argc, argv)
         printf("%s\n", _TEXT("Options:"));
         shell::help();
         printf("\n%s\n", _TEXT("Report bugs to dyfet@gnu.org"));
-        PROGRAM_EXIT(0);
+        return 0;
     }
 
     if(!secure::init())
@@ -528,6 +528,6 @@ PROGRAM_MAIN(argc, argv)
         fprintf(output, "-----END CAR STREAM-----\n");
 
 end:
-    PROGRAM_EXIT(exit_code);
+    return exit_code;
 }
 
