@@ -76,69 +76,6 @@ include(CheckLibraryExists)
 include(CheckIncludeFiles)
 include(CTest)
 
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_NAME} library")
-SET(CPACK_PACKAGE_VENDOR              "David Sugar")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE    "${CMAKE_CURRENT_SOURCE_DIR}/README")
-SET(CPACK_RESOURCE_FILE_LICENSE       "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-set(PACKAGE_FILE_NAME                 ${PROJECT_NAME})
-set(PACKAGE_FILE_VERSION              ${VERSION})
-
-IF (WIN32)
-    SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}-${PACKAGE_FILE_VERSION}")
-ELSE (WIN32)
-    SET(CPACK_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}-bin-${PACKAGE_FILE_VERSION}")
-    if (NOT CPACK_GENERATOR)
-        SET(CPACK_GENERATOR "TBZ2")
-    endif()
-ENDIF (WIN32)
-
-IF(WIN32 AND NOT UNIX)
-    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_FILE_NAME}")
-
-    # There is a bug in NSI that does not handle full unix paths properly. Make
-    # sure there is at least one set of four (4) backlasshes.
-    # SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
-    # SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\MyExecutable.exe")
-    SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ${PROJECT_NAME}$")
-    SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.gnutelephony.org")
-    SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.gnutelephony.org")
-    SET(CPACK_NSIS_CONTACT "dyfet@gnutelephony.org")
-    SET(CPACK_NSIS_MODIFY_PATH ON)
-
-ENDIF(WIN32 AND NOT UNIX)
-
-set(CPACK_COMPONENTS_ALL libraries headers)
-set(CPACK_COMPONENT_LIBRARIES_DISPLAY_NAME "Libraries")
-set(CPACK_COMPONENT_HEADERS_DISPLAY_NAME   "C++ Headers")
-set(CPACK_COMPONENT_LIBRARIES_DESCRIPTION  "Dynamic library")
-set(CPACK_COMPONENT_HEADERS_DESCRIPTION
-    "Header files needed to build applications using ucommon library")
-
-# The following components are regex's to match anywhere (unless anchored)
-# in absolute path + filename to find files or directories to be excluded
-# from source tarball.
-SET (CPACK_SOURCE_IGNORE_FILES
-#svn, git files
-"\\\\.svn/" "\\\\.cvsignore$" "/\\\\.git/"
-# temporary files
-"\\\\.swp$"
-# backup files
-"~$"
-# eclipse, kdevelop and othe IDE files
-"\\\\.cdtproject$" "\\\\.cproject$" "\\\\.project$" "\\\\.settings/" "\\\\.kdev4/" "\\\\.kdev4$"
-# others
-"\\\\.#" "/#"
-# don't copy build and other dirs used for building
-"/build/" "/autom4te\\\\.cache/" "/_build/"
-# used before
-"/CVS/" "/\\\\.libs/" "/\\\\.deps/" "\\\\.o$" "\\\\.lo$" "\\\\.la$" "\\\\.sh$" "Makefile\\\\.in$")
-
-SET(CPACK_SOURCE_GENERATOR "TBZ2")
-SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${PACKAGE_FILE_NAME}-${PACKAGE_FILE_VERSION}")
-
-# This must always be last!
-INCLUDE(CPack)
-
 # set to true for debug and trace during CMakeLists development
 set(CMAKE_VERBOSE_MAKEFILE FALSE)
 
