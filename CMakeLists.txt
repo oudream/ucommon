@@ -80,11 +80,8 @@ include(CTest)
 set(CMAKE_VERBOSE_MAKEFILE FALSE)
 
 # add module path of project if it exists...
-if (EXISTS "${CMAKE_SOURCE_DIR}/inc/")
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/inc/")
-endif()
-
-include (inc/ucommon.cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/inc/")
+include (cmake/ucommon.cmake)
 
 find_package(PkgConfig)
 find_package(Threads)
