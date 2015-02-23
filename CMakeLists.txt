@@ -71,17 +71,16 @@ option(CRYPTO_STATIC "Set to ON to build static crypto" OFF)
 option(CRYPTO_OPENSSL "Set to OFF to disable openssl" ON)
 
 MESSAGE( STATUS "Configuring GNU ${PROJECT_NAME} ${VERSION}...")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckIncludeFiles)
 include(CTest)
+include(ucommon)
 
 # set to true for debug and trace during CMakeLists development
 set(CMAKE_VERBOSE_MAKEFILE FALSE)
-
-# add module path of project if it exists...
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/inc/")
-include (cmake/ucommon.cmake)
 
 find_package(PkgConfig)
 find_package(Threads)
