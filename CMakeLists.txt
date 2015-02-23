@@ -45,8 +45,6 @@ else()
     set(MODULE_FLAGS "-module -shared -avoid-version")
 endif()
 
-include(GNUInstallDirs)
-
 # project options
 
 option(BUILD_STDLIB "Set to OFF to disable C++ stdlib" ON)
@@ -73,6 +71,7 @@ option(CRYPTO_OPENSSL "Set to OFF to disable openssl" ON)
 MESSAGE( STATUS "Configuring GNU ${PROJECT_NAME} ${VERSION}...")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
+include(GNUInstallDirs)
 include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckIncludeFiles)
