@@ -76,6 +76,8 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckIncludeFiles)
 include(CTest)
+include(CapeConfig)
+include(CapeMakeTargets)
 include(ucommon)
 
 set (CMAKE_REQUIRED_LIBRARIES ${UCOMMON_LIBS})
@@ -264,31 +266,29 @@ if(NOT WIN32)
         STRING(REGEX REPLACE "^[-]l" "" slib ${lib})
         set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS} -l${slib}")
     endforeach()
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.spec.cmake ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.spec @ONLY)
 
     if(BUILD_STDLIB)
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/commoncpp.pc.cmake ${CMAKE_CURRENT_BINARY_DIR}/commoncpp.pc)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/commoncpp-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/commoncpp-config)
     endif()
 endif(NOT WIN32)
 
-configure_file(ucommon-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ucommon-config.h)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+create_specfile()
+create_headers(ucommon-config.h)
+create_pcfiles(pc_files ucommon commoncpp)
 
 add_library(ucommon ${BUILD_RUNTIME_TYPE} ${common_src} ${ucommon_inc})
-set_target_properties(ucommon PROPERTIES VERSION ${LIB_VERSION} SOVERSION ${SOVERSION})
+add_library_version(ucommon)
 target_link_libraries(ucommon ${UCOMMON_LIBS} ${WITH_LIBS})
 
 add_library(usecure ${BUILD_CRYPTO_TYPE} ${secure_src} ${secure_inc})
-set_target_properties(usecure PROPERTIES VERSION ${LIB_VERSION} SOVERSION ${SOVERSION})
+add_library_version(usecure)
 target_link_libraries(usecure ucommon ${WITH_LIBS} ${SECURE_LIBS} ${UCOMMON_LIBS})
 add_dependencies(usecure ucommon)
 
 if(BUILD_STDLIB)
     add_library(commoncpp ${BUILD_LIBRARY_TYPE} ${commoncpp_src} ${commoncpp_inc})
-    set_target_properties(commoncpp PROPERTIES VERSION ${LIB_VERSION} SOVERSION ${SOVERSION})
+    add_library_version(commoncpp)
     target_link_libraries(commoncpp ucommon ${UCOMMON_LIBS} ${WITH_LIBS} ${SECURE_LIBS})
     add_dependencies(commoncpp ucommon)
 endif()
@@ -299,86 +299,7 @@ if (BUILD_TESTING)
     add_subdirectory(test)
 endif()
 
-find_package(Doxygen)
-
-if (DOXYGEN_FOUND)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doxy.config.cmake
-        ${CMAKE_CURRENT_BINARY_DIR}/doxy.config
-        @ONLY )
-
-    seT(DOXY_CONFIG "${CMAKE_CURRENT_BINARY_DIR}/doxy.config")
-
-    #add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG})
-    add_custom_target(doc
-                    ${DOXYGEN_EXECUTABLE} ${DOXY_CONFIG}
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                    COMMENT "Generating API documentation with Doxygen" VERBATIM
-                   )
-
-    #
-    # TODO an: taken from internet, to be tested
-    #
-    # create a windows help .chm file using hhc.exe
-    # HTMLHelp DLL must be in path!
-    # fallback: use hhw.exe interactively
-    IF    (WIN32)
-        FIND_PACKAGE(HTMLHelp)
-        IF   (HTML_HELP_COMPILER)
-            SET (TMP "${CMAKE_CURRENT_BINARY_DIR}\\Doc\\html\\index.hhp")
-            STRING(REGEX REPLACE "[/]" "\\\\" HHP_FILE ${TMP} )
-            # MESSAGE(SEND_ERROR "DBG  HHP_FILE=${HHP_FILE}")
-            ADD_CUSTOM_TARGET(winhelp ${HTML_HELP_COMPILER} ${HHP_FILE})
-            ADD_DEPENDENCIES (winhelp doc)
-
-            IF (NOT TARGET_DOC_SKIP_INSTALL)
-                # install windows help?
-                # determine useful name for output file
-                # should be project and version unique to allow installing
-                # multiple projects into one global directory
-                IF   (EXISTS "${PROJECT_BINARY_DIR}/Doc/html/index.chm")
-                    IF   (PROJECT_NAME)
-                        SET(OUT "${PROJECT_NAME}")
-                    ELSE (PROJECT_NAME)
-                        SET(OUT "Documentation") # default
-                    ENDIF(PROJECT_NAME)
-                    IF   (${PROJECT_NAME}_VERSION_MAJOR)
-                        SET(OUT "${OUT}-${${PROJECT_NAME}_VERSION_MAJOR}")
-                        IF   (${PROJECT_NAME}_VERSION_MINOR)
-                            SET(OUT  "${OUT}.${${PROJECT_NAME}_VERSION_MINOR}")
-                            IF   (${PROJECT_NAME}_VERSION_PATCH)
-                                SET(OUT "${OUT}.${${PROJECT_NAME}_VERSION_PATCH}")
-                            ENDIF(${PROJECT_NAME}_VERSION_PATCH)
-                        ENDIF(${PROJECT_NAME}_VERSION_MINOR)
-                    ENDIF(${PROJECT_NAME}_VERSION_MAJOR)
-                    # keep suffix
-                    SET(OUT  "${OUT}.chm")
-
-                    #MESSAGE("DBG ${PROJECT_BINARY_DIR}/Doc/html/index.chm \n${OUT}")
-                    # create target used by install and package commands
-                    INSTALL(FILES "${PROJECT_BINARY_DIR}/Doc/html/index.chm"
-                        DESTINATION ${CMAKE_INSTALL_DOCDIR} RENAME "${OUT}")
-                ENDIF(EXISTS "${PROJECT_BINARY_DIR}/Doc/html/index.chm")
-            ENDIF(NOT TARGET_DOC_SKIP_INSTALL)
-
-        ENDIF(HTML_HELP_COMPILER)
-        # MESSAGE(SEND_ERROR "HTML_HELP_COMPILER=${HTML_HELP_COMPILER}")
-    ENDIF (WIN32)
-ENDIF(DOXYGEN_FOUND)
-
-
-message (STATUS)
-message (STATUS "-------------------------------------------------------------------------------")
-message (STATUS "CMAKE_INSTALL_PREFIX " ${CMAKE_INSTALL_PREFIX} )
-message (STATUS "LIB_SUFFIX           " ${LIB_SUFFIX})
-message (STATUS "BUILD_STATIC         " ${BUILD_STATIC})
-message (STATUS "BUILD STDLIB         " ${BUILD_STDLIB})
-message (STATUS "BUILD_TESTING        " ${BUILD_TESTING})
-message (STATUS "-------------------------------------------------------------------------------")
-message (STATUS)
-message (STATUS "Change a value with: cmake -D<Variable>=<Value>")
-message (STATUS)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
+install(FILES ${pc_files} DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 if(NOT WIN32)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ucommon-config DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
@@ -386,7 +307,6 @@ if(BUILD_STDLIB)
     if(NOT WIN32)
         install(FILES ${CMAKE_CURRENT_BINARY_DIR}/commoncpp-config DESTINATION ${CMAKE_INSTALL_BINDIR})
     endif()
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/commoncpp.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 endif()
 
 install(FILES ${scripts_man} DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
@@ -399,42 +319,7 @@ endif()
 
 install(TARGETS ucommon usecure DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
-if(CMAKE_GENERATOR MATCHES "Unix Makefiles")
-    add_custom_target(cleandist
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}[-_]*.gz"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}[-_]*.xz"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}_*.dsc"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}-*.rpm"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}[-_]*.deb"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/*${PACKAGE}*[-_]*.deb"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}-*.zip"
-        COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/*${PACKAGE}*.changes"
-    )
+add_cape_make_targets(libcpr ${VERSION})
+add_cape_docs_target(Doxyfile)
+add_update_cmake_target(CapeConfig CapeMakeTargets CapeUses)
 
-    add_custom_target(srpm
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        COMMAND rm -f *.rpm
-        COMMAND rpmbuild  -bs --nodeps --define "_sourcedir ." --define "_srcrpmdir ." --sign ${PACKAGE}.spec
-    )
-
-    add_custom_target(dist
-        DEPENDS cleandist
-        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-        COMMAND git archive --format tar --output="${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}-${VERSION}.tar" --prefix="${PACKAGE}-${VERSION}/" HEAD
-        COMMAND gzip "${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE}-${VERSION}.tar"
-    )
-
-    add_custom_target(uninstall
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-        COMMAND xargs <install_manifest.txt
-    )
-
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/debian/")
-        add_custom_target(deb
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            COMMAND rm -f *.deb *.debian.tar.gz *.dsc *.changes
-            COMMAND cape-source --sign ${PACKAGE}-${VERSION}.tar.gz packaging
-        )
-    endif()
-endif()
