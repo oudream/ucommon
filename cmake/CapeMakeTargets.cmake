@@ -41,6 +41,7 @@ endmacro(add_make_dist_target)
 macro(add_make_srpm_target _TARGET)
     if(UNIX AND CMAKE_GENERATOR MATCHES "Unix Makefiles")
         add_custom_target(srpm
+            DEPENDS dist
             WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
             COMMAND rm -f *.rpm
             COMMAND rpmbuild  -bs --nodeps --define "_sourcedir ." --define "_srcrpmdir ." --sign ${_TARGET}.spec
@@ -59,9 +60,10 @@ endmacro()
 
 
 macro(add_make_deb_target _TARGET _VERSION)
-    if(LINUX AND CMAKE_GENERATOR MATCHES "Unix Makefiles")
+    if(UNIX AND CMAKE_GENERATOR MATCHES "Unix Makefiles")
         if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/debian/")
             add_custom_target(deb
+                DEPENDS dist
                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
                 COMMAND rm -f *.deb *.debian.tar.gz *.dsc *.changes
                 COMMAND cape-source --sign ${_TARGET}-${_VERSION}.tar.gz packaging
