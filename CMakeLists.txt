@@ -78,76 +78,6 @@ include(CheckIncludeFiles)
 include(CTest)
 include(ucommon)
 
-# set to true for debug and trace during CMakeLists development
-set(CMAKE_VERBOSE_MAKEFILE FALSE)
-
-find_package(PkgConfig)
-find_package(Threads)
-if (CMAKE_HAVE_PTHREAD_H)
-    set(HAVE_PTHREAD_H TRUE)
-endif()
-set (UCOMMON_LIBS ${UCOMMON_LIBS} ${CMAKE_THREAD_LIBS_INIT} ${WITH_LDFLAGS})
-
-if (MINGW OR MSYS)
-    set (UCOMMON_LIBS ${UCOMMON_LIBS} mingwex mingw32)
-else()
-    if (WIN32 AND CMAKE_COMPILER_IS_GNUCXX)
-        set (UCOMMON_LIBS ${UCOMMON_LIBS} mingwex mingw32)
-    endif()
-endif()
-
-if (WIN32 OR MINGW OR MSYS OR CMAKE_SYSTEM MATCHES "Windows")
-    set (UCOMMON_LIBS ${UCOMMON_LIBS} crypt32 advapi32 user32 ws2_32 wsock32 kernel32)
-endif()
-
-if(UNIX AND NOT BUILD_STDLIB)
-    set(UCOMMON_LIBS ${UCOMMON_LIBS} c)
-endif()
-
-if(MSYS OR MINGW)
-    set(UCOMMON_LIBS ${UCOMMON_LIBS} msvcrt)
-endif()
-
-if(CMAKE_COMPILER_IS_GNUCXX AND NOT BUILD_STDLIB)
-    check_library_exists(gcc __modsi3 "" HAVE_GCC_LIB)
-    if(HAVE_GCC_LIB)
-            set(UCOMMON_LIBS ${UCOMMON_LIBS} gcc)
-    endif()
-endif()
-
-
-if(UNIX OR MSYS OR MINGW OR CYGWIN)
-    check_library_exists(dl dlopen "" HAVE_DL_LIB)
-    if (HAVE_DL_LIB)
-        set (UCOMMON_LIBS ${UCOMMON_LIBS} dl)
-    else()
-        check_library_exists(compat dlopen "" HAVE_COMPAT_LIB)
-        if(HAVE_COMPAT_LIB)
-            set (UCOMMON_LIBS ${UCOMMON_LIBS} compat)
-        endif()
-    endif()
-
-    check_library_exists(dld shl_load "" HAVE DLD_LIB)
-    if (HAVE_DLD_LIB)
-        set (UCOMMON_LIBS ${UCOMMON_LIBS} dld)
-    endif()
-
-    check_library_exists(socket socket "" HAVE_SOCKET_LIB)
-    if (HAVE_SOCKET_LIB)
-        set (UCOMMON_LIBS ${UCOMMON_LIBS} socket)
-    endif()
-
-    check_library_exists(posix4 sem_wait "" HAVE_POSIX4_LIB)
-    if (HAVE_POSIX4_LIB)
-        set(UCOMMON_LIBS ${UCOMMON_LIBS} posix4)
-    endif()
-
-    check_library_exists(rt clock_gettime "" HAVE_RT_LIB)
-    if (HAVE_RT_LIB)
-        set(UCOMMON_LIBS ${UCOMMON_LIBS} rt)
-    endif()
-endif()
-
 set (CMAKE_REQUIRED_LIBRARIES ${UCOMMON_LIBS})
 check_function_exists(getaddrinfo HAVE_GETADDRINFO)
 check_function_exists(socketpair HAVE_SOCKETPAIR)
@@ -231,6 +161,8 @@ check_include_files(sys/lockf.h HAVE_SYS_LOCKF_H)
 check_include_files(regex.h HAVE_REGEX_H)
 
 # we are making this optional in automake, not default...
+
+find_package(PkgConfig)
 
 if(HAVE_REGEX_H)
     check_library_exists(regex regfree "" HAVE_REGEX_LIB)
