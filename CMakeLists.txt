@@ -294,8 +294,6 @@ file(GLOB common_src corelib/*.cpp)
 file(GLOB ucommon_inc inc/ucommon/*.h)
 file(GLOB commoncpp_src commoncpp/*.cpp)
 file(GLOB commoncpp_inc inc/commoncpp/*.h)
-file(GLOB ucommon_man utils/*.1)
-set(ucommon_man commoncpp-config.1 ucommon-config.1 ${ucommon_man})
 list(REMOVE_ITEM ucommon_inc inc/ucommon/secure.h)
 set(secure_inc inc/ucommon/secure.h)
 
@@ -362,45 +360,11 @@ if(BUILD_STDLIB)
     add_dependencies(commoncpp ucommon)
 endif()
 
-add_executable(ucommon-args utils/args.cpp)
-add_dependencies(ucommon-args ucommon)
-set_target_properties(ucommon-args PROPERTIES OUTPUT_NAME args)
-target_link_libraries(ucommon-args ucommon ${UCOMMON_LIBS} ${WITH_LIBS})
-
-add_executable(usecure-car utils/car.cpp)
-add_dependencies(usecure-car usecure ucommon)
-set_target_properties(usecure-car PROPERTIES OUTPUT_NAME car)
-target_link_libraries(usecure-car usecure ucommon ${SECURE_LIBS} ${UCOMMON_LIBS} ${WITH_LIBS})
-
-add_executable(ucommon-keywait utils/keywait.cpp)
-add_dependencies(ucommon-keywait ucommon)
-set_target_properties(ucommon-keywait PROPERTIES OUTPUT_NAME keywait)
-target_link_libraries(ucommon-keywait ucommon ${UCOMMON_LIBS} ${WITH_LIBS})
-
-add_executable(ucommon-pdetach utils/pdetach.cpp)
-add_dependencies(ucommon-pdetach ucommon)
-set_target_properties(ucommon-pdetach PROPERTIES OUTPUT_NAME pdetach)
-target_link_libraries(ucommon-pdetach ucommon ${UCOMMON_LIBS} ${WITH_LIBS})
-
-add_executable(ucommon-sockaddr utils/sockaddr.cpp)
-add_dependencies(ucommon-sockaddr ucommon)
-set_target_properties(ucommon-sockaddr PROPERTIES OUTPUT_NAME sockaddr)
-target_link_libraries(ucommon-sockaddr ucommon ${UCOMMON_LIBS} ${WITH_LIBS})
-
-add_executable(usecure-scrub utils/scrub.cpp)
-add_dependencies(usecure-scrub usecure ucommon)
-set_target_properties(usecure-scrub PROPERTIES OUTPUT_NAME scrub-files)
-target_link_libraries(usecure-scrub usecure ucommon ${SECURE_LIBS} ${UCOMMON_LIBS} ${WITH_LIBS})
-
-add_executable(usecure-mdsum utils/mdsum.cpp)
-add_dependencies(usecure-mdsum usecure ucommon)
-set_target_properties(usecure-mdsum PROPERTIES OUTPUT_NAME mdsum)
-target_link_libraries(usecure-mdsum usecure ucommon ${SECURE_LIBS} ${UCOMMON_LIBS} ${WITH_LIBS})
-
-add_executable(usecure-zerofill utils/zerofill.cpp)
-add_dependencies(usecure-zerofill usecure ucommon)
-set_target_properties(usecure-zerofill PROPERTIES OUTPUT_NAME zerofill)
-target_link_libraries(usecure-zerofill usecure ucommon ${SECURE_LIBS} ${UCOMMON_LIBS} ${WITH_LIBS})
+add_subdirectory(utils)
+if (BUILD_TESTING)
+    ENABLE_TESTING()
+    add_subdirectory(test)
+endif()
 
 find_package(Doxygen)
 
@@ -481,11 +445,6 @@ message (STATUS)
 message (STATUS "Change a value with: cmake -D<Variable>=<Value>")
 message (STATUS)
 
-if (BUILD_TESTING)
-    ENABLE_TESTING()
-    add_subdirectory(test)
-endif()
-
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 if(NOT WIN32)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ucommon-config DESTINATION ${CMAKE_INSTALL_BINDIR})
@@ -505,8 +464,6 @@ if(BUILD_STDLIB)
 endif()
 
 install(TARGETS ucommon usecure DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries)
-install(TARGETS ucommon-args ucommon-pdetach ucommon-keywait usecure-car usecure-scrub usecure-mdsum ucommon-sockaddr usecure-zerofill DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES ${ucommon_man} DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 
 if(CMAKE_GENERATOR MATCHES "Unix Makefiles")
     add_custom_target(cleandist
