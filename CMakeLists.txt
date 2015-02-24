@@ -21,22 +21,6 @@ PROJECT(ucommon)
 set (VERSION 6.3.0)
 set (PACKAGE ucommon)
 
-set(RC_VERSION ${VERSION})
-STRING(REGEX REPLACE "[.]" "," RC_VERSION ${RC_VERSION})
-set(RC_VERSION "${RC_VERSION},0")
-
-if(UNIX)
-    execute_process(WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} COMMAND "./cmake-abi.sh" OUTPUT_VARIABLE LIB_VERSION)
-else()
-    set(LIB_VERSION ${VERSION})
-endif()
-
-set(SOVERSION ${LIB_VERSION})
-STRING(REGEX REPLACE "[.].*$" "" SOVERSION ${SOVERSION})
-if(ABI_MAJORONLY)
-    set(LIB_VERSION ${SOVERSION})
-endif()
-
 # when we override default install prefix, assume full path is used...
 
 if(WIN32)
@@ -266,15 +250,11 @@ if(NOT WIN32)
         STRING(REGEX REPLACE "^[-]l" "" slib ${lib})
         set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS} -l${slib}")
     endforeach()
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-config)
-
-    if(BUILD_STDLIB)
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/commoncpp-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/commoncpp-config)
-    endif()
 endif(NOT WIN32)
 
 create_specfile()
 create_headers(ucommon-config.h)
+create_scripts(scripts_cfg ucommon-config commoncpp-config)
 create_pcfiles(pc_files ucommon commoncpp)
 
 add_library(ucommon ${BUILD_RUNTIME_TYPE} ${common_src} ${ucommon_inc})
@@ -300,15 +280,7 @@ if (BUILD_TESTING)
 endif()
 
 install(FILES ${pc_files} DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-if(NOT WIN32)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ucommon-config DESTINATION ${CMAKE_INSTALL_BINDIR})
-endif()
-if(BUILD_STDLIB)
-    if(NOT WIN32)
-        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/commoncpp-config DESTINATION ${CMAKE_INSTALL_BINDIR})
-    endif()
-endif()
-
+install(FILES ${scripts_cfg} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${scripts_man} DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 install(FILES ${ucommon_inc} ${secure_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ucommon)
 install(FILES ${commoncpp_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/commoncpp)
