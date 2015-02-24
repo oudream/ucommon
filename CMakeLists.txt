@@ -294,6 +294,7 @@ file(GLOB common_src corelib/*.cpp)
 file(GLOB ucommon_inc inc/ucommon/*.h)
 file(GLOB commoncpp_src commoncpp/*.cpp)
 file(GLOB commoncpp_inc inc/commoncpp/*.h)
+file(GLOB scripts_man *.1)
 list(REMOVE_ITEM ucommon_inc inc/ucommon/secure.h)
 set(secure_inc inc/ucommon/secure.h)
 
@@ -456,14 +457,15 @@ if(BUILD_STDLIB)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/commoncpp.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 endif()
 
-install(FILES ${ucommon_inc} ${secure_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ucommon    COMPONENT headers)
-install(FILES ${commoncpp_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/commoncpp  COMPONENT headers)
+install(FILES ${scripts_man} DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+install(FILES ${ucommon_inc} ${secure_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ucommon)
+install(FILES ${commoncpp_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/commoncpp)
 
 if(BUILD_STDLIB)
-    install(TARGETS commoncpp DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries)
+    install(TARGETS commoncpp DESTINATION ${CMAKE_INSTALL_LIBDIR})
 endif()
 
-install(TARGETS ucommon usecure DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT libraries)
+install(TARGETS ucommon usecure DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 if(CMAKE_GENERATOR MATCHES "Unix Makefiles")
     add_custom_target(cleandist

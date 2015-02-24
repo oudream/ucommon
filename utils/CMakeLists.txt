@@ -17,7 +17,6 @@
 # otherwise generic builds of the library and supporting applications.
 
 file(GLOB ucommon_man *.1)
-set(ucommon_man ../commoncpp-config.1 ../ucommon-config.1 ${ucommon_man})
 
 add_executable(ucommon-args args.cpp)
 add_dependencies(ucommon-args ucommon)
