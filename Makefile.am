@@ -29,6 +29,9 @@ pkgconfig_DATA = ucommon.pc @COMPAT_PC@
 scriptdir = $(bindir)
 script_SCRIPTS = ucommon-config @COMPAT_CONFIG@
 
+cmakedir = $(datadir)/cmake/GNUTelephony
+cmake_DATA = cmake/Cape*.cmake
+
 man_MANS = ucommon-config.1 commoncpp-config.1
 
 .phony:	doxy todo
