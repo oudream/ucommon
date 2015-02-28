@@ -9,16 +9,9 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-includedir=@includedir@
-
-if [ "`ldd /bin/sh | grep lib64`" = "" ]
-then
-    libdir=${exec_prefix}/lib
-else
-    libdir=${exec_prefix}/lib64
-fi
+prefix="@CMAKE_INSTALL_PREFIX@"
+includedir="@CMAKE_INSTALL_FULL_INCLUDEDIR@"
+libdir="@CMAKE_INSTALL_FULL_LIBDIR@"
 
 usage()
 {
@@ -28,7 +21,6 @@ Usage: ucommon-config [OPTION]
 Known values for OPTION are:
 
   --prefix=DIR		  change ucommon prefix [default $prefix]
-  --exec-prefix=DIR	change ucommon exec prefix [default $exec_prefix]
   --libs		        print library linking information
   --minimal         linking without usecure
   --cflags		      print pre-processor and compiler flags
@@ -65,15 +57,6 @@ while test $# -gt 0; do
 	  echo $prefix
 	  ;;
 
-  --exec-prefix=*)
-    exec_prefix=$optarg
-    libdir=$exec_prefix/lib
-    ;;
-
-   --exec-prefix)
-    echo $exec_prefix
-    ;;
-
   --version)
 	  echo @VERSION@
 	  exit 0
@@ -84,7 +67,7 @@ while test $# -gt 0; do
 	  ;;
 
   --cflags)
-    echo @UCOMMON_FLAGS@
+    echo @PKG_UCOMMON_FLAGS@
     ;;
 
   --libtool-libs)
@@ -93,15 +76,15 @@ while test $# -gt 0; do
     ;;
 
   --libs)
-		echo -lusecure -lucommon @SECURE_LIBS@ @UCOMMON_LINKED@ 
+		echo -L@CMAKE_INSTALL_FULL_LIBDIR@ -lusecure -lucommon @PKG_SECURE_LIBS@ @PKG_UCOMMON_LIBS@ 
     ;;
 
   --minimal)
-		echo -lucommon @UCOMMON_LINKED@ 
+		echo -lucommon @PKG_UCOMMON_LIBS@ 
     ;;
 
 	--includes)
-		echo @UCOMMON_INCLUDES@
+		echo @CMAKE_INSTALL_FULL_INCLUDEDIR@
 		;;
 
   *)
