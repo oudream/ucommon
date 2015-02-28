@@ -85,8 +85,11 @@ macro(add_cape_docs_target _DOXYFILE)
         find_package(Doxygen)
     endif()
     if(DOXYGEN_FOUND)
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${_DOXYFILE}.cmake
-            ${CMAKE_CURRENT_BINARY_DIR}/${_DOXYFILE} @ONLY )
+        if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_DOXYFILE}.cmake)
+            configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${_DOXYFILE}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_DOXYFILE} @ONLY )
+        elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${_DOXYFILE}.in)
+            configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${_DOXYFILE}.in ${CMAKE_CURRENT_BINARY_DIR}/${_DOXYFILE} @ONLY )
+        endif()
         add_custom_target(doc
             ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/${_DOXYFILE}
             WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
