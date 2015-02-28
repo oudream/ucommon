@@ -9,17 +9,10 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-includedir=@includedir@
+prefix="@CMAKE_INSTALL_PREFIX@"
+includedir="@CMAKE_INSTALL_FULL_INCLUDEDIR@"
+libdir="@CMAKE_INSTALL_FULL_LIBDIR@"
 modflags="@MODULE_FLAGS@"
-
-if [ "`ldd /bin/sh | grep lib64`" = "" ]
-then
-    libdir=${exec_prefix}/lib
-else
-    libdir=${exec_prefix}/lib64
-fi
 
 usage()
 {
@@ -29,7 +22,6 @@ Usage: commoncpp-config [OPTION]
 Known values for OPTION are:
 
   --prefix=DIR      change ucommon prefix [default $prefix]
-  --exec-prefix=DIR change ucommon exec prefix [default $exec_prefix]
   --libs        print library linking information
   --cflags      print pre-processor and compiler flags
   --includes    print framework include directory
@@ -66,15 +58,6 @@ while test $# -gt 0; do
         echo $prefix
         ;;
 
-    --exec-prefix=*)
-        exec_prefix=$optarg
-        libdir=$exec_prefix/lib
-        ;;
-
-    --exec-prefix)
-        echo $exec_prefix
-        ;;
-
     --version)
         echo @VERSION@
         exit 0
@@ -96,11 +79,11 @@ while test $# -gt 0; do
         ;;
 
     --libs)
-        echo -lcommoncpp -lucommon @UCOMMON_LIBS@
+        echo -lcommoncpp -lucommon @PKG_UCOMMON_LIBS@
         ;;
 
     --includes)
-        echo @UCOMMON_INCLUDES@
+        echo @CMAKE_INSTALL_FULL_INCLUDEDIR@
         ;;
     --modflags|--module)
         echo $modflags
