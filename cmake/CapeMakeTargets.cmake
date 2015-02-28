@@ -104,11 +104,3 @@ macro(add_cape_docs_target _DOXYFILE)
     endif()
 endmacro()
 
-macro(add_update_cmake_target)
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" AND CMAKE_GENERATOR MATCHES "Unix Makefiles")
-        add_custom_target(update-cmake
-            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-            COMMAND ./update-cmake.sh "${CMAKE_ROOT}/Modules" ${ARGN}
-        )
-    endif()
-endmacro()

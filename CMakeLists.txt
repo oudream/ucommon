@@ -295,5 +295,4 @@ install(TARGETS ucommon usecure DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 add_cape_make_targets(ucommon ${VERSION})
 add_cape_docs_target(Doxyfile)
-add_update_cmake_target(CapeConfig CapeMakeTargets CapeUses)
 
