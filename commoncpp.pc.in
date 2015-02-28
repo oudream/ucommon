@@ -1,4 +1,3 @@
-includes=@PKG_UCOMMON_INCLUDES@
 modflags="@MODULE_FLAGS@"
 
 Name: commoncpp
