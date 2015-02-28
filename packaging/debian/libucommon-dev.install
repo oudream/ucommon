@@ -6,4 +6,4 @@ usr/bin/ucommon-config
 usr/bin/commoncpp-config
 usr/share/man/man1/ucommon-config.*
 usr/share/man/man1/commoncpp-config.*
-usr/share/cmake/GNUTelephony/Cape*.cmake
+usr/share/libucommon/Cape*.cmake

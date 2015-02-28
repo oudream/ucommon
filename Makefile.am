@@ -29,7 +29,7 @@ pkgconfig_DATA = ucommon.pc @COMPAT_PC@
 scriptdir = $(bindir)
 script_SCRIPTS = ucommon-config @COMPAT_CONFIG@
 
-cmakedir = $(datadir)/cmake/GNUTelephony
+cmakedir = $(datadir)/libucommon
 cmake_DATA = cmake/Cape*.cmake
 
 man_MANS = ucommon-config.1 commoncpp-config.1
