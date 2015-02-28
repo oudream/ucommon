@@ -119,7 +119,7 @@ make install DESTDIR=%{buildroot}
 %{_bindir}/ucommon-config
 %{_bindir}/commoncpp-config
 # %{_mandir}/man1/ucommon-config.*
-%{_datadir}/cmake/GNUTelephony/Cape*.cmake
+%{_datadir}/libucommon/Cape*.cmake
 
 %files doc
 %defattr(-,root,root,-)
