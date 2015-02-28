@@ -1,3 +1,6 @@
+includedir="@CMAKE_INSTALL_FULL_INCLUDEDIR@"
+libdir="@CMAKE_INSTALL_FULL_LIBDIR@"
+prefix="@CMAKE_INSTALL_PREFIX@"
 modflags="@MODULE_FLAGS@"
 minimal="-lucommon @PKG_UCOMMON_LIBS@"
 
