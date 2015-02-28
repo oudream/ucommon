@@ -1,9 +1,9 @@
-includes=@UCOMMON_INCLUDES@
+includes=@PKG_UCOMMON_INCLUDES@
 modflags="@MODULE_FLAGS@"
 
 Name: commoncpp
 Description: GNU Common C++ compat class framework
 Version: @VERSION@
-Libs:  -lcommoncpp -lucommon @UCOMMON_LINKED@
-Cflags: @UCOMMON_FLAGS@
+Libs:  -lcommoncpp -lucommon @PKG_UCOMMON_LIBS@
+Cflags: @PKG_UCOMMON_FLAGS@
 

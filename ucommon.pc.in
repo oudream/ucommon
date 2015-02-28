@@ -1,8 +1,8 @@
-includes=@UCOMMON_INCLUDES@
-minimal="-lucommon @UCOMMON_LINKED@"
+modflags="@MODULE_FLAGS@"
+minimal="-lucommon @PKG_UCOMMON_LIBS@"
 
 Name: ucommon
 Description: GNU uCommon C++ class framework
 Version: @VERSION@
-Libs:  -lusecure -lucommon @SECURE_LIBS@ @UCOMMON_LINKED@
-Cflags: @UCOMMON_FLAGS@
+Libs:  -lusecure -lucommon @PKG_SECURE_LIBS@ @PKG_UCOMMON_LIBS@ -L@CMAKE_INSTALL_FULL_LIBDIR@
+Cflags: @PKG_UCOMMON_FLAGS@ -I@CMAKE_INSTALL_FULL_INCLUDEDIR@
