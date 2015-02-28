@@ -107,6 +107,7 @@ html browsable.
 %{_bindir}/commoncpp-config
 %{_mandir}/man1/ucommon-config.*
 %{_mandir}/man1/commoncpp-config.*
+%{_datadir}/cmake/GNUTelephony/Cape*.cmake
 
 %files doc
 %defattr(-,root,root,-)
