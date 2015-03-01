@@ -651,6 +651,8 @@ AC_SUBST(PKG_UCOMMON_FLAGS)
 AC_SUBST(PKG_UCOMMON_INCLUDES)
 AC_SUBST(PKG_SECURE_LIBS)
 
+pwd=`pwd`
+AC_SUBST_DIR(CMAKE_CURRENT_SOURCE_DIR, pwd)
 AC_SUBST_DIR(CMAKE_INSTALL_PREFIX, prefixdir)
 AC_SUBST_DIR(CMAKE_INSTALL_FULL_LIBDIR, libdir)
 AC_SUBST_DIR(CMAKE_INSTALL_FULL_INCLUDEDIR, includedir)
@@ -688,6 +690,6 @@ AC_SUBST(localedir)
 
 AC_OUTPUT(Makefile corelib/Makefile commoncpp/Makefile
 openssl/Makefile gnutls/Makefile nossl/Makefile utils/Makefile
-inc/Makefile inc/ucommon/Makefile inc/commoncpp/Makefile test/Makefile
+inc/Makefile inc/ucommon/Makefile inc/commoncpp/Makefile test/Makefile Doxyfile
 directive commoncpp.pc ucommon.pc ucommon.spec ucommon-config commoncpp-config)
 
