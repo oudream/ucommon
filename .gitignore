@@ -43,7 +43,7 @@ config.h.in
 config.log
 config.status
 configure.lineno
-doxy.config
+Doxyfile
 directive
 *.zip
 *.changes
