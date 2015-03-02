@@ -281,7 +281,7 @@ endif()
 install(FILES ${pc_files} DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 install(FILES ${scripts_cfg} DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${scripts_man} DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
-install(FILES ${cmakes_inc} DESTINATION ${CMAKE_INSTALL_DATADIR}/libucommon)
+install(FILES ${cmakes_inc} DESTINATION ${CMAKE_INSTALL_DATADIR}/ucommon/cmake)
 install(FILES ${ucommon_inc} ${secure_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/ucommon)
 install(FILES ${commoncpp_inc} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/commoncpp)
 
