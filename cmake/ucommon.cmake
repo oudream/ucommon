@@ -8,7 +8,8 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-if (NOT UCOMMON_LIBS AND NOT UCOMMON_FLAGS)
+if (NOT UCOMMON_CONFIGURED)
+    set(UCOMMON_CONFIGURED TRUE)
     include(CheckCCompilerFlag)
 
     if(CMAKE_COMPILER_IS_GNUCXX)
