@@ -59,7 +59,6 @@ directive
 *.deps
 *.libs
 *.pc
-*.spec
 *.exe
 *.dll
 *~
