@@ -27,7 +27,7 @@ pkgconfig_DATA = ucommon.pc @COMPAT_PC@
 scriptdir = $(bindir)
 script_SCRIPTS = ucommon-config @COMPAT_CONFIG@
 
-cmakedir = $(datadir)/libucommon
+cmakedir = $(datadir)/ucommon/cmake
 cmake_DATA = cmake/Cape*.cmake
 
 man_MANS = ucommon-config.1 commoncpp-config.1

@@ -6,4 +6,4 @@ usr/bin/ucommon-config
 usr/bin/commoncpp-config
 usr/share/man/man1/ucommon-config.*
 usr/share/man/man1/commoncpp-config.*
-usr/share/libucommon/Cape*.cmake
+usr/share/ucommon/cmake/Cape*.cmake

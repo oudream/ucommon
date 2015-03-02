@@ -119,7 +119,7 @@ make install DESTDIR=%{buildroot}
 %{_bindir}/ucommon-config
 %{_bindir}/commoncpp-config
 # %{_mandir}/man1/ucommon-config.*
-%{_datadir}/libucommon/Cape*.cmake
+%{_datadir}/ucommon/cmake/Cape*.cmake
 
 %files doc
 %defattr(-,root,root,-)
