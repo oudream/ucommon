@@ -12,7 +12,7 @@ ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = autogen.sh README* *.pc.in *.spec.in *.spec *-config.in \
     *-config.1 Doxyfile.in BUILDS SUPPORT COPYING* COPYRIGHT CMakeLists.txt \
-    cmake-abi.sh ucommon-config.h.cmake directive.in cmake/*.cmake
+    cmake-abi.sh ucommon-config.h.cmake directive.in cmake/*.cmake PKGBUILD.in
 
 DIST_SUBDIRS = corelib commoncpp openssl gnutls nossl utils inc test
 SUBDIRS = corelib @SECURE@ @COMPAT@ inc test

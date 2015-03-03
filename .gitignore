@@ -43,6 +43,7 @@ config.h.in
 config.log
 config.status
 configure.lineno
+PKGBUILD
 Doxyfile
 directive
 *.zip
