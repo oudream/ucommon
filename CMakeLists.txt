@@ -253,7 +253,8 @@ endforeach()
 
 create_specfile()
 create_headers(ucommon-config.h)
-create_scripts(scripts_cfg ucommon-config commoncpp-config PKGBUILD)
+create_scripts(scripts_cfg ucommon-config commoncpp-config)
+create_scripts(localscripts PKGBUILD)
 create_pcfiles(pc_files ucommon commoncpp)
 
 add_library(ucommon ${BUILD_RUNTIME_TYPE} ${common_src} ${ucommon_inc})
