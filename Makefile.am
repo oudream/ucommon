@@ -47,7 +47,7 @@ srpm:	dist
 
 deb:	dist
 	rm -f *.deb *.debian.tar.gz *.dsc *.changes
-	cape-source --sign ucommon-${VERSION}.tar.gz packaging
+	cape-source --sign ucommon-${VERSION}.tar.gz .
 
 clean-local:
 	-rm -rf doc

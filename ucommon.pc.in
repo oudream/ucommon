@@ -3,6 +3,7 @@ libdir=@CMAKE_INSTALL_FULL_LIBDIR@
 prefix=@CMAKE_INSTALL_PREFIX@
 modflags="@MODULE_FLAGS@"
 minimal="-lucommon @PKG_UCOMMON_LIBS@"
+cmake_macros=@CMAKE_INSTALL_FULL_DATADIR@/ucommon/cmake
 
 Name: ucommon
 Description: GNU uCommon C++ class framework

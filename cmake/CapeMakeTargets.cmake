@@ -61,12 +61,12 @@ endmacro()
 
 macro(add_make_deb_target _TARGET _VERSION)
     if(UNIX AND CMAKE_GENERATOR MATCHES "Unix Makefiles")
-        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/debian/")
+        if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/debian/")
             add_custom_target(deb
                 DEPENDS dist
                 WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
                 COMMAND rm -f *.deb *.debian.tar.gz *.dsc *.changes
-                COMMAND cape-source --sign ${_TARGET}-${_VERSION}.tar.gz packaging
+                COMMAND cape-source --sign ${_TARGET}-${_VERSION}.tar.gz .
             )
         endif()
     endif()
