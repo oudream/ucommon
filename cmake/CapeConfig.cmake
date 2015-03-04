@@ -62,6 +62,12 @@ function(add_library_version _LIBRARY)
     set_target_properties(${_LIBRARY} PROPERTIES VERSION ${_VERSION} SOVERSION ${_SOVERSION})
 endfunction()
 
+macro(add_source_dependencies _TARGET)
+    if(NOT "${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+        add_dependencies(${_TARGET} ${ARGN})
+    endif()
+endmacro()
+
 function(create_specfile)
     if(ARGN)
         foreach(arg ${ARGN})
