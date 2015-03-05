@@ -22,11 +22,10 @@ macro(add_make_dist_target _TARGET _VERSION)
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
             COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${_TARGET}[-_]*.gz"
             COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${_TARGET}_*.dsc"
-            COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${_TARGET}-*.rpm"
-            COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${_TARGET}[-_]*.deb"
-            COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/*${_TARGET}*[-_]*.deb"
             COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/${_TARGET}-*.zip"
-            COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/*${_TARGET}*.changes"
+            COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/*.rpm"
+            COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/*.deb"
+            COMMAND rm -f "${CMAKE_CURRENT_BINARY_DIR}/*.changes"
         )
 
         add_custom_target(dist
