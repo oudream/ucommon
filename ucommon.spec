@@ -142,6 +142,9 @@ chmod 0755 %{buildroot}%{_bindir}/commoncpp-config
 %{_bindir}/commoncpp-config
 %{_mandir}/man1/ucommon-config.*
 %{_mandir}/man1/commoncpp-config.*
+
+%dir %{_datadir}/ucommon
+%dir %{_datadir}/ucommon/cmake
 %{_datadir}/ucommon/cmake/Cape*.cmake
 
 %if %{build_docs}
