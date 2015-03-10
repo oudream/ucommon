@@ -3479,9 +3479,9 @@ int Socket::family(socket_t so)
     } us;
 
     socklen_t len = sizeof(us.saddr);
-    struct sockaddr *addr = (struct sockaddr *)(&us.saddr);
 
 #ifndef _MSWINDOWS_
+	struct sockaddr *addr = (struct sockaddr *)(&us.saddr);
     if(_getsockname_(so, addr, &len))
         return AF_UNSPEC;
 
