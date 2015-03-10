@@ -8,10 +8,10 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-AC_INIT([ucommon],[6.3.0])
+AC_INIT([ucommon],[6.3.1])
 AC_CONFIG_SRCDIR([inc/ucommon/ucommon.h])
 
-LT_VERSION="7:4:0"
+LT_VERSION="7:5:0"
 OPENSSL_REQUIRES="0.9.7"
 
 AC_CONFIG_AUX_DIR(autoconf)

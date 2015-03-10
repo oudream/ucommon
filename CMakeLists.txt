@@ -18,8 +18,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 PROJECT(ucommon)
-set (VERSION 6.3.0)
-set (PACKAGE ucommon)
+set (VERSION 6.3.1)
 
 # when we override default install prefix, assume full path is used...
 
