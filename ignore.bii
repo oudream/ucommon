@@ -1,0 +1,11 @@
+nossl/md5.cpp
+nossl/hmac.cpp
+nossl/digest.cpp
+nossl/cipher.cpp
+nossl/secure.cpp
+nossl/random.cpp
+nossl/sha1.cpp
+nossl/sstream.cpp
+nossl/*.h
+test/stdcpp.cpp
+gnutls/*
