@@ -286,4 +286,4 @@ install(TARGETS ucommon usecure DESTINATION ${CMAKE_INSTALL_LIBDIR})
 # cmake std targets not used; dist made on automake...
 #add_cape_make_targets(ucommon ${VERSION})
 add_cape_docs_target(Doxyfile)
-
+add_make_uninstall_target()
