@@ -1,4 +1,5 @@
 Changes from 6.3.0 to 6.3.1
+- copyright assignment to Cherokees of Idaho
 - introduction of ucommon cmake hosted macros
 - simplified doxygen doc support
 - convergence of automake and cmake builds

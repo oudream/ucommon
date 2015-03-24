@@ -1,6 +1,7 @@
 #
 # spec file for package ucommon
 #
+# Copyright (c) 2015 Cherokees of Idaho.
 # Copyright (c) 2008-2014 David Sugar, Tycho Softworks.
 #
 # All modifications and additions to the file contributed by third parties
