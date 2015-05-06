@@ -618,6 +618,17 @@ inline T& (limit)(T& value, T& low, T& high) {
     return (value < low) ? low : ((value > high) ? high : value);
 }
 
+/**
+ * Convert a pointer to a reference with type checking.  This is
+ * mostly convenience for documenting behavior.
+ * @param pointer to convert.
+ * @return object reference.
+ */
+template<typename T>
+inline T& deref_pointer(T *pointer) {
+    return *pointer;
+}
+
 } // namespace ucommon
 
 #endif
