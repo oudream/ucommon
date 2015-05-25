@@ -1,3 +1,8 @@
+Changes from 6.3.1 to 6.3.2
+- fixed a broken streambuf for commoncpp
+- deref cast function added
+- fixed missing pkg-config
+
 Changes from 6.3.0 to 6.3.1
 - copyright assignment to Cherokees of Idaho
 - introduction of ucommon cmake hosted macros
