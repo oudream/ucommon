@@ -458,7 +458,7 @@ TCPStream::TCPStream(TCPV6Socket &server, bool throwflag, timeout_t to) :
 
 TCPStream::TCPStream(const IPV4Host &host, tpport_t port, unsigned size, bool throwflag, timeout_t to) :
     streambuf(), Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
-    ,iostream(),
+    ,iostream((streambuf *)this),
     bufsize(0),gbuf(NULL),pbuf(NULL) {
     family = IPV4;
     timeout = to;
