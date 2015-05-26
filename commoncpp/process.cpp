@@ -775,6 +775,7 @@ bool Lockfile::lock(const char *name)
     const char *ext;
     char buffer[128];
     bool rtn = true;
+    size_t size;
 
     unlock();
 
@@ -785,16 +786,18 @@ bool Lockfile::lock(const char *name)
         ext = strrchr(name, '.');
 
     if(strchr(name, '/')) {
-        _path = new char[strlen(name) + 1];
-        strcpy(_path, name);
+        size = strlen(name) + 1;
+        _path = new char[size];
+        String::set(_path, size, name);
     }
     else if(ext && !strcmp(ext, ".pid")) {
         if(stat("/var/run", &ino))
             snprintf(buffer, sizeof(buffer), "/tmp/.%s", name);
         else
             snprintf(buffer, sizeof(buffer), "/var/run/%s", name);
-        _path = new char[strlen(buffer) + 1];
-        strcpy(_path, buffer);
+        size = strlen(buffer) + 1;
+        _path = new char[size];
+        String::set(_path, size, buffer);
     }
     else {
         if(!ext)
@@ -804,8 +807,9 @@ bool Lockfile::lock(const char *name)
         else
             snprintf(buffer, sizeof(buffer), "/var/lock/%s%s", name, ext);
 
-        _path = new char[strlen(buffer) + 1];
-        strcpy(_path, buffer);
+        size = strlen(buffer) + 1;
+        _path = new char[size];
+        String::set(_path, size, buffer);
     }
 
     for(;;) {

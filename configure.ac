@@ -266,6 +266,10 @@ AC_CHECK_LIB($clib, strcoll, [
     AC_DEFINE(HAVE_STRCOLL, [1], [string collation])
 ])
 
+AC_CHECK_LIB($clib, strlcpy, [
+    AC_DEFINE(HAVE_STRLCPY, [1], [string lcpy])
+])
+
 AC_CHECK_LIB($clib, stricmp, [
     AC_DEFINE(HAVE_STRICMP, [1], [string icmp])
 ])
@@ -377,7 +381,7 @@ if test "$threading" = "none" ; then
     fi
 fi
 
-for func in ftok shm_open nanosleep clock_nanosleep clock_gettime strerror_r localtime_r gmtime_r posix_fadvise ftruncate pwrite setgroups setpgrp setlocale gettext execvp atexit realpath symlink readlink waitpid wait4 endgrent; do
+for func in ftok shm_open nanosleep clock_nanosleep clock_gettime strerror_r localtime_r gmtime_r posix_fadvise ftruncate pwrite setgroups setpgrp setlocale gettext execvp atexit realpath symlink readlink waitpid wait4 endgrent strlcpy; do
     found="no"
     AC_CHECK_FUNC($func,[
         found=$func

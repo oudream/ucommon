@@ -73,6 +73,7 @@
 #cmakedefine HAVE_SHM_OPEN 1
 #cmakedefine HAVE_SOCKETPAIR 1
 #define HAVE_STDEXCEPT 1        /* cannot seem to test in cmake... */
+#cmakedefine HAVE_STRLCPY 1
 #cmakedefine HAVE_STRICMP 1
 #cmakedefine HAVE_STRCOLL 1
 #cmakedefine HAVE_STRINGS_H 1

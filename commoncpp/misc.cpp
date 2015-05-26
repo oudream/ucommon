@@ -60,7 +60,8 @@ char *MemPager::alloc(const char *str)
     size_t len = strlen(str) + 1;
     char *cp = (char *)_alloc(len);
     if(cp)
-	    strcpy(cp, str);
+        String::set(cp, len, str);
+
     return cp;
 }
 
@@ -82,8 +83,9 @@ void Assoc::setPointer(const char *id, void *data)
 {
     unsigned idx = getIndex(id);
     entry *e = (entry *)getMemory(sizeof(entry));
-    e->id = (const char *)getMemory(strlen(id) + 1);
-    strcpy((char *)e->id, id);
+    size_t size = strlen(id) + 1;
+    e->id = (const char *)getMemory(size);
+    String::set((char *)e->id, size, id);
     e->data = data;
     e->next = entries[idx];
     entries[idx] = e;

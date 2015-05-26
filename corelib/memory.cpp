@@ -519,7 +519,11 @@ void StringPager::set(unsigned ind, const char *text)
 
     size_t size = strlen(text) + 1;
     char *str = (char *)memalloc::_alloc(size);
+#ifdef  HAVE_STRLCPY
+    strlcpy(str, text, size);
+#else
     strcpy(str, text);
+#endif
     list->text = str;
 }
 
@@ -578,7 +582,11 @@ void StringPager::push(const char *text)
     void *mem = memalloc::_alloc(sizeof(member));
     char *str = (char *)memalloc::_alloc(size);
 
+#ifdef  HAVE_STRLCPY
+    strlcpy(str, text, size);
+#else
     strcpy(str, text);
+#endif
     member *node;
 
     node = new(mem) member(&root, str);
@@ -627,7 +635,11 @@ void StringPager::add(const char *text)
     void *mem = memalloc::_alloc(sizeof(member));
     char *str = (char *)memalloc::_alloc(size);
 
+#ifdef  HAVE_STRLCPY
+    strlcpy(str, text, size);
+#else
     strcpy(str, text);
+#endif
     member *node;
 
     index = NULL;

@@ -166,13 +166,15 @@ void Slog::open(const char *ident, Class grp)
     if(syslog)
             fclose(syslog);
     
-    char *buf = new char[strlen(ident) + 1];
-    strcpy(buf, ident);
+    size_t size = strlen(ident) + 1;
+    char *buf = new char[size];
+    String::set(buf, size, ident);
     cp = (const char *)buf;
     buf = strrchr(buf, '.');
     if(buf) {
-        if(!stricmp(buf, ".exe"))
-            strcpy(buf, ".log");
+        if(!stricmp(buf, ".exe")) {
+            String::set(buf, size, ".log");
+        }
     }
     syslog = fopen(cp, "a");
 #endif

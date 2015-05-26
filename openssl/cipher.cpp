@@ -73,7 +73,7 @@ void Cipher::Key::set(const char *cipher)
     char *lpart = strrchr(algoname, '-');
 
     if(fpart && fpart == lpart)
-        strcpy(fpart, fpart + 1);
+        String::set(fpart, sizeof(algoname), fpart + 1);
 
     algotype = EVP_get_cipherbyname(algoname);
 
@@ -94,7 +94,7 @@ bool Cipher::has(const char *id)
     char *lpart = strrchr(algoname, '-');
 
     if(fpart && fpart == lpart)
-        strcpy(fpart, fpart + 1);
+        String::set(fpart, sizeof(algoname), fpart + 1);
 
     return (EVP_get_cipherbyname(algoname) != NULL);
 }

@@ -1308,7 +1308,7 @@ void ttystream::open(const char *name)
 
 #ifndef _MSWINDOWS_
     if(*name != '/') {
-        strcpy(pathname, "/dev/");
+        setString(pathname, sizeof(pathname), "/dev/");
         cp += 5;
     }
 
