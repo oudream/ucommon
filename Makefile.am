@@ -30,7 +30,7 @@ scriptdir = $(bindir)
 script_SCRIPTS = ucommon-config @COMPAT_CONFIG@
 
 cmakedir = $(datadir)/ucommon/cmake
-cmake_DATA = cmake/Cape*.cmake
+cmake_DATA = cmake/CapeConfig.cmake cmake/CapeMakeTargets.cmake
 
 man_MANS = ucommon-config.1 commoncpp-config.1
 
