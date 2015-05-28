@@ -301,6 +301,10 @@ typedef int fd_t;
 
 #endif
 
+#if defined(sun) && defined(unix)
+#include <malloc.h>
+#endif
+
 #ifdef _MSC_VER
 typedef signed __int8 int8_t;
 typedef unsigned __int8 uint8_t;

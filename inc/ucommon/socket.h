@@ -415,8 +415,8 @@ public:
         /**
          * Construct a socket address from an addrinfo structure.
          */
-        address(const addrinfo* list) : list(NULL)
-            {insert(list);}
+        address(const addrinfo* address) : list(NULL)
+            {insert(address);}
 
         /**
          * Construct an empty address.

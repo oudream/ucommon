@@ -123,7 +123,15 @@ int main(int argc, char **argv)
     shell::exiting(&cleanup);
 
     tcgetattr(0, &current);
+#ifdef  __sun
+    current.c_iflag &= ~(IMAXBEL|IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
+    current.c_oflag &= ~OPOST;
+    current.c_lflag &= ~(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
+    current.c_cflag &= ~(CSIZE|PARENB);
+    current.c_cflag |= CS8;
+#else
     cfmakeraw(&current);
+#endif
     tcsetattr(0, TCSANOW, &current);
     fd_set inp;
     struct timeval tv = {0, 0};

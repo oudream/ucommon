@@ -730,12 +730,12 @@ size_t Buffer::post(void *buf, timeout_t timeout)
 
 #else
 
-size_t Buffer::wait(void *buf, timeout_t timeout)
+size_t Buffer::wait(void *buf, timeout_t waiting)
 {
     size_t rc = 0;
     enterMutex();
     while(!_used) {
-        if(!Conditional::wait(timeout, true)) {
+        if(!Conditional::wait(waiting, true)) {
             leaveMutex();
             return Buffer::timeout;
         }
@@ -747,13 +747,13 @@ size_t Buffer::wait(void *buf, timeout_t timeout)
     return rc;
 }
 
-size_t Buffer::post(void *buf, timeout_t timeout)
+size_t Buffer::post(void *buf, timeout_t waiting)
 {
     size_t rc = 0;
 
     enterMutex();
     while(_used == _size) {
-        if(!Conditional::wait(timeout, true)) {
+        if(!Conditional::wait(waiting, true)) {
             leaveMutex();
             return Buffer::timeout;
         }

@@ -107,7 +107,7 @@ class LevelName : public std::map<string, Slog::Level>
     LevelName(const levelNamePair initval[], int num)
     {
       for (int i = 0; i < num; i++)
-        insert(make_pair(initval[i].name, initval[i].level));
+        insert(make_pair(string(initval[i].name), initval[i].level));
     };
 };
 
