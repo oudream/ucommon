@@ -1,3 +1,9 @@
+Changes from 6.3.2 to 6.3.3
+- improved cipher key management
+- b64 support improved and string hex conversions
+- simplified digest functions
+- some solaris fixes
+
 Changes from 6.3.1 to 6.3.2
 - fixed a broken streambuf for commoncpp
 - deref cast function added

@@ -1,3 +1,10 @@
+ucommon (1:6.3.3-1) UNRELEASED; urgency=low
+
+  * Improved cipher key api
+  * Improved b64 and hex support
+
+ -- David Sugar <dyfet@gnutelephony.org>  Fri, 29 May 2015 19:56:53 -0400
+
 ucommon (1:6.3.2-1) UNRELEASED; urgency=low
 
   * Updated pkg fixes
