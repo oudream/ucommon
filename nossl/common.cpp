@@ -371,13 +371,18 @@ void Cipher::Key::set(const char *cipher, const uint8_t *iv, size_t ivsize)
     memcpy(ivbuf, iv, ivsize);
 }
 
-size_t Cipher::Key::get(uint8_t *buffer, size_t size)
+size_t Cipher::Key::get(uint8_t *keyout, uint8_t *ivout)
 {
-    if(!keysize || size < keysize)
-        return 0;
-
-    memcpy(buffer, keybuf, keysize);
-    return keysize;
+    size_t size = 0;
+    if(keysize) {
+        size += keysize;
+        memcpy(keyout, keybuf, keysize);
+        if(ivout) {
+            memcpy(ivout, ivbuf, blksize);
+            size += blksize;
+        }
+    }
+    return size;
 }
 
 String Cipher::Key::b64(void)

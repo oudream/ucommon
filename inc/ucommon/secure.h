@@ -326,7 +326,7 @@ public:
 
         void b64(const char *string);
 
-        size_t get(uint8_t *output, size_t size);
+        size_t get(uint8_t *key, uint8_t *ivout = NULL);
 
         inline size_t size(void) const
             {return keysize;}
