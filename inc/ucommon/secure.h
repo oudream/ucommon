@@ -296,7 +296,7 @@ public:
         // generated keysize
         size_t keysize, blksize;
 
-        Key(const char *cipher);
+        Key(const char *cipher, uint8_t *iv = NULL);
         Key();
 
         void set(const char *cipher);

@@ -293,7 +293,7 @@ const char *HMAC::c_str(void)
     return textbuf;
 }
 
-Cipher::Key::Key(const char *cipher)
+Cipher::Key::Key(const char *cipher, uint8_t *iv)
 {
     hashtype = algotype = NULL;
     hashid = algoid = 0;
@@ -301,6 +301,9 @@ Cipher::Key::Key(const char *cipher)
     secure::init();
 
     set(cipher);
+    if(blksize && iv)
+        memcpy(ivbuf, iv, blksize);
+
 }
 
 Cipher::Key::Key(const char *cipher, const char *digest)
@@ -337,17 +340,15 @@ Cipher::Key::~Key()
 void Cipher::Key::b64(const char *key)
 {
     clear();
-    keysize = String::b64decode(keybuf, key, sizeof(keybuf));
+    String::b64decode(keybuf, key, sizeof(keybuf));
 }
 
 void Cipher::Key::set(const unsigned char *key, size_t size)
 {
-    clear();
     if(!size || size >= sizeof(keybuf))
         return;
 
-    String::set((char *)keybuf, sizeof(keybuf), (const char *)key);
-    keysize = size;
+    memcpy(keybuf, key, size);
 }
 
 size_t Cipher::Key::get(uint8_t *buffer, size_t size)
@@ -355,7 +356,7 @@ size_t Cipher::Key::get(uint8_t *buffer, size_t size)
     if(!keysize || size < keysize)
         return 0;
 
-    String::set((char *)buffer, keysize, (const char *)keybuf);
+    memcpy(buffer, keybuf, keysize);
     return keysize;
 }
 
