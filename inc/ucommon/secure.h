@@ -525,6 +525,17 @@ public:
     static void uuid(char *string, const char *name, const unsigned char *ns = NULL);
 
     static String uuid(const char *name, const unsigned char *ns = NULL);
+
+    /**
+     * Shortcut for short md5 digests if supported...
+     * @param text to create a digest for.
+     * @return digest string.
+     */
+    static String md5(const char *text);
+
+    static String sha1(const char *text);
+
+    static String sha256(const char *text);
 };
 
 /**

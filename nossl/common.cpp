@@ -83,6 +83,36 @@ String Digest::uuid(const char *name, const unsigned char *ns)
     return String(buf);
 }
 
+String Digest::md5(const char *text)
+{
+    if(!has("md5"))
+        return String("");
+
+    digest_t digest = "md5";
+    digest.puts(text);
+    return String(*digest);
+}
+
+String Digest::sha1(const char *text)
+{
+    if(!has("sha1"))
+        return String("");
+
+    digest_t digest = "sha1";
+    digest.puts(text);
+    return String(*digest);
+}
+
+String Digest::sha256(const char *text)
+{
+    if(!has("sha256"))
+        return String("");
+
+    digest_t digest = "sha256";
+    digest.puts(text);
+    return String(*digest);
+}
+
 #if defined(_MSWINDOWS_)
 
 static void cexport(HCERTSTORE ca, FILE *fp)
