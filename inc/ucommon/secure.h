@@ -296,27 +296,31 @@ public:
         // generated keysize
         size_t keysize, blksize;
 
-        Key(const char *cipher, uint8_t *iv = NULL);
+        Key(const char *ciper);
         Key();
 
         void set(const char *cipher);
 
-        void set(const char *cipher, const char *digest);
-
-        void assign(const char *key, size_t size, const unsigned char *salt, unsigned rounds);
-
     public:
         Key(const char *cipher, const char *digest, const char *text, size_t size = 0, const unsigned char *salt = NULL, unsigned rounds = 1);
+
+        Key(const char *cipher, const uint8_t *iv, size_t ivsize);
 
         Key(const char *cipher, const char *digest);
 
         ~Key();
 
+        void set(const unsigned char *key, size_t size);
+
+        void set(const char *cipher, const char *digest);
+
+        void set(const char *cipher, const uint8_t *iv, size_t ivsize);
+
+        void assign(const char *key, size_t size, const unsigned char *salt, unsigned rounds);
+
         void assign(const char *key, size_t size = 0);
 
         void clear(void);
-
-        void set(const unsigned char *key, size_t size);
 
         String b64(void);
 

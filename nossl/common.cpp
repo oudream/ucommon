@@ -293,7 +293,8 @@ const char *HMAC::c_str(void)
     return textbuf;
 }
 
-Cipher::Key::Key(const char *cipher, uint8_t *iv)
+
+Cipher::Key::Key(const char *cipher)
 {
     hashtype = algotype = NULL;
     hashid = algoid = 0;
@@ -301,9 +302,16 @@ Cipher::Key::Key(const char *cipher, uint8_t *iv)
     secure::init();
 
     set(cipher);
-    if(blksize && iv)
-        memcpy(ivbuf, iv, blksize);
+}
 
+Cipher::Key::Key(const char *cipher, const uint8_t *iv, size_t ivsize)
+{
+    hashtype = algotype = NULL;
+    hashid = algoid = 0;
+
+    secure::init();
+
+    set(cipher, iv, ivsize);
 }
 
 Cipher::Key::Key(const char *cipher, const char *digest)
@@ -349,6 +357,18 @@ void Cipher::Key::set(const unsigned char *key, size_t size)
         return;
 
     memcpy(keybuf, key, size);
+}
+
+void Cipher::Key::set(const char *cipher, const uint8_t *iv, size_t ivsize)
+{
+    set(cipher);
+    if(blksize != ivsize)
+        clear();
+
+    if(!blksize)
+        return;
+
+    memcpy(ivbuf, iv, ivsize);
 }
 
 size_t Cipher::Key::get(uint8_t *buffer, size_t size)
