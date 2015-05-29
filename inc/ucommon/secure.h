@@ -297,11 +297,12 @@ public:
         size_t keysize, blksize;
 
         Key(const char *ciper);
-        Key();
 
         void set(const char *cipher);
 
     public:
+        Key();
+
         Key(const char *cipher, const char *digest, const char *text, size_t size = 0, const unsigned char *salt = NULL, unsigned rounds = 1);
 
         Key(const char *cipher, const uint8_t *iv, size_t ivsize);
