@@ -1350,6 +1350,14 @@ public:
         {return strtol(text, pointer, 0);}
 
     /**
+     * Standard radix 64 string encoding.
+     * @param binary data to encode.
+     * @param size of binary data to encode.
+     * @return encoded string.
+     */
+    static String b64(const uint8_t *binary, size_t size);
+
+    /**
      * Standard radix 64 encoding.
      * @param string of encoded text save into.
      * @param binary data to encode.

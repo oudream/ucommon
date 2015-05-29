@@ -2219,6 +2219,15 @@ String str(CharacterProtocol *p, strsize_t size)
 static const unsigned char alphabet[65] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
+String String::b64(const uint8_t *bin, size_t size)
+{
+    strsize_t dsize = (strsize_t)((size * 4 / 3) + 1);
+    String out(dsize, String::eos);
+
+    b64encode(out.c_mem(), bin, size);
+    return out;
+}
+
 size_t String::b64encode(char *dest, const uint8_t *bin, size_t size, size_t dsize)
 {
     assert(dest != NULL && bin != NULL);
