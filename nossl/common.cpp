@@ -334,6 +334,36 @@ Cipher::Key::~Key()
     clear();
 }
 
+void Cipher::Key::b64(const char *key)
+{
+    clear();
+    keysize = String::b64decode(keybuf, key, sizeof(keybuf));
+}
+
+void Cipher::Key::set(const unsigned char *key, size_t size)
+{
+    clear();
+    if(!size || size >= sizeof(keybuf))
+        return;
+
+    String::set((char *)keybuf, sizeof(keybuf), (const char *)key);
+    keysize = size;
+}
+
+size_t Cipher::Key::get(uint8_t *buffer, size_t size)
+{
+    if(!keysize || size < keysize)
+        return 0;
+
+    String::set((char *)buffer, keysize, (const char *)keybuf);
+    return keysize;
+}
+
+String Cipher::Key::b64(void)
+{
+    return String::b64(keybuf, keysize);
+}
+
 void Cipher::Key::clear(void)
 {
     algotype = NULL;

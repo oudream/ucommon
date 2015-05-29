@@ -316,6 +316,14 @@ public:
 
         void clear(void);
 
+        void set(const unsigned char *key, size_t size);
+
+        String b64(void);
+
+        void b64(const char *string);
+
+        size_t get(uint8_t *output, size_t size);
+
         inline size_t size(void) const
             {return keysize;}
 
