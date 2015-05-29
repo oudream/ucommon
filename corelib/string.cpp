@@ -2000,6 +2000,18 @@ unsigned String::hexsize(const char *format)
     return count;
 }
 
+String String::hex(const unsigned char *binary, size_t size)
+{
+    strsize_t ssize = (strsize_t)(size * 2);
+    String out(ssize, ' ');
+    char *buf = out.c_mem();
+    while(size--) {
+        snprintf(buf, 3, "%02x", *(binary++));
+        buf += 2;
+    }
+    return out;
+} 
+
 unsigned String::hexdump(const unsigned char *binary, char *string, const char *format)
 {
     unsigned count = 0;
@@ -2025,7 +2037,7 @@ unsigned String::hexdump(const unsigned char *binary, char *string, const char *
     return count;
 }
 
-static unsigned hex(char ch)
+static unsigned hexcode(char ch)
 {
     if(ch >= '0' && ch <= '9')
         return ch - '0';
@@ -2050,7 +2062,7 @@ unsigned String::hexpack(unsigned char *binary, const char *string, const char *
             format = ep;
             count += skip * 2;
             while(skip--) {
-                *(binary++) = hex(string[0]) * 16 + hex(string[1]);
+                *(binary++) = hexcode(string[0]) * 16 + hexcode(string[1]);
                 string += 2;
             }
         }

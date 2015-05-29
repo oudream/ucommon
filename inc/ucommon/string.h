@@ -1386,6 +1386,14 @@ public:
     static uint16_t crc16(uint8_t *binary, size_t size);
 
     /**
+     * Convert binary data buffer into hex string.
+     * @param binary data to convert.
+     * @param size of data.
+     * @return string from data.
+     */
+    static String hex(const unsigned char *binary, size_t size);
+
+    /**
      * Dump hex data to a string buffer.
      * @param binary memory to dump.
      * @param string to save into.

@@ -90,6 +90,12 @@ extern "C" int main()
     assert(String::check("xxx", 3));
     assert(!String::check("xxxx", 3));
 
+    unsigned char hbuf[2];
+    hbuf[0] = 0x23;
+    hbuf[1] = 0xa9;
+    string_t hex = String::hex(hbuf, 2);
+    assert(eq(hex, "23a9"));
+
     delete[] test;
     delete[] cdup;
 
