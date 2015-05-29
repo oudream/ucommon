@@ -33,6 +33,7 @@ namespace ucommon {
 #else
 const strsize_t String::npos = (strsize_t)(-1);
 const size_t memstring::header = sizeof(cstring);
+const char String::eos = '\0';
 #endif
 
 String::cstring::cstring(strsize_t size) :

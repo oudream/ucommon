@@ -1786,9 +1786,10 @@ int fsys::exec(const char *path, char **argv, char **envp)
 
 string_t fsys::prefix(void)
 {
-    char buf[256];
+    String cwd((strsize_t)256, String::eos);
+    char *buf = cwd.c_mem();
 
-    prefix(buf, sizeof(buf));
+    prefix(buf, 256);
     string_t s = buf;
     return s;
 }

@@ -282,13 +282,12 @@ protected:
     strsize_t getStringSize(void) const;
 
 public:
-    /**
-     * A constant for an invalid position value.
-     */
 #if _MSC_VER > 1400        // windows broken dll linkage issue...
     const static strsize_t npos = ((strsize_t)-1);
+    const static char eos = '\0';
 #else
     static const strsize_t npos;
+    static const char eos;
 #endif
 
 
