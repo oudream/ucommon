@@ -26,6 +26,8 @@
 
 using namespace ucommon;
 
+static int tval = 100;
+
 extern "C" int main()
 {
     stringlist_t mylist;
@@ -53,5 +55,10 @@ extern "C" int main()
     assert(eq(list[1], "300"));
 
     assert(list[2] == NULL);
+
+    int *pval = &tval;
+    int& rval = deref_pointer<int>(pval);
+    assert(&rval == pval);
+
     return 0;
 }
