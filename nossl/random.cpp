@@ -37,6 +37,9 @@ bool Random::seed(const unsigned char *buf, size_t size)
 #ifdef  _MSWINDOWS_
     return false;
 #else
+    if(is_file("/dev/hwrng") && is_readable("/dev/hwrng"))
+        return true;
+
     int fd = open("/dev/random", O_WRONLY);
     bool result = false;
 
@@ -56,7 +59,10 @@ size_t Random::key(unsigned char *buf, size_t size)
         return size;
     return 0;
 #else
-    int fd = open("/dev/random", O_RDONLY);
+    int fd = open("/dev/hwrng", O_RDONLY);
+    if(fd < 0)
+        fd = open("/dev/random", O_RDONLY);
+
     ssize_t result = 0;
 
     if(fd > -1) {
@@ -102,7 +108,10 @@ bool Random::status(void)
 #ifdef  _MSWINDOWS_
     return true;
 #else
-    if(fsys::is_file("/dev/random"))
+    if(fsys::is_file("/dev/hwrng") && is_readable("/dev/hwrng"))
+        return true;
+
+    if(fsys::is_file("/dev/random") && is_readable("/dev/random"))
         return true;
 
     return false;
