@@ -719,6 +719,32 @@ public:
     static void uuid(char *string);
 
     static String uuid(void);
+
+    template <class T>
+    inline static T value(void) {
+        T tmp;
+        Random::key(reinterpret_cast<unsigned char *>(&tmp), sizeof(tmp));
+        return tmp;
+    }
+
+    template <class T>
+    inline static T value(T max) {
+        T slice;
+        T value;
+
+        value = 0xffffffff;
+        slice = 0xffffffff / max;
+        while(value >= max) {
+            value = Random::value<T>() / slice;
+        }
+        return value;
+    }
+
+    template <class T>
+    inline static T value(T min, T max)
+    {
+        return min + Random::value<T>(max - min);
+    }    
 };
 
 /**
@@ -983,32 +1009,6 @@ public:
 };
 
 #endif
-
-template <class T>
-inline T key_value(void) {
-    T tmp;
-    Random::key(reinterpret_cast<unsigned char *>(&tmp), sizeof(tmp));
-    return tmp;
-}
-
-template <class T>
-inline T key_value(T max) {
-    T slice;
-    T value;
-
-    value = 0xffffffff;
-    slice = 0xffffffff / max;
-    while(value >= max) {
-        value = key_value<T>() / slice;
-    }
-    return value;
-}
-
-template <class T>
-inline T key_value(T min, T max)
-{
-    return min + key_value<T>(max - min);
-}    
 
 } // namespace ucommon
 
