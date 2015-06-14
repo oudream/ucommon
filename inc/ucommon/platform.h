@@ -466,27 +466,33 @@ inline void strfree(char *str)
     {::free(str);}
 
 template<class T, class S>
-inline T* polypointer_cast(S *s)
+inline T polypointer_cast(S *s)
 {
 #if defined(DEBUG) && defined(UCOMMON_RTTI)
-    assert(dynamic_cast<T*>(s) != NULL);   // rtti for debug only...
+    assert(dynamic_cast<T>(s) != NULL);   // rtti for debug only...
 #endif
-    return static_cast<T*>(s);
-}    
+    return static_cast<T>(s);
+}   
 
 template<class T, class S>
-inline T* polystatic_cast(S *s)
+inline T polyconst_cast(S *s)
 {
-    return static_cast<T*>(s);
+    return const_cast<T>(polypointer_cast<T>(s));
+}
+
+template<class T, class S>
+inline T polystatic_cast(S *s)
+{
+    return static_cast<T>(s);
 }    
 
 template<class T, class S>
-inline T* polydynamic_cast(S *s)
+inline T polydynamic_cast(S *s)
 {
 #if defined(UCOMMON_RTTI)
-    return dynamic_cast<T*>(s);
+    return dynamic_cast<T>(s);
 #else
-    return static_cast<T*>(s);
+    return static_cast<T>(s);
 #endif
 }    
 

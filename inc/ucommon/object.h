@@ -467,7 +467,7 @@ public:
      * @param typed object to assign.
      */
     inline void operator=(T *typed) {
-        P::operator=(polypointer_cast<ObjectProtocol, T>(typed));
+        P::operator=(polypointer_cast<ObjectProtocol*>(typed));
     }
 
     /**
