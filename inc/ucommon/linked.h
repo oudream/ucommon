@@ -267,7 +267,7 @@ public:
      * @return LinkedObject member of index.
      */
     inline LinkedObject *getIndexed(unsigned index) const {
-        return LinkedObject::getIndexed(polyconst_cast<LinkedObject*>(head), index);
+        return LinkedObject::getIndexed(polystatic_cast<LinkedObject*>(head), index);
     }
 
     /**
@@ -275,7 +275,7 @@ public:
      * @return first object in list.
      */
     inline LinkedObject *begin(void) const {
-        return polyconst_cast<LinkedObject*>(head);
+        return polystatic_cast<LinkedObject*>(head);
     }
 
     /**
@@ -283,7 +283,7 @@ public:
      * @return last object in list.
      */
     inline LinkedObject *end(void) const {
-        return polyconst_cast<LinkedObject*>(tail);
+        return polystatic_cast<LinkedObject*>(tail);
     }
 
     /**
@@ -291,7 +291,7 @@ public:
      * @return head pointer.
      */
     inline LinkedObject *operator*() const {
-        return polyconst_cast<LinkedObject*>(head);
+        return polystatic_cast<LinkedObject*>(head);
     }
 
     /**
@@ -703,7 +703,7 @@ public:
      * @return parent node or NULL if none.
      */
     inline NamedTree *getParent(void) const {
-        return const_cast<NamedTree *>(Parent);
+        return static_cast<NamedTree *>(Parent);
     };
 
     /**
@@ -868,7 +868,7 @@ public:
      * @return previous node in list.
      */
     inline LinkedList *getPrev(void) const {
-        return const_cast<LinkedList*>(Prev);
+        return static_cast<LinkedList*>(Prev);
     }
 
     /**
