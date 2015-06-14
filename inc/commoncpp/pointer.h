@@ -87,9 +87,9 @@ public:
         ++(*ptrCount);
     }
 
-    inline virtual ~Pointer()
-        {ptrDetach();}
-
+    inline virtual ~Pointer() {
+        ptrDetach();
+    }
 
     inline Pointer& operator=(const Pointer<T> &ref) {
         if(this != &ref) {
@@ -101,20 +101,25 @@ public:
         return *this;
     }
 
-    inline T& operator*() const
-        {return *ptrObject;}
+    inline T& operator*() const {
+        return *ptrObject;
+    }
 
-    inline T* getObject() const
-        {return ptrObject;}
+    inline T* getObject() const {
+        return ptrObject;
+    }
 
-    inline T* operator->() const
-        {return ptrObject;}
+    inline T* operator->() const {
+        return ptrObject;
+    }
 
-    inline bool operator!() const
-        {return (*ptrCount == 1);}
+    inline bool operator!() const {
+        return (*ptrCount == 1);
+    }
 
-    inline int operator++() const
-        {return ++(*ptrCount);}
+    inline int operator++() const {
+        return ++(*ptrCount);
+    }
 
     inline int operator--() const {
         if(*ptrCount == 1) {

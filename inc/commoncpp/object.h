@@ -71,8 +71,9 @@ protected:
     /**
      * The constructor simply initializes the count.
      */
-    inline RefObject()
-        {refCount = 0;}
+    inline RefObject() {
+        refCount = 0;
+    }
 
     /**
      * The destructor is called when the reference count returns
@@ -126,8 +127,9 @@ public:
     /**
      * Create an unattached pointer.
      */
-    inline RefPointer()
-        {ref = NULL;}
+    inline RefPointer() {
+        ref = NULL;
+    }
 
     /**
      * Create a pointer attached to a reference counted object.
@@ -147,11 +149,13 @@ public:
 
     RefPointer& operator=(const RefObject &ref);
 
-    inline void *operator*() const
-        {return getObject();}
+    inline void *operator*() const {
+        return getObject();
+    }
 
-    inline void *operator->() const
-        {return getObject();}
+    inline void *operator->() const {
+        return getObject();
+    }
 
     void *getObject(void) const;
 
@@ -170,8 +174,9 @@ class __EXPORT LinkedSingle
 protected:
     LinkedSingle *nextObject;
 
-    inline LinkedSingle()
-        {nextObject = NULL;}
+    inline LinkedSingle() {
+        nextObject = NULL;
+    }
 
     virtual ~LinkedSingle();
 
@@ -202,8 +207,9 @@ public:
      *
      * @return next object in list.
      */
-    inline LinkedSingle *getNext(void)
-        {return nextObject;}
+    inline LinkedSingle *getNext(void) {
+        return nextObject;
+    }
 
     /**
      * Insert object into chain.  This is a virtual because
@@ -229,8 +235,9 @@ class __EXPORT LinkedDouble
 protected:
     LinkedDouble *nextObject, *prevObject;
 
-    inline LinkedDouble()
-        {nextObject = prevObject = NULL;}
+    inline LinkedDouble() {
+        nextObject = prevObject = NULL;
+    }
 
     virtual ~LinkedDouble();
 
@@ -244,17 +251,17 @@ protected:
 
 public:
 
-  /**
-   * Requested in overloaded insert() method to indicate how to insert
-   * data into list
-   */
-  enum InsertMode
-  {
-    modeAtFirst,  /**< insert at first position in list pointed by current object */
-    modeAtLast,   /**< insert at last position in list pointed by current object */
-    modeBefore,   /**< insert in list before current object */
-    modeAfter     /**< insert in list after current object */
-  };
+    /**
+    * Requested in overloaded insert() method to indicate how to insert
+    * data into list
+    */
+    enum InsertMode
+    {
+      modeAtFirst,  /**< insert at first position in list pointed by current object */
+      modeAtLast,   /**< insert at last position in list pointed by current object */
+      modeBefore,   /**< insert in list before current object */
+      modeAfter     /**< insert in list after current object */
+    };
 
     /**
      * Get first linked object in list.  This may be dynamically
@@ -289,26 +296,28 @@ public:
      *
      * @return next object in list.
      */
-    inline LinkedDouble *getNext(void)
-        {return nextObject;}
+    inline LinkedDouble *getNext(void) {
+        return nextObject;
+    }
 
     /**
      * Get prev object in the list.
      *
      * @return pointer to previous object.
      */
-    inline LinkedDouble *getPrev(void)
-        {return prevObject;}
+    inline LinkedDouble *getPrev(void) {
+        return prevObject;
+    }
 
-  /**
-   * Insert object into chain at given position, as indicated by \ref InsertMode;
-   * If no position is given, it defaults to \ref modeAtLast, inserting element
-   * at list's end.
-   *
-   * @param object being inserted.
-   * @param position where object is inserted.
-   */
-  virtual void insert(LinkedDouble& obj, InsertMode position = modeAtLast);
+    /**
+    * Insert object into chain at given pos, as indicated by \ref InsertMode;
+    * If no pos is given, it defaults to \ref modeAtLast, inserting element
+    * at list's end.
+    *
+    * @param object being inserted.
+    * @param position where object is inserted.
+    */
+    virtual void insert(LinkedDouble& obj, InsertMode position = modeAtLast);
 
     /**
      * Remove object from chain.
@@ -369,16 +378,18 @@ public:
      *
      * @return table range.
      */
-    inline unsigned getRange(void)
-        {return range;}
+    inline unsigned getRange(void) {
+        return range;
+    }
 
     /**
      * Return the number of object stored in this table.
      *
      * @return table size.
      */
-    inline unsigned getSize(void)
-        {return count;}
+    inline unsigned getSize(void) {
+        return count;
+    }
 
     /**
      * Lookup an object by id key.  It is returned as void * for
@@ -418,8 +429,9 @@ public:
      *
      * @return pointer to found object or NULL.
      */
-    void *getEnd()
-        {return NULL;}
+    void *getEnd() {
+        return NULL;
+    }
 
     /**
      * Get next object from managed free list.  This returns as a
@@ -498,8 +510,9 @@ public :
      *
      * @return pointer to indexed object.
      */
-    void* operator*() const
-        {return (void*)thisObject;}
+    void* operator*() const {
+        return (void*)thisObject;
+    }
 
     /**
      * Assignment operator to avoid implicit cast.
@@ -520,19 +533,22 @@ public :
      *
      * @return the object itself, as changed.
      */
-    MapIndex  operator++(int)     // postfix
-        {return this->operator++();}
+    MapIndex  operator++(int) {     // postfix
+        return this->operator++();
+    }
 
     /**
      * Comparison operator, between two MapIndex's.
      *
      * @return the object itself, as changed.
      */
-    bool operator==(const MapIndex& theIndex) const
-        {return thisObject == theIndex.thisObject;}
+    bool operator==(const MapIndex& theIndex) const {
+        return thisObject == theIndex.thisObject;
+    }
 
-    bool operator!=(const MapIndex& theIndex) const
-        {return !(*this == theIndex);}
+    bool operator!=(const MapIndex& theIndex) const {
+        return !(*this == theIndex);
+    }
 
     /**
      * Comparison operator, between the MapIndex and a MapObject, useful to avoid
@@ -540,11 +556,13 @@ public :
      *
      * @return the object itself, as changed.
      */
-     bool operator==(const MapObject* theObject) const
-        {return thisObject == theObject;}
+    bool operator==(const MapObject* theObject) const {
+        return thisObject == theObject;
+    }
 
-    bool operator!=(const MapObject* theObject) const
-        {return !(*this == theObject);}
+    bool operator!=(const MapObject* theObject) const {
+        return !(*this == theObject);
+    }
 };
 
 /**
