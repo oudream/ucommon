@@ -302,7 +302,7 @@ public:
     }
 
     inline const T* at(unsigned offset) const {
-        return immutable_cast<T>(SparseObjects::get(offset));
+        return immutable_cast<T*>(SparseObjects::get(offset));
     }
 
 private:
