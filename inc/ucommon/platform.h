@@ -64,11 +64,15 @@
 #endif
 #endif
 
-#if !defined(__GNUC__) && !defined(__has_feature)
+#if !defined(__GNUC__) && !defined(__has_feature) && !defined(_MSC_VER)
 #define UCOMMON_RTTI    1
 #endif
 
 #if __GNUC__ > 3 && defined(__GXX_RTTI)
+#define UCOMMON_RTTI    1
+#endif
+
+#if defined(_MSC_VER) && defined(_CPPRTTI)
 #define UCOMMON_RTTI    1
 #endif
 
@@ -462,7 +466,7 @@ inline void strfree(char *str)
     {::free(str);}
 
 template<class T, class S>
-inline T* polydynamic_cast(S *s)
+inline T* polypointer_cast(S *s)
 {
 #if defined(DEBUG) && defined(UCOMMON_RTTI)
     assert(dynamic_cast<T*>(s) != NULL);   // rtti for debug only...
