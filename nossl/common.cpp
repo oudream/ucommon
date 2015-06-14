@@ -401,7 +401,7 @@ void Cipher::Key::clear(void)
     zerofill(ivbuf, sizeof(ivbuf));
 }
 
-Cipher::Cipher(key_t key, mode_t mode, unsigned char *address, size_t size)
+Cipher::Cipher(const key_t key, mode_t mode, unsigned char *address, size_t size)
 {
     bufaddr = NULL;
     bufsize = bufpos = 0;

@@ -364,13 +364,13 @@ protected:
 public:
     Cipher();
 
-    Cipher(key_t key, mode_t mode, unsigned char *address = NULL, size_t size = 0);
+    Cipher(const key_t key, mode_t mode, unsigned char *address = NULL, size_t size = 0);
 
     virtual ~Cipher();
 
     void set(unsigned char *address, size_t size = 0);
 
-    void set(key_t key, mode_t mode, unsigned char *address, size_t size = 0);
+    void set(const key_t key, mode_t mode, unsigned char *address, size_t size = 0);
 
     /**
      * Push a final cipher block.  This is used to push the final buffer into

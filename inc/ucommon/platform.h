@@ -27,7 +27,7 @@
 
 #ifndef _UCOMMON_PLATFORM_H_
 #define _UCOMMON_PLATFORM_H_
-#define UCOMMON_ABI 6
+#define UCOMMON_ABI 7
 
 #ifndef UCOMMON_SYSRUNTIME
 #ifndef NEW_STDCPP

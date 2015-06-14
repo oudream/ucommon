@@ -113,7 +113,7 @@ void Cipher::release(void)
     }
 }
 
-void Cipher::set(key_t key, mode_t mode, unsigned char *address, size_t size)
+void Cipher::set(const key_t key, mode_t mode, unsigned char *address, size_t size)
 {
     release();
 
