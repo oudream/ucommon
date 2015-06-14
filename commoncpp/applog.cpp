@@ -1216,9 +1216,8 @@ AppLog& AppLog::operator<< (AppLog& (*pfManipulator)(AppLog&))
 
 AppLog& AppLog::operator<< (ostream& (*pfManipulator)(ostream&))
 {
-  (*pfManipulator)(*(dynamic_cast<ostream*>(this)));
-
-  return  *this ;
+	(*pfManipulator)(polyreference_cast<ostream>(this));
+	return  reference_cast<AppLog>(this) ;
 }
 
 #endif
