@@ -489,4 +489,9 @@ inline T& polyreference_cast(S *s)
     return *(static_cast<T*>(s));
 }    
 
+template<typename T>
+inline T& reference_cast(T *pointer) {
+    return *pointer;
+}
+
 #endif
