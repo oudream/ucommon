@@ -481,6 +481,16 @@ inline T* polystatic_cast(S *s)
 }    
 
 template<class T, class S>
+inline T* polydynamic_cast(S *s)
+{
+#if defined(UCOMMON_RTTI)
+    return dynamic_cast<T*>(s);
+#else
+    return static_cast<T*>(s);
+#endif
+}    
+
+template<class T, class S>
 inline T& polyreference_cast(S *s)
 {
 #if defined(DEBUG) && defined(UCOMMON_RTTI)
