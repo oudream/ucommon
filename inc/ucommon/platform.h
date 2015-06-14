@@ -504,4 +504,10 @@ inline T& reference_cast(T *pointer) {
     return *pointer;
 }
 
+template<typename T>
+inline const T* immutable_cast(T *p)
+{
+    return static_cast<const T*>(p);
+}
+
 #endif
