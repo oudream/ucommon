@@ -82,8 +82,9 @@ protected:
     /**
      * Force reset of count.
      */
-    inline void reset(void)
-        {count = 0;}
+    inline void reset(void) {
+        count = 0;
+    }
 
 public:
     /**
@@ -91,22 +92,25 @@ public:
      * one object has a reference to our object.
      * @return true if referenced by more than one object.
      */
-    inline bool is_copied(void) const
-        {return count > 1;}
+    inline bool is_copied(void) const {
+        return count > 1;
+    }
 
     /**
      * Test if the object has been referenced (retained) by anyone yet.
      * @return true if retained.
      */
-    inline bool is_retained(void) const
-        {return count > 0;}
+    inline bool is_retained(void) const {
+        return count > 0;
+    }
 
     /**
      * Return the number of active references (retentions) to our object.
      * @return number of references to our object.
      */
-    inline unsigned copied(void) const
-        {return count;}
+    inline unsigned copied(void) const {
+        return count;
+    }
 
     /**
      * Increase reference count when retained.
@@ -283,8 +287,9 @@ public:
      * @param offset in array for object.
      * @return pointer to typed object.
      */
-    inline T *get(unsigned offset)
-        {return static_cast<T*>(SparseObjects::get(offset));}
+    inline T *get(unsigned offset) {
+        return static_cast<T*>(SparseObjects::get(offset));
+    }
 
     /**
      * Array operation to access member object.  If the object does not
@@ -292,15 +297,18 @@ public:
      * @param offset in array for object.
      * @return pointer to typed object.
      */
-    inline T& operator[](unsigned offset)
-        {return get(offset);}
+    inline T& operator[](unsigned offset) {
+        return reference_cast<T>(get(offset));
+    }
 
-    inline const T* at(unsigned offset) const
-        {return static_cast<const T&>(SparseObjects::get(offset));}
+    inline const T* at(unsigned offset) const {
+        return immutable_cast<T>(SparseObjects::get(offset));
+    }
 
 private:
-    __LOCAL ObjectProtocol *create(void)
-        {return new T;}
+    __LOCAL ObjectProtocol *create(void) {
+        return new T;
+    }
 };
 
 /**
@@ -320,8 +328,9 @@ protected:
      * Assign our value from a typed data object.  This is a helper method.
      * @param object to assign our value from.
      */
-    inline void set(const T& object)
-        {value = object;}
+    inline void set(const T& object) {
+        value = object;
+    }
 
 public:
     T value;    /**< Embedded data value */
@@ -335,39 +344,45 @@ public:
      * Construct composite value object and assign from existing data value.
      * @param existing typed value to assign.
      */
-    inline object_value(T& existing) : O()
-        {value = existing;}
+    inline object_value(T& existing) : O() {
+        value = existing;
+    }
 
     /**
      * Pointer reference to embedded data value.
      * @return embedded value.
      */
-    inline T& operator*()
-        {return value;}
+    inline T& operator*() {
+        return value;
+    }
 
     /**
      * Assign embedded data value.
      * @param data value to assign.
      */
-    inline void operator=(const T& data)
-        {value = data;}
+    inline void operator=(const T& data) {
+        value = data;
+    }
 
     /**
      * Retrieve data value by casting reference.
      * @return embedded value.
      */
-    inline operator T&()
-        {return value;}
+    inline operator T&() {
+        return value;
+    }
 
-    inline T& operator()()
-        {return value;}
+    inline T& operator()() {
+        return value;
+    }
 
     /**
      * Set data value by expression reference.
      * @param data value to assign.
      */
-    inline void operator()(T& data)
-        {value = data;}
+    inline void operator()(T& data) {
+        value = data;
+    }
 };
 
 /**
@@ -401,84 +416,100 @@ public:
      * Reference object we are pointing to through pointer indirection.
      * @return pointer to object we are pointing to.
      */
-    inline T* operator*() const
-        {return static_cast<T*>(P::object);}
+    inline T* operator*() const {
+        return static_cast<T*>(P::object);
+    }
 
     /**
      * Reference object we are pointing to through function reference.
      * @return object we are pointing to.
      */
-    inline T& operator()() const
-        {return *(static_cast<T*>(P::object));}
+    inline T& operator()() const {
+        return reference_cast<T>(P::object);
+    }
 
     /**
      * Reference member of object we are pointing to.
      * @return reference to member of pointed object.
      */
-    inline T* operator->() const
-        {return static_cast<T*>(P::object);}
+    inline T* operator->() const {
+        return static_cast<T*>(P::object);
+    }
 
     /**
      * Get pointer to object.
      * @return pointer or NULL if we are not referencing an object.
      */
-    inline T* get(void) const
-        {return static_cast<T*>(P::object);}
+    inline T* get(void) const {
+        return static_cast<T*>(P::object);
+    }
 
     /**
      * Iterate our pointer if we reference an array on the heap.
      * @return next object in array.
      */
-    inline T* operator++()
-        {P::operator++(); return get();}
+    inline T* operator++() {
+        P::operator++(); 
+        return get();
+    }
 
     /**
      * Iterate our pointer if we reference an array on the heap.
      * @return previous object in array.
      */
-    inline void operator--()
-        {P::operator--(); return get();}
+    inline void operator--() {
+        P::operator--(); 
+        return get();
+    }
 
     /**
      * Perform assignment operator to existing object.
      * @param typed object to assign.
      */
-    inline void operator=(T *typed)
-        {P::operator=((ObjectProtocol *)typed);}
+    inline void operator=(T *typed) {
+        P::operator=(polypointer_cast<ObjectProtocol, T>(typed));
+    }
 
     /**
      * See if pointer is set.
      */
-    inline operator bool() const
-        {return P::object != NULL;}
+    inline operator bool() const {
+        return P::object != NULL;
+    }
 
     /**
      * See if pointer is not set.
      */
-    inline bool operator!() const
-        {return P::object == NULL;}
+    inline bool operator!() const {
+        return P::object == NULL;
+    }
 };
 
 /**
  * Convenience function to access object retention.
  * @param object we are retaining.
  */
-inline void retain(ObjectProtocol *object)
-    {object->retain();}
+inline void retain(ObjectProtocol *object) 
+{
+    object->retain();
+}
 
 /**
  * Convenience function to access object release.
  * @param object we are releasing.
  */
-inline void release(ObjectProtocol *object)
-    {object->release();}
+inline void release(ObjectProtocol *object) 
+{
+    object->release();
+}
 
 /**
  * Convenience function to access object copy.
  * @param object we are copying.
  */
-inline ObjectProtocol *copy(ObjectProtocol *object)
-    {return object->copy();}
+inline ObjectProtocol *copy(ObjectProtocol *object) {
+    return object->copy();
+}
 
 } // namespace ucommon
 

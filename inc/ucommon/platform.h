@@ -501,6 +501,9 @@ inline T& polyreference_cast(S *s)
 
 template<typename T>
 inline T& reference_cast(T *pointer) {
+#ifdef  DEBUG
+    assert(pointer != NULL);
+#endif
     return *pointer;
 }
 
