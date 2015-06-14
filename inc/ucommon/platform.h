@@ -64,6 +64,24 @@
 #endif
 #endif
 
+#if !defined(__GNUC__) && !defined(__has_feature) && !defined(_MSC_VER)
+#define UCOMMON_RTTI    1
+#endif
+
+#if __GNUC__ > 3 && defined(__GXX_RTTI)
+#define UCOMMON_RTTI    1
+#endif
+
+#if defined(_MSC_VER) && defined(_CPPRTTI)
+#define UCOMMON_RTTI    1
+#endif
+
+#if defined(__has_feature)
+#if __has_feature(cxx_rtti)
+#define UCOMMON_RTTI    1
+#endif
+#endif
+
 #if defined(__GNUC__) && (__GNUC < 3) && !defined(_GNU_SOURCE)
 #define _GNU_SOURCE
 #endif
@@ -446,5 +464,59 @@ typedef double Real;
  */
 inline void strfree(char *str)
     {::free(str);}
+
+template<class T, class S>
+inline T polypointer_cast(S *s)
+{
+#if defined(DEBUG) && defined(UCOMMON_RTTI)
+    assert(dynamic_cast<T>(s) != NULL);   // rtti for debug only...
+#endif
+    return static_cast<T>(s);
+}   
+
+template<class T, class S>
+inline T polyconst_cast(S *s)
+{
+    return const_cast<T>(polypointer_cast<T>(s));
+}
+
+template<class T, class S>
+inline T polystatic_cast(S *s)
+{
+    return static_cast<T>(s);
+}    
+
+template<class T, class S>
+inline T polydynamic_cast(S *s)
+{
+#if defined(UCOMMON_RTTI)
+    return dynamic_cast<T>(s);
+#else
+    return static_cast<T>(s);
+#endif
+}    
+
+template<class T, class S>
+inline T& polyreference_cast(S *s)
+{
+#if defined(DEBUG) && defined(UCOMMON_RTTI)
+    assert(dynamic_cast<T*>(s) != NULL);   // rtti for debug only...
+#endif
+    return *(static_cast<T*>(s));
+}    
+
+template<typename T>
+inline T& reference_cast(T *pointer) {
+#ifdef  DEBUG
+    assert(pointer != NULL);
+#endif
+    return *pointer;
+}
+
+template<typename T>
+inline const T* immutable_cast(T *p)
+{
+    return static_cast<const T*>(p);
+}
 
 #endif

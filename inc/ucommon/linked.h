@@ -141,8 +141,9 @@ public:
      * Get next effective object when iterating.
      * @return next linked object in list.
      */
-    inline LinkedObject *getNext(void) const
-        {return Next;}
+    inline LinkedObject *getNext(void) const {
+        return Next;
+    }
 };
 
 /**
@@ -166,8 +167,9 @@ public:
      * Get next effective reusable object when iterating.
      * @return next reusable object in list.
      */
-    inline ReusableObject *getNext(void)
-        {return static_cast<ReusableObject*>(LinkedObject::getNext());}
+    inline ReusableObject *getNext(void) {
+        return polypointer_cast<ReusableObject*>(LinkedObject::getNext());
+    }
 };
 
 /**
@@ -195,8 +197,9 @@ public:
      */
     OrderedIndex();
 
-    inline OrderedIndex(const OrderedIndex& source)
-        {copy(source);}
+    inline OrderedIndex(const OrderedIndex& source) {
+        copy(source);
+    }
 
     /**
      * Destroy index.
@@ -263,36 +266,42 @@ public:
      * @param index of member to fetch.
      * @return LinkedObject member of index.
      */
-    inline LinkedObject *getIndexed(unsigned index) const
-        {return LinkedObject::getIndexed((LinkedObject*)head, index);}
+    inline LinkedObject *getIndexed(unsigned index) const {
+        return LinkedObject::getIndexed(polyconst_cast<LinkedObject*>(head), index);
+    }
 
     /**
      * Return first object in list for iterators.
      * @return first object in list.
      */
-    inline LinkedObject *begin(void) const
-        {return (LinkedObject*)(head);}
+    inline LinkedObject *begin(void) const {
+        return polyconst_cast<LinkedObject*>(head);
+    }
 
     /**
      * Return last object in list for iterators.
      * @return last object in list.
      */
-    inline LinkedObject *end(void) const
-        {return (LinkedObject*)(tail);}
+    inline LinkedObject *end(void) const {
+        return polyconst_cast<LinkedObject*>(tail);
+    }
 
     /**
      * Return head object pointer.
      * @return head pointer.
      */
-    inline LinkedObject *operator*() const
-        {return (LinkedObject*)(head);}
+    inline LinkedObject *operator*() const {
+        return polyconst_cast<LinkedObject*>(head);
+    }
 
     /**
      * Assign ordered index.
      * @param object to copy from.
      */
-    OrderedIndex& operator=(const OrderedIndex& object)
-        {copy(object); return *this;}
+    OrderedIndex& operator=(const OrderedIndex& object) {
+        copy(object); 
+        return *this;
+    }
 
     /**
      * Add object to our list.
@@ -356,8 +365,9 @@ public:
      * Get next ordered member when iterating.
      * @return next ordered object.
      */
-    inline OrderedObject *getNext(void) const
-        {return static_cast<OrderedObject *>(LinkedObject::getNext());}
+    inline OrderedObject *getNext(void) const {
+        return static_cast<OrderedObject *>(LinkedObject::getNext());
+    }
 };
 
 /**
@@ -536,15 +546,17 @@ public:
      * Get next effective object when iterating.
      * @return next linked object in list.
      */
-    inline NamedObject *getNext(void) const
-        {return static_cast<NamedObject*>(LinkedObject::getNext());}
+    inline NamedObject *getNext(void) const {
+        return static_cast<NamedObject*>(LinkedObject::getNext());
+    }
 
     /**
      * Get the named id string of this object.
      * @return name id.
      */
-    inline char *getId(void) const
-        {return Id;};
+    inline char *getId(void) const {
+        return Id;
+    };
 
     /**
      * Compare the name of our object to see if equal.  This is a virtual
@@ -560,24 +572,27 @@ public:
      * @param name to compare our name to.
      * @return true if equal.
      */
-    inline bool equal(const char *name) const
-        {return (compare(name) == 0);}
+    inline bool equal(const char *name) const {
+        return (compare(name) == 0);
+    }
 
     /**
      * Comparison operator between our name and a string.
      * @param name to compare with.
      * @return true if equal.
      */
-    inline bool operator==(const char *name) const
-        {return compare(name) == 0;}
+    inline bool operator==(const char *name) const {
+        return compare(name) == 0;
+    }
 
     /**
      * Comparison operator between our name and a string.
      * @param name to compare with.
      * @return true if not equal.
      */
-    inline bool operator!=(const char *name) const
-        {return compare(name) != 0;}
+    inline bool operator!=(const char *name) const {
+        return compare(name) != 0;
+    }
 };
 
 /**
@@ -679,44 +694,50 @@ public:
      * unamed child nodes.
      * @return first child node or NULL if no children.
      */
-    inline NamedTree *getFirst(void) const
-        {return static_cast<NamedTree *>(Child.begin());}
+    inline NamedTree *getFirst(void) const {
+        return static_cast<NamedTree *>(Child.begin());
+    }
 
     /**
      * Get parent node we are listed as a child on.
      * @return parent node or NULL if none.
      */
-    inline NamedTree *getParent(void) const
-        {return Parent;};
+    inline NamedTree *getParent(void) const {
+        return const_cast<NamedTree *>(Parent);
+    };
 
     /**
      * Get child by index number.
      * @param index of child to fetch.
      * @return indexed child node.
      */
-    inline NamedTree *getIndexed(unsigned index) const
-        {return static_cast<NamedTree *>(Child.getIndexed(index));}
+    inline NamedTree *getIndexed(unsigned index) const {
+        return static_cast<NamedTree *>(Child.getIndexed(index));
+    }
 
     /**
      * Get the ordered index of our child nodes.
      * @return ordered index of our children.
      */
-    inline OrderedIndex *getIndex(void) const
-        {return const_cast<OrderedIndex*>(&Child);}
+    inline OrderedIndex *getIndex(void) const {
+        return const_cast<OrderedIndex*>(&Child);
+    }
 
     /**
      * Test if this node has a name.
      * @return true if name is set.
      */
-    inline operator bool() const
-        {return (Id != NULL);}
+    inline operator bool() const {
+        return (Id != NULL);
+    }
 
     /**
      * Test if this node is unnamed.
      * @return false if name is set.
      */
-    inline bool operator!() const
-        {return (Id == NULL);}
+    inline bool operator!() const {
+        return (Id == NULL);
+    }
 
     /**
      * Set or replace the name id of this node.  This will free the string
@@ -735,15 +756,17 @@ public:
      * Test if node has children.
      * @return true if node contains child nodes.
      */
-    inline bool is_leaf(void) const
-        {return (Child.begin() == NULL);}
+    inline bool is_leaf(void) const {
+        return (Child.begin() == NULL);
+    }
 
     /**
      * Test if node is root node.
      * @return true if node is root node.
      */
-    inline bool is_root(void) const
-        {return (Parent == NULL);}
+    inline bool is_root(void) const {
+        return (Parent == NULL);
+    }
 
     /**
      * Add leaf to a trunk, by order.  If NULL, just remove.
@@ -761,8 +784,9 @@ public:
      * Default relist is by tail...
      * @param trunk we add leaf node to, NULL to delist.
      */
-    inline void relist(NamedTree *trunk = NULL)
-        {relistTail(trunk);}
+    inline void relist(NamedTree *trunk = NULL) {
+        relistTail(trunk);
+    }
 };
 
 /**
@@ -827,29 +851,33 @@ public:
      * Test if we are at the head of a list.
      * @return true if we are the first node in a list.
      */
-    inline bool is_head(void) const
-        {return Root->head == (OrderedObject *)this;}
+    inline bool is_head(void) const {
+        return polypointer_cast<LinkedList *>(Root->head) == this;
+    }
 
     /**
      * Test if we are at the end of a list.
      * @return true if we are the last node in a list.
      */
-    inline bool is_tail(void) const
-        {return Root->tail == (OrderedObject *)this;}
+    inline bool is_tail(void) const {
+        return polypointer_cast<LinkedList *>(Root->tail) == this;
+    }
 
     /**
      * Get previous node in the list for reverse iteration.
      * @return previous node in list.
      */
-    inline LinkedList *getPrev(void) const
-        {return Prev;}
+    inline LinkedList *getPrev(void) const {
+        return const_cast<LinkedList*>(Prev);
+    }
 
     /**
      * Get next node in the list when iterating.
      * @return next node in list.
      */
-    inline LinkedList *getNext(void) const
-        {return static_cast<LinkedList*>(LinkedObject::getNext());}
+    inline LinkedList *getNext(void) const {
+        return static_cast<LinkedList*>(LinkedObject::getNext());
+    }
 
     /**
      * Insert object behind our object.
@@ -873,22 +901,25 @@ public:
      * Insert object behind our object.
      * @param object to add to list.
      */
-    inline void operator+=(LinkedList *object)
-        {insertTail(object);}
+    inline void operator+=(LinkedList *object) {
+        insertTail(object);
+    }
 
     /**
      * Insert object in front of our object.
      * @param object to add to list.
      */
-    inline void operator-=(LinkedList *object)
-        {insertHead(object);}
+    inline void operator-=(LinkedList *object) {
+        insertHead(object);
+    }
 
     /**
      * Insert object in list with our object.
      * @param object to add to list.
      */
-    inline void operator*=(LinkedList *object)
-        {insert(object);}
+    inline void operator*=(LinkedList *object) {
+        insert(object);
+    }
 };
 
 /**
@@ -962,8 +993,9 @@ public:
      * Pop an object from the stack.
      * @return object popped from stack or NULL if empty.
      */
-    inline LinkedObject *pop(void)
-        {return ObjectStack::pull();}
+    inline LinkedObject *pop(void) {
+        return ObjectStack::pull();
+    }
 };
 
 
@@ -1073,15 +1105,18 @@ public:
      * @param root node or pointer for list.
      * @param name of our object.
      */
-    inline named_value(LinkedObject **root, char *name)
-        {LinkedObject::enlist(root); O::id = name;}
+    inline named_value(LinkedObject **root, char *name) {
+        LinkedObject::enlist(root); 
+        O::id = name;
+    }
 
     /**
      * Assign embedded value from related type.
      * @param typed_value to assign.
      */
-    inline void operator=(const T& typed_value)
-        {this->set(typed_value);}
+    inline void operator=(const T& typed_value) {
+        this->set(typed_value);
+    }
 
     /**
      * Find embedded object in chain by name.
@@ -1089,8 +1124,9 @@ public:
      * @param name to search for.
      * @return composite object found by name or NULL if not found.
      */
-    inline static named_value find(named_value *first, const char *name)
-        {return static_cast<named_value *>(NamedObject::find(first, name));}
+    inline static named_value find(named_value *first, const char *name) {
+        return static_cast<named_value *>(NamedObject::find(first, name));
+    }
 };
 
 /**
@@ -1114,38 +1150,45 @@ public:
      * Construct embedded object on a linked list.
      * @param root node or pointer for list.
      */
-    inline linked_value(LinkedObject **root)
-        {LinkedObject::enlist(root);}
+    inline linked_value(LinkedObject **root) {
+        LinkedObject::enlist(root);
+    }
 
     /**
      * Construct embedded object on an ordered list.
      * @param index pointer for the ordered list.
      */
-    inline linked_value(OrderedIndex *index)
-        {O::enlist(index);}
+    inline linked_value(OrderedIndex *index) {
+        O::enlist(index);
+    }
 
     /**
      * Assign embedded value from related type and link to list.
      * @param root node or pointer for list.
      * @param typed_value to assign.
      */
-    inline linked_value(LinkedObject **root, const T& typed_value)
-        {LinkedObject::enlist(root); this->set(typed_value);}
+    inline linked_value(LinkedObject **root, const T& typed_value) {
+        LinkedObject::enlist(root); 
+        this->set(typed_value);
+    }
 
     /**
      * Assign embedded value from related type and add to list.
      * @param index to list our object on.
      * @param typed_value to assign.
      */
-    inline linked_value(OrderedIndex *index, const T& typed_value)
-        {O::enlist(index); this->set(typed_value);}
+    inline linked_value(OrderedIndex *index, const T& typed_value) {
+        O::enlist(index); 
+        this->set(typed_value);
+    }
 
     /**
      * Assign embedded value from related type.
      * @param typed_value to assign.
      */
-    inline void operator=(const T& typed_value)
-        {this->set(typed_value);}
+    inline void operator=(const T& typed_value) {
+        this->set(typed_value);
+    }
 };
 
 /**
@@ -1171,29 +1214,33 @@ public:
      * Push an object onto the object stack.
      * @param object of specified type to push.
      */
-    inline void push(T *object)
-        {ObjectStack::push(object);}
+    inline void push(T *object) {
+        ObjectStack::push(polypointer_cast<LinkedObject*>(object));
+    }
 
     /**
      * Add an object onto the object stack.
      * @param object of specified type to push.
      */
-    inline void add(T *object)
-        {ObjectStack::push(object);}
+    inline void add(T *object) {
+        ObjectStack::push(polypointer_cast<LinkedObject*>(object));
+    }
 
     /**
      * Pull an object from the object stack.
      * @return object of specified type or NULL if empty.
      */
-    inline T *pull(void)
-        {return (T *)ObjectStack::pull();}
+    inline T *pull(void) {
+        return static_cast<T *>(ObjectStack::pull());
+    }
 
     /**
      * Pull (pop) an object from the object stack.
      * @return object of specified type or NULL if empty.
      */
-    inline T *pop(void)
-        {return (T *)ObjectStack::pull();}
+    inline T *pop(void) {
+        return static_cast<T *>(ObjectStack::pull());
+    }
 };
 
 /**
@@ -1215,29 +1262,33 @@ public:
      * Push an object onto the object fifo.
      * @param object of specified type to push.
      */
-    inline void push(T *object)
-        {OrderedIndex::add((OrderedObject *)object);}
+    inline void push(T *object) {
+        OrderedIndex::add(polypointer_cast<OrderedObject *>(object));
+    }
 
     /**
      * Add an object onto the object fifo.
      * @param object of specified type to push.
      */
-    inline void add(T *object)
-        {OrderedIndex::add((OrderedObject *)object);}
+    inline void add(T *object) {
+        OrderedIndex::add(polypointer_cast<OrderedObject *>(object));
+    }
 
     /**
      * Pull an object from the object stack.
      * @return object of specified type or NULL if empty.
      */
-    inline T *pull(void)
-        {return (T *)OrderedIndex::get();}
+    inline T *pull(void) {
+        return static_cast<T *>(OrderedIndex::get());
+    }
 
     /**
      * Pull (pop) an object from the object stack.
      * @return object of specified type or NULL if empty.
      */
-    inline T *pop(void)
-        {return (T *)OrderedIndex::get();}
+    inline T *pop(void) {
+        return static_cast<T *>(OrderedIndex::get());
+    }
 };
 
 /**
@@ -1258,29 +1309,33 @@ public:
      * Push an object to start of queue.
      * @param object of specified type to push.
      */
-    inline void push(T *object)
-        {ObjectQueue::push((DLinkedObject *)object);}
+    inline void push(T *object) {
+        ObjectQueue::push(polypointer_cast<DLinkedObject *>(object));
+    }
 
     /**
      * Add an object to the end of the object queue.
      * @param object of specified type to add.
      */
-    inline void add(T *object)
-        {ObjectQueue::add((DLinkedObject *)object);}
+    inline void add(T *object) {
+        ObjectQueue::add(polypointer_cast<DLinkedObject *>(object));
+    }
 
     /**
      * Pull an object from the start of the object queue.
      * @return object of specified type or NULL if empty.
      */
-    inline T *pull(void)
-        {return (T *)ObjectQueue::pull();}
+    inline T *pull(void) {
+        return static_cast<T *>(ObjectQueue::pull());
+    }
 
     /**
      * Pop an object from the end of the object queue.
      * @return object of specified type or NULL if empty.
      */
-    inline T *pop(void)
-        {return (T *)ObjectQueue::pop();}
+    inline T *pop(void) {
+        return static_cast<T *>(ObjectQueue::pop());
+    }
 };
 
 /**
@@ -1300,161 +1355,186 @@ public:
      * Create a linked pointer and assign to start of a list.
      * @param pointer to first member of a linked list.
      */
-    inline linked_pointer(T *pointer)
-        {ptr = pointer;}
+    inline linked_pointer(T *pointer) {
+        ptr = pointer;
+    }
 
     /**
      * Create a copy of an existing linked pointer.
      * @param pointer to copy from.
      */
-    inline linked_pointer(const linked_pointer &pointer)
-        {ptr = pointer.ptr;}
+    inline linked_pointer(const linked_pointer &pointer) {
+        ptr = pointer.ptr;
+    }
 
     /**
      * Create a linked pointer assigned from a raw linked object pointer.
      * @param pointer to linked object.
      */
-    inline linked_pointer(LinkedObject *pointer)
-        {ptr = static_cast<T*>(pointer);}
+    inline linked_pointer(LinkedObject *pointer) {
+        ptr = static_cast<T*>(pointer);
+    }
 
-    inline linked_pointer(const LinkedObject *pointer)
-        {ptr = static_cast<T*>(pointer);}
+    inline linked_pointer(const LinkedObject *pointer) {
+        ptr = static_cast<T*>(pointer);
+    }
 
     /**
      * Create a linked pointer to examine an ordered index.
      * @param index of linked objects to iterate through.
      */
-    inline linked_pointer(OrderedIndex *index)
-        {ptr = static_cast<T*>(index->begin());}
+    inline linked_pointer(OrderedIndex *index) {
+        ptr = static_cast<T*>(index->begin());
+    }
 
     /**
      * Create a linked pointer not attached to a list.
      */
-    inline linked_pointer()
-        {ptr = NULL;}
+    inline linked_pointer() {
+        ptr = NULL;
+    }
 
     /**
      * Assign our typed iterative pointer from a matching typed object.
      * @param pointer to typed object.
      */
-    inline void operator=(T *pointer)
-        {ptr = pointer;}
+    inline void operator=(T *pointer) {
+        ptr = pointer;
+    }
 
     /**
      * Assign our pointer from another pointer.
      * @param pointer to assign from.
      */
-    inline void operator=(linked_pointer &pointer)
-        {ptr = pointer.ptr;}
+    inline void operator=(linked_pointer &pointer) {
+        ptr = pointer.ptr;
+    }
 
     /**
      * Assign our pointer from the start of an ordered index.
      * @param index to assign pointer from.
      */
-    inline void operator=(OrderedIndex *index)
-        {ptr = static_cast<T*>(index->begin());}
+    inline void operator=(OrderedIndex *index) {
+        ptr = static_cast<T*>(index->begin());
+    }
 
     /**
      * Assign our pointer from a generic linked object pointer.
      * @param pointer of linked list.
      */
-    inline void operator=(LinkedObject *pointer)
-        {ptr = static_cast<T*>(pointer);}
+    inline void operator=(LinkedObject *pointer) {
+        ptr = static_cast<T*>(pointer);
+    }
 
     /**
      * Return member from typed object our pointer references.
      * @return evaluated member of object we point to.
      */
-    inline T* operator->() const
-        {return ptr;}
+    inline T* operator->() const {
+        return ptr;
+    }
 
     /**
      * Return object we currently point to.
      * @return object linked pointer references.
      */
-    inline T* operator*() const
-        {return ptr;}
+    inline T* operator*() const {
+        return ptr;
+    }
 
     /**
      * Return object we point to by casting.
      * @return object linked pointer references.
      */
-    inline operator T*() const
-        {return ptr;}
+    inline operator T*() const {
+        return ptr;
+    }
 
     /**
      * Move (iterate) pointer to previous member in double linked list.
      */
-    inline void prev(void)
-        {ptr = static_cast<T*>(ptr->getPrev());}
+    inline void prev(void) {
+        ptr = static_cast<T*>(ptr->getPrev());
+    }
 
     /**
      * Move (iterate) pointer to next member in linked list.
      */
-    inline void next(void)
-        {ptr = static_cast<T*>(ptr->getNext());}
+    inline void next(void) {
+        ptr = static_cast<T*>(ptr->getNext());
+    }
 
     /**
      * Get the next member in linked list.  Do not change who we point to.
      * @return next member in list or NULL if end of list.
      */
-    inline T *getNext(void) const
-        {return static_cast<T*>(ptr->getNext());}
+    inline T *getNext(void) const {
+        return static_cast<T*>(ptr->getNext());
+    }
 
     /**
      * Get the previous member in double linked list.  Do not change who we
      * point to.
      * @return previous member in list or NULL if start of list.
      */
-    inline T *getPrev(void) const
-        {return static_cast<T*>(ptr->getPrev());}
+    inline T *getPrev(void) const {
+        return static_cast<T*>(ptr->getPrev());
+    }
 
     /**
      * Move (iterate) pointer to next member in linked list.
      */
-    inline void operator++()
-        {ptr = static_cast<T*>(ptr->getNext());}
+    inline void operator++() {
+        ptr = static_cast<T*>(ptr->getNext());
+    }
 
     /**
      * Move (iterate) pointer to previous member in double linked list.
      */
-    inline void operator--()
-        {ptr = static_cast<T*>(ptr->getPrev());}
+    inline void operator--() {
+        ptr = static_cast<T*>(ptr->getPrev());
+    }
 
     /**
      * Test for next member in linked list.
      * @return true if there is more members after current one.
      */
-    inline bool is_next(void) const
-        {return (ptr->getNext() != NULL);}
+    inline bool is_next(void) const {
+        return (ptr->getNext() != NULL);
+    }
 
     /**
      * Test for previous member in double linked list.
      * @return true if there is more members before current one.
      */
-    inline bool is_prev(void) const
-        {return (ptr->getPrev() != NULL);}
+    inline bool is_prev(void) const {
+        return (ptr->getPrev() != NULL);
+    }
 
     /**
      * Test if linked pointer is set/we are not at end of list.
      * @return true if we are not at end of list.
      */
-    inline operator bool() const
-        {return (ptr != NULL);}
+    inline operator bool() const {
+        return (ptr != NULL);
+    }
 
     /**
      * Test if linked list is empty/we are at end of list.
      * @return true if we are at end of list.
      */
-    inline bool operator!() const
-        {return (ptr == NULL);}
+    inline bool operator!() const {
+        return (ptr == NULL);
+    }
 
     /**
      * Return pointer to our linked pointer to use as root node of a chain.
      * @return our object pointer as a root index.
      */
-    inline LinkedObject **root(void) const
-        {T **r = &ptr; return (LinkedObject**)r;}
+    inline LinkedObject **root(void) const {
+        T **r = &ptr;
+        return static_cast<LinkedObject**>(r);
+    }
 };
 
 /**
@@ -1485,44 +1565,50 @@ public:
      * Return the typed value of this node.
      * @return reference to value of node.
      */
-    inline T &get(void) const
-        {return value;}
+    inline T &get(void) const {
+        return value;
+    }
 
     /**
      * Return next multimap typed object.
      * @param path to follow.
      * @return multimap typed.
      */
-    inline multimap *next(unsigned path)
-        {return static_cast<multimap*>(MultiMap::next(path));}
+    inline multimap *next(unsigned path) {
+        return static_cast<multimap*>(MultiMap::next(path));
+    }
 
     /**
      * Return typed value of this node by pointer reference.
      * @return value of node.
      */
-    inline T& operator*() const
-        {return value;}
+    inline T& operator*() const {
+        return value;
+    }
 
     /**
      * Set the pointer of a pointer based value tree.
      * @param pointer to set.
      */
-    inline void setPointer(const T pointer)
-        {value = pointer;}
+    inline void setPointer(const T pointer) {
+        value = pointer;
+    }
 
     /**
      * Set the value of a data based value tree.
      * @param reference to value to copy into node.
      */
-    inline void set(const T &reference)
-        {value = reference;}
+    inline void set(const T &reference) {
+        value = reference;
+    }
 
     /**
      * Assign the value of our node.
      * @param data value to assign.
      */
-    inline void operator=(const T& data)
-        {value = data;}
+    inline void operator=(const T& data) {
+        value = data;
+    }
 
     /**
      * Find multimap key entry.
@@ -1533,8 +1619,9 @@ public:
      * @param keysize or 0 if NULL terminated string.
      * @return multipath typed object.
      */
-    inline static multimap *find(unsigned path, MultiMap **index, caddr_t key, unsigned size, unsigned keysize = 0)
-        {return static_cast<multimap*>(MultiMap::find(path, index, key, size, keysize));}
+    inline static multimap *find(unsigned path, MultiMap **index, caddr_t key, unsigned size, unsigned keysize = 0) {
+        return static_cast<multimap*>(MultiMap::find(path, index, key, size, keysize));
+    }
 };
 
 /**
@@ -1572,8 +1659,9 @@ public:
      * Construct a copy of the treemap object.
      * @param source of copy for new object.
      */
-    inline treemap(const treemap& source) : NamedTree(source)
-        {value = source.value;};
+    inline treemap(const treemap& source) : NamedTree(source) {
+        value = source.value;
+    };
 
     /**
      * Construct a child node on an existing tree.
@@ -1588,87 +1676,99 @@ public:
      * @param name of this node.
      * @param reference to value to assign to this node.
      */
-    inline treemap(treemap *parent, char *name, T& reference) :
-        NamedTree(parent, name) {value = reference;}
+    inline treemap(treemap *parent, char *name, T& reference) : NamedTree(parent, name) {
+        value = reference;
+    }
 
     /**
      * Return the typed value of this node.
      * @return reference to value of node.
      */
-    inline const T& get(void) const
-        {return value;}
+    inline const T& get(void) const {
+        return value;
+    }
 
     /**
      * Return typed value of this node by pointer reference.
      * @return value of node.
      */
-    inline const T& operator*() const
-        {return value;}
+    inline const T& operator*() const {
+        return value;
+    }
 
     /**
      * Return value from tree element when value is a pointer.
      * @param node in our typed tree.
      * @return value of node.
      */
-    static inline T getPointer(treemap *node)
-        {return (node == NULL) ? NULL : node->value;}
+    static inline T getPointer(treemap *node) {
+        return (node == NULL) ? NULL : node->value;
+    }
 
     /**
      * Test if this node is a leaf node for a tree pointer table.
      * @return true if value pointer is not NULL and there are no children.
      */
-    inline bool is_attribute(void) const
-        {return (!Child.begin() && value != NULL);}
+    inline bool is_attribute(void) const {
+        return (!Child.begin() && value != NULL);
+    }
 
     /**
      * Get the pointer of a pointer based value tree.
      * @return value pointer of node.
      */
-    inline const T getPointer(void) const
-        {return value;}
+    inline const T getPointer(void) const {
+        return value;
+    }
 
     /**
      * Get the data value of a data based value tree.
      * @return data value of node.
      */
-    inline const T& getData(void) const
-        {return value;}
+    inline const T& getData(void) const {
+        return value;
+    }
 
     /**
      * Set the pointer of a pointer based value tree.
      * @param pointer to set.
      */
-    inline void setPointer(const T pointer)
-        {value = pointer;}
+    inline void setPointer(const T pointer) {
+        value = pointer;
+    }
 
     /**
      * Set the value of a data based value tree.
      * @param reference to value to copy into node.
      */
-    inline void set(const T& reference)
-        {value = reference;}
+    inline void set(const T& reference) {
+        value = reference;
+    }
 
     /**
      * Assign the value of our node.
      * @param data value to assign.
      */
-    inline void operator=(const T& data)
-        {value = data;}
+    inline void operator=(const T& data) {
+        value = data;
+    }
 
     /**
      * Get child member node by index.
      * @param index of child member.
      * @return node or NULL if past end.
      */
-    inline treemap *getIndexed(unsigned index) const
-        {return static_cast<treemap*>(Child.getIndexed(index));}
+    inline treemap *getIndexed(unsigned index) const {
+        return static_cast<treemap*>(Child.getIndexed(index));
+    }
 
     /**
      * Get the typed parent node for our node.
      * @return parent node or NULL if root of tree.
      */
-    inline treemap *getParent(void) const
-        {return static_cast<treemap*>(Parent);}
+    inline treemap *getParent(void) const {
+        return static_cast<treemap*>(Parent);
+    }
 
     /**
      * Get direct typed child node of our node of specified name.  This
@@ -1676,8 +1776,9 @@ public:
      * @param name of child node.
      * @return typed child node pointer or NULL if not found.
      */
-    inline treemap *getChild(const char *name) const
-        {return static_cast<treemap*>(NamedTree::getChild(name));}
+    inline treemap *getChild(const char *name) const {
+        return static_cast<treemap*>(NamedTree::getChild(name));
+    }
 
     /**
      * Find a direct typed leaf node on our node.  A leaf node is a node that
@@ -1685,8 +1786,9 @@ public:
      * @param name of leaf child node to find.
      * @return typed leaf node object of leaf or NULL.
      */
-    inline treemap *getLeaf(const char *name) const
-        {return static_cast<treemap*>(NamedTree::getLeaf(name));}
+    inline treemap *getLeaf(const char *name) const {
+        return static_cast<treemap*>(NamedTree::getLeaf(name));
+    }
 
     /**
      * Get the value pointer of a leaf node of a pointer tree.  This allows
@@ -1695,8 +1797,9 @@ public:
      * @param name of leaf node.
      * @return value of leaf pointer if found and contains value, or NULL.
      */
-    inline T getValue(const char *name) const
-        {return getPointer(getLeaf(name));}
+    inline T getValue(const char *name) const {
+        return getPointer(getLeaf(name));
+    }
 
     /**
      * Find a subnode from our node by name.  This performs a recursive
@@ -1704,8 +1807,9 @@ public:
      * @param name to search for.
      * @return typed node that is found or NULL if none is found.
      */
-    inline treemap *find(const char *name) const
-        {return static_cast<treemap*>(NamedTree::find(name));}
+    inline treemap *find(const char *name) const {
+        return static_cast<treemap*>(NamedTree::find(name));
+    }
 
     /**
      * Find a subnode by pathname.  This is the same as the NamedTree
@@ -1713,8 +1817,9 @@ public:
      * @param path name to search for node.
      * @return typed node that is found at path or NULL.
      */
-    inline treemap *path(const char *path) const
-        {return static_cast<treemap*>(NamedTree::path(path));}
+    inline treemap *path(const char *path) const {
+        return static_cast<treemap*>(NamedTree::path(path));
+    }
 
     /**
      * Search for a leaf node of our node.  This performs a recursive
@@ -1722,15 +1827,17 @@ public:
      * @param name to search for.
      * @return typed not that is found or NULL if none is found.
      */
-    inline treemap *leaf(const char *name) const
-        {return static_cast<treemap*>(NamedTree::leaf(name));}
+    inline treemap *leaf(const char *name) const {
+        return static_cast<treemap*>(NamedTree::leaf(name));
+    }
 
     /**
      * Get first child of our node.  This is useful for iterating children.
      * @return first child or NULL.
      */
-    inline treemap *getFirst(void) const
-        {return static_cast<treemap*>(NamedTree::getFirst());}
+    inline treemap *getFirst(void) const {
+        return static_cast<treemap*>(NamedTree::getFirst());
+    }
 };
 
 /**
@@ -1750,84 +1857,95 @@ public:
     /**
      * Destroy the hash map by puring the index chains.
      */
-    inline ~keymap()
-        {NamedObject::purge(idx, M);}
+    inline ~keymap() {
+        NamedObject::purge(idx, M);
+    }
 
     /**
      * Retrieve root of index to use in NamedObject constructors.
      * @return root node of index.
      */
-    inline NamedObject **root(void) const
-        {return idx;}
+    inline NamedObject **root(void) const {
+        return idx;
+    }
 
     /**
      * Retrieve key size to use in NamedObject constructors.
      * @return key size of hash map.
      */
-    inline unsigned limit(void) const
-        {return M;}
+    inline unsigned limit(void) const {
+        return M;
+    }
 
     /**
      * Find a typed object derived from NamedObject in the hash map by name.
      * @param name to search for.
      * @return typed object if found through map or NULL.
      */
-    inline T *get(const char *name) const
-        {return static_cast<T*>(NamedObject::map(idx, name, M));}
+    inline T *get(const char *name) const {
+        return static_cast<T*>(NamedObject::map(idx, name, M));
+    }
 
     /**
      * Find a typed object derived from NamedObject in the hash map by name.
      * @param name to search for.
      * @return typed object if found through map or NULL.
      */
-    inline T& operator[](const char *name) const
-        {return static_cast<T*>(NamedObject::map(idx, name, M));}
+    inline T& operator[](const char *name) const {
+        return static_cast<T*>(NamedObject::map(idx, name, M));
+    }
 
     /**
      * Add a typed object derived from NamedObject to the hash map by name.
      * @param name to add.
      * @param object to add.
      */
-    inline void add(const char *name, T& object)
-        {object.NamedObject::add(idx, name, M);}
+    inline void add(const char *name, T& object) {
+        object.NamedObject::add(idx, name, M);
+    }
 
     /**
      * Add a typed object derived from NamedObject to the hash map by name.
      * @param name to add.
      * @param object to add.
      */
-    inline void add(const char *name, T *object)
-        {object->NamedObject::add(idx, name, M);}
+    inline void add(const char *name, T *object) {
+        object->NamedObject::add(idx, name, M);
+    }
 
     /**
      * Remove a typed object derived from NamedObject to the hash map by name.
      * @param name to remove.
      * @return object removed if found or NULL.
      */
-    inline T *remove(const char *name)
-        {return static_cast<T*>(NamedObject::remove(idx, name, M));}
+    inline T *remove(const char *name) {
+        return static_cast<T*>(NamedObject::remove(idx, name, M));
+    }
 
     /**
      * Find first typed object in hash map to iterate.
      * @return first typed object or NULL if nothing in list.
      */
-    inline T *begin(void) const
-        {return static_cast<T*>(NamedObject::skip(idx, NULL, M));}
+    inline T *begin(void) const {
+        return static_cast<T*>(NamedObject::skip(idx, NULL, M));
+    }
 
     /**
      * Find next typed object in hash map for iteration.
      * @param current typed object we are referencing.
      * @return next iterative object or NULL if past end of map.
      */
-    inline T *next(T *current) const
-        {return static_cast<T*>(NamedObject::skip(idx, current, M));}
+    inline T *next(T *current) const {
+        return static_cast<T*>(NamedObject::skip(idx, current, M));
+    }
 
     /**
      * Count the number of typed objects in our hash map.
      * @return count of typed objects.
      */
-    inline unsigned count(void) const
-        {return NamedObject::count(idx, M);}
+    inline unsigned count(void) const {
+        return NamedObject::count(idx, M);
+    }
 
     /**
      * Convert our hash map into a linear object pointer array.  The
@@ -1835,8 +1953,9 @@ public:
      * when no longer used.
      * @return array of typed named object pointers.
      */
-    inline T **index(void) const
-        {return NamedObject::index(idx, M);}
+    inline T **index(void) const {
+        return NamedObject::index(idx, M);
+    }
 
     /**
      * Convert our hash map into an alphabetically sorted linear object
@@ -1844,8 +1963,9 @@ public:
      * and must be deleted when no longer used.
      * @return sorted array of typed named object pointers.
      */
-    inline T **sort(void) const
-        {return NamedObject::sort(NamedObject::index(idx, M));}
+    inline T **sort(void) const {
+        return NamedObject::sort(NamedObject::index(idx, M));
+    }
 
     /**
      * Convenience typedef for iterative pointer.
@@ -1867,24 +1987,27 @@ public:
      * Return a root node pointer to use in NamedObject constructors.
      * @return pointer to index root.
      */
-    inline NamedObject **root(void)
-        {return static_cast<NamedObject**>(&head);}
+    inline NamedObject **root(void) {
+        return static_cast<NamedObject**>(&head);
+    }
 
     /**
      * Return first item in ordered list.  This is commonly used to
      * iterate the list.
      * @return first item in list or NULL if empty.
      */
-    inline T *begin(void)
-        {return static_cast<T*>(head);}
+    inline T *begin(void) {
+        return static_cast<T*>(head);
+    }
 
     /**
      * Return last item in ordered list.  This is commonly used to determine
      * end of list iteration.
      * @return last item in list or NULL if empty.
      */
-    inline T *end(void)
-        {return static_cast<T*>(tail);}
+    inline T *end(void) {
+        return static_cast<T*>(tail);
+    }
 
     /**
      * Create a new typed named object with default constructor.
@@ -1892,38 +2015,44 @@ public:
      * @param name of object to create.
      * @return typed named object.
      */
-    inline T *create(const char *name)
-        {return new T(this, name);}
+    inline T *create(const char *name) {
+        return new T(this, name);
+    }
 
     /**
      * Iterate next object in list.
      * @param current object we are referencing.
      * @return next logical object in linked list or NULL if end.
      */
-    inline T *next(LinkedObject *current)
-        {return static_cast<T*>(current->getNext());}
+    inline T *next(LinkedObject *current) {
+        return static_cast<T*>(current->getNext());
+    }
 
     /**
      * Find a specific object by name.
      * @param name to search for.
      * @return type named object that matches or NULL if not found.
      */
-    inline T *find(const char *name)
-        {return static_cast<T*>(NamedObject::find(begin(), name));}
+    inline T *find(const char *name) {
+        return static_cast<T*>(NamedObject::find(begin(), name));
+    }
 
-    inline T *offset(unsigned offset)
-        {return static_cast<T*>(OrderedIndex::find(offset));}
+    inline T *offset(unsigned offset) {
+        return static_cast<T*>(OrderedIndex::find(offset));
+    }
 
     /**
      * Retrieve a specific object by position in list.
      * @param offset in list for object we want.
      * @return type named object or NULL if past end of list.
      */
-    inline T& operator[](unsigned offset)
-        {return static_cast<T&>(OrderedIndex::find(offset));}
+    inline T& operator[](unsigned offset) {
+        return static_cast<T&>(OrderedIndex::find(offset));
+    }
 
-    inline T& operator[](const char *name)
-        {return static_cast<T&>(NamedObject::find(begin(), name));}
+    inline T& operator[](const char *name) {
+        return static_cast<T&>(NamedObject::find(begin(), name));
+    }
 
     /**
      * Convert our linked list into a linear object pointer array.  The
@@ -1931,8 +2060,9 @@ public:
      * when no longer used.
      * @return array of typed named object pointers.
      */
-    inline T **index(void)
-        {return static_cast<T**>(OrderedIndex::index());}
+    inline T **index(void) {
+        return static_cast<T**>(OrderedIndex::index());
+    }
 
     /**
      * Convert our linked list into an alphabetically sorted linear object
@@ -1940,8 +2070,9 @@ public:
      * and must be deleted when no longer used.
      * @return array of typed named object pointers.
      */
-    inline T **sort(void)
-        {return static_cast<T**>(NamedObject::sort(index()));}
+    inline T **sort(void) {
+        return static_cast<T**>(NamedObject::sort(index()));
+    }
 
     /**
      * Convenience typedef for iterative pointer.
