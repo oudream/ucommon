@@ -88,7 +88,7 @@ void atomic::spinlock::release(void) volatile
 
 #define SIMULATED true
 
-long atomic::get()
+long atomic::counter::get() const volatile
 {
     long rval;
     Mutex::protect((void *)&value);
@@ -97,7 +97,14 @@ long atomic::get()
     return rval;
 }
 
-long atomic::counter::operator++()
+void atomic::counter::set(long change) volatile
+{
+    Mutex::protect((void *)&value);
+    value = change;
+    Mutex::release((void *)&value);
+}
+
+long atomic::counter::operator++() volatile
 {
     long rval;
     Mutex::protect((void *)&value);
@@ -107,7 +114,7 @@ long atomic::counter::operator++()
     return rval;
 }
 
-long atomic::counter::operator--()
+long atomic::counter::operator--() volatile
 {
     long rval;
     Mutex::protect((void *)&value);
@@ -117,7 +124,7 @@ long atomic::counter::operator--()
     return rval;
 }
 
-long atomic::counter::operator+=(long change)
+long atomic::counter::operator+=(long change) volatile
 {
     long rval;
     Mutex::protect((void *)&value);
@@ -127,7 +134,7 @@ long atomic::counter::operator+=(long change)
     return rval;
 }
 
-long atomic::counter::operator-=(long change)
+long atomic::counter::operator-=(long change) volatile
 {
     long rval;
     Mutex::protect((void *)&value);
@@ -137,7 +144,7 @@ long atomic::counter::operator-=(long change)
     return rval;
 }
 
-bool atomic::spinlock::acquire(void)
+bool atomic::spinlock::acquire(void) volatile
 {
     bool rtn = true;
 
@@ -150,7 +157,13 @@ bool atomic::spinlock::acquire(void)
     return rtn;
 }
 
-void atomic::spinlock::release(void)
+void atomic::spinlock::wait(void) volatile
+{
+    while(!acquire())
+        ;
+}
+
+void atomic::spinlock::release(void) volatile
 {
     Mutex::protect((void *)&value);
     value = 0;
