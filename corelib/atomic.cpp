@@ -33,8 +33,16 @@ atomic::spinlock::spinlock()
     value = 0;
 }
 
-#if defined(__GCC_ATOMIC_CHAR_LOCK_FREE) && __GCC_ATOMIC_CHAR_LOCK_FREE > 0
+#if !defined(__GNUC_PREREQ__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#define __GNUC_PREREQ__(maj, min) \
+((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#else
+#define __GNUC_PREREQ__(maj, min) 0
+#endif
+#endif 
 
+#if __GNUC_PREREQ__(4, 7)
 long atomic::counter::get() const volatile
 {
     return __atomic_load_n(&value, __ATOMIC_SEQ_CST);
