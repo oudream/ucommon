@@ -21,10 +21,6 @@
 #include <ucommon/atomic.h>
 #include <ucommon/thread.h>
 
-#ifdef  HAVE_STDATOMIC_H
-#include <stdatomic.h>
-#endif
-
 namespace ucommon {
 
 atomic::counter::counter(long init)
