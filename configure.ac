@@ -301,11 +301,6 @@ PTHREAD_FLAGS=""
 if test "$enable_shared" = "no" ; then
     UCOMMON_FLAGS="$UCOMMON_FLAGS -DUCOMMON_STATIC" ; fi
 
-AC_ARG_ENABLE(atomics, [
-    AC_HELP_STRING([--enable-atomics],[enable gcc atomic support])], [
-    AC_DEFINE(HAVE_GCC_ATOMICS, [1], ["cannot test in autoconf safely"])
-])
-
 AC_ARG_ENABLE(pth, [
     AC_HELP_STRING([--enable-pth],[always use GNU pth for threading])
 ])

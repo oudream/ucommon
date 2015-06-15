@@ -61,19 +61,56 @@ public:
     public:
         counter(long initial = 0);
 
+        // returns pre-modified values (fetch_and_change behavior)
+
         long operator++();
         long operator--();
         long operator+=(long offset);
         long operator-=(long offset);
+        long get();
 
         inline operator long() {
-            return value;
+            return get();
         }
 
-        inline long operator*()
-        {
-            return value;
+        inline long operator*() {
+            return get();
         }
+    };
+
+    class __EXPORT number : private counter
+    {
+    public:
+        number(long initial = 0) : counter(initial) {};
+
+        inline operator long() {
+            return get();
+        }
+
+        inline long operator *() {
+            return get();
+        }
+
+        inline long operator++() {
+            long val = counter::operator++();
+            return ++val;
+        }
+
+        inline long operator--() {
+            long val = counter::operator--();
+            return --val;
+        }
+
+        inline long operator+=(long offset) {
+            long val = counter::operator+=(offset);
+            return val + offset;
+        }
+
+        inline long operator-=(long offset) {
+            long val = counter::operator-=(offset);
+            return val - offset;
+        }
+    
     };
 
     /**
@@ -98,6 +135,11 @@ public:
          * @return true if acquired.
          */
         bool acquire(void);
+
+        /**
+         * Wait for and aquire spinlock.
+         */
+        void wait(void);
 
         /**
          * Release an acquired spinlock.

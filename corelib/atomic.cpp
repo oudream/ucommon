@@ -33,32 +33,45 @@ atomic::spinlock::spinlock()
     value = 0;
 }
 
-#ifdef HAVE_GCC_ATOMICS
+#if __GNUC__ > 3
+
+long atomic::counter::get()
+{
+    return __atomic_load_n(&value, __ATOMIC_RELAXED);
+}
 
 long atomic::counter::operator++()
 {
-    return __sync_add_and_fetch(&value, 1);
+    return __sync_fetch_and_add(&value, 1);
 }
 
 long atomic::counter::operator--()
 {
-    return __sync_sub_and_fetch(&value, 1);
+    return __sync_fetch_and_sub(&value, 1);
 }
 
 long atomic::counter::operator+=(long change)
 {
-    return __sync_add_and_fetch(&value, change);
+    return __sync_fetch_and_add(&value, change);
 }
 
 long atomic::counter::operator-=(long change)
 {
-    return __sync_sub_and_fetch(&value, change);
+    return __sync_fetch_and_sub(&value, change);
 }
 
 bool atomic::spinlock::acquire(void)
 {
     // if not locked by another already, then we acquired it...
     return (__sync_lock_test_and_set(&value, 1) == 0);
+}
+
+void atomic::spinlock::wait(void)
+{
+    while (__sync_lock_test_and_set(&value, 1)) {
+        while (value)
+            ;
+    }
 }
 
 void atomic::spinlock::release(void)
@@ -74,7 +87,8 @@ long atomic::counter::operator++()
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(++value);
+    rval = value;
+    value++;
     Mutex::release((void *)&value);
     return rval;
 }
@@ -83,7 +97,8 @@ long atomic::counter::operator--()
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(--value);
+    rval = value;
+    value--;
     Mutex::release((void *)&value);
     return rval;
 }
@@ -92,7 +107,8 @@ long atomic::counter::operator+=(long change)
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(value += change);
+    rval = value;
+    value += change;
     Mutex::release((void *)&value);
     return rval;
 }
@@ -101,7 +117,8 @@ long atomic::counter::operator-=(long change)
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(value -= change);
+    rval = value;
+    value -= change;
     Mutex::release((void *)&value);
     return rval;
 }
