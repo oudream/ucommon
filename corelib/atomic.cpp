@@ -21,6 +21,10 @@
 #include <ucommon/atomic.h>
 #include <ucommon/thread.h>
 
+#ifdef  HAVE_STDATOMIC_H
+#include <stdatomic.h>
+#endif
+
 namespace ucommon {
 
 atomic::counter::counter(long init)
@@ -42,7 +46,65 @@ atomic::spinlock::spinlock()
 #endif
 #endif 
 
-#if __GNUC_PREREQ__(4, 7)
+#if defined(__has_feature) && defined(__has_extension)
+#if __has_feature(c_atomic) || __has_extension(c_atomic)
+#define __CLANG_ATOMICS
+#endif
+#endif
+
+#if defined(__CLANG_ATOMICS)
+typedef _Atomic(long)   *atomic_val;
+
+long atomic::counter::get() const volatile
+{
+    return __c11_atomic_load((atomic_val)(&value), __ATOMIC_SEQ_CST);
+}
+
+void atomic::counter::set(long change) volatile
+{
+    __c11_atomic_store((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator++() volatile
+{
+    return __c11_atomic_fetch_add((atomic_val)(&value), (long)1, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator--() volatile
+{
+    return __c11_atomic_fetch_sub((atomic_val)(&value), (long)1, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator+=(long change) volatile
+{
+    return __c11_atomic_fetch_add((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator-=(long change) volatile
+{
+    return __c11_atomic_fetch_sub((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+}
+
+bool atomic::spinlock::acquire(void) volatile
+{
+    // if not locked by another already, then we acquired it...
+    return (!__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST));
+}
+
+void atomic::spinlock::wait(void) volatile
+{
+    while (__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST)) {
+        while (value)
+            ;
+    }
+}
+
+void atomic::spinlock::release(void) volatile
+{
+    __c11_atomic_store((atomic_val)(&value), 0, __ATOMIC_SEQ_CST);
+}
+
+#elif __GNUC_PREREQ__(4, 7) 
 long atomic::counter::get() const volatile
 {
     return __atomic_load_n(&value, __ATOMIC_SEQ_CST);
