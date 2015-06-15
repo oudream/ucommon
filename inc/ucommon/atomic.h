@@ -63,50 +63,48 @@ public:
 
         // returns pre-modified values (fetch_and_change behavior)
 
-        long operator++();
-        long operator--();
-        long operator+=(long offset);
-        long operator-=(long offset);
-        long get();
+        long operator++() volatile;
+        long operator--() volatile;
+        long operator+=(long offset) volatile;
+        long operator-=(long offset) volatile;
+        long get() const volatile;
+        void set(long change) volatile;
 
-        inline operator long() {
+        inline long operator=(long change) volatile {
+            set(change);
+            return change;
+        }
+
+        inline operator long() const volatile {
             return get();
         }
 
-        inline long operator*() {
+        inline long operator*() const volatile {
             return get();
         }
     };
 
-    class __EXPORT number : private counter
+    class __EXPORT number : public counter
     {
     public:
         number(long initial = 0) : counter(initial) {};
 
-        inline operator long() {
-            return get();
-        }
-
-        inline long operator *() {
-            return get();
-        }
-
-        inline long operator++() {
+        inline long operator++() volatile {
             long val = counter::operator++();
             return ++val;
         }
 
-        inline long operator--() {
+        inline long operator--() volatile {
             long val = counter::operator--();
             return --val;
         }
 
-        inline long operator+=(long offset) {
+        inline long operator+=(long offset) volatile {
             long val = counter::operator+=(offset);
             return val + offset;
         }
 
-        inline long operator-=(long offset) {
+        inline long operator-=(long offset) volatile {
             long val = counter::operator-=(offset);
             return val - offset;
         }
@@ -134,17 +132,17 @@ public:
          * by doing something else.  One suggestion is using thread::yield.
          * @return true if acquired.
          */
-        bool acquire(void);
+        bool acquire(void) volatile;
 
         /**
          * Wait for and aquire spinlock.
          */
-        void wait(void);
+        void wait(void) volatile;
 
         /**
          * Release an acquired spinlock.
          */
-        void release(void);
+        void release(void) volatile;
     };
 };
 

@@ -33,50 +33,55 @@ atomic::spinlock::spinlock()
     value = 0;
 }
 
-#if __GNUC__ > 3
+#if defined(__GCC_ATOMIC_CHAR_LOCK_FREE) && __GCC_ATOMIC_CHAR_LOCK_FREE > 0
 
-long atomic::counter::get()
+long atomic::counter::get() const volatile
 {
-    return __atomic_load_n(&value, __ATOMIC_RELAXED);
+    return __atomic_load_n(&value, __ATOMIC_SEQ_CST);
 }
 
-long atomic::counter::operator++()
+void atomic::counter::set(long change) volatile
 {
-    return __sync_fetch_and_add(&value, 1);
+    __atomic_store_n(&value, change, __ATOMIC_SEQ_CST);
 }
 
-long atomic::counter::operator--()
+long atomic::counter::operator++() volatile
 {
-    return __sync_fetch_and_sub(&value, 1);
+    return __atomic_fetch_add(&value, (long)1, __ATOMIC_SEQ_CST);
 }
 
-long atomic::counter::operator+=(long change)
+long atomic::counter::operator--() volatile
 {
-    return __sync_fetch_and_add(&value, change);
+    return __atomic_fetch_sub(&value, (long)1, __ATOMIC_SEQ_CST);
 }
 
-long atomic::counter::operator-=(long change)
+long atomic::counter::operator+=(long change) volatile
 {
-    return __sync_fetch_and_sub(&value, change);
+    return __atomic_fetch_add(&value, change, __ATOMIC_SEQ_CST);
 }
 
-bool atomic::spinlock::acquire(void)
+long atomic::counter::operator-=(long change) volatile
+{
+    return __atomic_fetch_sub(&value, change, __ATOMIC_SEQ_CST);
+}
+
+bool atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
-    return (__sync_lock_test_and_set(&value, 1) == 0);
+    return (!__atomic_test_and_set(&value, __ATOMIC_SEQ_CST));
 }
 
-void atomic::spinlock::wait(void)
+void atomic::spinlock::wait(void) volatile
 {
-    while (__sync_lock_test_and_set(&value, 1)) {
+    while (__atomic_test_and_set(&value, __ATOMIC_SEQ_CST)) {
         while (value)
             ;
     }
 }
 
-void atomic::spinlock::release(void)
+void atomic::spinlock::release(void) volatile
 {
-    __sync_lock_release(&value);
+    __atomic_clear(&value, __ATOMIC_SEQ_CST);
 }
 
 #else
