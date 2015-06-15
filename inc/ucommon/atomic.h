@@ -66,11 +66,14 @@ public:
         long operator+=(long offset);
         long operator-=(long offset);
 
-        inline operator long()
-            {return (long)(value);}
+        inline operator long() {
+            return value;
+        }
 
         inline long operator*()
-            {return value;}
+        {
+            return value;
+        }
     };
 
     /**

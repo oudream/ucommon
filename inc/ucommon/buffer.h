@@ -71,8 +71,9 @@ protected:
      * Get the low level socket object.
      * @return socket we are using.
      */
-    inline socket_t getsocket(void) const
-        {return so;}
+    inline socket_t getsocket(void) const {
+        return so;
+    }
 
 public:
     /**

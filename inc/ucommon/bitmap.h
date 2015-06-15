@@ -98,7 +98,7 @@ public:
      * as part of the object itself, and uses the BMALLOC bus mode.
      * @param length of bitmap to create in bits.
      */
-    bitmap(size_t length);
+    explicit bitmap(size_t length);
 
     /**
      * Destroy bitmap manipulation object.  If a bitmap was locally
