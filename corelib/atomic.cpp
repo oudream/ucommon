@@ -83,6 +83,15 @@ void atomic::spinlock::release(void)
 
 #define SIMULATED true
 
+long atomic::get()
+{
+    long rval;
+    Mutex::protect((void *)&value);
+    rval = value;
+    Mutex::release((void *)&value);
+    return rval;
+}
+
 long atomic::counter::operator++()
 {
     long rval;
