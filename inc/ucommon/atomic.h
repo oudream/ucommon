@@ -30,6 +30,8 @@
 #include <ucommon/platform.h>
 #endif
 
+typedef int atomic_t;
+
 namespace ucommon {
 
 /**
@@ -56,25 +58,29 @@ public:
     class __EXPORT counter
     {
     private:
-        mutable volatile long value;
+#ifdef  __GNUC__
+        mutable volatile atomic_t value __attribute__ ((aligned(16)));
+#else
+        mutable volatile atomic_t value;
+#endif
 
     public:
-        counter(long initial = 0);
+        counter(atomic_t initial = 0);
 
         // returns pre-modified values (fetch_and_change behavior)
 
-        long operator++() volatile;
-        long operator--() volatile;
-        long operator+=(long offset) volatile;
-        long operator-=(long offset) volatile;
-        long get() const volatile;
+        atomic_t operator++() volatile;
+        atomic_t operator--() volatile;
+        atomic_t operator+=(atomic_t offset) volatile;
+        atomic_t operator-=(atomic_t offset) volatile;
+        atomic_t get() const volatile;
         void clear() volatile;
 
-        inline operator long() const volatile {
+        inline operator atomic_t() const volatile {
             return get();
         }
 
-        inline long operator*() const volatile {
+        inline atomic_t operator*() const volatile {
             return get();
         }
     };
@@ -87,7 +93,11 @@ public:
     class __EXPORT spinlock
     {
     private:
-        volatile long value;
+#ifdef  __GNUC__
+        mutable volatile atomic_t value __attribute__ ((aligned(16)));
+#else
+        mutable volatile atomic_t value;
+#endif
 
     public:
         /**
