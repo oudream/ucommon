@@ -30,6 +30,12 @@
 #include <stdalign.h>
 #endif
 
+#if !defined(HAVE_ALIGNED_ALLOC) && defined(_MSC_VER) && _MSC_VER >= 1800
+#include <malloc.h>
+#define HAVE_ALIGNED_ALLOC 1
+#define aligned_alloc(a, s) _aligned_malloc(s, a)
+#endif
+
 namespace ucommon {
 
 atomic::counter::counter(atomic_t init)
