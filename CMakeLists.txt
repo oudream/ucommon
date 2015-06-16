@@ -49,7 +49,8 @@ else()
     option(POSIX_TIMERS "Set to ON to enable" OFF)
 endif()
 
-MARK_AS_ADVANCED(POSIX_TIMERS)
+option(HAVE_ATOMICS "Set to OFF to disable" ON)
+MARK_AS_ADVANCED(POSIX_TIMERS HAVE_ATOMICS)
 
 option(BUILD_TESTING "Set to ON to build test programs" OFF)
 option(CRYPTO_STATIC "Set to ON to build static crypto" OFF)

@@ -52,7 +52,7 @@ atomic::spinlock::spinlock()
 #endif
 #endif
 
-#if defined(__CLANG_ATOMICS)
+#if defined(__CLANG_ATOMICS) && defined(HAVE_ATOMICS)
 typedef _Atomic(long)   *atomic_val;
 
 long atomic::counter::get() const volatile
@@ -60,9 +60,9 @@ long atomic::counter::get() const volatile
     return __c11_atomic_load((atomic_val)(&value), __ATOMIC_SEQ_CST);
 }
 
-void atomic::counter::set(long change) volatile
+void atomic::counter::clear() volatile
 {
-    __c11_atomic_store((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+    return __c11_atomic_fetch_and((atomic_val)(&value), (long)0, __ATOMIC_SEQ_CST);
 }
 
 long atomic::counter::operator++() volatile
@@ -104,15 +104,15 @@ void atomic::spinlock::release(void) volatile
     __c11_atomic_store((atomic_val)(&value), 0, __ATOMIC_SEQ_CST);
 }
 
-#elif __GNUC_PREREQ__(4, 7) 
+#elif __GNUC_PREREQ__(4, 7) && defined(HAVE_ATOMICS)
 long atomic::counter::get() const volatile
 {
-    return __atomic_load_n(&value, __ATOMIC_SEQ_CST);
+    return __atomic_fetch_add(&value, (long)0, __ATOMIC_SEQ_CST);
 }
 
-void atomic::counter::set(long change) volatile
+void atomic::counter::clear() volatile
 {
-    __atomic_store_n(&value, change, __ATOMIC_SEQ_CST);
+    __atomic_fetch_and(&value, (long)0, __ATOMIC_SEQ_CST);
 }
 
 long atomic::counter::operator++() volatile
@@ -154,11 +154,61 @@ void atomic::spinlock::release(void) volatile
     __atomic_clear(&value, __ATOMIC_SEQ_CST);
 }
 
+#elif __GNUC_PREREQ__(4, 1) && defined(HAVE_ATOMICS)
+long atomic::counter::get() const volatile
+{
+    return __sync_fetch_and_add(&value, (long)0);
+}
+
+void atomic::counter::clear() volatile
+{
+    __sync_fetch_and_and(&value, (long)0);
+}
+
+long atomic::counter::operator++() volatile
+{
+    return __sync_fetch_and_add(&value, (long)1);
+}
+
+long atomic::counter::operator--() volatile
+{
+    return __sync_fetch_and_sub(&value, (long)1);
+}
+
+long atomic::counter::operator+=(long change) volatile
+{
+    return __sync_fetch_and_add(&value, change, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator-=(long change) volatile
+{
+    return __sync_fetch_and_sub(&value, change, __ATOMIC_SEQ_CST);
+}
+
+bool atomic::spinlock::acquire(void) volatile
+{
+    // if not locked by another already, then we acquired it...
+    return (!__sync_lock_test_and_set(&value, 1));
+}
+
+void atomic::spinlock::wait(void) volatile
+{
+    while (__sync_lock_test_and_set(&value, 1)) {
+        while (value)
+            ;
+    }
+}
+
+void atomic::spinlock::release(void) volatile
+{
+    __sync_lock_release(&value);
+}
+
 #else
 
 #define SIMULATED true
 
-long atomic::counter::get() const volatile
+long atomic::counter::get() volatile
 {
     long rval;
     Mutex::protect((void *)&value);

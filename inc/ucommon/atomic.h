@@ -56,7 +56,7 @@ public:
     class __EXPORT counter
     {
     private:
-        volatile long value;
+        mutable volatile long value;
 
     public:
         counter(long initial = 0);
@@ -68,12 +68,7 @@ public:
         long operator+=(long offset) volatile;
         long operator-=(long offset) volatile;
         long get() const volatile;
-        void set(long change) volatile;
-
-        inline long operator=(long change) volatile {
-            set(change);
-            return change;
-        }
+        void clear() volatile;
 
         inline operator long() const volatile {
             return get();
@@ -82,33 +77,6 @@ public:
         inline long operator*() const volatile {
             return get();
         }
-    };
-
-    class __EXPORT number : public counter
-    {
-    public:
-        number(long initial = 0) : counter(initial) {};
-
-        inline long operator++() volatile {
-            long val = counter::operator++();
-            return ++val;
-        }
-
-        inline long operator--() volatile {
-            long val = counter::operator--();
-            return --val;
-        }
-
-        inline long operator+=(long offset) volatile {
-            long val = counter::operator+=(offset);
-            return val + offset;
-        }
-
-        inline long operator-=(long offset) volatile {
-            long val = counter::operator-=(offset);
-            return val - offset;
-        }
-    
     };
 
     /**
