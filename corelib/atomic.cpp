@@ -119,10 +119,12 @@ void atomic::counter::clear() volatile
 atomic_t atomic::counter::fetch_add(atomic_t change) volatile
 {
     return __c11_atomic_fetch_add((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+}
 
 atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
 {
     return __c11_atomic_fetch_sub((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+}
 
 bool atomic::spinlock::acquire(void) volatile
 {
