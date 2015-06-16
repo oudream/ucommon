@@ -131,6 +131,9 @@ public:
     void *alloc(size_t size);
 };
 
+// for abi7
+typedef atomic Atomic;
+
 } // namespace ucommon
 
 #endif
