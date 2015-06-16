@@ -67,22 +67,25 @@ public:
      * Get the range of values before recycling.
      * @return counter limit.
      */
-    inline unsigned range(void)
-        {return cycle;}
+    inline unsigned range(void) {
+        return cycle;
+    }
 
     /**
      * Reference next counter value through pointer operation.
      * @return next counter value.
      */
-    inline unsigned operator*()
-        {return get();}
+    inline unsigned operator*() {
+        return get();
+    }
 
     /**
      * Reference next counter value by casting to integer.
      * @return next counter value.
      */
-    inline operator unsigned()
-        {return get();}
+    inline operator unsigned() {
+        return get();
+    }
 
     /**
      * Assign the value of the counter.
@@ -116,8 +119,9 @@ public:
      * Used to directly assign sequence position in template.
      * @param inc_offset in sequence to reset sequencing to.
      */
-    inline void operator=(unsigned inc_offset)
-        {counter::operator=(inc_offset);}
+    inline void operator=(unsigned inc_offset) {
+        counter::operator=(inc_offset);
+    }
 };
 
 /**
@@ -130,20 +134,23 @@ private:
     bool value;
 
 public:
-    inline toggle()
-        {value = false;}
+    inline toggle() {
+        value = false;
+    }
 
     bool get(void);
 
-    inline bool operator*()
-        {return get();}
+    inline bool operator*() {
+        return get();
+    }
 
-    inline void operator=(bool v)
-        {value = v;}
+    inline void operator=(bool v) {
+        value = v;
+    }
 
-    inline operator bool()
-        {return get();}
-
+    inline operator bool() {
+        return get();
+    }
 };
 
 /**
@@ -156,8 +163,9 @@ template <class T>
 class sequence : public SeqCounter
 {
 protected:
-    inline T *get(unsigned idx)
-        {return static_cast<T *>(SeqCounter::get(idx));}
+    inline T *get(unsigned idx) {
+        return static_cast<T *>(SeqCounter::get(idx));
+    }
 
 public:
     /**
@@ -172,30 +180,34 @@ public:
      * Return next typed member of the sequence.
      * @return next typed member of sequence.
      */
-    inline T* get(void)
-        {return static_cast<T *>(SeqCounter::get());}
+    inline T* get(void) {
+        return static_cast<T *>(SeqCounter::get());
+    }
 
     /**
      * Return next typed member of the sequence by pointer reference.
      * @return next typed member of sequence.
      */
-    inline T& operator*()
-        {return *get();}
+    inline T& operator*() {
+        return reference_cast<T&>(SeqCounter::get());
+    }
 
     /**
      * Return next typed member of the sequence by casted reference.
      * @return next typed member of sequence.
      */
-    inline operator T&()
-        {return *get();}
+    inline operator T&() {
+        return reference_cast<T&>(SeqCounter::get());
+    }
 
     /**
      * Return a specific typed member from the sequence list.
      * @param offset of member to return.
      * @return typed value at the specified offset.
      */
-    inline T& operator[](unsigned offset)
-        {return *get(offset);}
+    inline T& operator[](unsigned offset) {
+        return reference_cast<T&>(get(offset));
+    }
 };
 
 /**

@@ -167,6 +167,15 @@ elif test $enable_debug = "yes" ; then
     CXXFLAGS="${CXXFLAGS} -g -DDEBUG"
 fi
 
+AC_ARG_ENABLE(atomics,
+    AC_HELP_STRING([--enable-atomics],[compile with atomics]))
+if test -z "$enable_atomics" ; then
+    enable_atomics="yes"
+fi
+if test x"$enable_atomics" = "xyes" ; then
+    AC_DEFINE(HAVE_ATOMICS, [1], [enable atomics support])
+fi
+
 AH_BOTTOM([
 #include <ucommon/platform.h>
 ])
@@ -177,7 +186,7 @@ tlib=""
 
 AC_CHECK_HEADERS(stdint.h poll.h sys/mman.h sys/shm.h sys/poll.h sys/timeb.h endian.h sys/filio.h dirent.h sys/resource.h wchar.h netinet/in.h net/if.h)
 AC_CHECK_HEADERS(mach/clock.h mach-o/dyld.h linux/version.h sys/inotify.h sys/event.h syslog.h sys/wait.h termios.h termio.h fcntl.h unistd.h)
-AC_CHECK_HEADERS(sys/param.h sys/lockf.h sys/file.h dlfcn.h)
+AC_CHECK_HEADERS(sys/param.h sys/lockf.h sys/file.h dlfcn.h stdatomic.h)
 
 AC_CHECK_HEADER(regex.h, [
     AC_DEFINE(HAVE_REGEX_H, [1], [have regex header])
@@ -300,11 +309,6 @@ PTHREAD_FLAGS=""
 
 if test "$enable_shared" = "no" ; then
     UCOMMON_FLAGS="$UCOMMON_FLAGS -DUCOMMON_STATIC" ; fi
-
-AC_ARG_ENABLE(atomics, [
-    AC_HELP_STRING([--enable-atomics],[enable gcc atomic support])], [
-    AC_DEFINE(HAVE_GCC_ATOMICS, [1], ["cannot test in autoconf safely"])
-])
 
 AC_ARG_ENABLE(pth, [
     AC_HELP_STRING([--enable-pth],[always use GNU pth for threading])

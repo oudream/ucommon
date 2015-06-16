@@ -461,7 +461,7 @@ public:
     }
 
     inline const T& at(int index) {
-        return static_cast<const T&>(Vector::get(index));
+        return immutable_cast<T&>(Vector::get(index));
     }
 
     /**
@@ -750,7 +750,7 @@ public:
      * @return typed object pointer of member.
      */
     inline const T& at(int index) {
-        return static_cast<const T&>(Vector::get(index));
+        return immutable_cast<T&>(Vector::get(index));
     }
 
     inline T& operator[](int index) {

@@ -149,8 +149,9 @@ public:
 #ifdef  _MSWINDOWS_
     static int remapError(void);
 #else
-    inline static int remapError(void)
-        {return errno;}
+    inline static int remapError(void) {
+        return errno;
+    }
 #endif
 
     /**
@@ -219,35 +220,40 @@ public:
      * Get the descriptor from the object by pointer reference.
      * @return low level file handle.
      */
-    inline fd_t operator*() const
-        {return fd;}
+    inline fd_t operator*() const {
+        return fd;
+    }
 
     /**
      * Get the descriptor from the object by casting reference.
      * @return low level file handle.
      */
-    inline operator fd_t() const
-        {return fd;}
+    inline operator fd_t() const {
+        return fd;
+    }
 
     /**
      * Reset error flag.
      */
-    inline void reset(void)
-        {error = 0;}
+    inline void reset(void) {
+        error = 0;
+    }
 
     /**
      * Test if file descriptor is open.
      * @return true if open.
      */
-    inline operator bool() const
-        {return fd != INVALID_HANDLE_VALUE;}
+    inline operator bool() const {
+        return fd != INVALID_HANDLE_VALUE;
+    }
 
     /**
      * Test if file descriptor is closed.
      * @return true if closed.
      */
-    inline bool operator!() const
-        {return fd == INVALID_HANDLE_VALUE;}
+    inline bool operator!() const {
+        return fd == INVALID_HANDLE_VALUE;
+    }
 
     /**
      * Assign file descriptor by duplicating another descriptor.
@@ -272,8 +278,9 @@ public:
      * Get the native system descriptor handle of the file descriptor.
      * @return native os descriptor.
      */
-    inline fd_t handle(void) const
-        {return fd;}
+    inline fd_t handle(void) const {
+        return fd;
+    }
 
     /**
      * Set with external descriptor.  Closes existing file if open.
@@ -481,16 +488,20 @@ public:
      * Assign descriptor directly.
      * @param descriptor to assign.
      */
-    inline void assign(fd_t descriptor)
-        {close(); fd = descriptor;}
+    inline void assign(fd_t descriptor) {
+        close(); 
+        fd = descriptor;
+    }
 
     /**
      * Assign a descriptor directly.
      * @param object to assign descriptor to.
      * @param descriptor to assign.
      */
-    inline static void assign(fsys& object, fd_t descriptor)
-        {object.close(); object.fd = descriptor;}
+    inline static void assign(fsys& object, fd_t descriptor) {
+        object.close(); 
+        object.fd = descriptor;
+    }
 
     /**
      * Open a file descriptor directly.
@@ -543,8 +554,9 @@ public:
      * Get last error.
      * @return error number.
      */
-    inline int err(void) const
-        {return error;}
+    inline int err(void) const {
+        return error;
+    }
 
     /**
      * Direct means to open a read-only file path and return a descriptor.
@@ -614,26 +626,33 @@ public:
      */
     static int exec(const char *path, char **argv, char **envp = NULL);
 
-    static inline bool is_file(struct stat *inode)
-        {return S_ISREG(inode->st_mode);}
+    static inline bool is_file(struct stat *inode) {
+        return S_ISREG(inode->st_mode);
+    }
 
-    static inline bool is_dir(struct stat *inode)
-        {return S_ISDIR(inode->st_mode);}
+    static inline bool is_dir(struct stat *inode) {
+        return S_ISDIR(inode->st_mode);
+    }
 
-    static inline bool is_link(struct stat *inode)
-        {return S_ISLNK(inode->st_mode);}
+    static inline bool is_link(struct stat *inode) {
+        return S_ISLNK(inode->st_mode);
+    }
 
-    static inline bool is_dev(struct stat *inode)
-        {return S_ISBLK(inode->st_mode) || S_ISCHR(inode->st_mode);}
+    static inline bool is_dev(struct stat *inode) {
+        return S_ISBLK(inode->st_mode) || S_ISCHR(inode->st_mode);
+    }
 
-    static inline bool is_char(struct stat *inode)
-        {return S_ISCHR(inode->st_mode);}
+    static inline bool is_char(struct stat *inode) {
+        return S_ISCHR(inode->st_mode);
+    }
 
-    static inline bool is_disk(struct stat *inode)
-        {return S_ISBLK(inode->st_mode);}
+    static inline bool is_disk(struct stat *inode) {
+        return S_ISBLK(inode->st_mode);
+    }
 
-    static inline bool is_sys(struct stat *inode)
-        {return S_ISSOCK(inode->st_mode) || S_ISFIFO(inode->st_mode);}
+    static inline bool is_sys(struct stat *inode) {
+        return S_ISSOCK(inode->st_mode) || S_ISFIFO(inode->st_mode);
+    }
 };
 
 /**
@@ -694,20 +713,25 @@ public:
      */
     addr_t find(const char *symbol) const;
 
-    inline int err(void) const
-        {return error;}
+    inline int err(void) const {
+        return error;
+    }
 
-    inline addr_t operator[](const char *symbol) const
-        {return find(symbol);}
+    inline addr_t operator[](const char *symbol) const {
+        return find(symbol);
+    }
 
-    inline addr_t operator()(const char *symbol) const
-        {return find(symbol);}
+    inline addr_t operator()(const char *symbol) const {
+        return find(symbol);
+    }
 
-    inline operator bool() const
-        {return ptr != NULL;}
+    inline operator bool() const {
+        return ptr != NULL;
+    }
 
-    inline bool operator!() const
-        {return ptr == NULL;}
+    inline bool operator!() const {
+        return ptr == NULL;
+    }
 };
 
 /**
@@ -775,25 +799,29 @@ public:
      */
     void close(void);
 
-    inline int err(void) const
-        {return fsys::err();}
+    inline int err(void) const {
+        return fsys::err();
+    }
 
-    inline void reset(void)
-        {fsys::reset();}
+    inline void reset(void) {
+        fsys::reset();
+    }
 
     /**
      * Test if file descriptor is open.
      * @return true if open.
      */
-    inline operator bool() const
-        {return ptr != NULL;}
+    inline operator bool() const {
+        return ptr != NULL;
+    }
 
     /**
      * Test if file descriptor is closed.
      * @return true if closed.
      */
-    inline bool operator!() const
-        {return ptr == NULL;}
+    inline bool operator!() const {
+        return ptr == NULL;
+    }
 };
 
 /**
@@ -806,28 +834,44 @@ typedef dir dir_t;
 typedef dso dso_t;
 
 inline bool is_exists(const char *path)
-    {return fsys::is_exists(path);}
+{
+    return fsys::is_exists(path);
+}
 
 inline bool is_readable(const char *path)
-    {return fsys::is_readable(path);}
+{
+    return fsys::is_readable(path);
+}
 
 inline bool is_writable(const char *path)
-    {return fsys::is_writable(path);}
+{
+    return fsys::is_writable(path);
+}
 
 inline bool is_executable(const char *path)
-    {return fsys::is_executable(path);}
+{
+    return fsys::is_executable(path);
+}
 
 inline bool is_file(const char *path)
-    {return fsys::is_file(path);}
+{
+    return fsys::is_file(path);
+}
 
 inline bool is_dir(const char *path)
-    {return fsys::is_dir(path);}
+{
+    return fsys::is_dir(path);
+}
 
 inline bool is_link(const char *path)
-    {return fsys::is_link(path);}
+{
+    return fsys::is_link(path);
+}
 
 inline bool is_device(const char *path)
-    {return fsys::is_device(path);}
+{
+    return fsys::is_device(path);
+}
 
 } // namespace ucommon
 

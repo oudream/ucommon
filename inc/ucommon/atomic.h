@@ -56,21 +56,27 @@ public:
     class __EXPORT counter
     {
     private:
-        volatile long value;
+        mutable volatile long value;
 
     public:
         counter(long initial = 0);
 
-        long operator++();
-        long operator--();
-        long operator+=(long offset);
-        long operator-=(long offset);
+        // returns pre-modified values (fetch_and_change behavior)
 
-        inline operator long()
-            {return (long)(value);}
+        long operator++() volatile;
+        long operator--() volatile;
+        long operator+=(long offset) volatile;
+        long operator-=(long offset) volatile;
+        long get() const volatile;
+        void clear() volatile;
 
-        inline long operator*()
-            {return value;}
+        inline operator long() const volatile {
+            return get();
+        }
+
+        inline long operator*() const volatile {
+            return get();
+        }
     };
 
     /**
@@ -94,12 +100,17 @@ public:
          * by doing something else.  One suggestion is using thread::yield.
          * @return true if acquired.
          */
-        bool acquire(void);
+        bool acquire(void) volatile;
+
+        /**
+         * Wait for and aquire spinlock.
+         */
+        void wait(void) volatile;
 
         /**
          * Release an acquired spinlock.
          */
-        void release(void);
+        void release(void) volatile;
     };
 };
 

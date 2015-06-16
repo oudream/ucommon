@@ -36,7 +36,9 @@ extern "C" {
     __EXPORT int cpr_setenv(const char *s, const char *v, int p);
 
     inline int setenv(const char *s, const char *v, int overwrite)
-        {return cpr_setenv(s, v, overwrite);}
+    {
+        return cpr_setenv(s, v, overwrite);
+    }
 }
 
 #endif
@@ -95,9 +97,7 @@ __EXPORT void *operator new(size_t size);
  * @return memory allocated from heap.
  */
 __EXPORT void *operator new[](size_t size);
-#endif
 
-#ifdef UCOMMON_SYSRUNTIME
 /**
  * A placement new array operator where we assume the size of memory is good.
  * We construct the array at a specified place in memory which we assume is
@@ -118,9 +118,7 @@ __EXPORT void *operator new[](size_t size, void *address);
  * @return memory we placed object array.
  */
 __EXPORT void *operator new[](size_t size, void *address, size_t known);
-#endif
 
-#ifdef UCOMMON_SYSRUNTIME
 /**
  * Delete an object from the heap.
  * @param object to delete.
@@ -160,7 +158,7 @@ extern "C" {
 
 template <typename T>
 T *newp(T **handle) {
-    return (T*)cpr_newp(handle, sizeof(T));
+    return static_cast<T*>(cpr_newp(handle, sizeof(T)));
 }
 
 template <typename T>

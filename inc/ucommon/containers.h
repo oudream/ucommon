@@ -407,17 +407,21 @@ public:
             array[i].enlist(&freelist);
     }
 
-    ~linked_allocator()
-        {delete[] array;}
+    ~linked_allocator() {
+        delete[] array;
+    }
 
-    inline T *get(void)
-        {return static_cast<T *>(LinkedAllocator::get());}
+    inline T *get(void) {
+        return polypointer_cast<T *>(LinkedAllocator::get());
+    }
 
-    inline T *get(timeout_t timeout)
-        {return static_cast<T *>(LinkedAllocator::get(timeout));}
+    inline T *get(timeout_t timeout) {
+        return polypointer_cast<T *>(LinkedAllocator::get(timeout));
+    }
 
-    inline void release(T *node)
-        {LinkedAllocator::release(node);}
+    inline void release(T *node) {
+        LinkedAllocator::release(node);
+    }
 };
 
 /**
@@ -447,24 +451,27 @@ public:
      * becomes available.
      * @return pointer to next typed object from buffer.
      */
-    inline T *get(void)
-        {return static_cast<T*>(get());}
+    inline T *get(void) {
+        return static_cast<T*>(get());
+    }
 
     /**
      * Get the next typed object from the buffer.
      * @param timeout to wait when buffer is empty in milliseconds.
      * @return pointer to next typed object in the buffer or NULL if timed out.
      */
-    inline T *get(timeout_t timeout)
-        {return static_cast<T*>(get(timeout));}
+    inline T *get(timeout_t timeout) {
+        return static_cast<T*>(get(timeout));
+    }
 
     /**
      * Put (copy) a typed object into the buffer.  This blocks while the buffer
      * is full.
      * @param object to copy into the buffer.
      */
-    inline void put(T *object)
-        {put(object);}
+    inline void put(T *object) {
+        put(object);
+    }
 
     /**
      * Put (copy) an object into the buffer.
@@ -472,16 +479,18 @@ public:
      * @param timeout to wait if buffer is full.
      * @return true if copied, false if timed out while full.
      */
-    inline bool put(T *object, timeout_t timeout)
-        {return put(object, timeout);}
+    inline bool put(T *object, timeout_t timeout) {
+        return put(object, timeout);
+    }
 
     /**
      * Copy the next typed object from the buffer.  This blocks until an object
      * becomes available.
      * @param object pointer to copy typed object into.
      */
-    inline void copy(T *object)
-        {copy(object);}
+    inline void copy(T *object) {
+        copy(object);
+    }
 
     /**
      * Copy the next typed object from the buffer.
@@ -489,8 +498,9 @@ public:
      * @param timeout to wait when buffer is empty in milliseconds.
      * @return true if object copied, or false if timed out.
      */
-    inline bool get(T *object, timeout_t timeout)
-        {return copy(object, timeout);}
+    inline bool get(T *object, timeout_t timeout) {
+        return copy(object, timeout);
+    }
 
     /**
      * Examine past item in the buffer.  This is a typecast of the peek
@@ -498,8 +508,9 @@ public:
      * @param item in buffer.
      * @return item pointer if valid or NULL.
      */
-    inline const T& at(unsigned item)
-        {return static_cast<const T&>(Buffer::peek(item));}
+    inline const T& at(unsigned item) {
+        return static_cast<const T&>(Buffer::peek(item));
+    }
 
     /**
      * Examine past item in the buffer.  This is a typecast of the peek
@@ -507,11 +518,13 @@ public:
      * @param item in buffer.
      * @return item pointer if valid or NULL.
      */
-    inline T&operator[](unsigned item)
-        {return static_cast<T&>(Buffer::peek(item));}
+    inline T&operator[](unsigned item) {
+        return static_cast<T&>(Buffer::peek(item));
+    }
 
-    inline T* operator()(unsigned offset = 0)
-        {return static_cast<T*>(Buffer::peek(offset));}
+    inline T* operator()(unsigned offset = 0) {
+        return static_cast<T*>(Buffer::peek(offset));
+    }
 };
 
 /**
@@ -539,8 +552,9 @@ public:
      * @param object to remove.
      * @return true if object was removed, false if not found.
      */
-    inline bool remove(T *object)
-        {return Stack::remove(object);}
+    inline bool remove(T *object) {
+        return Stack::remove(polypointer_cast<ObjectProtocol*>(object));
+    }
 
     /**
      * Push a typed object into the stack by it's pointer.  This can wait for
@@ -550,8 +564,9 @@ public:
      * @param timeout to wait if queue is full in milliseconds.
      * @return true if object pushed, false if queue full and timeout expired.
      */
-    inline bool push(T *object, timeout_t timeout = 0)
-        {return Stack::push(object);}
+    inline bool push(T *object, timeout_t timeout = 0) {
+        return Stack::push(polypointer_cast<ObjectProtocol*>(object), timeout);
+    }
 
     /**
      * Get and remove last typed object posted to the stack.  This can wait for
@@ -560,8 +575,9 @@ public:
      * @param timeout to wait if empty in milliseconds.
      * @return object from queue or NULL if empty and timed out.
      */
-    inline T *pull(timeout_t timeout = 0)
-        {return static_cast<T *>(Stack::pull(timeout));}
+    inline T *pull(timeout_t timeout = 0) {
+        return polypointer_cast<T *>(Stack::pull(timeout));
+    }
 
     /**
      * Examine last typed object posted to the stack.  This can wait for
@@ -569,20 +585,13 @@ public:
      * @param timeout to wait if empty in milliseconds.
      * @return object in queue or NULL if empty and timed out.
      */
-    inline const T *peek(timeout_t timeout = 0)
-        {return static_cast<const T *>(Stack::peek(timeout));}
+    inline const T *peek(timeout_t timeout = 0) {
+        return polypointer_cast<const T *>(Stack::peek(timeout));
+    }
 
-    inline T* operator()(unsigned offset = 0)
-        {return static_cast<T*>(Stack::get(offset));}
-
-    /**
-     * Examine past item in the stack.  This is a typecast of the peek
-     * operation.
-     * @param offset in stack.
-     * @return item pointer if valid or NULL.
-     */
-    inline const T& at(unsigned offset = 0)
-        {return static_cast<const T&>(Stack::get(offset));}
+    inline T* operator()(unsigned offset = 0) {
+        return polypointer_cast<T*>(Stack::get(offset));
+    }
 
     /**
      * Examine past item in the stack.  This is a typecast of the peek
@@ -590,8 +599,19 @@ public:
      * @param offset in stack.
      * @return item pointer if valid or NULL.
      */
-    inline const T& operator[](unsigned offset)
-        {return static_cast<T&>(Stack::get(offset));}
+    inline const T& at(unsigned offset = 0) {
+        return polyreference_cast<const T&>(Stack::get(offset));
+    }
+
+    /**
+     * Examine past item in the stack.  This is a typecast of the peek
+     * operation.
+     * @param offset in stack.
+     * @return item pointer if valid or NULL.
+     */
+    inline const T& operator[](unsigned offset) {
+        return polyreference_cast<T&>(Stack::get(offset));
+    }
 
 };
 
@@ -620,8 +640,9 @@ public:
      * @param object to remove.
      * @return true if object was removed, false if not found.
      */
-    inline bool remove(T *object)
-        {return Queue::remove(object);}
+    inline bool remove(T *object) {
+        return Queue::remove(polypointer_cast<ObjectProtocol *>(object));
+    }
 
     /**
      * Post a typed object into the queue by it's pointer.  This can wait for
@@ -631,8 +652,9 @@ public:
      * @param timeout to wait if queue is full in milliseconds.
      * @return true if object posted, false if queue full and timeout expired.
      */
-    inline bool post(T *object, timeout_t timeout = 0)
-        {return Queue::post(object);}
+    inline bool post(T *object, timeout_t timeout = 0) {
+        return Queue::post(polypointer_cast<ObjectProtocol*>(object), timeout);
+    }
 
     /**
      * Get and remove first typed object posted to the queue.  This can wait for
@@ -641,8 +663,9 @@ public:
      * @param timeout to wait if empty in milliseconds.
      * @return object from queue or NULL if empty and timed out.
      */
-    inline T *fifo(timeout_t timeout = 0)
-        {return static_cast<T *>(Queue::fifo(timeout));}
+    inline T *fifo(timeout_t timeout = 0) {
+        return polypointer_cast<T *>(Queue::fifo(timeout));
+    }
 
     /**
      * Get and remove last typed object posted to the queue.  This can wait for
@@ -651,8 +674,9 @@ public:
      * @param timeout to wait if empty in milliseconds.
      * @return object from queue or NULL if empty and timed out.
      */
-    inline T *lifo(timeout_t timeout = 0)
-        {return static_cast<T *>(Queue::lifo(timeout));}
+    inline T *lifo(timeout_t timeout = 0) {
+        return polypointer_cast<T *>(Queue::lifo(timeout));
+    }
 
     /**
      * Examine past item in the queue.  This is a typecast of the peek
@@ -660,8 +684,9 @@ public:
      * @param offset in queue.
      * @return item pointer if valid or NULL.
      */
-    inline const T& at(unsigned offset = 0)
-        {return static_cast<const T&>(Queue::get(offset));}
+    inline const T& at(unsigned offset = 0) {
+        return polyreference_cast<const T&>(Queue::get(offset));
+    }
 
     /**
      * Examine past item in the queue.  This is a typecast of the peek
@@ -669,11 +694,13 @@ public:
      * @param offset in queue.
      * @return item pointer if valid or NULL.
      */
-    inline T& operator[](unsigned offset)
-        {return static_cast<T&>(Queue::get(offset));}
+    inline T& operator[](unsigned offset) {
+        return polyreference_cast<T&>(Queue::get(offset));
+    }
 
-    inline T* operator()(unsigned offset = 0)
-        {return static_cast<T*>(Queue::get(offset));}
+    inline T* operator()(unsigned offset = 0) {
+        return polypointer_cast<T*>(Queue::get(offset));
+    }
 };
 
 /**

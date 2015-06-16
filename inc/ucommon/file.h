@@ -116,18 +116,21 @@ public:
      * Test if file is opened.
      * @return true if opened.
      */
-    inline operator bool() const
-        {return fp != NULL;}
+    inline operator bool() const {
+        return fp != NULL;
+    }
 
     /**
      * Test if file is not opened.
      * @return true if not opened.
      */
-    inline bool operator !() const
-        {return fp == NULL;}
+    inline bool operator !() const {
+        return fp == NULL;
+    }
 
-    inline operator FILE *() const
-        {return fp;}
+    inline operator FILE *() const {
+        return fp;
+    }
 
     /**
      * Open file path.  If a file is already opened, it is closed.
@@ -154,8 +157,10 @@ public:
     /**
      * Clear error state.
      */
-    inline void clear(void)
-        {if(fp) clearerr(fp);}
+    inline void clear(void) {
+        if(fp) 
+            clearerr(fp);
+    }
 
     /**
      * Check if file is good, no error or eof...
@@ -169,66 +174,93 @@ public:
      */
     int cancel(void);
 
-    inline size_t put(const void *data, size_t size)
-        { return fp == NULL ? 0 : fwrite(data, 1, size, fp);}
+    inline size_t put(const void *data, size_t size) {
+        return fp == NULL ? 0 : fwrite(data, 1, size, fp);
+    }
 
-    inline size_t get(void *data, size_t size)
-        { return fp == NULL ? 0 : fread(data, 1, size, fp);}
+    inline size_t get(void *data, size_t size) {
+        return fp == NULL ? 0 : fread(data, 1, size, fp);
+    }
 
-    inline int put(char value)
-        { return fp == NULL ? EOF : fputc(value, fp);}
+    inline int put(char value) {
+        return fp == NULL ? EOF : fputc(value, fp);
+    }
 
-    inline int get(void)
-        { return fp == NULL ? EOF : fgetc(fp);}
+    inline int get(void) {
+        return fp == NULL ? EOF : fgetc(fp);
+    }
 
-    inline int push(char value)
-        { return fp == NULL ? EOF : ungetc(value, fp);}
+    inline int push(char value) {
+        return fp == NULL ? EOF : ungetc(value, fp);
+    }
 
-    inline int puts(const char *data)
-        { return fp == NULL ? 0 : fputs(data, fp);}
+    inline int puts(const char *data) {
+        return fp == NULL ? 0 : fputs(data, fp);
+    }
 
-    inline char *gets(char *data, size_t size)
-        { return fp == NULL ? NULL : fgets(data, size, fp);}
+    inline char *gets(char *data, size_t size) {
+        return fp == NULL ? NULL : fgets(data, size, fp);
+    }
 
-    template<typename T> inline size_t read(T* data, size_t count)
-        { return fp == NULL ? 0 : fread(data, sizeof(T), count, fp);}
+    template<typename T> inline size_t read(T* data, size_t count) {
+        return fp == NULL ? 0 : fread(data, sizeof(T), count, fp);
+    }
 
-    template<typename T> inline size_t write(const T* data, size_t count)
-        { return fp == NULL ? 0 : fwrite(data, sizeof(T), count, fp);}
+    template<typename T> inline size_t write(const T* data, size_t count) {
+        return fp == NULL ? 0 : fwrite(data, sizeof(T), count, fp);
+    }
 
-    template<typename T> inline size_t read(T& data)
-        { return fp == NULL ? 0 : fread(data, sizeof(T), 1, fp);}
+    template<typename T> inline size_t read(T& data) {
+        return fp == NULL ? 0 : fread(data, sizeof(T), 1, fp);
+    }
 
-    template<typename T> inline size_t write(const T& data)
-        { return fp == NULL ? 0 : fwrite(data, sizeof(T), 1, fp);}
+    template<typename T> inline size_t write(const T& data) {
+        return fp == NULL ? 0 : fwrite(data, sizeof(T), 1, fp);
+    }
 
-    inline void get(bookmark_t& pos)
-        { if(fp) fsetpos(fp, &pos);}
+    inline void get(bookmark_t& pos) {
+        if(fp) 
+            fsetpos(fp, &pos);
+    }
 
-    inline void set(bookmark_t& pos)
-        { if(fp) fgetpos(fp, &pos);}
+    inline void set(bookmark_t& pos) {
+        if(fp)
+            fgetpos(fp, &pos);
+    }
 
     int err(void) const;
 
     bool eof(void) const;
 
-    template<typename T> inline void offset(long pos)
-        {if(fp) fseek(fp, sizeof(const T) * pos, SEEK_CUR);}
+    template<typename T> inline void offset(long pos) {
+        if(fp) 
+            fseek(fp, sizeof(const T) * pos, SEEK_CUR);
+    }
 
-    inline void seek(long offset)
-        {if(fp) fseek(fp, offset, SEEK_SET);}
+    inline void seek(long offset) {
+        if(fp) 
+            fseek(fp, offset, SEEK_SET);
+    }
 
-    inline void move(long offset)
-        {if(fp) fseek(fp, offset, SEEK_CUR);}
+    inline void move(long offset) {
+        if(fp) 
+            fseek(fp, offset, SEEK_CUR);
+    }
 
-    inline void append(void)
-        {if (fp) fseek(fp, 0l, SEEK_END);}
+    inline void append(void) {
+        if (fp) 
+            fseek(fp, 0l, SEEK_END);
+    }
 
-    inline void rewind(void)
-        {if(fp) ::rewind(fp);}
+    inline void rewind(void) {
+        if(fp) 
+            ::rewind(fp);
+    }
 
-    inline void flush(void)
-        {if(fp) ::fflush(fp);}
+    inline void flush(void) {
+        if(fp) 
+            ::fflush(fp);
+    }
 
     size_t printf(const char *format, ...) __PRINTF(2, 3);
 

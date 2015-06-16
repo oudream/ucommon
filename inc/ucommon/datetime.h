@@ -203,15 +203,17 @@ public:
      * Casting operator to return date as number.
      * @return julian number.
      */
-    inline operator long() const
-        {return get();}
+    inline operator long() const {
+        return get();
+    }
 
     /**
      * Access julian value.
      * @return julian number of object.
      */
-    inline long operator*() const
-        {return get();}
+    inline long operator*() const {
+        return get();
+    }
 
     /**
      * Expression operator to return an ISO date string for the current
@@ -265,8 +267,9 @@ public:
      * @param date offset for computation.
      * @return number of days difference.
      */
-    inline long operator-(const Date &date)
-        {return (julian - date.julian);}
+    inline long operator-(const Date &date) {
+        return (julian - date.julian);
+    }
 
     /**
      * Assign date from another date object.
@@ -321,15 +324,17 @@ public:
      * Check if julian date is not valid.
      * @return true if date is invalid.
      */
-    inline bool operator!() const
-        {return !is_valid();}
+    inline bool operator!() const {
+        return !is_valid();
+    }
 
     /**
      * Check if julian date is valid for is() expression.
      * @return true if date is valid.
      */
-    inline operator bool() const
-        {return is_valid();}
+    inline operator bool() const {
+        return is_valid();
+    }
 };
 
 /**
@@ -470,15 +475,17 @@ public:
      * Check if time object has valid value for is() operator.
      * @return true if object is valid.
      */
-    inline operator bool() const
-        {return is_valid();}
+    inline operator bool() const {
+        return is_valid();
+    }
 
     /**
      * Check if time object has valid value for ! operator.
      * @return true if object is not valid.
      */
-    inline bool operator!() const
-        {return !is_valid();}
+    inline bool operator!() const {
+        return !is_valid();
+    }
 
     /**
      * Get difference (in seconds) between two times.
@@ -505,15 +512,17 @@ public:
      * Get time in seconds.
      * @return seconds.
      */
-    inline operator long() const
-        {return get();}
+    inline operator long() const {
+        return get();
+    }
 
     /**
      * Get object time in seconds.
      * @return time in seconds.
      */
-    inline long operator*() const
-        {return get();}
+    inline long operator*() const {
+        return get();
+    }
 
     /**
      * Convert to standard 24 hour time string.
@@ -801,8 +810,9 @@ public:
      * Casting operator to return date as number.
      * @return date as a number.
      */
-    inline operator long() const
-        {return Date::get();}
+    inline operator long() const {
+        return Date::get();
+    }
 
     /**
      * Set (update) the date and time with current date and time.
@@ -864,7 +874,8 @@ public:
      * and time.
      */
     typedef enum {
-        DATE, TIME, BOTH} mode_t;
+        DATE, TIME, BOTH
+    } mode_t;
 
 private:
     char buffer[DATETIME_BUFFER_SIZE];
@@ -926,16 +937,18 @@ public:
      *
      * @return string of datetime.
      */
-    inline const char *c_str(void) const
-        {return buffer;}
+    inline const char *c_str(void) const {
+        return buffer;
+    }
 
     /**
      * Cast to string.
      *
      * @return string of datetime.
      */
-    inline operator const char *(void) const
-        {return buffer;}
+    inline operator const char *(void) const {
+        return buffer;
+    }
 
     /**
      * Set (update) the date and time with current date and time.
@@ -984,7 +997,10 @@ private:
     Date *d;
     Time *t;
 
-    enum {DATE, TIME, DATETIME} mode;
+    enum {
+        DATE, TIME, DATETIME
+    } mode;
+
     char buf[32];
     unsigned pos;
 

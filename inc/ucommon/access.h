@@ -77,14 +77,16 @@ public:
     /**
      * Access interface to exclusive lock the object.
      */
-    inline void exclusive_lock(void)
-        {return _lock();}
+    inline void exclusive_lock(void) {
+        return _lock();
+    }
 
     /**
      * Access interface to release a lock.
      */
-    inline void release_exclusive(void)
-        {return _unlock();}
+    inline void release_exclusive(void) {
+        return _unlock();
+    }
 };
 
 /**
@@ -122,11 +124,13 @@ public:
      */
     virtual void exclusive(void);
 
-    inline void shared_lock(void)
-        {return _share();}
+    inline void shared_lock(void) {
+        return _share();
+    }
 
-    inline void release_share(void)
-        {return _unlock();}
+    inline void release_share(void) {
+        return _unlock();
+    }
 };
 
 /**
@@ -157,15 +161,17 @@ public:
      * Test if the reference holds an active lock.
      * @return true if is not locking an object.
      */
-    inline bool operator!() const
-        {return lock == NULL;}
+    inline bool operator!() const {
+        return lock == NULL;
+    }
 
     /**
      * Test if the reference holds an active lock.
      * @return true if locking an object.
      */
-    inline operator bool() const
-        {return lock != NULL;}
+    inline operator bool() const {
+        return lock != NULL;
+    }
 
     /**
      * Release a held lock programmatically.  This can be used to de-reference
@@ -205,15 +211,17 @@ public:
      * Test if the reference holds an active lock.
      * @return true if is not locking an object.
      */
-    inline bool operator!() const
-        {return lock == NULL;}
+    inline bool operator!() const {
+        return lock == NULL;
+    }
 
     /**
      * Test if the reference holds an active lock.
      * @return true if locking an object.
      */
-    inline operator bool() const
-        {return lock != NULL;}
+    inline operator bool() const {
+        return lock != NULL;
+    }
 
     /**
      * Release a held lock programmatically.  This can be used to de-reference
@@ -237,43 +245,55 @@ public:
  * Convenience function to exclusively lock an object through it's protocol.
  * @param object to lock.
  */
-inline void lock(ExclusiveAccess& object)
-    {object.exclusive_lock();}
+inline void lock(ExclusiveAccess& object) 
+{
+    object.exclusive_lock();
+}
 
 /**
  * Convenience function to unlock an exclusive object through it's protocol.
  * @param object to unlock.
  */
-inline void unlock(ExclusiveAccess& object)
-    {object.release_exclusive();}
+inline void unlock(ExclusiveAccess& object) 
+{
+    object.release_exclusive();
+}
 
 /**
  * Convenience function to access (lock) shared object through it's protocol.
  * @param object to share lock.
  */
 inline void access(SharedAccess& object)
-    {object.shared_lock();}
+{
+    object.shared_lock();
+}
 
 /**
  * Convenience function to unlock shared object through it's protocol.
  * @param object to unlock.
  */
 inline void release(SharedAccess& object)
-    {object.release_share();}
+{
+    object.release_share();
+}
 
 /**
  * Convenience function to exclusive lock shared object through it's protocol.
  * @param object to exclusive lock.
  */
 inline void exclusive(SharedAccess& object)
-    {object.exclusive();}
+{
+    object.exclusive();
+}
 
 /**
  * Convenience function to restore shared locking for object through it's protocol.
  * @param object to restore shared locking.
  */
 inline void share(SharedAccess& object)
-    {object.share();}
+{
+    object.share();
+}
 
 /**
  * Convenience type to use for object referencing an exclusive object.
@@ -290,14 +310,18 @@ typedef shared_access shlock_t;
  * @param reference to object referencing exclusive locked object.
  */
 inline void release(exlock_t &reference)
-    {reference.release();}
+{
+    reference.release();
+}
 
 /**
  * Convenience function to release a reference to a shared lock.
  * @param reference to object referencing shared locked object.
  */
 inline void release(shlock_t &reference)
-    {reference.release();}
+{
+    reference.release();
+}
 
 // Special macros to allow member functions of an object with a protocol
 // to create self locking states while the member functions are called by

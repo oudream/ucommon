@@ -33,35 +33,169 @@ atomic::spinlock::spinlock()
     value = 0;
 }
 
-#ifdef HAVE_GCC_ATOMICS
+#if !defined(__GNUC_PREREQ__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#define __GNUC_PREREQ__(maj, min) \
+((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#else
+#define __GNUC_PREREQ__(maj, min) 0
+#endif
+#endif 
 
-long atomic::counter::operator++()
+#if defined(__has_feature) && defined(__has_extension)
+#if __has_feature(c_atomic) || __has_extension(c_atomic)
+#define __CLANG_ATOMICS
+#endif
+#endif
+
+#if defined(__CLANG_ATOMICS) && defined(HAVE_ATOMICS)
+typedef _Atomic(long)   *atomic_val;
+
+long atomic::counter::get() const volatile
 {
-    return __sync_add_and_fetch(&value, 1);
+    return __c11_atomic_load((atomic_val)(&value), __ATOMIC_SEQ_CST);
 }
 
-long atomic::counter::operator--()
+void atomic::counter::clear() volatile
 {
-    return __sync_sub_and_fetch(&value, 1);
+    __c11_atomic_fetch_and((atomic_val)(&value), (long)0, __ATOMIC_SEQ_CST);
 }
 
-long atomic::counter::operator+=(long change)
+long atomic::counter::operator++() volatile
 {
-    return __sync_add_and_fetch(&value, change);
+    return __c11_atomic_fetch_add((atomic_val)(&value), (long)1, __ATOMIC_SEQ_CST);
 }
 
-long atomic::counter::operator-=(long change)
+long atomic::counter::operator--() volatile
 {
-    return __sync_sub_and_fetch(&value, change);
+    return __c11_atomic_fetch_sub((atomic_val)(&value), (long)1, __ATOMIC_SEQ_CST);
 }
 
-bool atomic::spinlock::acquire(void)
+long atomic::counter::operator+=(long change) volatile
+{
+    return __c11_atomic_fetch_add((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator-=(long change) volatile
+{
+    return __c11_atomic_fetch_sub((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
+}
+
+bool atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
-    return (__sync_lock_test_and_set(&value, 1) == 0);
+    return (!__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST));
 }
 
-void atomic::spinlock::release(void)
+void atomic::spinlock::wait(void) volatile
+{
+    while (__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST)) {
+        while (value)
+            ;
+    }
+}
+
+void atomic::spinlock::release(void) volatile
+{
+    __c11_atomic_store((atomic_val)(&value), 0, __ATOMIC_SEQ_CST);
+}
+
+#elif __GNUC_PREREQ__(4, 7) && defined(HAVE_ATOMICS)
+long atomic::counter::get() const volatile
+{
+    return __atomic_fetch_add(&value, (long)0, __ATOMIC_SEQ_CST);
+}
+
+void atomic::counter::clear() volatile
+{
+    __atomic_fetch_and(&value, (long)0, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator++() volatile
+{
+    return __atomic_fetch_add(&value, (long)1, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator--() volatile
+{
+    return __atomic_fetch_sub(&value, (long)1, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator+=(long change) volatile
+{
+    return __atomic_fetch_add(&value, change, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator-=(long change) volatile
+{
+    return __atomic_fetch_sub(&value, change, __ATOMIC_SEQ_CST);
+}
+
+bool atomic::spinlock::acquire(void) volatile
+{
+    // if not locked by another already, then we acquired it...
+    return (!__atomic_test_and_set(&value, __ATOMIC_SEQ_CST));
+}
+
+void atomic::spinlock::wait(void) volatile
+{
+    while (__atomic_test_and_set(&value, __ATOMIC_SEQ_CST)) {
+        while (value)
+            ;
+    }
+}
+
+void atomic::spinlock::release(void) volatile
+{
+    __atomic_clear(&value, __ATOMIC_SEQ_CST);
+}
+
+#elif __GNUC_PREREQ__(4, 1) && defined(HAVE_ATOMICS)
+long atomic::counter::get() const volatile
+{
+    return __sync_fetch_and_add(&value, (long)0);
+}
+
+void atomic::counter::clear() volatile
+{
+    __sync_fetch_and_and(&value, (long)0);
+}
+
+long atomic::counter::operator++() volatile
+{
+    return __sync_fetch_and_add(&value, (long)1);
+}
+
+long atomic::counter::operator--() volatile
+{
+    return __sync_fetch_and_sub(&value, (long)1);
+}
+
+long atomic::counter::operator+=(long change) volatile
+{
+    return __sync_fetch_and_add(&value, change, __ATOMIC_SEQ_CST);
+}
+
+long atomic::counter::operator-=(long change) volatile
+{
+    return __sync_fetch_and_sub(&value, change, __ATOMIC_SEQ_CST);
+}
+
+bool atomic::spinlock::acquire(void) volatile
+{
+    // if not locked by another already, then we acquired it...
+    return (!__sync_lock_test_and_set(&value, 1));
+}
+
+void atomic::spinlock::wait(void) volatile
+{
+    while (__sync_lock_test_and_set(&value, 1)) {
+        while (value)
+            ;
+    }
+}
+
+void atomic::spinlock::release(void) volatile
 {
     __sync_lock_release(&value);
 }
@@ -70,43 +204,56 @@ void atomic::spinlock::release(void)
 
 #define SIMULATED true
 
-long atomic::counter::operator++()
+long atomic::counter::get() const volatile
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(++value);
+    rval = value;
     Mutex::release((void *)&value);
     return rval;
 }
 
-long atomic::counter::operator--()
+long atomic::counter::operator++() volatile
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(--value);
+    rval = value;
+    value++;
     Mutex::release((void *)&value);
     return rval;
 }
 
-long atomic::counter::operator+=(long change)
+long atomic::counter::operator--() volatile
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(value += change);
+    rval = value;
+    value--;
     Mutex::release((void *)&value);
     return rval;
 }
 
-long atomic::counter::operator-=(long change)
+long atomic::counter::operator+=(long change) volatile
 {
     long rval;
     Mutex::protect((void *)&value);
-    rval = (long)(value -= change);
+    rval = value;
+    value += change;
     Mutex::release((void *)&value);
     return rval;
 }
 
-bool atomic::spinlock::acquire(void)
+long atomic::counter::operator-=(long change) volatile
+{
+    long rval;
+    Mutex::protect((void *)&value);
+    rval = value;
+    value -= change;
+    Mutex::release((void *)&value);
+    return rval;
+}
+
+bool atomic::spinlock::acquire(void) volatile
 {
     bool rtn = true;
 
@@ -119,7 +266,13 @@ bool atomic::spinlock::acquire(void)
     return rtn;
 }
 
-void atomic::spinlock::release(void)
+void atomic::spinlock::wait(void) volatile
+{
+    while(!acquire())
+        ;
+}
+
+void atomic::spinlock::release(void) volatile
 {
     Mutex::protect((void *)&value);
     value = 0;
