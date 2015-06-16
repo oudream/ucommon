@@ -26,6 +26,10 @@
 #undef  HAVE_ATOMICS
 #endif
 
+#ifdef  HAVE_STDALIGN_H
+#include <stdalign.h>
+#endif
+
 namespace ucommon {
 
 atomic::counter::counter(atomic_t init)
@@ -282,6 +286,32 @@ void atomic::spinlock::release(void) volatile
     Mutex::protect((void *)&value);
     value = 0;
     Mutex::release((void *)&value);
+}
+
+#endif
+
+#ifdef  HAVE_POSIX_MEMALIGN
+
+void *atomic::alloc(size_t size)
+{
+    void *addr = NULL;
+    if(!posix_memalign(&addr, 16, size))
+        return NULL;
+    return addr;
+}
+
+#elif  HAVE_ALIGNED_ALLOC
+
+void *atomic::alloc(size_t size)
+{
+    return aligned_alloc(16, size);
+}
+
+#else
+
+void *atomic::alloc(size_t size)
+{
+    return ::malloc(size);
 }
 
 #endif

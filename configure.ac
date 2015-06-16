@@ -186,7 +186,7 @@ tlib=""
 
 AC_CHECK_HEADERS(stdint.h poll.h sys/mman.h sys/shm.h sys/poll.h sys/timeb.h endian.h sys/filio.h dirent.h sys/resource.h wchar.h netinet/in.h net/if.h)
 AC_CHECK_HEADERS(mach/clock.h mach-o/dyld.h linux/version.h sys/inotify.h sys/event.h syslog.h sys/wait.h termios.h termio.h fcntl.h unistd.h)
-AC_CHECK_HEADERS(sys/param.h sys/lockf.h sys/file.h dlfcn.h stdatomic.h)
+AC_CHECK_HEADERS(sys/param.h sys/lockf.h sys/file.h dlfcn.h stdatomic.h stdalign.h)
 
 AC_CHECK_HEADER(regex.h, [
     AC_DEFINE(HAVE_REGEX_H, [1], [have regex header])
@@ -293,6 +293,10 @@ AC_CHECK_LIB($clib, sysconf, [
 
 AC_CHECK_LIB($clib, posix_memalign, [
     AC_DEFINE(HAVE_POSIX_MEMALIGN, [1], [posix memory alignment])
+])
+
+AC_CHECK_LIB($clib, aligned_alloc, [
+    AC_DEFINE(HAVE_ALIGNED_ALLOC, [1], [aligned memory allocation])
 ])
 
 AC_CHECK_LIB($clib, dlopen,,[

@@ -122,6 +122,13 @@ public:
          */
         void release(void) volatile;
     };
+
+    /**
+     * Atomically aligned heap alloc function.
+     * @param size of memory to allocate.
+     * @return pointer or NULL if cannot alloc.
+     */
+    void *alloc(size_t size);
 };
 
 } // namespace ucommon
