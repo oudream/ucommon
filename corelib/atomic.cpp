@@ -58,7 +58,7 @@ long atomic::counter::get() const volatile
 
 void atomic::counter::clear() volatile
 {
-    return __c11_atomic_fetch_and((atomic_val)(&value), (long)0, __ATOMIC_SEQ_CST);
+    __c11_atomic_fetch_and((atomic_val)(&value), (long)0, __ATOMIC_SEQ_CST);
 }
 
 long atomic::counter::operator++() volatile
