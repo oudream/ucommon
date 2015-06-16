@@ -62,11 +62,7 @@ public:
     class __EXPORT counter
     {
     private:
-#ifdef  __GNUC__
-        mutable volatile atomic_t value __attribute__ ((aligned(16)));
-#else
         mutable volatile atomic_t value;
-#endif
 
     public:
         counter(atomic_t initial = 0);

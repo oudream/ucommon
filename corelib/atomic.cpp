@@ -349,7 +349,12 @@ void *atomic::alloc(size_t size)
 
 void *atomic::alloc(size_t size)
 {
-    return ::malloc(size);
+    caddr_t addr = (caddr_t)::malloc(size + 16);
+    if(!addr)
+        return NULL;
+    while(((uintptr_t)addr) & 0xf)
+        ++addr;
+    return addr;
 }
 
 #endif
