@@ -30,7 +30,11 @@
 #include <ucommon/platform.h>
 #endif
 
+#ifdef  _MSWINDOWS_
+typedef LONG atomic_t;
+#else
 typedef int atomic_t;
+#endif
 
 namespace ucommon {
 
@@ -67,20 +71,22 @@ public:
     public:
         counter(atomic_t initial = 0);
 
-        // returns pre-modified values (fetch_and_change behavior)
+        // fetch add/sub optimized semantics
+        atomic_t fetch_add(atomic_t offset = 1) volatile;
+        atomic_t fetch_sub(atomic_t offset = 1) volatile;
 
         atomic_t operator++() volatile;
         atomic_t operator--() volatile;
         atomic_t operator+=(atomic_t offset) volatile;
         atomic_t operator-=(atomic_t offset) volatile;
-        atomic_t get() const volatile;
+        atomic_t get() volatile;
         void clear() volatile;
 
-        inline operator atomic_t() const volatile {
+        inline operator atomic_t() volatile {
             return get();
         }
 
-        inline atomic_t operator*() const volatile {
+        inline atomic_t operator*() volatile {
             return get();
         }
     };
