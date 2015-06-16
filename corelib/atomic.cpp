@@ -204,20 +204,13 @@ void atomic::spinlock::release(void) volatile
 
 #define SIMULATED true
 
-long atomic::counter::get() volatile
+long atomic::counter::get() const volatile
 {
     long rval;
     Mutex::protect((void *)&value);
     rval = value;
     Mutex::release((void *)&value);
     return rval;
-}
-
-void atomic::counter::set(long change) volatile
-{
-    Mutex::protect((void *)&value);
-    value = change;
-    Mutex::release((void *)&value);
 }
 
 long atomic::counter::operator++() volatile
