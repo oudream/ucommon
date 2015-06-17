@@ -153,10 +153,6 @@ public:
         return getObject();
     }
 
-    inline void *operator->() const {
-        return getObject();
-    }
-
     void *getObject(void) const;
 
     bool operator!() const;
