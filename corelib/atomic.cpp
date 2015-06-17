@@ -240,26 +240,6 @@ atomic_t atomic::counter::get() volatile
     return rval;
 }
 
-atomic_t atomic::counter::operator++() volatile
-{
-    atomic_t rval;
-    Mutex::protect((void *)&value);
-    ++value;
-    rval = value;
-    Mutex::release((void *)&value);
-    return rval;
-}
-
-atomic_t atomic::counter::operator--() volatile
-{
-    atomic_t rval;
-    Mutex::protect((void *)&value);
-    --value;
-    rval = value;
-    Mutex::release((void *)&value);
-    return rval;
-}
-
 atomic_t atomic::counter::fetch_add(atomic_t change) volatile
 {
     atomic_t rval;
@@ -276,26 +256,6 @@ atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
     Mutex::protect((void *)&value);
     rval = value;
     value -= change;
-    Mutex::release((void *)&value);
-    return rval;
-}
-
-atomic_t atomic::counter::operator+=(atomic_t change) volatile
-{
-    atomic_t rval;
-    Mutex::protect((void *)&value);
-    value += change;
-    rval = value;
-    Mutex::release((void *)&value);
-    return rval;
-}
-
-atomic_t atomic::counter::operator-=(atomic_t change) volatile
-{
-    atomic_t rval;
-    Mutex::protect((void *)&value);
-    value -= change;
-    rval = value;
     Mutex::release((void *)&value);
     return rval;
 }
