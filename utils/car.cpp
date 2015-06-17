@@ -482,6 +482,7 @@ int main(int argc, char **argv)
             binarydecode(fp, args[0]);
         else
             streamdecode(fp, args[0]);
+        fclose(fp);        
         goto end;
     }
 

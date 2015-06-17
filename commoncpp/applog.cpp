@@ -1220,6 +1220,6 @@ AppLog& AppLog::operator<< (ostream& (*pfManipulator)(ostream&))
 	return  reference_cast<AppLog>(this) ;
 }
 
-#endif
-
 }
+
+#endif

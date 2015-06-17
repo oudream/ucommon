@@ -34,7 +34,7 @@ cmake_DATA = cmake/CapeConfig.cmake cmake/CapeMakeTargets.cmake
 
 man_MANS = ucommon-config.1 commoncpp-config.1
 
-.phony:	doxy todo
+.phony:	doxy todo lint
 
 todo:
 	@grep --color=tty --exclude="Makefile*" --exclude-dir=.git -nrEI "/[*] TODO|/[*] FIXME|// TODO|// FIXME" .
@@ -50,6 +50,9 @@ srpm:	dist
 deb:	dist
 	rm -f *.deb *.debian.tar.gz *.dsc *.changes
 	cape-source --sign ucommon-${VERSION}.tar.gz .
+
+lint:
+	cppcheck --force -q .
 
 clean-local:
 	-rm -rf doc

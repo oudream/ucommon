@@ -57,6 +57,14 @@ macro(add_make_uninstall_target)
     endif()
 endmacro()
 
+macro(add_make_lint_target)
+    if(CMAKE_GENERATOR MATCHES "Unix Makefiles")
+        add_custom_target(lint
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+            COMMAND cppcheck --force -q .
+        )
+    endif()
+endmacro()
 
 macro(add_make_deb_target _TARGET _VERSION)
     if(UNIX AND CMAKE_GENERATOR MATCHES "Unix Makefiles")
@@ -72,6 +80,7 @@ macro(add_make_deb_target _TARGET _VERSION)
 endmacro()
 
 macro(add_cape_make_targets _TARGET _VERSION)
+    add_make_lint_target()
     add_make_dist_target(${_TARGET} ${_VERSION})
     add_make_deb_target(${_TARGET} ${_VERSION})
     add_make_srpm_target(${_TARGET})
