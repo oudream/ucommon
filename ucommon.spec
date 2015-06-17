@@ -23,7 +23,7 @@
 %define	build_docs	0
 %endif
 Name:           ucommon
-Version:        6.3.3
+Version:        6.3.4
 Release:        1
 Summary:        Portable C++ runtime for threads and sockets
 License:        LGPL-3.0+
@@ -94,7 +94,8 @@ html browsable.
 %build
 %cmake \
     -DCMAKE_INSTALL_SYSCONFDIR:PATH=%{_sysconfdir} \
-    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir}
+    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
+    -DBUILD_ATOMICS:BOOL=TRUE
 
 make %{?_smp_mflags}
 %if	%{build_docs}
