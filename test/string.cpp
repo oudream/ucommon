@@ -96,7 +96,7 @@ extern "C" int main()
     string_t hex = String::hex(hbuf, 2);
     assert(eq(hex, "23a9"));
 
-    delete[] test;
+    strfree(test);
     delete[] cdup;
 
     return 0;

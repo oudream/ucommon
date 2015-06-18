@@ -30,6 +30,16 @@
 #include <string.h>
 #include <stdio.h>
 
+#ifdef  HAVE_STDALIGN_H
+#include <stdalign.h>
+#endif
+
+#if !defined(HAVE_ALIGNED_ALLOC) && defined(_MSC_VER) && _MSC_VER >= 1800
+#include <malloc.h>
+#define HAVE_ALIGNED_ALLOC 1
+#define aligned_alloc(a, s) _aligned_malloc(s, a)
+#endif
+
 namespace ucommon {
 
 extern "C" {
@@ -133,15 +143,20 @@ memalloc::page_t *memalloc::pager(void)
     if(limit && count >= limit)
         fault();
 
-#ifdef  HAVE_POSIX_MEMALIGN
+#if defined(HAVE_POSIX_MEMALIGN)
     if(align && !posix_memalign(&addr, align, pagesize)) {
         npage = (page_t *)addr;
+        goto use;
+    }
+#elif defined(HAVE_ALIGNED_ALLOC)
+    if(align) {
+        npage = (page_t)aligned_alloc(align, pagesize);
         goto use;
     }
 #endif
     npage = (page_t *)malloc(pagesize);
 
-#ifdef  HAVE_POSIX_MEMALIGN
+#if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_ALIGNED_ALLOC)
 use:
 #endif
     if(!npage)

@@ -19,7 +19,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 PROJECT(ucommon)
-set (VERSION 6.3.3)
+set (VERSION 6.3.4)
 
 if(BIICODE)
     include(dyfet/ucommon/cmake/biicode)
@@ -49,12 +49,18 @@ else()
     option(POSIX_TIMERS "Set to ON to enable" OFF)
 endif()
 
-option(HAVE_ATOMICS "Set to ON to enable" OFF)
-MARK_AS_ADVANCED(POSIX_TIMERS HAVE_ATOMICS)
-
+option(BUILD_ATOMICS "Set to ON to enable" OFF)
 option(BUILD_TESTING "Set to ON to build test programs" OFF)
 option(CRYPTO_STATIC "Set to ON to build static crypto" OFF)
 option(CRYPTO_OPENSSL "Set to OFF to disable openssl" ON)
+
+MARK_AS_ADVANCED(POSIX_TIMERS BUILD_ATOMICS)
+
+if(BUILD_ATOMICS)
+    set(HAVE_ATOMICS true)
+else()
+    set(HAVE_ATOMICS false)
+endif()
 
 MESSAGE( STATUS "Configuring GNU ${PROJECT_NAME} ${VERSION}...")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
@@ -209,5 +215,6 @@ install(TARGETS ucommon usecure DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # cmake std targets not used; dist made on automake...
 #add_cape_make_targets(ucommon ${VERSION})
+add_make_lint_target()
 add_cape_docs_target(Doxyfile)
 add_make_uninstall_target()

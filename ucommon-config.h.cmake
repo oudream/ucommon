@@ -62,6 +62,7 @@
 #cmakedefine HAVE_CLOCK_GETTIME 1
 #cmakedefine HAVE_POSIX_FADVISE 1
 #cmakedefine HAVE_POSIX_MEMALIGN 1
+#cmakedefine HAVE_ALIGNED_ALLOC 1
 #cmakedefine HAVE_PTHREAD_CONDATTR_SETCLOCK 1
 #cmakedefine HAVE_PTHREAD_DELAY 1
 #cmakedefine HAVE_PTHREAD_DELAY_NP 1
@@ -97,6 +98,8 @@
 #cmakedefine HAVE_TERMIOS_H 1
 #cmakedefine HAVE_TERMIO_H 1
 #cmakedefine HAVE_OPENSSL_FIPS_H 1
+#cmakedefine HAVE_STDATOMIC_H 1
+#cmakedefine HAVE_STDALIGN_H 1
 
 #cmakedefine POSIX_TIMERS 1
 #cmakedefine HAVE_ATOMICS 1
