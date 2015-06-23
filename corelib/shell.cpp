@@ -1257,10 +1257,11 @@ void shell::detach(mainproc_t entry)
         name = _domain;
 
     // detach only called once, keeps persistent name...
-    name = ::strdup(name);
 
     if(entry == NULL)
         return;
+
+    name = ::strdup(name);
 
     SERVICE_TABLE_ENTRY servicetable[] = {
         {(LPSTR)name, (LPSERVICE_MAIN_FUNCTION)entry},
