@@ -124,7 +124,7 @@ public:
      * @return size of each pager heap allocation.
      */
     inline unsigned size(void) const
-        {return pagesize;}
+        {return (unsigned)pagesize;}
 
     /**
      * Determine fragmentation level of acquired heap pages.  This is

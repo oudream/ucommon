@@ -150,7 +150,7 @@ memalloc::page_t *memalloc::pager(void)
     }
 #elif defined(HAVE_ALIGNED_ALLOC)
     if(align) {
-        npage = (page_t)aligned_alloc(align, pagesize);
+        npage = (page_t *)aligned_alloc(align, pagesize);
         goto use;
     }
 #endif
