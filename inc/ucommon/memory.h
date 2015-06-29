@@ -123,8 +123,8 @@ public:
      * Get the size of a memory page.
      * @return size of each pager heap allocation.
      */
-    inline unsigned size(void) const
-        {return (unsigned)pagesize;}
+    inline size_t size(void) const
+        {return pagesize;}
 
     /**
      * Determine fragmentation level of acquired heap pages.  This is
