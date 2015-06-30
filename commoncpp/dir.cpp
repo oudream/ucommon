@@ -64,7 +64,7 @@
 #include <commoncpp/process.h>
 #include <commoncpp/file.h>
 
-#ifdef WIN32
+#ifdef _MSWINDOWS_
 #include <sys/stat.h>
 #include <malloc.h>
 #endif
@@ -73,7 +73,7 @@ namespace ost {
 using namespace std;
 
 Dir::Dir(const char *fname) :
-#ifdef WIN32
+#ifdef _MSWINDOWS_
 hDir(INVALID_HANDLE_VALUE), name(NULL)
 #else
 dir(NULL)
@@ -89,7 +89,7 @@ dir(NULL)
 bool Dir::create(const char *path, Attr attr)
 {
 	bool rtn = true;
-#ifdef	WIN32
+#ifdef	_MSWINDOWS_
 
 	// fixme: make it form a security attributes structure
 
@@ -119,7 +119,7 @@ bool Dir::create(const char *path, Attr attr)
 bool Dir::remove(const char *path)
 {
 	bool rtn = true;
-#ifdef	WIN32
+#ifdef	_MSWINDOWS_
 	if(!RemoveDirectory(path))
 		rtn = false;
 #else
@@ -133,7 +133,7 @@ bool Dir::setPrefix(const char *prefix)
 {
 	bool rtn = true;
 
-#ifdef	WIN32
+#ifdef	_MSWINDOWS_
 	if(!SetCurrentDirectory(prefix))
 		rtn = false;
 #else
@@ -147,7 +147,7 @@ bool Dir::getPrefix(char *prefix, size_t size)
 {
 	bool rtn = true;
 
-#ifdef	WIN32
+#ifdef	_MSWINDOWS_
 	if(!GetCurrentDirectory((DWORD)size, prefix))
 		rtn = false;
 #else
@@ -159,13 +159,13 @@ bool Dir::getPrefix(char *prefix, size_t size)
 
 void Dir::open(const char *fname)
 {
-#ifdef	WIN32
+#ifdef	_MSWINDOWS_
 	size_t len = strlen(fname) + 4;
 	char *path;
 #endif
 
 	close();
-#ifdef WIN32
+#ifdef _MSWINDOWS_
 	DWORD attr = GetFileAttributes(fname);
 	if( (attr == (DWORD)~0l) || !(attr & FILE_ATTRIBUTE_DIRECTORY) )
 	{
@@ -217,7 +217,7 @@ Dir::~Dir()
 
 void Dir::close(void)
 {
-#ifdef WIN32
+#ifdef _MSWINDOWS_
 	if(hDir != INVALID_HANDLE_VALUE)
 		FindClose(hDir);
 	hDir = INVALID_HANDLE_VALUE;
@@ -232,7 +232,7 @@ void Dir::close(void)
 bool Dir::rewind(void)
 {
 	bool rtn = true;
-#ifdef	WIN32
+#ifdef	_MSWINDOWS_
 	memcpy(&data, &fdata, sizeof(data));
 	name = fdata.cFileName;
 #else
@@ -246,7 +246,7 @@ bool Dir::rewind(void)
 
 bool Dir::isValid(void)
 {
-#ifdef WIN32
+#ifdef _MSWINDOWS_
 	if(hDir == INVALID_HANDLE_VALUE)
 #else
 	if(!dir)
@@ -258,7 +258,7 @@ bool Dir::isValid(void)
 
 const char *Dir::operator*()
 {
-#ifdef	WIN32
+#ifdef	_MSWINDOWS_
 	return name;
 #else
 	if(!dir)
@@ -273,7 +273,7 @@ const char *Dir::operator*()
 
 const char *Dir::getName(void)
 {
-#ifdef WIN32
+#ifdef _MSWINDOWS_
 	char *retname = name;
 
 	if(hDir == INVALID_HANDLE_VALUE)
