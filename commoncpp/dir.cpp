@@ -88,7 +88,6 @@ dir(NULL)
 
 bool Dir::create(const char *path, Attr attr)
 {
-	long xmask = 0;
 	bool rtn = true;
 #ifdef	WIN32
 
@@ -97,6 +96,8 @@ bool Dir::create(const char *path, Attr attr)
 	if(!CreateDirectory(path, NULL))
 		rtn = false;
 #else
+	long xmask = 0;
+
 	switch(attr)
 	{
 	case attrPublic:
