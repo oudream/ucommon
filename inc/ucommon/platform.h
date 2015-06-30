@@ -25,6 +25,9 @@
  * @file ucommon/platform.h
  */
 
+
+#include <cstdlib>
+
 #ifndef _UCOMMON_PLATFORM_H_
 #define _UCOMMON_PLATFORM_H_
 #define UCOMMON_ABI 6
@@ -366,7 +369,6 @@ typedef void (*sighandler_t)(int);  /**< Convenient typedef for signal handlers.
 #endif
 typedef unsigned long timeout_t;    /**< Typedef for millisecond timer values. */
 
-#include <cstdlib>
 #include <cctype>
 #include <climits>
 #include <cerrno>
