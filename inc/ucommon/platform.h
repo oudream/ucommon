@@ -27,6 +27,9 @@
 
 
 #include <cstdlib>
+#if defined(sun) && defined(unix)
+#include <malloc.h>
+#endif
 
 #ifndef _UCOMMON_PLATFORM_H_
 #define _UCOMMON_PLATFORM_H_
@@ -330,10 +333,6 @@ typedef int fd_t;
 #define INVALID_HANDLE_VALUE -1
 #include <signal.h>
 
-#endif
-
-#if defined(sun) && defined(unix)
-#include <malloc.h>
 #endif
 
 #ifdef _MSC_VER
