@@ -370,19 +370,19 @@ void DirTree::close(void)
 }
 
 
-bool DirTree::filter(const char *path, struct stat *ino)
+bool DirTree::filter(const char *fpath, struct stat *ino)
 {
-	path = strrchr(path, '/');
+	fpath = strrchr(path, '/');
 
-	if(path)
-		++path;
+	if(fpath)
+		++fpath;
 	else
 		return false;
 
-	if(!strcmp(path, "."))
+	if(!strcmp(fpath, "."))
 		return false;
 
-	if(!strcmp(path, ".."))
+	if(!strcmp(fpath, ".."))
 		return false;
 
 	if(!ino)
