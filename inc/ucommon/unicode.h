@@ -358,7 +358,7 @@ protected:
      * @return count of codepoints.
      */
     inline strsize_t count(void) const
-        {return utf8::count(str->text);}
+        {return (strsize_t)utf8::count(str->text);}
 
     /**
      * Count occurrences of a unicode character in string.

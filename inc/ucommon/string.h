@@ -1289,10 +1289,10 @@ public:
     static const char *pos(const char *text, ssize_t offset);
 
     inline static char *right(const char *text, size_t size)
-        {return dup(pos(text, -(signed)size));}
+        {return dup(pos(text, -(ssize_t)size));}
 
     inline static char *copy(const char *text, size_t offset, size_t len)
-        {return left(pos(text, offset), len);}
+        {return left(pos(text, (ssize_t)offset), len);}
 
     static void cut(char *text, size_t offset, size_t len);
 

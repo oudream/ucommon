@@ -1304,7 +1304,7 @@ protected:
 
     enum {R_UNUSED} reserved;   // cancel mode?
     pthread_t tid;
-    size_t stack;
+    stacksize_t stack;
     int priority;
 
     /**

@@ -176,7 +176,7 @@ char *utf8::offset(char *string, ssize_t pos)
     if(!string)
         return NULL;
 
-    ssize_t codepoints = count(string);
+    ssize_t codepoints = (ssize_t)count(string);
     if(pos > codepoints)
         return NULL;
 
@@ -309,8 +309,8 @@ ucs4_t *utf8::udup(const char *string)
     if(!string)
         return NULL;
 
-    unsigned len = count(string);
-    unsigned pos = 0;
+    strsize_t len = (strsize_t)count(string);
+    strsize_t pos = 0;
     ucs4_t *out = (ucs4_t *)malloc(sizeof(ucs4_t) * (++len));
 
     while(*string) {
@@ -326,8 +326,8 @@ ucs2_t *utf8::wdup(const char *string)
     if(!string)
         return NULL;
 
-    unsigned len = count(string);
-    unsigned pos = 0;
+    strsize_t len = (strsize_t)count(string);
+    strsize_t pos = 0;
     ucs2_t *out = (ucs2_t *)malloc(sizeof(ucs2_t) * (++len));
     ucs4_t ch;
 
@@ -464,7 +464,7 @@ UString::UString(const UString& copy)
 
 void UString::set(const unicode_t text)
 {
-    strsize_t size = utf8::chars(text);
+    strsize_t size = (strsize_t)utf8::chars(text);
     str = NULL;
     str = create(size);
     str->retain();
@@ -478,7 +478,7 @@ void UString::add(const unicode_t text)
 {
     strsize_t alloc, size;
 
-    size = alloc = utf8::chars(text);
+    size = alloc = (strsize_t)utf8::chars(text);
     if(str)
         alloc += str->len;
 
@@ -539,7 +539,7 @@ UString UString::get(strsize_t pos, strsize_t size) const
     if(!end)
         return UString(substr);
 
-    pos = (end - substr + 1);
+    pos = (strsize_t)(end - substr + 1);
     return UString(substr, pos);
 }
 

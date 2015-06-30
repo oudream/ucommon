@@ -310,7 +310,7 @@ size_t BufferProtocol::printf(const char *pformat, ...)
         return 0;
 
     if((size_t)result > bufsize)
-        result = bufsize;
+        result = (int)bufsize;
 
     count = _push(output, result);
     if(count < (size_t)result) {

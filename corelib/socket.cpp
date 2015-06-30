@@ -1578,7 +1578,8 @@ size_t Socket::address::print(const sockaddr* addr, char *dst, size_t dst_sz, bo
 		memset(&in, 0, sizeof(in));
 		in.sin_family = AF_INET;
 		memcpy(&in.sin_addr, &reinterpret_cast<const struct sockaddr_in*>(addr)->sin_addr, sizeof(struct in_addr));
-		if(!getnameinfo((struct sockaddr *)&in, sizeof(struct sockaddr_in), dst, dst_sz, NULL, 0, NI_NUMERICHOST)) {
+
+		if(!getnameinfo((struct sockaddr *)&in, (socklen_t)sizeof(struct sockaddr_in), dst, (socksize_t)dst_sz, NULL, 0, NI_NUMERICHOST)) {
 			res = dst;
 		}
         break;
@@ -1589,7 +1590,7 @@ size_t Socket::address::print(const sockaddr* addr, char *dst, size_t dst_sz, bo
 		in6.sin6_family = AF_INET6;
 		memcpy(&in6.sin6_addr, &reinterpret_cast<const struct sockaddr_in6*>(addr)->sin6_addr, sizeof(struct in_addr6));
 
-		if(!getnameinfo((struct sockaddr *)&in6, sizeof(struct sockaddr_in6), dst, dst_sz, NULL, 0, NI_NUMERICHOST)) {
+		if(!getnameinfo((struct sockaddr *)&in6, (socklen_t)sizeof(struct sockaddr_in6), dst, (socksize_t)dst_sz, NULL, 0, NI_NUMERICHOST)) {
 			res = dst;
 		}
         break;
@@ -1677,7 +1678,7 @@ Socket::Socket(const struct addrinfo *addr)
         so = ::socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
         socket_mapping(addr->ai_family, so);
         if(so != INVALID_SOCKET) {
-            if(!_connect_(so, addr->ai_addr, addr->ai_addrlen))
+            if(!_connect_(so, addr->ai_addr, (socklen_t)addr->ai_addrlen))
                 return;
         }
         addr = addr->ai_next;
@@ -1781,7 +1782,7 @@ socket_t Socket::create(const char *iface, const char *port, int family, int typ
     }
     setsockopt(so, SOL_SOCKET, SO_REUSEADDR, (caddr_t)&reuse, sizeof(reuse));
     if(res->ai_addr) {
-        if(_bind_(so, res->ai_addr, res->ai_addrlen)) {
+        if(_bind_(so, res->ai_addr, (socklen_t)res->ai_addrlen)) {
             release(so);
             so = INVALID_SOCKET;
         }
@@ -1960,7 +1961,7 @@ ssize_t Socket::recvinet(socket_t so, void *data, size_t len, int flags, struct 
     assert(len > 0);
 
     socklen_t slen = sizeof(struct sockaddr_internet);
-    return _recvfrom_(so, (caddr_t)data, len, flags, (struct sockaddr *)addr, &slen);
+    return _recvfrom_(so, (caddr_t)data, (socksize_t)len, flags, (struct sockaddr *)addr, &slen);
 }
 
 ssize_t Socket::recvfrom(socket_t so, void *data, size_t len, int flags, struct sockaddr_storage *addr)
@@ -1969,7 +1970,7 @@ ssize_t Socket::recvfrom(socket_t so, void *data, size_t len, int flags, struct 
     assert(len > 0);
 
     socklen_t slen = sizeof(struct sockaddr_storage);
-    return _recvfrom_(so, (caddr_t)data, len, flags, (struct sockaddr *)addr, &slen);
+    return _recvfrom_(so, (caddr_t)data, (socksize_t)len, flags, (struct sockaddr *)addr, (socklen_t *)&slen);
 }
 
 size_t Socket::readfrom(void *data, size_t len, struct sockaddr_storage *from)
@@ -1982,7 +1983,7 @@ size_t Socket::readfrom(void *data, size_t len, struct sockaddr_storage *from)
         return 0;
 
     socklen_t slen = sizeof(struct sockaddr_storage);
-    ssize_t result = _recvfrom_(so, (caddr_t)data, len, 0, (struct sockaddr *)from, &slen);
+    ssize_t result = _recvfrom_(so, (caddr_t)data, (socksize_t)len, 0, (struct sockaddr *)from, (socklen_t *)&slen);
 
     if(result < 0) {
         ioerr = Socket::error();
@@ -2000,7 +2001,8 @@ size_t Socket::writeto(const void *data, size_t dlen, const struct sockaddr *des
     if(dest)
         slen = len(dest);
 
-    ssize_t result = _sendto_(so, (caddr_t)data, dlen, MSG_NOSIGNAL, dest, slen);
+    ssize_t result = _sendto_(so, (caddr_t)data, (socksize_t)dlen, MSG_NOSIGNAL, dest, (socklen_t)slen);
+
     if(result < 0) {
         ioerr = Socket::error();
         return 0;
@@ -2017,7 +2019,7 @@ ssize_t Socket::sendto(socket_t so, const void *data, size_t dlen, int flags, co
     if(dest)
         slen = len(dest);
 
-    return _sendto_(so, (caddr_t)data, dlen, MSG_NOSIGNAL | flags, dest, slen);
+    return _sendto_(so, (caddr_t)data, (socksize_t)dlen, MSG_NOSIGNAL | flags, dest, (socklen_t)slen);
 }
 
 size_t Socket::writes(const char *str)
@@ -2068,7 +2070,7 @@ ssize_t Socket::readline(socket_t so, char *data, size_t max, timeout_t timeout)
 
     bool crlf = false;
     bool nl = false;
-    int nleft = max - 1;        // leave space for null byte
+    size_t nleft = max - 1;        // leave space for null byte
     int nstat, c;
 
     if(max < 1)
@@ -2080,12 +2082,12 @@ ssize_t Socket::readline(socket_t so, char *data, size_t max, timeout_t timeout)
             if(!wait(so, timeout))
                 return 0;
         }
-        nstat = _recv_(so, data, nleft, MSG_PEEK);
+        nstat = _recv_(so, data, (socksize_t)nleft, MSG_PEEK);
         if(nstat < 0)
             return -1;
 
         if(nstat == 0)
-            return max - nleft - 1;
+            return (ssize_t)(max - nleft - 1);
 
         for(c = 0; c < nstat; ++c) {
             if(data[c] == '\n') {
@@ -2549,7 +2551,7 @@ socket_t Socket::create(const struct addrinfo *node, int stype, int sprotocol)
             so = Socket::create(sfamily, ctype, cprotocol);
         }
         if(so != INVALID_SOCKET) {
-            if(!_connect_(so, node->ai_addr, node->ai_addrlen))
+            if(!_connect_(so, node->ai_addr, (socklen_t)node->ai_addrlen))
                 return so;
         }
 next:
@@ -2584,7 +2586,7 @@ int Socket::connectto(socket_t so, struct addrinfo *node)
 
     while(node) {
         if(node->ai_family == socket_family) {
-            if(!_connect_(so, node->ai_addr, node->ai_addrlen)) {
+            if(!_connect_(so, node->ai_addr, (socklen_t)node->ai_addrlen)) {
                 rtn = 0;
                 goto exit;
             }
@@ -3001,7 +3003,7 @@ char *Socket::hostname(const struct sockaddr *sa, char *buf, size_t max)
         return NULL;
     }
 
-    if(getnameinfo(sa, sl, buf, max, NULL, 0, NI_NOFQDN))
+    if(getnameinfo(sa, (socklen_t)sl, buf, (socksize_t)max, NULL, 0, NI_NOFQDN))
         return NULL;
 
     return buf;
@@ -3028,7 +3030,7 @@ socklen_t Socket::query(socket_t so, struct sockaddr_storage *sa, const char *ho
         goto exit;
 
     memcpy(sa, res->ai_addr, res->ai_addrlen);
-    len = res->ai_addrlen;
+    len = (socklen_t)res->ai_addrlen;
 
 exit:
     if(res)
@@ -3103,7 +3105,7 @@ int Socket::bindto(socket_t so, const char *host, const char *svc, int protocol)
     if(rtn)
         goto exit;
 
-    rtn = _bind_(so, res->ai_addr, res->ai_addrlen);
+    rtn = _bind_(so, res->ai_addr, (socklen_t)res->ai_addrlen);
 exit:
     if(res)
         freeaddrinfo(res);
