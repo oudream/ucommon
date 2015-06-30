@@ -386,8 +386,8 @@ void tcpstream::allocate(unsigned mss)
     else
         bufsize = mss * 5;
 
-    Socket::sendsize(so, bufsize);
-    Socket::recvsize(so, bufsize);
+    Socket::sendsize(so, (unsigned)bufsize);
+    Socket::recvsize(so, (unsigned)bufsize);
 
     if(mss < 512)
         Socket::sendwait(so, mss * 4);

@@ -89,7 +89,7 @@ void TCPBuffer::close(void)
 void TCPBuffer::_buffer(size_t size)
 {
     unsigned iobuf = 0;
-    unsigned mss = size;
+    unsigned mss = (unsigned)size;
     unsigned max = 0;
 
 #ifdef  TCP_MAXSEG
@@ -161,22 +161,15 @@ size_t TCPBuffer::_push(const char *address, size_t len)
     if(ioerr)
         return 0;
 
-    ssize_t result = writeto(address, len);
-    if(result < 0)
-        result = 0;
-
-    return (size_t)result;
+    return writeto(address, len);
 }
 
 size_t TCPBuffer::_pull(char *address, size_t len)
 {
-    ssize_t result;
+    if (ioerr)
+        return 0;
 
-    result = readfrom(address, len);
-
-    if(result < 0)
-        result = 0;
-    return (size_t)result;
+    return readfrom(address, len);
 }
 
 bool TCPBuffer::_pending(void)

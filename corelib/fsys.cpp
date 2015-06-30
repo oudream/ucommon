@@ -212,7 +212,7 @@ int fsys::pipe(fd_t& input, fd_t& output, size_t size)
     sattr.bInheritHandle = TRUE;
     sattr.lpSecurityDescriptor = NULL;
 
-    if(!CreatePipe(&input, &output, &sattr, size))
+    if(!CreatePipe(&input, &output, &sattr, (DWORD)size))
         return remapError();
 
     return 0;
@@ -256,7 +256,7 @@ int fsys::prefix(const char *path)
 
 int fsys::prefix(char *path, size_t len)
 {
-    if (_getcwd(path, len))
+    if (_getcwd(path, (socksize_t)len))
         return remapError();
     return 0;
 }
@@ -373,7 +373,7 @@ ssize_t dir::read(char *buf, size_t len)
     ssize_t rtn = -1;
     if(ptr) {
         snprintf((char *)buf, len, ptr->cFileName);
-        rtn = strlen(ptr->cFileName);
+        rtn = (ssize_t)strlen(ptr->cFileName);
         if(!FindNextFile(fd, ptr))
             close();
         return rtn;
@@ -1236,7 +1236,7 @@ int fsys::linkinfo(const char *path, char *buffer, size_t size)
 #ifdef  UNICODE
     String::set(buffer, size, rb.PathBuffer);
 #else
-    WideCharToMultiByte(CP_THREAD_ACP, 0, rb->PathBuffer, rb->SubstituteNameLength / sizeof(WCHAR) + 1, buffer, size, "", FALSE);
+    WideCharToMultiByte(CP_THREAD_ACP, 0, rb->PathBuffer, rb->SubstituteNameLength / sizeof(WCHAR) + 1, buffer, (int)size, "", FALSE);
 #endif
     CloseHandle(h);
     return 0;
@@ -1373,7 +1373,7 @@ int fsys::copy(const char *oldpath, const char *newpath, size_t size)
     int result = 0;
     char *buffer = new char[size];
     fsys src, dest;
-    ssize_t count = size;
+    ssize_t count = (ssize_t)size;
 
     if(!buffer) {
         result = ENOMEM;
