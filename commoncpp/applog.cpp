@@ -707,7 +707,7 @@ void AppLog::writeLog(bool endOfLine)
           cerr << "stringstream failed!!!! " << endl;
 
         // enqueues log message
-        d->_pLogger->post((void *) sstr.str().c_str(), sstr.str().length() + 1);
+        d->_pLogger->post((void *) sstr.str().c_str(), (unsigned)(sstr.str().length() + 1));
 
         d->_lock.enterMutex();
       }

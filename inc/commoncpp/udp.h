@@ -238,7 +238,7 @@ public:
      * @return number of bytes examined.
      */
     inline ssize_t peek(void *buf, size_t len)
-        {return ::recv(so, (char *)buf, len, MSG_PEEK);}
+        {return ::recv(so, (char *)buf, (socksize_t)len, MSG_PEEK);}
 
     /**
      * Associate socket with a named connection
@@ -379,7 +379,7 @@ protected:
      * @param len of bytes to send.
      */
     inline ssize_t send(const void *buf, size_t len)
-        {return ::send(so, (const char *)buf, len, MSG_NOSIGNAL);}
+        {return ::send(so, (const char *)buf, (socksize_t)len, MSG_NOSIGNAL);}
 
     /**
      * Stop transmitter.
@@ -412,7 +412,7 @@ public:
      * @param len of bytes to send.
      */
     inline ssize_t transmit(const char *buffer, size_t len)
-        {return ::send(so, buffer, len, MSG_DONTWAIT|MSG_NOSIGNAL);}
+        {return ::send(so, buffer, (socksize_t)len, MSG_DONTWAIT|MSG_NOSIGNAL);}
 
     /**
      * See if output queue is empty for sending more packets.
@@ -527,7 +527,7 @@ public:
      * @param len size of data receive buffer.
      */
     inline ssize_t receive(void *buf, size_t len)
-        {return ::recv(so, (char *)buf, len, 0);}
+        {return ::recv(so, (char *)buf, (socksize_t)len, 0);}
 
     /**
      * See if input queue has data packets available.

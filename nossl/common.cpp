@@ -441,7 +441,7 @@ size_t Cipher::puts(const char *text)
         return 0;
 
     size_t len = strlen(text) + 1;
-    unsigned pad = len % keys.iosize();
+    size_t pad = len % keys.iosize();
 
     size_t count = put((const unsigned char *)text, len - pad);
     if(pad) {

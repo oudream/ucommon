@@ -3476,14 +3476,13 @@ int Socket::family(socket_t so)
 {
     assert(so != INVALID_SOCKET);
 
+#ifndef _MSWINDOWS_
     union {
         struct sockaddr_storage saddr;
         struct sockaddr_in inaddr;
     } us;
 
     socklen_t len = sizeof(us.saddr);
-
-#ifndef _MSWINDOWS_
 	struct sockaddr *addr = (struct sockaddr *)(&us.saddr);
     if(_getsockname_(so, addr, &len))
         return AF_UNSPEC;
@@ -3492,7 +3491,7 @@ int Socket::family(socket_t so)
 #else
     // getsockname doesn't work on unbound windows sockets
     WSAPROTOCOL_INFO info;
-    len = sizeof(info);
+    socklen_t len = sizeof(info);
     if(getsockopt(so, SOL_SOCKET, SO_PROTOCOL_INFO, (char *) &info, &len))
         return AF_UNSPEC;
 

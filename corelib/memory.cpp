@@ -104,7 +104,7 @@ unsigned memalloc::utilization(void) const
     page_t *mp = page;
 
     while(mp) {
-        alloc += pagesize;
+        alloc += (unsigned long)pagesize;
         used += mp->used;
         mp = mp->next;
     }
@@ -196,7 +196,7 @@ void *memalloc::_alloc(size_t size)
         p = pager();
 
     mem = ((caddr_t)(p)) + p->used;
-    p->used += size;
+    p->used += (unsigned)size;
     return mem;
 }
 
@@ -943,7 +943,7 @@ void *keyassoc::remove(const char *id)
     LinkedObject *obj;
     void *data;
     unsigned path = NamedObject::keyindex(id, paths);
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(!keysize || size >= keysize || !list)
         return NULL;
@@ -971,7 +971,7 @@ void *keyassoc::allocate(const char *id, size_t dsize)
     void *dp = NULL;
     keydata *kd;
     LinkedObject *obj;
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(keysize && size >= keysize)
         return NULL;
@@ -1009,7 +1009,7 @@ bool keyassoc::create(const char *id, void *data)
 
     keydata *kd;
     LinkedObject *obj;
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(keysize && size >= keysize)
         return false;
@@ -1043,7 +1043,7 @@ bool keyassoc::assign(const char *id, void *data)
 
     keydata *kd;
     LinkedObject *obj;
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(keysize && size >= keysize)
         return false;
@@ -1156,7 +1156,7 @@ void bufpager::put(const char *text, size_t iosize)
                 unsigned size = 0;
 
                 while(p) {
-                    size = pagesize - p->used;
+                    size = (unsigned)(pagesize - p->used);
                     if(size)
                         break;
                     p = p->next;
@@ -1170,7 +1170,7 @@ void bufpager::put(const char *text, size_t iosize)
                 next->text = ((char *)(p)) + p->used;
                 next->used = 0;
                 next->size = size;
-                p->used = pagesize;
+                p->used = (unsigned)pagesize;
             }
 
             if(last)
@@ -1227,7 +1227,7 @@ char *bufpager::request(size_t *iosize)
             unsigned size = 0;
 
             while(p) {
-                size = pagesize - p->used;
+                size = (unsigned)(pagesize - p->used);
                 if(size)
                     break;
                 p = p->next;
@@ -1243,7 +1243,7 @@ char *bufpager::request(size_t *iosize)
             next->text = ((char *)(p)) + p->used;
             next->used = 0;
             next->size = size;
-            p->used = pagesize;
+            p->used = (unsigned)pagesize;
         }
 
         if(last)
@@ -1259,7 +1259,7 @@ char *bufpager::request(size_t *iosize)
 
 void bufpager::update(size_t iosize)
 {
-    last->used += iosize;
+    last->used += (unsigned)iosize;
 }
 
 size_t bufpager::get(char *text, size_t iosize)
@@ -1307,7 +1307,7 @@ void bufpager::add(const char *text)
                 unsigned size = 0;
 
                 while(p) {
-                    size = pagesize - p->used;
+                    size = (unsigned)(pagesize - p->used);
                     if(size)
                         break;
                     p = p->next;
@@ -1323,7 +1323,7 @@ void bufpager::add(const char *text)
                 next->text = ((char *)(p)) + p->used;
                 next->used = 0;
                 next->size = size;
-                p->used = pagesize;
+                p->used = (unsigned)pagesize;
             }
 
             if(last)
@@ -1411,7 +1411,7 @@ int bufpager::_putch(int code)
             unsigned size = 0;
 
             while(p) {
-                size = pagesize - p->used;
+                size = (unsigned)(pagesize - p->used);
                 if(size)
                     break;
                 p = p->next;
@@ -1427,7 +1427,7 @@ int bufpager::_putch(int code)
             next->text = ((char *)(p)) + p->used;
             next->used = 0;
             next->size = size;
-            p->used = pagesize;
+            p->used = (unsigned)pagesize;
         }
 
         if(last)

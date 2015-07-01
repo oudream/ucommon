@@ -129,7 +129,7 @@ void String::cstring::inc(strsize_t offset)
 
 void String::cstring::add(const char *str)
 {
-    strsize_t size = strlen(str);
+    strsize_t size = (strsize_t)strlen(str);
 
     if(!size)
         return;
@@ -217,7 +217,7 @@ void String::cstring::set(const char *str)
 {
     assert(str != NULL);
 
-    strsize_t size = strlen(str);
+    strsize_t size = (strsize_t)strlen(str);
     if(size > max)
         size = max;
 
@@ -241,7 +241,7 @@ String::String(const char *s, const char *end)
     if(!s)
         s = "";
     else if(!end)
-        size = strlen(s);
+        size = (strsize_t)strlen(s);
     else if(end > s)
         size = (strsize_t)(end - s);
     str = create(size);
@@ -251,7 +251,7 @@ String::String(const char *s, const char *end)
 
 String::String(const char *s)
 {
-    strsize_t size = count(s);
+    strsize_t size = (strsize_t)count(s);
     if(!s)
         s = "";
     str = create(size);
@@ -264,7 +264,7 @@ String::String(const char *s, strsize_t size)
     if(!s)
         s = "";
     if(!size)
-        size = strlen(s);
+        size = (strsize_t)strlen(s);
     str = create(size);
     str->retain();
     str->set(s);
@@ -281,7 +281,7 @@ String::String(long value)
     str = create(20);
     str->retain();
     snprintf(&str->text[0], 20, "%ld", value);
-    str->len = strlen(str->text);
+    str->len = (strsize_t)strlen(str->text);
     str->fix();
 }
 
@@ -290,7 +290,7 @@ String::String(double value)
     str = create(32);
     str->retain();
     snprintf(&str->text[0], 32, "%f", value);
-    str->len = strlen(str->text);
+    str->len = (strsize_t)strlen(str->text);
     str->fix();
 }
 
@@ -568,17 +568,17 @@ unsigned String::replace(const char *substring, const char *cp, unsigned flags)
 {
     const char *result = "";
     unsigned count = 0;
-    size_t cpl = 0;
+    strsize_t cpl = 0;
 
     if(cp)
-        cpl = strlen(cp);
+        cpl = (strsize_t)strlen(cp);
 
     if(!str || !substring || str->len == 0)
         return 0;
 
     strsize_t offset = 0;
 
-    size_t tcl = strlen(substring);
+    strsize_t tcl = (strsize_t)strlen(substring);
 
     while(result) {
         const char *text = str->text + offset;
@@ -597,7 +597,7 @@ unsigned String::replace(const char *substring, const char *cp, unsigned flags)
 
         if(result) {
             ++count;
-            offset = text - str->text;
+            offset = (strsize_t)(text - str->text);
             cut(offset, tcl);
             if(cpl) {
                 paste(offset, cp);
@@ -729,7 +729,7 @@ strsize_t String::printf(const char *format, ...)
     va_start(args, format);
     if(str) {
         vsnprintf(str->text, str->max + 1, format, args);
-        str->len = strlen(str->text);
+        str->len = (strsize_t)strlen(str->text);
         str->fix();
     }
     va_end(args);
@@ -742,7 +742,7 @@ strsize_t String::vprintf(const char *format, va_list args)
 
     if(str) {
         vsnprintf(str->text, str->max + 1, format, args);
-        str->len = strlen(str->text);
+        str->len = (strsize_t)strlen(str->text);
         str->fix();
     }
     return len();
@@ -801,7 +801,7 @@ void String::rsplit(strsize_t pos)
 
 void String::split(const char *s)
 {
-    unsigned pos;
+    size_t pos;
 
     if(!s || !*s || !str)
         return;
@@ -829,7 +829,7 @@ void String::set(strsize_t offset, const char *s, strsize_t size)
         return;
 
     if(!size)
-        size = strlen(s);
+        size = (strsize_t)strlen(s);
 
     str->set(offset, s, size);
 }
@@ -860,7 +860,7 @@ void String::set(const char *s, char overflow, strsize_t offset, strsize_t size)
 
 void String::rset(const char *s, char overflow, strsize_t offset, strsize_t size)
 {
-    size_t len = count(s);
+    strsize_t len = (strsize_t)count(s);
     strsize_t dif;
 
     if(!s || !*s || !str)
@@ -893,7 +893,7 @@ void String::set(const char *s)
         s = "";
 
     if(!str) {
-        len = strlen(s);
+        len = (strsize_t)strlen(s);
         str = create(len);
         str->retain();
     }
@@ -907,7 +907,7 @@ void String::paste(strsize_t offset, const char *cp, strsize_t size)
         return;
 
     if(!size)
-        size = strlen(cp);
+        size = (strsize_t)strlen(cp);
 
     if(!size)
         return;
@@ -1087,7 +1087,7 @@ void String::add(const char *s)
         return;
     }
 
-    cow(strlen(s));
+    cow((strsize_t)strlen(s));
     str->add(s);
 }
 
@@ -1115,7 +1115,7 @@ String String::operator()(int offset, strsize_t len) const
         cp = "";
 
     if(!len)
-        len = strlen(cp);
+        len = (strsize_t)strlen(cp);
 
     return String(cp, len);
 }
@@ -1466,7 +1466,7 @@ String::cstring *memstring::c_copy(void) const
 void String::fix(String &s)
 {
     if(s.str) {
-        s.str->len = strlen(s.str->text);
+        s.str->len = (strsize_t)strlen(s.str->text);
         s.str->fix();
     }
 }
@@ -1519,7 +1519,7 @@ const char *String::pos(const char *cp, ssize_t offset)
 
     if(offset >= 0) {
         if((size_t)offset > len)
-            offset = len;
+            offset = (ssize_t)len;
         return cp + offset;
     }
 
@@ -1540,8 +1540,8 @@ size_t String::count(const char *cp)
 
 const char *String::find(const char *str, const char *key, const char *delim)
 {
-    unsigned l1 = strlen(str);
-    unsigned l2 = strlen(key);
+    size_t l1 = strlen(str);
+    size_t l2 = strlen(key);
 
     if(!delim[0])
         delim = NULL;
@@ -1570,8 +1570,8 @@ const char *String::find(const char *str, const char *key, const char *delim)
 
 const char *String::ifind(const char *str, const char *key, const char *delim)
 {
-    unsigned l1 = strlen(str);
-    unsigned l2 = strlen(key);
+    size_t l1 = strlen(str);
+    size_t l2 = strlen(key);
 
     if(!delim[0])
         delim = NULL;
@@ -2173,7 +2173,7 @@ String &String::operator%(const char *get)
     if(!str || !str->text[0] || !get)
         return *this;
 
-    unsigned len = strlen(get);
+    unsigned len = (strsize_t)strlen(get);
     const char *cp = str->text;
 
     while(isspace(*cp))
