@@ -110,31 +110,23 @@ void TCPBuffer::_buffer(size_t size)
     if(max && max < mss)
         mss = max;
 
-    if(!mss) {
-        if(max)
-            mss = max;
+    if(mss) {
+        if(mss < 80)
+            mss = 80;
+
+        if(mss * 7 < 64000u)
+            iobuf = mss * 7;
+        else if(size * 6 < 64000u)
+            iobuf = mss * 6;
         else
-            mss = 536;
-        goto alloc;
+            iobuf = mss * 5;
+
+        Socket::sendsize(so, iobuf);
+        Socket::recvsize(so, iobuf);
+
+        if(mss < 512)
+            Socket::sendwait(so, mss * 4);
     }
-
-    if(mss < 80)
-        mss = 80;
-
-    if(mss * 7 < 64000u)
-        iobuf = mss * 7;
-    else if(size * 6 < 64000u)
-        iobuf = mss * 6;
-    else
-        iobuf = mss * 5;
-
-    Socket::sendsize(so, iobuf);
-    Socket::recvsize(so, iobuf);
-
-    if(mss < 512)
-        Socket::sendwait(so, mss * 4);
-
-alloc:
     allocate(size);
 }
 

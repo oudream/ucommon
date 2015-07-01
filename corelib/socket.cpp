@@ -3291,7 +3291,6 @@ int Socket::via(struct sockaddr *iface, const struct sockaddr *dest)
         ::shutdown(so, SHUT_RDWR);
         ::close(so);
 #endif
-        so = INVALID_SOCKET;
     }
     if(rtn)
         rtn = Socket::error();

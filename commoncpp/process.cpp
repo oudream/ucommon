@@ -409,7 +409,7 @@ int Process::spawn(const char *exename, const char **args, bool wait)
 {
     int pid;
 
-    pid = vfork();
+    pid = fork();
     if(pid == -1)
         return -1;
 

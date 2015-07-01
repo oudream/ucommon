@@ -365,9 +365,9 @@ off_t RandomFile::getCapacity(void)
     eof = SetFilePointer(fd, 0l, NULL, FILE_END);
     SetFilePointer(fd, pos, NULL, FILE_BEGIN);
 #else
-    lseek(fd, pos, SEEK_SET);
     pos = lseek(fd, 0l, SEEK_CUR);
     eof = lseek(fd, 0l, SEEK_END);
+    lseek(fd, pos, SEEK_SET);
 #endif
     leaveMutex();
     return eof;

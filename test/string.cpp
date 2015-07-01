@@ -97,7 +97,7 @@ extern "C" int main()
     assert(eq(hex, "23a9"));
 
     strfree(test);
-    delete[] cdup;
+    strfree(cdup);
 
     return 0;
 }

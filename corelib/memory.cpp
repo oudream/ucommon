@@ -397,7 +397,6 @@ void **ObjectPager::list(void)
         mp.next();
     }
     index[pos] = NULL;
-    dp = index;
     return index;
 }
 

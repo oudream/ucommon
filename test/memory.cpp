@@ -37,7 +37,6 @@ extern "C" int main()
     mylist.add("050");
     mylist.add("300");
 
-    item = mylist.begin();
     assert(eq("100", mylist[0u]));
     mylist.sort();
     item = mylist.begin();

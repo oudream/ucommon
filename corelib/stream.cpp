@@ -578,7 +578,6 @@ void pipestream::open(const char *path, access_t mode, char **args, char **envp,
             if(mode == RDWR) {
                 fsys::release(stdio[1]);
                 fsys::release(input);
-                input = INVALID_HANDLE_VALUE;
             }
             return;
         }
