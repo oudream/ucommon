@@ -864,6 +864,12 @@ void cidr::set(const char *cp)
     char *ep;
     unsigned dots = 0;
 
+#ifdef	_MSWINDOWS_
+	DWORD addr4;
+	int slen;
+	struct sockaddr_in6 *paddr;
+#endif
+
 #ifdef  AF_INET6
     if(strchr(cp, ':'))
         Family = AF_INET6;
@@ -890,7 +896,8 @@ void cidr::set(const char *cp)
             String::add(cbuf, sizeof(cbuf), ".0");
 
 #ifdef  _MSWINDOWS_
-        memcpy(&Network.ipv4, &addr, sizeof(Network.ipv4));
+		addr4 = inet_addr(cp);
+        memcpy(&Network.ipv4, &addr4, sizeof(Network.ipv4));
 #else
         inet_aton(cbuf, &Network.ipv4);
 #endif
