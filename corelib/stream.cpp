@@ -676,20 +676,44 @@ void filestream::allocate(size_t size, fsys::access_t mode)
         return;
     }
 
-    if(mode == fsys::RDONLY || fsys::RDWR || fsys::SHARED)
+    switch (mode) {
+    case fsys::RDONLY:
+    case fsys::RDWR:
+    case fsys::SHARED:
         gbuf = new char[size];
-    if(mode == fsys::WRONLY || fsys::APPEND || fsys::SHARED || fsys::RDWR)
+    default:
+    }
+
+    switch (mode) {
+    case fsys::WRONLY:
+    case fsys::APPEND:
+    case fsys::SHARED:
+    case fsys::RDWR:
         pbuf = new char[size];
+    default:
+    }
+
     bufsize = size;
     clear();
-    if(mode == fsys::RDONLY || fsys::RDWR || fsys::SHARED) {
+    switch (mode) {
+    case fsys::RDONLY:
+    case fsys::RDWR:
+    case fsys::SHARED:
 #if (defined(__GNUC__) && (__GNUC__ < 3)) && !defined(MSWINDOWS) && !defined(STLPORT)
         setb(gbuf, gbuf + size, 0);
 #endif
         setg(gbuf, gbuf + size, gbuf + size);
+    default:
     }
-    if(mode == fsys::WRONLY || fsys::APPEND || fsys::SHARED || fsys::RDWR)
+
+    switch (mode) {
+    case fsys::WRONLY:
+    case fsys::APPEND:
+    case fsys::SHARED:
+    case fsys::RDWR:
         setp(pbuf, pbuf + size);
+    default:
+    }
 }
 
 void filestream::open(const char *fname, unsigned fmode, fsys::access_t access, size_t size)

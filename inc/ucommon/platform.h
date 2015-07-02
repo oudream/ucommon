@@ -347,8 +347,8 @@ typedef unsigned __int64 uint64_t;
 typedef char *caddr_t;
 
 #include <stdio.h>
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
+#define snprintf(p, s, f, ...) _snprintf_s(p, s, _TRUNCATE, f, __VA_ARGS__) 
+#define vsnprintf(p, s, f, a) _vsnprintf_s(p, s, _TRUNCATE, f, a)
 
 #else
 

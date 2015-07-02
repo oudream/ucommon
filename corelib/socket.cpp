@@ -863,12 +863,6 @@ void cidr::set(const char *cp)
     char cbuf[128];
     char *ep;
     unsigned dots = 0;
-#ifdef  _MSWINDOWS_
-//  struct sockaddr saddr;
-    int slen;
-    struct sockaddr_in6 *paddr;
-    DWORD addr = (DWORD)inet_addr(cbuf);
-#endif
 
 #ifdef  AF_INET6
     if(strchr(cp, ':'))
@@ -1317,6 +1311,8 @@ bool Socket::address::insert(const struct sockaddr *addr)
     }
 
     node = (struct addrinfo *)malloc(sizeof(struct addrinfo));
+    if (!node)
+        return false;
     memset(node, 0, sizeof(struct addrinfo));
     node->ai_family = addr->sa_family;
     node->ai_addrlen = len(addr);
@@ -1335,6 +1331,8 @@ void Socket::address::copy(const struct addrinfo *addr)
     clear();
     while(addr) {
         node = (struct addrinfo *)malloc(sizeof(struct addrinfo));
+        if (!node)
+            break;
         memcpy(node, addr, sizeof(struct addrinfo));
         node->ai_next = NULL;
         node->ai_addr = dup(addr->ai_addr);
@@ -1498,7 +1496,8 @@ struct sockaddr *Socket::address::dup(struct sockaddr *addr)
         return NULL;
 
     node = (struct sockaddr *)malloc(slen);
-    memcpy(node, addr, slen);
+    if (node)
+        memcpy(node, addr, slen);
     return node;
 }
 
@@ -2693,7 +2692,7 @@ bool Socket::is_pending(unsigned qio)
 #ifdef _MSWINDOWS_
 unsigned Socket::pending(socket_t so)
 {
-    u_long opt;
+    u_long opt = 0;
     if(so == INVALID_SOCKET)
         return 0;
 

@@ -476,6 +476,8 @@ int Serial::aRead(char * Data, const int Length)
 
     memset(&ol, 0, sizeof(OVERLAPPED));
     ol.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (!ol.hEvent || ol.hEvent == INVALID_HANDLE_VALUE)
+        return 0;
 
     if(dwReadLength > 0) {
         if(ReadFile(dev, Data, dwReadLength, &dwLength, &ol) == FALSE) {
@@ -488,8 +490,7 @@ int Serial::aRead(char * Data, const int Length)
         }
     }
 
-    if(ol.hEvent != INVALID_HANDLE_VALUE)
-        CloseHandle(ol.hEvent);
+    CloseHandle(ol.hEvent);
 
     return dwLength;
 }
@@ -507,6 +508,8 @@ int Serial::aWrite(const char * Data, const int Length)
 
     memset(&ol, 0, sizeof(OVERLAPPED));
     ol.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    if (!ol.hEvent || ol.hEvent == INVALID_HANDLE_VALUE)
+        return  0;
 
     if(WriteFile(dev, Data, Length, &retSize, &ol) == FALSE) {
         if(GetLastError() == ERROR_IO_PENDING) {
@@ -516,9 +519,7 @@ int Serial::aWrite(const char * Data, const int Length)
         else
             ClearCommError(dev, &dwError, &cs);
     }
-
-    if(ol.hEvent != INVALID_HANDLE_VALUE)
-        CloseHandle(ol.hEvent);
+    CloseHandle(ol.hEvent);
 
     return retSize;
 }
@@ -907,6 +908,8 @@ bool Serial::isPending(Pending pending, timeout_t timeout)
 
         memset(&ol, 0, sizeof(OVERLAPPED));
         ol.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+        if (!ol.hEvent)
+            return false;
 
         if(pending == pendingInput)
             dwMask = EV_RXCHAR;
@@ -926,20 +929,20 @@ bool Serial::isPending(Pending pending, timeout_t timeout)
                     SetCommMask(dev, 0);
 
                 suc = GetOverlappedResult(dev, &ol, &transferred, TRUE);
-                if (suc)
+                if (suc) {
                     suc = (dwEvents & dwMask) ? TRUE : FALSE;
                 }
-            else
-                ClearCommError(dev, &dwError, &cs);
             }
+        else
+            ClearCommError(dev, &dwError, &cs);
+        }
 
-        if(ol.hEvent != INVALID_HANDLE_VALUE)
-            CloseHandle(ol.hEvent);
+        CloseHandle(ol.hEvent);
 
         if(suc == FALSE)
                 return false;
         return true;
-        }
+    }
 #else
 
 

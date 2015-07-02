@@ -179,7 +179,7 @@ void Dir::open(const char *fname)
 #endif
 	}
 
-	path = (char *)alloca(len + 1);
+	path = (char *)_malloca(len + 1);
 	if(path)
 		snprintf(path, len + 1, "%s", fname);
 #ifdef	CCXX_EXCEPTIONS

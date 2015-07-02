@@ -1050,6 +1050,9 @@ void String::cow(strsize_t size)
 
     if(!str || !str->max || str->is_copied() || size > str->max) {
         cstring *s = create(size);
+        if (!s)
+            return;
+
         s->len = str->len;
         String::set(s->text, s->max + 1, str->text);
         s->retain();

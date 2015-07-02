@@ -79,8 +79,12 @@ Mutex   DSO::mutex;
 
 void DSO::dynunload(void)
 {
-    while(DSO::last)
-        delete DSO::last;
+    while (last) {
+        DSO *prev = last->prev;
+        delete last;
+        last = prev;
+    }
+    last = first = NULL;
 }
 
 DSO::~DSO()

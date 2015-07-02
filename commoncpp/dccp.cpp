@@ -685,7 +685,7 @@ int DCCPSocket::getRxCCID()
 
 size_t  DCCPSocket::available()
 {
-    size_t readsize;
+    size_t readsize = 0;
 #ifndef _MSWINDOWS_
      if (ioctl (so, FIONREAD, &readsize) < 0) {
          error(errInput,(char *)"Error on retrieve the FIONREAD option.",socket_errno);

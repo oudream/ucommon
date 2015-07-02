@@ -149,7 +149,7 @@ const char *secure::oscerts(void)
 
 int secure::oscerts(const char *pathname)
 {
-    bool caset;
+    bool caset = false;
     string_t target;
 
     if(pathname[1] == ':' || pathname[0] == '/' || pathname[0] == '\\')

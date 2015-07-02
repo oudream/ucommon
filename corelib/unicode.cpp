@@ -312,6 +312,8 @@ ucs4_t *utf8::udup(const char *string)
     strsize_t len = (strsize_t)count(string);
     strsize_t pos = 0;
     ucs4_t *out = (ucs4_t *)malloc(sizeof(ucs4_t) * (++len));
+    if (!out)
+        return NULL;
 
     while(*string) {
         out[pos++] = utf8::codepoint(string);
@@ -330,6 +332,9 @@ ucs2_t *utf8::wdup(const char *string)
     strsize_t pos = 0;
     ucs2_t *out = (ucs2_t *)malloc(sizeof(ucs2_t) * (++len));
     ucs4_t ch;
+
+    if (!out)
+        return NULL;
 
     while(*string) {
         ch = utf8::codepoint(string);

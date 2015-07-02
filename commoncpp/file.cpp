@@ -774,11 +774,13 @@ RandomFile(fname)
     map = CreateFileMapping(fd, NULL, page, 0, 0, mapname);
     if(!map)
         error(errMapFailed);
-    fcb.address = (caddr_t)MapViewOfFile(map, prot, 0, 0, size);
-    fcb.len = (ccxx_size_t)size;
-    fcb.pos = 0;
-    if(!fcb.address)
-        error(errMapFailed);
+    else {
+        fcb.address = (caddr_t)MapViewOfFile(map, prot, 0, 0, size);
+        fcb.len = (ccxx_size_t)size;
+        fcb.pos = 0;
+        if (!fcb.address)
+            error(errMapFailed);
+    }
 }
 
 MappedFile::MappedFile(const char *fname, Access mode) :
