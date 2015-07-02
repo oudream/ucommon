@@ -682,6 +682,7 @@ void filestream::allocate(size_t size, fsys::access_t mode)
     case fsys::SHARED:
         gbuf = new char[size];
     default:
+        break;
     }
 
     switch (mode) {
@@ -691,6 +692,7 @@ void filestream::allocate(size_t size, fsys::access_t mode)
     case fsys::RDWR:
         pbuf = new char[size];
     default:
+        break;
     }
 
     bufsize = size;
@@ -704,6 +706,7 @@ void filestream::allocate(size_t size, fsys::access_t mode)
 #endif
         setg(gbuf, gbuf + size, gbuf + size);
     default:
+        break;
     }
 
     switch (mode) {
@@ -713,6 +716,7 @@ void filestream::allocate(size_t size, fsys::access_t mode)
     case fsys::RDWR:
         setp(pbuf, pbuf + size);
     default:
+        break;
     }
 }
 
