@@ -1053,10 +1053,15 @@ void String::cow(strsize_t size)
         if (!s)
             return;
 
-        s->len = str->len;
-        String::set(s->text, s->max + 1, str->text);
+		if (str) {
+			s->len = str->len;
+			String::set(s->text, s->max + 1, str->text);
+		}
+		else
+			s->len = 0;
         s->retain();
-        str->release();
+		if (str)
+			str->release();
         str = s;
     }
 }

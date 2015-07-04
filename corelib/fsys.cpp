@@ -1213,8 +1213,10 @@ int fsys::linkinfo(const char *path, char *buffer, size_t size)
 {
 #if defined(_MSWINDOWS_)
     HANDLE h;
-    char reparse[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
     DWORD rsize;
+	char *reparse = (char *)_malloca(MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
+	if (!reparse)
+		return EINVAL;
 
     if(!fsys::is_link(path))
         return EINVAL;
@@ -1225,7 +1227,7 @@ int fsys::linkinfo(const char *path, char *buffer, size_t size)
     if(!h || h == INVALID_HANDLE_VALUE)
         return EINVAL;
 
-    memset(reparse, 0, sizeof(reparse));
+    memset(reparse, 0, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
     LOCAL_REPARSE_DATA_BUFFER *rb = (LOCAL_REPARSE_DATA_BUFFER*)&reparse;
 
     if(!DeviceIoControl(h, FSCTL_GET_REPARSE_POINT, NULL, 0, (LPVOID *)rb, MAXIMUM_REPARSE_DATA_BUFFER_SIZE, &rsize, 0)) {
@@ -1267,17 +1269,20 @@ int fsys::link(const char *path, const char *target)
 #if defined(_MSWINDOWS_)
     TCHAR dest[512];
     HANDLE h;
-    char reparse[MAXIMUM_REPARSE_DATA_BUFFER_SIZE];
     char *part;
     DWORD size;
     WORD len;
+	char *reparse = (char *)_malloca(MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
+	if (!reparse)
+		return EINVAL;
 
     lstrcpy(dest, "\\??\\");
+	dest[4] = 0;
     if(!GetFullPathName(path, sizeof(dest) - (4 * sizeof(TCHAR)), &dest[4], &part) || GetFileAttributes(&dest[4]) == INVALID_FILE_ATTRIBUTES)
         return remapError();
 
-    memset(reparse, 0, sizeof(reparse));
     LOCAL_REPARSE_DATA_BUFFER *rb = (LOCAL_REPARSE_DATA_BUFFER*)&reparse;
+	memset(rb, 0, MAXIMUM_REPARSE_DATA_BUFFER_SIZE);
 
     if(!MultiByteToWideChar(CP_THREAD_ACP, MB_PRECOMPOSED, dest, lstrlenA(dest) + 1, rb->PathBuffer, lstrlenA(dest) + 1))
         return remapError();
@@ -1315,7 +1320,7 @@ int fsys::unlink(const char *path)
     if(is_link(path))
         h = CreateFile(path, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING,
             FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, 0);
-    if(!h || h != INVALID_HANDLE_VALUE) {
+    if(h && h != INVALID_HANDLE_VALUE) {
         REPARSE_GUID_DATA_BUFFER rb;
         memset(&rb, 0, sizeof(rb));
         DWORD size;

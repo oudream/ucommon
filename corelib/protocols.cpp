@@ -414,8 +414,10 @@ size_t CharacterProtocol::getline(char *string, size_t size)
     if(!eols)
         eols = "\0";
 
-    if(string)
-        string[0] = 0;
+	if (string)
+		string[0] = 0;
+	else
+		return 0;
 
     while(count < size - 1) {
         int ch = _getch();
@@ -695,6 +697,7 @@ int _input_long::_input(int code)
 
     buf[pos] = 0;
     if(pos)
+#pragma warning(suppress: 6031)
         sscanf(buf, "%ld", ref);
 
     return code;
@@ -728,6 +731,7 @@ int _input_double::_input(int code)
 
     buf[pos] = 0;
     if(pos)
+#pragma warning(suppress: 6031)
         sscanf(buf, "%lf", ref);
 
     return code;

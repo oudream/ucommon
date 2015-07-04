@@ -557,8 +557,8 @@ char *shell::getargv0(char **argv)
 {
     if(!argv || !argv[0])
         errexit(-1, "*** %s\n", errmsg(shell::NOARGS));
-
-    set0(argv[0]);
+	else
+		set0(argv[0]);
     return _argv0;
 }
 

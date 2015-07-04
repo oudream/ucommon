@@ -159,8 +159,10 @@ memalloc::page_t *memalloc::pager(void)
 #if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_ALIGNED_ALLOC)
 use:
 #endif
-    if(!npage)
-        fault();
+	if (!npage) {
+		fault();
+		return NULL;
+	}
 
     ++count;
     npage->used = sizeof(page_t);
@@ -323,6 +325,8 @@ void *ObjectPager::push(void)
     member *node;
 
     node = new(mem) member(&root);
+	if (!node)
+		return NULL;
     if(!last)
         last = node;
     ++members;
@@ -701,11 +705,12 @@ void StringPager::sort(void)
     if(!members)
         return;
 
+	unsigned count = members;
     member **list = new member*[members];
     unsigned pos = 0;
     linked_pointer<member> mp = root;
 
-    while(is(mp)) {
+    while(is(mp) && count--) {
         list[pos++] = *mp;
         mp.next();
     }
@@ -870,7 +875,8 @@ PagerObject *PagerPool::get(size_t size)
         ptr = new((_alloc(size))) PagerObject;
     else
         ptr->reset();
-    ptr->pager = this;
+	if (ptr)
+		ptr->pager = this;
     return ptr;
 }
 
@@ -995,7 +1001,10 @@ void *keyassoc::allocate(const char *id, size_t dsize)
     else
         dp = ((keydata *)(ptr))->data;
     kd = new(ptr) keydata(this, id, paths, 8 + size * 8);
-    kd->data = dp;
+	if (kd)
+		kd->data = dp;
+	else
+		dp = NULL;
     ++keycount;
     _unlock();
     return dp;
@@ -1029,10 +1038,14 @@ bool keyassoc::create(const char *id, void *data)
     if(ptr == NULL)
         ptr = memalloc::_alloc(sizeof(keydata) + size * 8);
     kd = new(ptr) keydata(this, id, paths, 8 + size * 8);
-    kd->data = data;
+	bool rtn = true;
+	if (kd)
+		kd->data = data;
+	else
+		rtn = false;
     ++keycount;
     _unlock();
-    return true;
+    return rtn;
 }
 
 bool keyassoc::assign(const char *id, void *data)
@@ -1062,9 +1075,13 @@ bool keyassoc::assign(const char *id, void *data)
         kd = new(ptr) keydata(this, id, paths, 8 + size * 8);
         ++keycount;
     }
-    kd->data = data;
+	bool rtn = true;
+	if (kd)
+		kd->data = data;
+	else
+		rtn = false;
     _unlock();
-    return true;
+    return rtn;
 }
 
 chartext::chartext() :
@@ -1504,7 +1521,8 @@ void charmem::set(size_t total)
     buffer = (char *)malloc(total);
     size = total;
     inp = out = 0;
-    buffer[0] = 0;
+	if (buffer)
+		buffer[0] = 0;
 }
 
 void charmem::set(char *mem, size_t total)

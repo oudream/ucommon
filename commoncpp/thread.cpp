@@ -183,6 +183,7 @@ void Thread::exit(void)
         delete this;
         pthread_exit(NULL);
     }
+#pragma warning(suppress: 6001)
     terminate();
 }
 
@@ -359,6 +360,7 @@ int SysTime::getTimeOfDay(struct timeval *tp)
     time_t now;
     time(&now);
     temp.tv_sec = (long)now;
+#pragma warning(suppress: 28159)
     temp.tv_usec = (GetTickCount() % 1000) * 1000;
     memcpy(tp, &temp, sizeof(struct timeval));
 #else

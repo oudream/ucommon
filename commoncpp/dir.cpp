@@ -190,6 +190,8 @@ void Dir::open(const char *fname)
 		throw(DirException(String(fname) + ": failed"));
 #endif
 #endif
+	if (!path || !path[0])
+		return;
 	addString(path, len, "\\*");
 	hDir = FindFirstFile(path, &fdata);
 	if(hDir != INVALID_HANDLE_VALUE)

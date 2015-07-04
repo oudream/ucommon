@@ -266,12 +266,15 @@ extern "C" {
         {LeaveCriticalSection(mutex);}
 #endif
 
+#pragma warning(suppress: 28251)
     inline char *strdup(const char *s)
         {return _strdup(s);}
 
+#pragma warning(suppress: 28251)
     inline int stricmp(const char *s1, const char *s2)
         {return _stricmp(s1, s2);}
 
+#pragma warning(suppress: 28251)
     inline int strnicmp(const char *s1, const char *s2, size_t l)
         {return _strnicmp(s1, s2, l);}
 }
@@ -366,7 +369,7 @@ typedef char *caddr_t;
 #ifndef _GNU_SOURCE
 typedef void (*sighandler_t)(int);  /**< Convenient typedef for signal handlers. */
 #endif
-typedef unsigned long timeout_t;    /**< Typedef for millisecond timer values. */
+typedef unsigned long timeout_t;
 
 #include <cctype>
 #include <climits>

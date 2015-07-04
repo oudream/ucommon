@@ -1311,7 +1311,7 @@ bool Socket::address::insert(const struct sockaddr *addr)
 
     struct addrinfo *node = list;
 
-    while(node) {
+    while(node && node->ai_addr) {
         if(node->ai_addr && equal(addr, node->ai_addr))
             return false;
         node = node->ai_next;
@@ -1325,7 +1325,8 @@ bool Socket::address::insert(const struct sockaddr *addr)
     node->ai_addrlen = len(addr);
     node->ai_next = list;
     node->ai_addr = (struct sockaddr *)malloc(node->ai_addrlen);
-    memcpy(node->ai_addr, addr, node->ai_addrlen);
+	if (node->ai_addr)
+		memcpy(node->ai_addr, addr, node->ai_addrlen);
     list = node;
     return true;
 }
@@ -2766,6 +2767,7 @@ bool Socket::wait(socket_t so, timeout_t timeout)
 #else
     struct timeval tv;
     struct timeval *tvp = &tv;
+	unsigned long to = (unsigned long)timeout;
     fd_set grp;
 
     if(so == INVALID_SOCKET)
@@ -2774,8 +2776,8 @@ bool Socket::wait(socket_t so, timeout_t timeout)
     if(timeout == Timer::inf)
         tvp = NULL;
     else {
-        tv.tv_usec = (timeout % 1000) * 1000;
-        tv.tv_sec = timeout / 1000;
+        tv.tv_usec = (to % 1000) * 1000;
+        tv.tv_sec = (to / 1000);
     }
 
     FD_ZERO(&grp);
@@ -2819,6 +2821,7 @@ bool Socket::waitSending(timeout_t timeout) const
 #else
     struct timeval tv;
     struct timeval *tvp = &tv;
+	unsigned long to = (unsigned long)timeout;
     fd_set grp;
 
     if(so == INVALID_SOCKET)
@@ -2827,8 +2830,8 @@ bool Socket::waitSending(timeout_t timeout) const
     if(timeout == Timer::inf)
         tvp = NULL;
     else {
-        tv.tv_usec = (timeout % 1000) * 1000;
-        tv.tv_sec = timeout / 1000;
+        tv.tv_usec = (to % 1000) * 1000;
+        tv.tv_sec = to / 1000;
     }
 
     FD_ZERO(&grp);
