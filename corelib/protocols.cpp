@@ -697,7 +697,6 @@ int _input_long::_input(int code)
 
     buf[pos] = 0;
     if(pos)
-#pragma warning(suppress: 6031)
         sscanf(buf, "%ld", ref);
 
     return code;
@@ -731,7 +730,6 @@ int _input_double::_input(int code)
 
     buf[pos] = 0;
     if(pos)
-#pragma warning(suppress: 6031)
         sscanf(buf, "%lf", ref);
 
     return code;

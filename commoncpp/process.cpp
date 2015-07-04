@@ -657,7 +657,6 @@ void Process::setEnv(const char *name, const char *value, bool overwrite)
         if(getenv(strbuf))
             return;
 
-#pragma warning(suppress: 6031)
     ::putenv(strdup(strbuf));
 #endif
 }
