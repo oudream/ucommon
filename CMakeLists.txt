@@ -19,7 +19,7 @@
 
 cmake_minimum_required(VERSION 2.6)
 PROJECT(ucommon)
-set (VERSION 6.3.4)
+set (VERSION 6.3.5)
 
 if(BIICODE)
     include(dyfet/ucommon/cmake/biicode)
