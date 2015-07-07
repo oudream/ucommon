@@ -24,7 +24,7 @@ include(dyfet/ucommon/cmake/config)
 set(OPENSSL_FOUND TRUE)
 set(HAVE_OPENSSL TRUE)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ucommon-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ucommon-config.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/ucommon-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ucommon-config.h NEWLINE_STYLE UNIX)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_biicode_targets()
