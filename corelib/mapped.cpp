@@ -311,7 +311,9 @@ void MappedMemory::create(const char *fn, size_t len)
 
     if(!use_mapping) {
         assert(len > 0);
-        map = (caddr_t)malloc(size);
+        map = NULL;
+        if(len)
+            map = (caddr_t)malloc(len);
         if(!map)
             fault();
         size = mapsize = len;

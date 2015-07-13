@@ -708,10 +708,10 @@ valid:
 
 int _input_double::_input(int code)
 {
-    if(code == '-' && !pos)
+    if((code == '-') && !pos)
         goto valid;
 
-    if(code == '-' && buf[pos] == 'e')
+    if((code == '-') && buf[pos] == 'e')
         goto valid;
 
     if(tolower(code) == 'e' && !e) {
@@ -720,7 +720,7 @@ int _input_double::_input(int code)
         goto valid;
     }
 
-    if(code == '.' && !dot) {
+    if((code == '.') && !dot) {
         dot = true;
         goto valid;
     }

@@ -1204,6 +1204,8 @@ void bufpager::put(const char *text, size_t iosize)
 
 char *bufpager::copy(size_t *iosize)
 {
+    char *result = NULL;
+
     *iosize = 0;
     if(!current || (current->next == NULL && cpos >= current->used))
         return NULL;
@@ -1213,10 +1215,16 @@ char *bufpager::copy(size_t *iosize)
         cpos = 0l;
     }
 
-    char *result = current->text + cpos;
-    *iosize = current->used - cpos;
+    if(current) {
+        result = current->text + cpos;
+        *iosize = current->used - cpos;
+    }
+    else
+        *iosize = 0l;
+
     cpos = 0l;
-    current = current->next;
+    if(current)
+        current = current->next;
     return result;
 }
 

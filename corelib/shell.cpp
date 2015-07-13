@@ -290,7 +290,7 @@ void shell::set0(char *argv0)
     if(_argv0)
         return;
 
-    if(*argv0 != '/' && *argv0 != '\\' && argv0[1] != ':') {
+    if(argv0 && *argv0 != '/' && *argv0 != '\\' && argv0[1] != ':') {
         fsys::prefix(prefix, sizeof(prefix));
         String::add(prefix, sizeof(prefix), "/");
         String::add(prefix, sizeof(prefix), argv0);
@@ -1735,9 +1735,10 @@ int shell::system(const char *cmd, const char **envp)
         if(ep)
             *ep = 0;
         cp = strchr(*envp, '=');
-        if(cp)
+        if(cp) {
             ++cp;
-        ::setenv(symname, cp, 1);
+            ::setenv(symname, cp, 1);
+        }
         ++envp;
     }
 
@@ -2021,9 +2022,10 @@ int shell::detach(const char *path, char **argv, char **envp, fd_t *stdio)
         if(ep)
             *ep = 0;
         cp = strchr(*envp, '=');
-        if(cp)
+        if(cp) {
             ++cp;
-        ::setenv(symname, cp, 1);
+            ::setenv(symname, cp, 1);
+        }
         ++envp;
     }
 
@@ -2079,9 +2081,10 @@ shell::pid_t shell::spawn(const char *path, char **argv, char **envp, fd_t *stdi
         if(ep)
             *ep = 0;
         cp = strchr(*envp, '=');
-        if(cp)
+        if(cp) {
             ++cp;
-        ::setenv(symname, cp, 1);
+            ::setenv(symname, cp, 1);
+        }
         ++envp;
     }
 

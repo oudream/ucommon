@@ -1192,6 +1192,7 @@ proc:
 #endif
 
     getaddrinfo(host, svc, &hint, &list);
+	strfree(addr);
 }
 
 struct sockaddr *Socket::address::get(void) const
