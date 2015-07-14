@@ -28,6 +28,7 @@ static shell::flagopt follow('F', "--follow", _TEXT("follow symlinks"));
 static shell::numericopt passes('p', "--passes", _TEXT("passes with randomized data (0-x)"), "count", 1);
 static shell::flagopt renamefile('n', "--rename", _TEXT("rename file randomly"));
 static shell::flagopt recursive('R', "--recursive", _TEXT("recursive directory scan"));
+static shell::flagopt simulate('S', "--simulate", _TEXT("produce list of files to scrub"));
 static shell::flagopt altrecursive('r', NULL, NULL);
 static shell::flagopt truncflag('t', "--truncate", _TEXT("decompose file by truncation"));
 static shell::flagopt verbose('v', "--verbose", _TEXT("show active status"));
@@ -108,23 +109,37 @@ static void scrub(const char *path)
     int err = fsys::info(path, &ino);
 
     if(err == ENOENT || fsys::is_link(path)) {
-        report(path, fsys::unlink(path));
+        if(is(simulate))
+            shell::printf("sym %s\n", path);
+        else
+            report(path, fsys::unlink(path));
         return;
     }
 
     if(fsys::is_dir(&ino)) {
-        report(path, dir::remove(path));
+        if(is(simulate))
+            shell::printf("dir %s\n", path);
+        else
+            report(path, dir::remove(path));
         return;
     }
 
     if(err == ENOENT || !ino.st_size || fsys::is_sys(&ino) || fsys::is_dev(&ino)) {
-        report(path, fsys::erase(path));
+        if(is(simulate))
+            shell::printf("del %s\n", path);
+        else 
+            report(path, fsys::erase(path));
         return;
     }
 
     count = (ino.st_size + 1023l) / 1024;
     count /= (fsys::offset_t)(*blocks);
     count *= (fsys::offset_t)(*blocks);
+
+    if(is(simulate)) {
+        shell::printf("scr %s\n", path);
+        return;
+    }
 
     fs.open(path, fsys::REWRITE);
     if(!is(fs)) {
@@ -187,9 +202,8 @@ repeat:
         }
     }
 
-    report(path, dir::remove(path));
-
     fs.close();
+    report(path, dir::remove(path));
 
 }
 
