@@ -30,7 +30,7 @@ bool Random::seed(const unsigned char *buf, size_t size)
 {
     secure::init();
 
-    RAND_seed(buf, size);
+    RAND_seed(buf, (int)size);
     return true;
 }
 
@@ -38,7 +38,7 @@ size_t Random::key(unsigned char *buf, size_t size)
 {
     secure::init();
 
-    if(RAND_bytes(buf, size))
+    if(RAND_bytes(buf, (int)size))
         return size;
     return 0;
 }
@@ -47,7 +47,7 @@ size_t Random::fill(unsigned char *buf, size_t size)
 {
     secure::init();
 
-    if(RAND_pseudo_bytes(buf, size))
+    if(RAND_pseudo_bytes(buf, (int)size))
         return size;
     return 0;
 }

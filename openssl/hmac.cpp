@@ -38,7 +38,7 @@ void HMAC::set(const char *digest, const char *key, size_t len)
     if(hmactype && len) {
         context = new ::HMAC_CTX;
         HMAC_CTX_init((HMAC_CTX *)context);
-        HMAC_Init((HMAC_CTX *)context, key, len, (const EVP_MD *)hmactype);
+        HMAC_Init((HMAC_CTX *)context, key, (int)len, (const EVP_MD *)hmactype);
     }
 }
 

@@ -46,7 +46,7 @@ TCPBuffer(tcp, size)
     if(!is_open() || !ssl)
         return;
 
-    SSL_set_fd((SSL *)ssl, getsocket());
+    SSL_set_fd((SSL *)ssl, (int)getsocket());
 
     if(SSL_accept((SSL *)ssl) > 0)
         bio = SSL_get_wbio((SSL *)ssl);
@@ -70,7 +70,7 @@ void SSLBuffer::open(const char *host, const char *service, size_t size)
     if(!is_open() || !ssl)
         return;
 
-    SSL_set_fd((SSL *)ssl, getsocket());
+    SSL_set_fd((SSL *)ssl, (int)getsocket());
 
     if(SSL_connect((SSL *)ssl) > 0)
         bio = SSL_get_wbio((SSL *)ssl);
@@ -106,7 +106,7 @@ size_t SSLBuffer::_push(const char *address, size_t size)
     if(!bio)
         return TCPBuffer::_push(address, size);
 
-    int result = SSL_write((SSL *)ssl, address, size);
+    int result = SSL_write((SSL *)ssl, address, (int)size);
     if(result < 0) {
         result = 0;
         ioerr = EIO;
@@ -139,7 +139,7 @@ size_t SSLBuffer::_pull(char *address, size_t size)
     if(SSL_pending((SSL *)ssl) == 0 && iowait && iowait != Timer::inf && !Socket::wait(so, iowait))
         return 0;
 
-    int result = SSL_read((SSL *)ssl, address, size);
+    int result = SSL_read((SSL *)ssl, address, (int)size);
     if(result < 0) {
         result = 0;
         ioerr = EIO;
