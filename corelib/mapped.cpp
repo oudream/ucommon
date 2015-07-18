@@ -248,7 +248,7 @@ void MappedMemory::create(const char *fn, size_t len)
 //      prot = FILE_MAP_WRITE;
         mode |= GENERIC_WRITE;
         share |= FILE_SHARE_WRITE;
-        fd = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, len, fn);
+        fd = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, (DWORD)len, fn);
     }
     else
         fd = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, fn);
@@ -311,7 +311,9 @@ void MappedMemory::create(const char *fn, size_t len)
 
     if(!use_mapping) {
         assert(len > 0);
-        map = (caddr_t)malloc(size);
+        map = NULL;
+        if(len)
+            map = (caddr_t)malloc(len);
         if(!map)
             fault();
         size = mapsize = len;
@@ -554,7 +556,7 @@ ReusableAllocator(), MappedMemory(name,  osize * count)
     assert(name != NULL && *name != 0);
     assert(osize > 0 && count > 0);
 
-    objsize = osize;
+    objsize = (unsigned)osize;
     reading = 0;
 }
 
@@ -563,7 +565,7 @@ ReusableAllocator(), MappedMemory()
 {
     assert(osize > 0);
 
-    objsize = osize;
+    objsize = (unsigned)osize;
     reading = 0;
 }
 

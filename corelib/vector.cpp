@@ -380,11 +380,19 @@ void Vector::cow(vectorsize_t size)
 
     if(!data || !data->max || data->is_copied() || size > data->max) {
         array *a = create(size);
-        a->len = data->len;
-        memcpy(a->list, data->list, data->len * sizeof(ObjectProtocol *));
+        if (!a)
+            return;
+
+		if (data) {
+			a->len = data->len;
+			memcpy(a->list, data->list, data->len * sizeof(ObjectProtocol *));
+		}
+		else
+			a->len = 0;
         a->list[a->len] = 0;
         a->retain();
-        data->release();
+		if (data)
+	       data->release();
         data = a;
     }
 }

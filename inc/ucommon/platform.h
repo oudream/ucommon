@@ -25,6 +25,12 @@
  * @file ucommon/platform.h
  */
 
+
+#include <cstdlib>
+#if defined(sun) && defined(unix)
+#include <malloc.h>
+#endif
+
 #ifndef _UCOMMON_PLATFORM_H_
 #define _UCOMMON_PLATFORM_H_
 #define UCOMMON_ABI 7
@@ -169,8 +175,13 @@
 #include <ws2tcpip.h>
 
 #if defined(_MSC_VER)
+typedef int socksize_t;
+typedef int socklen_t;
 typedef signed long ssize_t;
 typedef int pid_t;
+#else
+typedef size_t sockword_t;
+typedef size_t socksize_t;
 #endif
 
 #include <process.h>
@@ -191,6 +202,7 @@ typedef int pid_t;
 #endif
 
 #else
+typedef size_t socksize_t;
 #define __EXPORT    __attribute__ ((visibility("default")))
 #define __LOCAL     __attribute__ ((visibility("hidden")))
 #define __SHARED    __attribute__ ((visibility("default")))
@@ -207,9 +219,11 @@ typedef int pid_t;
 #if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)) && !defined(UCOMMON_SYSRUNTIME) && defined(__MINGW_WINPTHREAD__)
 #include <pthread.h>   // gnu libstdc++ now requires a win pthread
 #undef  _MSCONDITIONALS_
+typedef size_t stacksize_t;
 #else   
 #define _MSTHREADS_
 typedef DWORD pthread_t;
+typedef unsigned stacksize_t;
 typedef CRITICAL_SECTION pthread_mutex_t;
 #endif
 typedef char *caddr_t;
@@ -267,6 +281,7 @@ extern "C" {
 #include <pth.h>
 #include <sys/wait.h>
 
+typedef size_t stacksize_t;
 typedef int socket_t;
 typedef int fd_t;
 #define INVALID_SOCKET -1
@@ -311,16 +326,13 @@ inline void pthread_cond_broadcast(pthread_cond_t *cond)
 
 #include <pthread.h>
 
+typedef size_t stacksize_t;
 typedef int socket_t;
 typedef int fd_t;
 #define INVALID_SOCKET -1
 #define INVALID_HANDLE_VALUE -1
 #include <signal.h>
 
-#endif
-
-#if defined(sun) && defined(unix)
-#include <malloc.h>
 #endif
 
 #ifdef _MSC_VER
@@ -335,8 +347,8 @@ typedef unsigned __int64 uint64_t;
 typedef char *caddr_t;
 
 #include <stdio.h>
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
+#define snprintf(p, s, f, ...) _snprintf_s(p, s, _TRUNCATE, f, __VA_ARGS__) 
+#define vsnprintf(p, s, f, a) _vsnprintf_s(p, s, _TRUNCATE, f, a)
 
 #else
 
@@ -354,9 +366,8 @@ typedef char *caddr_t;
 #ifndef _GNU_SOURCE
 typedef void (*sighandler_t)(int);  /**< Convenient typedef for signal handlers. */
 #endif
-typedef unsigned long timeout_t;    /**< Typedef for millisecond timer values. */
+typedef unsigned long timeout_t;
 
-#include <cstdlib>
 #include <cctype>
 #include <climits>
 #include <cerrno>

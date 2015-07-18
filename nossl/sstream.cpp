@@ -31,7 +31,7 @@ tcpstream()
 }
 
 sstream::sstream(const TCPServer *tcp, secure::server_t context, size_t size) :
-tcpstream(tcp, size)
+tcpstream(tcp, (unsigned)size)
 {
     ssl = NULL;
     bio = NULL;
@@ -47,7 +47,7 @@ void sstream::open(const char *host, const char *service, size_t bufsize)
     if(server)
         return;
 
-    tcpstream::open(host, service, bufsize);
+    tcpstream::open(host, service, (unsigned)bufsize);
 }
 
 void sstream::close(void)

@@ -35,7 +35,7 @@ tcpstream()
 }
 
 sstream::sstream(const TCPServer *tcp, secure::server_t scontext, size_t size) :
-tcpstream(tcp, size)
+tcpstream(tcp, (unsigned)size)
 {
     __context *ctx = (__context *)scontext;
     ssl = NULL;
@@ -48,7 +48,7 @@ tcpstream(tcp, size)
     if(!is_open() || !ssl)
         return;
 
-    SSL_set_fd((SSL *)ssl, getsocket());
+    SSL_set_fd((SSL *)ssl, (int)getsocket());
 
     if(SSL_accept((SSL *)ssl) > 0)
         bio = SSL_get_wbio((SSL *)ssl);
@@ -65,12 +65,12 @@ void sstream::open(const char *host, const char *service, size_t size)
         return;
 
     close();
-    tcpstream::open(host, service, size);
+    tcpstream::open(host, service, (unsigned)size);
 
     if(!is_open() || !ssl)
         return;
 
-    SSL_set_fd((SSL *)ssl, getsocket());
+    SSL_set_fd((SSL *)ssl, (int)getsocket());
 
     if(SSL_connect((SSL *)ssl) > 0)
         bio = SSL_get_wbio((SSL *)ssl);
@@ -105,7 +105,7 @@ ssize_t sstream::_write(const char *address, size_t size)
     if(!bio)
         return tcpstream::_write(address, size);
 
-    return SSL_write((SSL *)ssl, address, size);
+    return SSL_write((SSL *)ssl, address, (int)size);
 }
 
 ssize_t sstream::_read(char *address, size_t size)
@@ -113,7 +113,7 @@ ssize_t sstream::_read(char *address, size_t size)
     if(!bio)
         return tcpstream::_read(address, size);
 
-    return SSL_read((SSL *)ssl, address, size);
+    return SSL_read((SSL *)ssl, address, (int)size);
 }
 
 bool sstream::_wait(void)

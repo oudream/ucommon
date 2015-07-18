@@ -48,7 +48,7 @@ void Cipher::Key::assign(const char *text, size_t size, const unsigned char *sal
     if(!salt)
         salt = _salt;
 
-    if(EVP_BytesToKey((const EVP_CIPHER*)algotype, (const EVP_MD*)hashtype, salt, (const unsigned char *)text, size, rounds, keybuf, ivbuf) < (int)keysize)
+    if(EVP_BytesToKey((const EVP_CIPHER*)algotype, (const EVP_MD*)hashtype, salt, (const unsigned char *)text, (int)size, rounds, keybuf, ivbuf) < (int)keysize)
         keysize = 0;
 }
 
@@ -149,7 +149,7 @@ size_t Cipher::put(const unsigned char *data, size_t size)
         size -= diff;
     }
 
-    if(!EVP_CipherUpdate((EVP_CIPHER_CTX *)context, bufaddr + bufpos, &outlen, data, size)) {
+    if(!EVP_CipherUpdate((EVP_CIPHER_CTX *)context, bufaddr + bufpos, &outlen, data, (int)size)) {
         release();
         return count;
     }
@@ -185,12 +185,12 @@ size_t Cipher::pad(const unsigned char *data, size_t size)
         put(data, size - padsize);
         if(padsize) {
             memcpy(padbuf, data + size - padsize, padsize);
-            memset(padbuf + padsize, keys.iosize() - padsize, keys.iosize() - padsize);
+            memset(padbuf + padsize, (int)(keys.iosize() - padsize), keys.iosize() - padsize);
             size = (size - padsize) + keys.iosize();
         }
         else {
             size += keys.iosize();
-            memset(padbuf, keys.iosize(), keys.iosize());
+            memset(padbuf, (int)keys.iosize(), keys.iosize());
         }
 
         put((const unsigned char *)padbuf, keys.iosize());

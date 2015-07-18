@@ -199,7 +199,7 @@ public:
     }
 
     inline char *gets(char *data, size_t size) {
-        return fp == NULL ? NULL : fgets(data, size, fp);
+        return fp == NULL ? NULL : fgets(data, (socksize_t)size, fp);
     }
 
     template<typename T> inline size_t read(T* data, size_t count) {

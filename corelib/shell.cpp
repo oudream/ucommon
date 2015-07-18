@@ -290,7 +290,7 @@ void shell::set0(char *argv0)
     if(_argv0)
         return;
 
-    if(*argv0 != '/' && *argv0 != '\\' && argv0[1] != ':') {
+    if(argv0 && *argv0 != '/' && *argv0 != '\\' && argv0[1] != ':') {
         fsys::prefix(prefix, sizeof(prefix));
         String::add(prefix, sizeof(prefix), "/");
         String::add(prefix, sizeof(prefix), argv0);
@@ -403,7 +403,7 @@ unsigned shell::count(char **argv)
 void shell::help(void)
 {
     linked_pointer<Option> op = Option::first();
-    unsigned hp = 0, count = 0;
+    size_t hp = 0, count = 0;
     while(is(op)) {
         if(!op->help_string) {
             ++op;
@@ -557,15 +557,15 @@ char *shell::getargv0(char **argv)
 {
     if(!argv || !argv[0])
         errexit(-1, "*** %s\n", errmsg(shell::NOARGS));
-
-    set0(argv[0]);
+	else
+		set0(argv[0]);
     return _argv0;
 }
 
 char **shell::getargv(char **argv)
 {
     char *arg, *opt;
-    unsigned len;
+    size_t len;
     const char *value;
     const char *err;
     unsigned argp = 0;
@@ -882,7 +882,7 @@ size_t shell::readln(char *address, size_t size)
 {
     address[0] = 0;
 
-    if(!fgets(address, size, stdin))
+    if(!fgets(address, (socksize_t)size, stdin))
         return 0;
 
     if(address[size - 1] == '\n') {
@@ -1080,7 +1080,7 @@ int shell::system(const char *cmd, const char **envp)
     char cmdspec[128];
     PROCESS_INFORMATION pi;
     char *ep = NULL;
-    unsigned len = 0;
+    size_t len = 0;
 
     if(envp)
         ep = new char[4096];
@@ -1134,7 +1134,7 @@ shell::pid_t shell::spawn(const char *path, char **argv, char **envp, fd_t *stdi
         {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 
     char *ep = NULL;
-    unsigned len = 0;
+    size_t len = 0;
 
     memset(&si, 0, sizeof(STARTUPINFO));
     si.cb = sizeof(STARTUPINFO);
@@ -1289,7 +1289,7 @@ int shell::detach(const char *path, char **argv, char **envp, fd_t *stdio)
         {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 
     char *ep = NULL;
-    unsigned len = 0;
+    size_t len = 0;
 
     memset(&si, 0, sizeof(STARTUPINFO));
     si.cb = sizeof(STARTUPINFO);
@@ -1419,7 +1419,7 @@ char *shell::getline(const char *prompt, char *buffer, size_t size)
     unsigned pos = 0;
 
     if(!fsys::is_tty(shell::input()))
-        return fgets(buffer, size, stdin);
+        return fgets(buffer, (socksize_t)size, stdin);
 
     fputs(prompt, stdout);
 
@@ -1735,9 +1735,10 @@ int shell::system(const char *cmd, const char **envp)
         if(ep)
             *ep = 0;
         cp = strchr(*envp, '=');
-        if(cp)
+        if(cp) {
             ++cp;
-        ::setenv(symname, cp, 1);
+            ::setenv(symname, cp, 1);
+        }
         ++envp;
     }
 
@@ -2021,9 +2022,10 @@ int shell::detach(const char *path, char **argv, char **envp, fd_t *stdio)
         if(ep)
             *ep = 0;
         cp = strchr(*envp, '=');
-        if(cp)
+        if(cp) {
             ++cp;
-        ::setenv(symname, cp, 1);
+            ::setenv(symname, cp, 1);
+        }
         ++envp;
     }
 
@@ -2079,9 +2081,10 @@ shell::pid_t shell::spawn(const char *path, char **argv, char **envp, fd_t *stdi
         if(ep)
             *ep = 0;
         cp = strchr(*envp, '=');
-        if(cp)
+        if(cp) {
             ++cp;
-        ::setenv(symname, cp, 1);
+            ::setenv(symname, cp, 1);
+        }
         ++envp;
     }
 

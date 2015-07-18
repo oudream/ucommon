@@ -522,7 +522,7 @@ public:
       * @return number of bytes examined.
       */
      inline ssize_t peek(void *buf, size_t len)
-         {return ::recv(so, (char *)buf, len, MSG_PEEK);}
+         {return ::recv(so, (char *)buf, (socksize_t)len, MSG_PEEK);}
 
     /**
      * Return the size of the current stream buffering used.

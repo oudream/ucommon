@@ -310,7 +310,7 @@ size_t BufferProtocol::printf(const char *pformat, ...)
         return 0;
 
     if((size_t)result > bufsize)
-        result = bufsize;
+        result = (int)bufsize;
 
     count = _push(output, result);
     if(count < (size_t)result) {
@@ -414,8 +414,10 @@ size_t CharacterProtocol::getline(char *string, size_t size)
     if(!eols)
         eols = "\0";
 
-    if(string)
-        string[0] = 0;
+	if (string)
+		string[0] = 0;
+	else
+		return 0;
 
     while(count < size - 1) {
         int ch = _getch();
@@ -706,10 +708,10 @@ valid:
 
 int _input_double::_input(int code)
 {
-    if(code == '-' && !pos)
+    if((code == '-') && !pos)
         goto valid;
 
-    if(code == '-' && buf[pos] == 'e')
+    if((code == '-') && buf[pos] == 'e')
         goto valid;
 
     if(tolower(code) == 'e' && !e) {
@@ -718,7 +720,7 @@ int _input_double::_input(int code)
         goto valid;
     }
 
-    if(code == '.' && !dot) {
+    if((code == '.') && !dot) {
         dot = true;
         goto valid;
     }

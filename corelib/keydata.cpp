@@ -193,7 +193,7 @@ bool keyfile::save(HKEY keys, keydata *section, const char *path)
         linked_pointer<keydata::keyvalue> kv = section->begin();
         while(is(kv)) {
             const char *value = kv->value;
-            RegSetValueEx(keys, kv->id, 0L, REG_SZ, (const BYTE *)value, strlen(value) + 1);
+            RegSetValueEx(keys, kv->id, 0L, REG_SZ, (const BYTE *)value, (DWORD)strlen(value) + 1);
         }
     }
     return true;
@@ -364,7 +364,7 @@ void keyfile::load(const char *path)
     char linebuf[1024];
     char *lp = linebuf;
     char *ep;
-    unsigned size = sizeof(linebuf);
+    size_t size = sizeof(linebuf);
     FILE *fp = fopen(path, "r");
     keydata *section = NULL;
     const char *key;
@@ -384,7 +384,7 @@ void keyfile::load(const char *path)
 
     for(;;) {
         *lp = 0;
-        if(NULL == fgets(lp, size, fp)) {
+        if(NULL == fgets(lp, (socksize_t)size, fp)) {
             errcode = ferror(fp);
             lp[0] = 0;
         }

@@ -365,9 +365,9 @@ off_t RandomFile::getCapacity(void)
     eof = SetFilePointer(fd, 0l, NULL, FILE_END);
     SetFilePointer(fd, pos, NULL, FILE_BEGIN);
 #else
-    lseek(fd, pos, SEEK_SET);
     pos = lseek(fd, 0l, SEEK_CUR);
     eof = lseek(fd, 0l, SEEK_END);
+    lseek(fd, pos, SEEK_SET);
 #endif
     leaveMutex();
     return eof;
@@ -774,11 +774,13 @@ RandomFile(fname)
     map = CreateFileMapping(fd, NULL, page, 0, 0, mapname);
     if(!map)
         error(errMapFailed);
-    fcb.address = (caddr_t)MapViewOfFile(map, prot, 0, 0, size);
-    fcb.len = (ccxx_size_t)size;
-    fcb.pos = 0;
-    if(!fcb.address)
-        error(errMapFailed);
+    else {
+        fcb.address = (caddr_t)MapViewOfFile(map, prot, 0, 0, size);
+        fcb.len = (ccxx_size_t)size;
+        fcb.pos = 0;
+        if (!fcb.address)
+            error(errMapFailed);
+    }
 }
 
 MappedFile::MappedFile(const char *fname, Access mode) :

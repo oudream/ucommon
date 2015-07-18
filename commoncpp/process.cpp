@@ -409,7 +409,7 @@ int Process::spawn(const char *exename, const char **args, bool wait)
 {
     int pid;
 
-    pid = vfork();
+    pid = fork();
     if(pid == -1)
         return -1;
 
@@ -734,6 +734,8 @@ bool Lockfile::lock(const char *name)
     if(!ext)
         addString(mname, sizeof(mname), ".lck");
     _mutex = CreateMutex(NULL, FALSE, mname);
+    if (!_mutex || _mutex == INVALID_HANDLE_VALUE)
+        return false;
     if(WaitForSingleObject(_mutex, 200) == WAIT_OBJECT_0)
         _flagged = true;
     return _flagged;

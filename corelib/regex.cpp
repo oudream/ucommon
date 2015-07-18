@@ -233,13 +233,13 @@ unsigned StringPager::split(stringex_t& expr, const char *string, unsigned flags
     while(member < expr.members()) {
         if(!expr.size(member))
             break;
-        match = expr.offset(member++);
+        match = (int)expr.offset(member++);
         if(match > prior) {
             tmp[match] = 0;
             add(tmp + (size_t)prior);
             ++count;
         }
-        prior = match + tcl;
+        prior = (int)(match + tcl);
     }
     if(tmp[prior]) {
         add(tmp + (size_t)prior);

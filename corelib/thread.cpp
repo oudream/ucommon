@@ -1803,7 +1803,7 @@ SharedObject *SharedPointer::share(void)
 
 Thread::Thread(size_t size)
 {
-    stack = size;
+    stack = (stacksize_t)size;
     priority = 0;
 #ifdef  _MSTHREADS_
     cancellor = INVALID_HANDLE_VALUE;
@@ -1891,7 +1891,7 @@ JoinableThread::JoinableThread(size_t size)
     running = false;
     cancellor = NULL;
 #endif
-    stack = size;
+    stack = (stacksize_t)size;
 }
 
 DetachedThread::DetachedThread(size_t size)
@@ -1902,7 +1902,7 @@ DetachedThread::DetachedThread(size_t size)
     cancellor = NULL;
 #endif
     active = false;
-    stack = size;
+    stack = (stacksize_t)size;
 }
 
 void Thread::sleep(timeout_t timeout)

@@ -109,7 +109,7 @@ Conditional()
     bufsize = osize * c;
     objsize = osize;
     objcount = 0;
-    limit = c;
+    limit = (unsigned)c;
 
     if(osize) {
         buf = (char *)malloc(bufsize);
@@ -143,7 +143,7 @@ unsigned Buffer::count(void) const
 
 unsigned Buffer::size(void) const
 {
-    return bufsize / objsize;
+    return (unsigned)(bufsize / objsize);
 }
 
 void *Buffer::get(void)

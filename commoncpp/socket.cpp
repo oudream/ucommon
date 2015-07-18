@@ -1003,7 +1003,7 @@ void Socket::setCompletion(bool immediate)
 {
     flags.completion = immediate;
 #ifdef _MSWINDOWS_
-    unsigned long flag;
+    unsigned long flag = 0;
     // note that this will not work on some versions of Windows for Workgroups. Tough. -- jfc
     switch( immediate ) {
     case false:

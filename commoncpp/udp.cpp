@@ -217,7 +217,7 @@ Socket(ia.family(), SOCK_DGRAM, IPPROTO_UDP)
     int opt = 1;
     setsockopt(so, SOL_SOCKET, SO_REUSEADDR, (char *)&opt, (socklen_t)sizeof(opt));
 #endif
-    if(bind(so, peer, peer.getLength())) {
+    if(bind(so, peer, (socklen_t)peer.getLength())) {
         endSocket();
         error(errBindingFailed,(char *)"Could not bind socket",socket_errno);
         return;
@@ -265,7 +265,7 @@ UDPSocket::~UDPSocket()
 ssize_t UDPSocket::send(const void *buf, size_t len)
 {
     struct sockaddr *addr = peer;
-    socklen_t alen = peer.getLength();
+    socklen_t alen = (socklen_t)peer.getLength();
     if(isConnected()) {
         addr = NULL;
         alen = 0;
@@ -277,7 +277,7 @@ ssize_t UDPSocket::send(const void *buf, size_t len)
 ssize_t UDPSocket::receive(void *buf, size_t len, bool reply)
 {
     struct sockaddr *addr = peer;
-    socklen_t alen = peer.getLength();
+    socklen_t alen = (socklen_t)peer.getLength();
     struct sockaddr_in6 senderAddress;  // DMC 2/7/05 ADD for use below.
 
     if(isConnected() || !reply) {
@@ -394,7 +394,7 @@ void UDPSocket::connect(const ucommon::Socket::address &host)
     if(so == INVALID_SOCKET)
         return;
 
-    if(!::connect(so, host, host.getLength()))
+    if(!::connect(so, host, (socklen_t)host.getLength()))
         Socket::state = CONNECTED;
 }
 
@@ -449,14 +449,14 @@ void UDPSocket::connect(const char *service)
     if(so == INVALID_SOCKET)
         return;
 
-    rtn = ::connect(so, peer, peer.getLength());
+    rtn = ::connect(so, peer, (socklen_t)peer.getLength());
     if(!rtn)
         Socket::state = CONNECTED;
 }
 
 ucommon::Socket::address UDPSocket::getPeer()
 {
-    ucommon::Socket::address addr = getPeer();
+    ucommon::Socket::address addr = Socket::getPeer();
     setPeer(addr);
     return addr;
 }
@@ -543,7 +543,7 @@ Socket::Error UDPTransmit::connect(const ucommon::Socket::address &host)
     peer = host;
     if(peer.isAny())
         peer.setLoopback();
-    if(::connect(so, peer, peer.getLength()))
+    if(::connect(so, peer, (socklen_t)peer.getLength()))
         return connectError();
     return errSuccess;
 }
@@ -629,7 +629,7 @@ Socket::Error UDPReceive::connect(const ucommon::Socket::address &ia)
     if(host.isAny())
         host.setLoopback();
 
-    if(::connect(so, host, host.getLength()))
+    if(::connect(so, host, (socklen_t)host.getLength()))
         return connectError();
     return errSuccess;
 }

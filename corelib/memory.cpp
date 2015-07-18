@@ -104,7 +104,7 @@ unsigned memalloc::utilization(void) const
     page_t *mp = page;
 
     while(mp) {
-        alloc += pagesize;
+        alloc += (unsigned long)pagesize;
         used += mp->used;
         mp = mp->next;
     }
@@ -159,8 +159,10 @@ memalloc::page_t *memalloc::pager(void)
 #if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_ALIGNED_ALLOC)
 use:
 #endif
-    if(!npage)
-        fault();
+	if (!npage) {
+		fault();
+		return NULL;
+	}
 
     ++count;
     npage->used = sizeof(page_t);
@@ -196,7 +198,7 @@ void *memalloc::_alloc(size_t size)
         p = pager();
 
     mem = ((caddr_t)(p)) + p->used;
-    p->used += size;
+    p->used += (unsigned)size;
     return mem;
 }
 
@@ -323,6 +325,8 @@ void *ObjectPager::push(void)
     member *node;
 
     node = new(mem) member(&root);
+	if (!node)
+		return NULL;
     if(!last)
         last = node;
     ++members;
@@ -397,7 +401,6 @@ void **ObjectPager::list(void)
         mp.next();
     }
     index[pos] = NULL;
-    dp = index;
     return index;
 }
 
@@ -702,11 +705,12 @@ void StringPager::sort(void)
     if(!members)
         return;
 
+	unsigned count = members;
     member **list = new member*[members];
     unsigned pos = 0;
     linked_pointer<member> mp = root;
 
-    while(is(mp)) {
+    while(is(mp) && count--) {
         list[pos++] = *mp;
         mp.next();
     }
@@ -871,7 +875,8 @@ PagerObject *PagerPool::get(size_t size)
         ptr = new((_alloc(size))) PagerObject;
     else
         ptr->reset();
-    ptr->pager = this;
+	if (ptr)
+		ptr->pager = this;
     return ptr;
 }
 
@@ -943,7 +948,7 @@ void *keyassoc::remove(const char *id)
     LinkedObject *obj;
     void *data;
     unsigned path = NamedObject::keyindex(id, paths);
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(!keysize || size >= keysize || !list)
         return NULL;
@@ -971,7 +976,7 @@ void *keyassoc::allocate(const char *id, size_t dsize)
     void *dp = NULL;
     keydata *kd;
     LinkedObject *obj;
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(keysize && size >= keysize)
         return NULL;
@@ -996,7 +1001,10 @@ void *keyassoc::allocate(const char *id, size_t dsize)
     else
         dp = ((keydata *)(ptr))->data;
     kd = new(ptr) keydata(this, id, paths, 8 + size * 8);
-    kd->data = dp;
+	if (kd)
+		kd->data = dp;
+	else
+		dp = NULL;
     ++keycount;
     _unlock();
     return dp;
@@ -1009,7 +1017,7 @@ bool keyassoc::create(const char *id, void *data)
 
     keydata *kd;
     LinkedObject *obj;
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(keysize && size >= keysize)
         return false;
@@ -1030,10 +1038,14 @@ bool keyassoc::create(const char *id, void *data)
     if(ptr == NULL)
         ptr = memalloc::_alloc(sizeof(keydata) + size * 8);
     kd = new(ptr) keydata(this, id, paths, 8 + size * 8);
-    kd->data = data;
+	bool rtn = true;
+	if (kd)
+		kd->data = data;
+	else
+		rtn = false;
     ++keycount;
     _unlock();
-    return true;
+    return rtn;
 }
 
 bool keyassoc::assign(const char *id, void *data)
@@ -1043,7 +1055,7 @@ bool keyassoc::assign(const char *id, void *data)
 
     keydata *kd;
     LinkedObject *obj;
-    unsigned size = strlen(id);
+    unsigned size = (unsigned)strlen(id);
 
     if(keysize && size >= keysize)
         return false;
@@ -1063,9 +1075,13 @@ bool keyassoc::assign(const char *id, void *data)
         kd = new(ptr) keydata(this, id, paths, 8 + size * 8);
         ++keycount;
     }
-    kd->data = data;
+	bool rtn = true;
+	if (kd)
+		kd->data = data;
+	else
+		rtn = false;
     _unlock();
-    return true;
+    return rtn;
 }
 
 chartext::chartext() :
@@ -1156,7 +1172,7 @@ void bufpager::put(const char *text, size_t iosize)
                 unsigned size = 0;
 
                 while(p) {
-                    size = pagesize - p->used;
+                    size = (unsigned)(pagesize - p->used);
                     if(size)
                         break;
                     p = p->next;
@@ -1170,7 +1186,7 @@ void bufpager::put(const char *text, size_t iosize)
                 next->text = ((char *)(p)) + p->used;
                 next->used = 0;
                 next->size = size;
-                p->used = pagesize;
+                p->used = (unsigned)pagesize;
             }
 
             if(last)
@@ -1188,6 +1204,8 @@ void bufpager::put(const char *text, size_t iosize)
 
 char *bufpager::copy(size_t *iosize)
 {
+    char *result = NULL;
+
     *iosize = 0;
     if(!current || (current->next == NULL && cpos >= current->used))
         return NULL;
@@ -1197,10 +1215,16 @@ char *bufpager::copy(size_t *iosize)
         cpos = 0l;
     }
 
-    char *result = current->text + cpos;
-    *iosize = current->used - cpos;
+    if(current) {
+        result = current->text + cpos;
+        *iosize = current->used - cpos;
+    }
+    else
+        *iosize = 0l;
+
     cpos = 0l;
-    current = current->next;
+    if(current)
+        current = current->next;
     return result;
 }
 
@@ -1227,7 +1251,7 @@ char *bufpager::request(size_t *iosize)
             unsigned size = 0;
 
             while(p) {
-                size = pagesize - p->used;
+                size = (unsigned)(pagesize - p->used);
                 if(size)
                     break;
                 p = p->next;
@@ -1243,7 +1267,7 @@ char *bufpager::request(size_t *iosize)
             next->text = ((char *)(p)) + p->used;
             next->used = 0;
             next->size = size;
-            p->used = pagesize;
+            p->used = (unsigned)pagesize;
         }
 
         if(last)
@@ -1259,7 +1283,7 @@ char *bufpager::request(size_t *iosize)
 
 void bufpager::update(size_t iosize)
 {
-    last->used += iosize;
+    last->used += (unsigned)iosize;
 }
 
 size_t bufpager::get(char *text, size_t iosize)
@@ -1307,7 +1331,7 @@ void bufpager::add(const char *text)
                 unsigned size = 0;
 
                 while(p) {
-                    size = pagesize - p->used;
+                    size = (unsigned)(pagesize - p->used);
                     if(size)
                         break;
                     p = p->next;
@@ -1323,7 +1347,7 @@ void bufpager::add(const char *text)
                 next->text = ((char *)(p)) + p->used;
                 next->used = 0;
                 next->size = size;
-                p->used = pagesize;
+                p->used = (unsigned)pagesize;
             }
 
             if(last)
@@ -1411,7 +1435,7 @@ int bufpager::_putch(int code)
             unsigned size = 0;
 
             while(p) {
-                size = pagesize - p->used;
+                size = (unsigned)(pagesize - p->used);
                 if(size)
                     break;
                 p = p->next;
@@ -1427,7 +1451,7 @@ int bufpager::_putch(int code)
             next->text = ((char *)(p)) + p->used;
             next->used = 0;
             next->size = size;
-            p->used = pagesize;
+            p->used = (unsigned)pagesize;
         }
 
         if(last)
@@ -1505,7 +1529,8 @@ void charmem::set(size_t total)
     buffer = (char *)malloc(total);
     size = total;
     inp = out = 0;
-    buffer[0] = 0;
+	if (buffer)
+		buffer[0] = 0;
 }
 
 void charmem::set(char *mem, size_t total)

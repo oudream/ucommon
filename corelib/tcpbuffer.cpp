@@ -89,7 +89,7 @@ void TCPBuffer::close(void)
 void TCPBuffer::_buffer(size_t size)
 {
     unsigned iobuf = 0;
-    unsigned mss = size;
+    unsigned mss = (unsigned)size;
     unsigned max = 0;
 
 #ifdef  TCP_MAXSEG
@@ -110,31 +110,23 @@ void TCPBuffer::_buffer(size_t size)
     if(max && max < mss)
         mss = max;
 
-    if(!mss) {
-        if(max)
-            mss = max;
+    if(mss) {
+        if(mss < 80)
+            mss = 80;
+
+        if(mss * 7 < 64000u)
+            iobuf = mss * 7;
+        else if(size * 6 < 64000u)
+            iobuf = mss * 6;
         else
-            mss = 536;
-        goto alloc;
+            iobuf = mss * 5;
+
+        Socket::sendsize(so, iobuf);
+        Socket::recvsize(so, iobuf);
+
+        if(mss < 512)
+            Socket::sendwait(so, mss * 4);
     }
-
-    if(mss < 80)
-        mss = 80;
-
-    if(mss * 7 < 64000u)
-        iobuf = mss * 7;
-    else if(size * 6 < 64000u)
-        iobuf = mss * 6;
-    else
-        iobuf = mss * 5;
-
-    Socket::sendsize(so, iobuf);
-    Socket::recvsize(so, iobuf);
-
-    if(mss < 512)
-        Socket::sendwait(so, mss * 4);
-
-alloc:
     allocate(size);
 }
 
@@ -161,22 +153,15 @@ size_t TCPBuffer::_push(const char *address, size_t len)
     if(ioerr)
         return 0;
 
-    ssize_t result = writeto(address, len);
-    if(result < 0)
-        result = 0;
-
-    return (size_t)result;
+    return writeto(address, len);
 }
 
 size_t TCPBuffer::_pull(char *address, size_t len)
 {
-    ssize_t result;
+    if (ioerr)
+        return 0;
 
-    result = readfrom(address, len);
-
-    if(result < 0)
-        result = 0;
-    return (size_t)result;
+    return readfrom(address, len);
 }
 
 bool TCPBuffer::_pending(void)

@@ -149,7 +149,7 @@ const char *secure::oscerts(void)
 
 int secure::oscerts(const char *pathname)
 {
-    bool caset;
+    bool caset = false;
     string_t target;
 
     if(pathname[1] == ':' || pathname[0] == '/' || pathname[0] == '\\')
@@ -441,13 +441,13 @@ size_t Cipher::puts(const char *text)
         return 0;
 
     size_t len = strlen(text) + 1;
-    unsigned pad = len % keys.iosize();
+    size_t pad = len % keys.iosize();
 
-    size_t count = put((const unsigned char *)text, len - pad);
+    put((const unsigned char *)text, len - pad);
     if(pad) {
         memcpy(padbuf, text + len - pad, pad);
         memset(padbuf + pad, 0, keys.iosize() - pad);
-        count += put((const unsigned char *)padbuf, keys.iosize());
+        put((const unsigned char *)padbuf, keys.iosize());
         zerofill(padbuf, sizeof(padbuf));
     }
     return flush();

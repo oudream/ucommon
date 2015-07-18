@@ -67,7 +67,8 @@ void MultiMap::delist(unsigned path)
             *links[path].root = next(path);
             break;
         }
-        links[path].root = &((*links[path].root)->links[path].next);
+		if (links[path].root && *links[path].root)
+			links[path].root = &((*links[path].root)->links[path].next);
     }
     links[path].root = NULL;
     links[path].next = NULL;
@@ -758,6 +759,8 @@ void NamedTree::purge(void)
 
     while(node) {
         obj = *node;
+		if (!obj)
+			break;
         obj->Parent = NULL; // save processing
         node = obj->getNext();
         delete obj;

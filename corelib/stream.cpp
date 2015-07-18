@@ -386,8 +386,8 @@ void tcpstream::allocate(unsigned mss)
     else
         bufsize = mss * 5;
 
-    Socket::sendsize(so, bufsize);
-    Socket::recvsize(so, bufsize);
+    Socket::sendsize(so, (unsigned)bufsize);
+    Socket::recvsize(so, (unsigned)bufsize);
 
     if(mss < 512)
         Socket::sendwait(so, mss * 4);
@@ -578,7 +578,6 @@ void pipestream::open(const char *path, access_t mode, char **args, char **envp,
             if(mode == RDWR) {
                 fsys::release(stdio[1]);
                 fsys::release(input);
-                input = INVALID_HANDLE_VALUE;
             }
             return;
         }
@@ -677,20 +676,48 @@ void filestream::allocate(size_t size, fsys::access_t mode)
         return;
     }
 
-    if(mode == fsys::RDONLY || fsys::RDWR || fsys::SHARED)
+    switch (mode) {
+    case fsys::RDONLY:
+    case fsys::RDWR:
+    case fsys::SHARED:
         gbuf = new char[size];
-    if(mode == fsys::WRONLY || fsys::APPEND || fsys::SHARED || fsys::RDWR)
+    default:
+        break;
+    }
+
+    switch (mode) {
+    case fsys::WRONLY:
+    case fsys::APPEND:
+    case fsys::SHARED:
+    case fsys::RDWR:
         pbuf = new char[size];
+    default:
+        break;
+    }
+
     bufsize = size;
     clear();
-    if(mode == fsys::RDONLY || fsys::RDWR || fsys::SHARED) {
+    switch (mode) {
+    case fsys::RDONLY:
+    case fsys::RDWR:
+    case fsys::SHARED:
 #if (defined(__GNUC__) && (__GNUC__ < 3)) && !defined(MSWINDOWS) && !defined(STLPORT)
         setb(gbuf, gbuf + size, 0);
 #endif
         setg(gbuf, gbuf + size, gbuf + size);
+    default:
+        break;
     }
-    if(mode == fsys::WRONLY || fsys::APPEND || fsys::SHARED || fsys::RDWR)
+
+    switch (mode) {
+    case fsys::WRONLY:
+    case fsys::APPEND:
+    case fsys::SHARED:
+    case fsys::RDWR:
         setp(pbuf, pbuf + size);
+    default:
+        break;
+    }
 }
 
 void filestream::open(const char *fname, unsigned fmode, fsys::access_t access, size_t size)

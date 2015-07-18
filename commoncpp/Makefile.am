@@ -19,5 +19,5 @@ libcommoncpp_la_LDFLAGS = ../corelib/libucommon.la @UCOMMON_LIBS@ $(RELEASE)
 libcommoncpp_la_SOURCES = strchar.cpp slog.cpp exception.cpp thread.cpp \
 	address.cpp socket.cpp tcp.cpp udp.cpp dccp.cpp applog.cpp mime.cpp \
 	process.cpp serial.cpp tokenizer.cpp file.cpp dso.cpp linked.cpp \
-	pointer.cpp map.cpp misc.cpp
+	pointer.cpp map.cpp misc.cpp dir.cpp
 
