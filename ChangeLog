@@ -1,3 +1,8 @@
+Changes from 6.3.5 to 6.3.6
+- code cleanup
+- simulate option for scrub
+- set newline style for cmake genorated files
+
 Changes from 6.3.4 to 6.3.5
 - general code cleanup
 - some build fixes
