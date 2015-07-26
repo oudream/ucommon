@@ -269,7 +269,7 @@ public:
 
 	void set(const uint8_t *str, size_t size);
 
-	void set(value *bytes);
+	void assign(value *bytes);
 
 	static byteref::value *create(size_t size);
 

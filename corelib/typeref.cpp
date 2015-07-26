@@ -211,7 +211,7 @@ byteref& byteref::operator=(const byteref& objref)
 
 byteref& byteref::operator=(value *bytes)
 {
-    set(bytes);
+    assign(bytes);
     return *this;
 }
 
@@ -222,7 +222,7 @@ void byteref::set(const uint8_t *str, size_t size)
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
-void byteref::set(value *bytes)
+void byteref::assign(value *bytes)
 {
     release();
     TypeRef::set(bytes);
