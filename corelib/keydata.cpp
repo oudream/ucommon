@@ -128,6 +128,18 @@ memalloc(pagesize), index()
     load(&copy);
 }
 
+void keyfile::assign(keyfile& source)
+{
+    errcode = source.errcode;
+    defaults = source.defaults;
+    index.copy(source.index);
+    
+    memalloc::assign(source);
+    source.errcode = 0;
+    source.defaults = NULL;
+    source.index.reset();
+}
+
 void keyfile::release(void)
 {
     defaults = NULL;

@@ -156,6 +156,8 @@ private:
     keydata *defaults;
     int errcode;
 
+    inline keyfile(const keyfile& copy) {};
+
 protected:
     keydata *create(const char *section);
 
@@ -253,6 +255,17 @@ public:
 
     inline int err(void) const
         {return errcode;}
+
+    /**
+     * Assign foreign pager to us.  This relocates the heap references
+     * to our object, clears the other object.
+     */
+    void assign(keyfile& source);
+
+    inline keyfile& operator=(keyfile& source) {
+        assign(source);
+        return *this;
+    }
 };
 
 } // namespace ucommon

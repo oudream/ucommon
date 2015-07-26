@@ -189,9 +189,9 @@ protected:
 
     OrderedObject *head, *tail;
 
+public:
     void copy(const OrderedIndex& source);
 
-public:
     /**
      * Create and initialize an empty index.
      */
