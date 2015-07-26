@@ -48,52 +48,54 @@
 namespace ucommon {
 
 /**
- * Heap base-class container for typeref objects.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT TypeCounted : public ObjectProtocol
-{
-protected:
-	friend class TypeRef;
-
-	mutable atomic::counter count;
-	size_t size;
-	void *memory;
-
-	explicit TypeCounted(void *addr, size_t size);
-
-	virtual void dealloc();
-
-public:
-	inline bool is() const {
-		return (count.get() > 0);
-	}
-
-	inline unsigned copies() const {
-		return ((unsigned)count.get());
-	}
-
-	void operator delete(void *addr);
-
-	void retain();
-
-	void release();
-};
-
-/**
  * Smart pointer base class for auto-retained objects.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 class __EXPORT TypeRef
 {
 protected:
-	TypeCounted *ref;		// heap reference...
+    /**
+	 * Heap base-class container for typeref objects.
+	 * @author David Sugar <dyfet@gnutelephony.org>
+	 */
+	class __EXPORT Counted : public ObjectProtocol
+	{
+	protected:
+		friend class TypeRef;
 
-	TypeRef(TypeCounted *object);
+		mutable atomic::counter count;
+		size_t size;
+		void *memory;
+
+		explicit Counted(void *addr, size_t size);
+
+		virtual void dealloc();
+
+	public:
+		inline bool is() const {
+			return (count.get() > 0);
+		}
+
+		inline unsigned copies() const {
+			return ((unsigned)count.get());
+		}
+
+		void operator delete(void *addr);
+
+		void retain();
+
+		void release();
+	};
+
+
+
+	Counted *ref;		// heap reference...
+
+	TypeRef(Counted *object);
 	TypeRef(const TypeRef& copy);
 	TypeRef();
 
-	void set(TypeCounted *object);
+	void set(Counted *object);
 
 	static caddr_t alloc(size_t size);
 
@@ -130,14 +132,14 @@ template<typename T>
 class typeref : public TypeRef
 {
 private:
-	class value : public TypeCounted
+	class value : public Counted
 	{
 	public:
 		inline value(caddr_t mem) : 
-		TypeCounted(mem, sizeof(value)) {};
+		Counted(mem, sizeof(value)) {};
 
 		inline value(caddr_t mem, const T& object) : 
-		TypeCounted(mem, sizeof(value)) {
+		Counted(mem, sizeof(value)) {
 			data = object;
 		}
 
@@ -193,7 +195,7 @@ public:
 class __EXPORT stringref : public TypeRef
 {
 private:
-	class value : public TypeCounted
+	class value : public Counted
 	{
 	public:
 		value(caddr_t addr, size_t size, const char *str);
@@ -220,7 +222,7 @@ public:
 class __EXPORT byteref : public TypeRef
 {
 public:
-	class value : public TypeCounted
+	class value : public Counted
 	{
 	protected:
 		friend class byteref;

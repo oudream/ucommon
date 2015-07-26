@@ -24,29 +24,29 @@
 
 namespace ucommon {
 
-TypeCounted::TypeCounted(void *addr, size_t size) : 
+TypeRef::Counted::Counted::Counted(void *addr, size_t size) : 
 ObjectProtocol()
 {
     this->memory = addr;
     this->size = size;
 }
 
-void TypeCounted::dealloc()
+void TypeRef::Counted::dealloc()
 {
     delete this;
     ::free(memory);
 }
 
-void TypeCounted::operator delete(void *addr)
+void TypeRef::Counted::operator delete(void *addr)
 {
 }
 
-void TypeCounted::retain(void)
+void TypeRef::Counted::retain(void)
 {
     count.fetch_add();
 }
 
-void TypeCounted::release(void)
+void TypeRef::Counted::release(void)
 {
     if(count.fetch_sub() < 2) {
 	dealloc();
@@ -58,7 +58,7 @@ TypeRef::TypeRef()
     ref = NULL;
 }
 
-TypeRef::TypeRef(TypeCounted *object)
+TypeRef::TypeRef(TypeRef::Counted *object)
 {
     ref = object;
     object->retain();
@@ -90,7 +90,7 @@ void TypeRef::set(const TypeRef& ptr)
     ref = ptr.ref;
 }
 
-void TypeRef::set(TypeCounted *object)
+void TypeRef::set(TypeRef::Counted *object)
 {
     object->retain();
     release();
@@ -110,7 +110,7 @@ caddr_t TypeRef::mem(caddr_t addr)
 }
 
 stringref::value::value(caddr_t addr, size_t size, const char *str) : 
-TypeCounted(addr, size)
+TypeRef::Counted(addr, size)
 {
     if(str)
     	String::set(mem, size + 1, str);
@@ -169,14 +169,14 @@ void stringref::set(const char *str)
 }
 
 byteref::value::value(caddr_t addr, size_t size, const uint8_t *str) : 
-TypeCounted(addr, size)
+TypeRef::Counted(addr, size)
 {
     if(size)
         memcpy(mem, str, size);
 }
 
 byteref::value::value(caddr_t addr, size_t size) : 
-TypeCounted(addr, size)
+TypeRef::Counted(addr, size)
 {
 }
 
