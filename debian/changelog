@@ -1,3 +1,10 @@
+ucommon (1:6.4.0-1) UNRELEASED; urgency=low
+
+  * new typeref system for immutable atomic reference counted objects
+  * heap management objects support moving heap through assignment
+
+ -- David Sugar <dyfet@gnutelephony.org>  Sun, 26 Jul 2015 15:52:37 -0400
+
 ucommon (1:6.3.6-1) UNRELEASED; urgency=low
 
   * More code cleanup
