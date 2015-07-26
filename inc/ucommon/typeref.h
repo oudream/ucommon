@@ -212,6 +212,10 @@ public:
 
 	const char *operator*() const;
 
+	inline operator const char *() const {
+		return operator*();
+	}
+
 	stringref& operator=(const stringref& objref);
 
 	stringref& operator=(const char *str);
@@ -256,6 +260,10 @@ public:
 
 	const uint8_t *operator*() const;
 
+	inline operator const uint8_t *() const {
+		return operator*();
+	}
+
 	byteref& operator=(const byteref& objref);
 
 	byteref& operator=(value *bytes);
@@ -270,6 +278,8 @@ public:
 };
 
 typedef	byteref::value	*bytevalues_t;
+typedef	stringref	stringref_t;
+typedef byteref		byteref_t;
 
 } // namespace
 
