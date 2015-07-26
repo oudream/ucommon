@@ -98,16 +98,61 @@ public:
 	void set(TypeRef ptr);
 	void release(void);
 	
-	inline void operator=(TypeRef ptr) {
-		set(ptr);
-	}
-
 	inline bool is() const {
 		return ref != NULL;
 	}
 
 	inline bool operator!() const {
 		return ref == NULL;
+	}
+};
+
+template<typename T>
+class typeref : public TypeRef
+{
+private:
+	class value : public TypeCounted
+	{
+	public:
+		value();
+
+		T data;
+	};
+ 
+public:
+	inline typeref() :	TypeRef() {};
+
+	inline typeref(const typeref& copy) : TypeRef(copy) {};
+
+	inline typeref(const T& object) : TypeRef() {
+		caddr_t mem = (caddr_t)atomic::alloc(sizeof(value));
+		set(new(mem) value);
+	}
+
+	inline const T *operator*() const {
+		value *v = polystatic_cast<value>(ref);
+		return &(v->data);
+	}
+
+	inline operator const T&() const {
+		value *v = polystatic_cast<value>(ref);
+		return polyreference_cast<const T>(&(v->data));
+	}
+
+	inline typeref& operator=(const typeref& ptr) {
+		set(ptr);
+		return *this;
+	}
+
+	inline void set(const T& object) {
+		release();
+		caddr_t mem = (caddr_t)atomic::alloc(sizeof(value));
+		set(new(mem) value);
+	}
+
+	inline typeref& operator=(const T& object) {
+		set(object);
+		return *this;
 	}
 };
 
