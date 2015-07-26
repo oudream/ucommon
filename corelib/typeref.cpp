@@ -24,11 +24,11 @@
 
 namespace ucommon {
 
-TypeRef::Counted::Counted(void *addr, size_t size) : 
+TypeRef::Counted::Counted(void *addr, size_t objsize) : 
 ObjectProtocol()
 {
     this->memory = addr;
-    this->size = size;
+    this->size = objsize;
 }
 
 void TypeRef::Counted::dealloc()
@@ -109,11 +109,11 @@ caddr_t TypeRef::mem(caddr_t addr)
     return addr;
 }
 
-stringref::value::value(caddr_t addr, size_t size, const char *str) : 
-TypeRef::Counted(addr, size)
+stringref::value::value(caddr_t addr, size_t objsize, const char *str) : 
+TypeRef::Counted(addr, objsize)
 {
     if(str)
-    	String::set(mem, size + 1, str);
+    	String::set(mem, objsize + 1, str);
     else
 	mem[0] = 0;
 }
@@ -168,11 +168,11 @@ void stringref::set(const char *str)
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
-byteref::value::value(caddr_t addr, size_t size, const uint8_t *str) : 
-TypeRef::Counted(addr, size)
+byteref::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
+TypeRef::Counted(addr, objsize)
 {
-    if(size)
-        memcpy(mem, str, size);
+    if(objsize)
+        memcpy(mem, str, objsize);
 }
 
 byteref::value::value(caddr_t addr, size_t size) : 

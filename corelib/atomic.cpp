@@ -240,6 +240,13 @@ atomic_t atomic::counter::get() volatile
     return rval;
 }
 
+void atomic::counter::clear() volatile
+{
+    Mutex::protect((void *)&value);
+    value = 0;
+    Mutex::release((void *)&value);
+}
+
 atomic_t atomic::counter::fetch_add(atomic_t change) volatile
 {
     atomic_t rval;
