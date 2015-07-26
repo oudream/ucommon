@@ -48,7 +48,7 @@ void TypeRef::Counted::retain(void)
 void TypeRef::Counted::release(void)
 {
     if(count.fetch_sub() < 2) {
-	dealloc();
+	    dealloc();
     }
 }
 
@@ -60,13 +60,15 @@ TypeRef::TypeRef()
 TypeRef::TypeRef(TypeRef::Counted *object)
 {
     ref = object;
-    object->retain();
+    if(ref)
+        ref->retain();
 }
 
 TypeRef::TypeRef(const TypeRef& copy)
 {
     ref = copy.ref;
-    ref->retain();
+    if(ref)
+        ref->retain();
 }
 
 TypeRef::~TypeRef()
@@ -91,7 +93,8 @@ void TypeRef::set(const TypeRef& ptr)
 
 void TypeRef::set(TypeRef::Counted *object)
 {
-    object->retain();
+    if(object)
+        object->retain();
     release();
     ref = object;
 }
