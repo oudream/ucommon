@@ -23,7 +23,7 @@
 %define	build_docs	0
 %endif
 Name:           ucommon
-Version:        6.3.5
+Version:        6.3.6
 Release:        1
 Summary:        Portable C++ runtime for threads and sockets
 License:        LGPL-3.0+
