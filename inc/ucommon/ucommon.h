@@ -89,6 +89,7 @@
 #include <ucommon/generics.h>
 #include <ucommon/protocols.h>
 #include <ucommon/object.h>
+#include <ucommon/typeref.h>
 #include <ucommon/string.h>
 #include <ucommon/counter.h>
 #include <ucommon/numbers.h>
