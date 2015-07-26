@@ -48,7 +48,7 @@ void TypeCounted::retain(void)
 
 void TypeCounted::release(void)
 {
-    if(count.fetch_sub() == 1) {
+    if(count.fetch_sub() < 2) {
 	dealloc();
     }
 }
@@ -139,7 +139,7 @@ TypeRef()
 const char *stringref::operator*() const 
 {
     if(!ref)
-	return NULL;
+	    return NULL;
     value *v = polystatic_cast<value *>(ref);
     return &v->mem[0];
 }
@@ -168,5 +168,73 @@ void stringref::set(const char *str)
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
+byteref::value::value(caddr_t addr, size_t size, const uint8_t *str) : 
+TypeCounted(addr, size)
+{
+    if(size)
+        memcpy(mem, str, size);
+}
+
+byteref::value::value(caddr_t addr, size_t size) : 
+TypeCounted(addr, size)
+{
+}
+
+byteref::byteref() :
+TypeRef() {}
+
+byteref::byteref(const byteref& copy) :
+TypeRef(copy) {}
+
+byteref::byteref(const uint8_t *str, size_t size) :
+TypeRef()
+{
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    TypeRef::set(new(mem(p)) value(p, size, str));
+}
+
+const uint8_t *byteref::operator*() const 
+{
+    if(!ref)
+	    return NULL;
+    value *v = polystatic_cast<value *>(ref);
+    return &v->mem[0];
+}
+
+byteref& byteref::operator=(const byteref& objref)
+{
+    TypeRef::set(objref);
+    return *this;
+}
+
+byteref& byteref::operator=(value *bytes)
+{
+    set(bytes);
+    return *this;
+}
+
+void byteref::set(const uint8_t *str, size_t size)
+{
+    release();
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    TypeRef::set(new(mem(p)) value(p, size, str));
+}
+
+void byteref::set(value *bytes)
+{
+    release();
+    TypeRef::set(bytes);
+}
+
+byteref::value *byteref::create(size_t size)
+{
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    return new(mem(p)) value(p, size);
+}
+
+void byteref::destroy(byteref::value *bytes)
+{
+    bytes->destroy();
+}
 
 } // namespace

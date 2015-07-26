@@ -217,6 +217,58 @@ public:
 	void set(const char *str);
 };
 
+class __EXPORT byteref : public TypeRef
+{
+public:
+	class value : public TypeCounted
+	{
+	protected:
+		friend class byteref;
+
+		uint8_t mem[1];
+
+		value(caddr_t addr, size_t size, const uint8_t *data);
+
+		value(caddr_t addr, size_t size);
+
+		inline void destroy(void) {
+			count.clear();
+			release();
+		}
+
+	public:
+		inline size_t used() {
+			return size;
+		}
+
+		inline uint8_t *get() {
+			return &mem[0];
+		}
+	};
+
+	byteref();
+	
+	byteref(const byteref& copy);
+
+	byteref(const uint8_t *str, size_t size);
+
+	const uint8_t *operator*() const;
+
+	byteref& operator=(const byteref& objref);
+
+	byteref& operator=(value *bytes);
+
+	void set(const uint8_t *str, size_t size);
+
+	void set(value *bytes);
+
+	static byteref::value *create(size_t size);
+
+	static void destroy(value *bytes);
+};
+
+typedef	byteref::value	*bytevalues_t;
+
 } // namespace
 
 #endif
