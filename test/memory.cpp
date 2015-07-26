@@ -27,6 +27,22 @@
 using namespace ucommon;
 
 static int tval = 100;
+static int dval = 0;
+static int cval = 0;
+
+class special
+{
+public:
+    int x;
+    
+    special() {
+        x = ++cval;
+    }
+
+    ~special() {
+        ++dval;
+    }
+};
 
 extern "C" int main()
 {
@@ -58,6 +74,24 @@ extern "C" int main()
     int *pval = &tval;
     int& rval = deref_pointer<int>(pval);
     assert(&rval == pval);
+
+    typeref<int> iptr;
+    iptr = (int)3;
+    assert((int)iptr == 3);
+
+    iptr = 17;
+    assert((int)iptr == 17);
+
+    special spec;
+    cval = 0;
+    typeref<special> sptr = spec;
+    typeref<special> xptr = sptr;
+    assert(xptr->x == 1);
+    assert(cval == 1);
+    assert(xptr.copies() == 2);
+    sptr.release();
+    xptr.release();
+    assert(dval == 1);
 
     return 0;
 }

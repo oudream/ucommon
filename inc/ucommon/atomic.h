@@ -130,7 +130,7 @@ public:
      * @param size of memory to allocate.
      * @return pointer or NULL if cannot alloc.
      */
-    void *alloc(size_t size);
+    static void *alloc(size_t size);
 };
 
 // for abi7

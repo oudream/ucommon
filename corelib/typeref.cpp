@@ -23,20 +23,21 @@
 
 namespace ucommon {
 
-TypeCounted::TypeCounted(size_t size) : 
+TypeCounted::TypeCounted(void *addr, size_t size) : 
 ObjectProtocol()
 {
+	this->memory = addr;
 	this->size = size;
-}
-
-TypeCounted::TypeCounted(const TypeCounted& source)
-{
-	this->size = source.size;
 }
 
 void TypeCounted::dealloc()
 {
 	delete this;
+	::free(memory);
+}
+
+void TypeCounted::operator delete(void *addr)
+{
 }
 
 void TypeCounted::retain(void)
@@ -93,6 +94,18 @@ void TypeRef::set(TypeCounted *object)
 	object->retain();
 	release();
 	ref = object;
+}
+
+caddr_t TypeRef::alloc(size_t size)
+{
+	return (caddr_t)::malloc(size + 16);
+}
+
+caddr_t TypeRef::mem(caddr_t addr)
+{
+	while(((uintptr_t)addr) & 0xf)
+        ++addr;
+	return addr;
 }
 
 } // namespace

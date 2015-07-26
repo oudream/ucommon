@@ -293,6 +293,7 @@ void atomic::spinlock::release(void) volatile
 void *atomic::alloc(size_t size)
 {
     void *addr = NULL;
+    size = size + (size % 16);
     if(!posix_memalign(&addr, 16, size))
         return NULL;
     return addr;

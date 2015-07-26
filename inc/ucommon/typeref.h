@@ -56,10 +56,9 @@ class __EXPORT TypeCounted : public ObjectProtocol
 protected:
 	mutable atomic::counter count;
 	size_t size;
+	void *memory;
 
-	explicit TypeCounted(size_t size);
-
-	TypeCounted(const TypeCounted &ref);
+	explicit TypeCounted(void *addr, size_t size);
 
 	virtual void dealloc();
 
@@ -71,6 +70,8 @@ public:
 	inline unsigned copies() const {
 		return ((unsigned)count.get());
 	}
+
+	void operator delete(void *addr);
 
 	void retain();
 
@@ -92,6 +93,10 @@ protected:
 
 	void set(TypeCounted *object);
 
+	static caddr_t alloc(size_t size);
+
+	static caddr_t mem(caddr_t addr);
+
 public:
 	virtual ~TypeRef();
 
@@ -105,6 +110,12 @@ public:
 	inline bool operator!() const {
 		return ref == NULL;
 	}
+
+	inline unsigned copies() const {
+		if(!ref)
+			return 0;
+		return ref->copies();
+	}
 };
 
 template<typename T>
@@ -114,7 +125,13 @@ private:
 	class value : public TypeCounted
 	{
 	public:
-		value();
+		inline value(caddr_t mem) : 
+		TypeCounted(mem, sizeof(value)) {};
+
+		inline value(caddr_t mem, const T& object) : 
+		TypeCounted(mem, sizeof(value)) {
+			data = object;
+		}
 
 		T data;
 	};
@@ -125,18 +142,23 @@ public:
 	inline typeref(const typeref& copy) : TypeRef(copy) {};
 
 	inline typeref(const T& object) : TypeRef() {
-		caddr_t mem = (caddr_t)atomic::alloc(sizeof(value));
-		set(new(mem) value);
+		caddr_t p = TypeRef::alloc(sizeof(value));
+		TypeRef::set(new(mem(p)) value(p, object)); 
+	}
+
+	inline T* operator->() {
+		value *v = polystatic_cast<value *>(ref);
+		return &(v->data);
 	}
 
 	inline const T *operator*() const {
-		value *v = polystatic_cast<value>(ref);
+		value *v = polystatic_cast<value*>(ref);
 		return &(v->data);
 	}
 
 	inline operator const T&() const {
-		value *v = polystatic_cast<value>(ref);
-		return polyreference_cast<const T>(&(v->data));
+		value *v = polystatic_cast<value*>(ref);
+		return *(&(v->data));
 	}
 
 	inline typeref& operator=(const typeref& ptr) {
@@ -146,8 +168,8 @@ public:
 
 	inline void set(const T& object) {
 		release();
-		caddr_t mem = (caddr_t)atomic::alloc(sizeof(value));
-		set(new(mem) value);
+		caddr_t p = TypeRef::alloc(sizeof(value));
+		TypeRef::set(new(mem(p)) value(p, object));
 	}
 
 	inline typeref& operator=(const T& object) {
