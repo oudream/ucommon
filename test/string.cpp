@@ -35,6 +35,11 @@ extern "C" int main()
     unsigned count = 0;
     const char *tp;
     const char *array[5];
+    stringref sref = "ABC";
+    string_t tref(sref);
+
+    assert(eq(tref, "ABC"));
+    assert(eq(sref, "ABC"));
 
     assert(max(3, 2) == 3);
 

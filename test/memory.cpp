@@ -99,7 +99,7 @@ extern "C" int main()
     stringref sref = "this is a test";
     stringref xref = sref;
     assert(*sref == *xref);
-    assert(!strcmp(*sref, "this is a test"));
+    assert(!strcmp((const char *)sref, "this is a test"));
     assert(sref.size() == 14);
     assert(sref.copies() == 2);
 
