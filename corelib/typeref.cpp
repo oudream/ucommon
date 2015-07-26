@@ -24,7 +24,7 @@
 
 namespace ucommon {
 
-TypeRef::Counted::Counted::Counted(void *addr, size_t size) : 
+TypeRef::Counted::Counted(void *addr, size_t size) : 
 ObjectProtocol()
 {
     this->memory = addr;
