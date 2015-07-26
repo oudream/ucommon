@@ -239,7 +239,7 @@ public:
 		}
 
 	public:
-		inline size_t used() {
+		inline size_t max() {
 			return size;
 		}
 
