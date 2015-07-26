@@ -180,13 +180,13 @@ public:
 		return *this;
 	}
 
-	inline void set(const T& object) {
+	inline void set(T& object) {
 		release();
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object));
 	}
 
-	inline typeref& operator=(const T& object) {
+	inline typeref& operator=(T& object) {
 		set(object);
 		return *this;
 	}

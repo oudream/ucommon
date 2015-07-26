@@ -63,6 +63,9 @@ class __EXPORT memalloc : public MemoryProtocol
 private:
     friend class bufpager;
 
+    // disabled...
+    inline memalloc(const memalloc& copy) {};
+
     size_t pagesize, align;
     unsigned count;
 
@@ -143,6 +146,7 @@ public:
      */
     void purge(void);
 
+protected:
     /**
      * Allocate memory from the pager heap.  The size of the request must be
      * less than the size of the memory page used.  This implements the
@@ -151,6 +155,18 @@ public:
      * @return allocated memory or NULL if not possible.
      */
     virtual void *_alloc(size_t size);
+
+public:
+    /**
+     * Assign foreign pager to us.  This relocates the heap references
+     * to our object, clears the other object.
+     */
+    void assign(memalloc& source);
+
+    inline memalloc& operator=(memalloc& source) {
+        assign(source);
+        return *this;
+    }
 };
 
 /**
@@ -177,6 +193,8 @@ class __EXPORT mempager : public memalloc, public LockingProtocol
 {
 private:
     mutable pthread_mutex_t mutex;
+
+    inline mempager(const mempager& copy) {};
 
 protected:
     /**
@@ -230,6 +248,7 @@ public:
      */
     virtual void dealloc(void *memory);
 
+protected:
     /**
      * Allocate memory from the pager heap.  The size of the request must be
      * less than the size of the memory page used.  This impliments the
@@ -239,6 +258,18 @@ public:
      * @return allocated memory or NULL if not possible.
      */
     virtual void *_alloc(size_t size);
+
+public:
+    /**
+     * Assign foreign pager to us.  This relocates the heap references
+     * to our object, clears the other object.
+     */
+    void assign(mempager& source);
+
+    inline mempager& operator=(mempager& source) {
+        assign(source);
+        return *this;
+    }
 };
 
 class __EXPORT ObjectPager : protected memalloc
@@ -272,6 +303,8 @@ private:
     size_t typesize;
     member *last;
     void **index;
+
+    inline ObjectPager(const ObjectPager& ref) {};
 
 protected:
     ObjectPager(size_t objsize, size_t pagesize = 256);
@@ -355,6 +388,18 @@ protected:
      * @return index.
      */
     void **list(void);
+
+public:
+    /**
+     * Assign foreign pager to us.  This relocates the heap references
+     * to our object, clears the other object.
+     */
+    void assign(ObjectPager& source);
+
+    inline ObjectPager& operator=(ObjectPager& source) {
+        assign(source);
+        return *this;
+    }
 };
 
 /**
@@ -367,6 +412,8 @@ class __EXPORT StringPager : protected memalloc
 private:
     unsigned members;
     LinkedObject *root;
+
+    inline StringPager(const StringPager& copy) {};
 
 protected:
     virtual const char *invalid(void) const;
@@ -582,6 +629,18 @@ public:
 private:
     member *last;
     char **index;
+
+public:
+    /**
+     * Assign foreign pager to us.  This relocates the heap references
+     * to our object, clears the other object.
+     */
+    void assign(StringPager& source);
+
+    inline StringPager& operator=(StringPager& source) {
+        assign(source);
+        return *this;
+    }
 };
 
 /**
@@ -593,6 +652,9 @@ private:
  */
 class __EXPORT DirPager : protected StringPager
 {
+private:
+    DirPager(const DirPager& copy) {};    
+
 protected:
     const char *dir;
 
@@ -651,6 +713,18 @@ public:
 
     inline unsigned pages(void) const
         {return memalloc::pages();}
+
+public:
+    /**
+     * Assign foreign pager to us.  This relocates the heap references
+     * to our object, clears the other object.
+     */
+    void assign(DirPager& source);
+
+    inline DirPager& operator=(DirPager& source) {
+        assign(source);
+        return *this;
+    }
 };
 
 /**
@@ -778,6 +852,17 @@ public:
      */
     inline operator bool() const
         {return !eom;}
+
+    /**
+     * Assign foreign pager to us.  This relocates the heap references
+     * to our object, clears the other object.
+     */
+    void assign(bufpager& source);
+
+    inline bufpager& operator=(bufpager& source) {
+        assign(source);
+        return *this;
+    }
 };
 
 /**
