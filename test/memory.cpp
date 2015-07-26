@@ -77,10 +77,13 @@ extern "C" int main()
 
     typeref<int> iptr;
     iptr = (int)3;
+    typeref<int> jptr = iptr;
     assert((int)iptr == 3);
+    assert(iptr.copies() == 2);
 
     iptr = 17;
     assert((int)iptr == 17);
+    assert(iptr.copies() == 1);
 
     special spec;
     cval = 0;
