@@ -51,15 +51,15 @@ namespace ucommon {
  * Heap base-class container for typeref objects.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT CountedType : public ObjectProtocol
+class __EXPORT TypeCounted : public ObjectProtocol
 {
 protected:
 	mutable atomic::counter count;
 	size_t size;
 
-	explicit CountedType(size_t size);
+	explicit TypeCounted(size_t size);
 
-	CountedType(const CountedType &ref);
+	TypeCounted(const TypeCounted &ref);
 
 	virtual void dealloc();
 
@@ -75,6 +75,40 @@ public:
 	void retain();
 
 	void release();
+};
+
+/**
+ * Smart pointer base class for auto-retained objects.
+ * @author David Sugar <dyfet@gnutelephony.org>
+ */
+class __EXPORT TypeRef
+{
+protected:
+	TypeCounted *ref;		// heap reference...
+
+	TypeRef(TypeCounted *object);
+	TypeRef(const TypeRef& copy);
+	TypeRef();
+
+	void set(TypeCounted *object);
+
+public:
+	virtual ~TypeRef();
+
+	void set(TypeRef ptr);
+	void release(void);
+	
+	inline void operator=(TypeRef ptr) {
+		set(ptr);
+	}
+
+	inline bool is() const {
+		return ref != NULL;
+	}
+
+	inline bool operator!() const {
+		return ref == NULL;
+	}
 };
 
 } // namespace

@@ -23,32 +23,76 @@
 
 namespace ucommon {
 
-CountedType::CountedType(size_t size) : 
+TypeCounted::TypeCounted(size_t size) : 
 ObjectProtocol()
 {
 	this->size = size;
 }
 
-CountedType::CountedType(const CountedType& source)
+TypeCounted::TypeCounted(const TypeCounted& source)
 {
 	this->size = source.size;
 }
 
-void CountedType::dealloc()
+void TypeCounted::dealloc()
 {
 	delete this;
 }
 
-void CountedType::retain(void)
+void TypeCounted::retain(void)
 {
 	count.fetch_add();
 }
 
-void CountedType::release(void)
+void TypeCounted::release(void)
 {
 	if(count.fetch_sub() == 1) {
 		dealloc();
 	}
+}
+
+TypeRef::TypeRef()
+{
+	ref = NULL;
+}
+
+TypeRef::TypeRef(TypeCounted *object)
+{
+	ref = object;
+	object->retain();
+}
+
+TypeRef::TypeRef(const TypeRef& copy)
+{
+	ref = copy.ref;
+	ref->retain();
+}
+
+TypeRef::~TypeRef()
+{
+	release();
+}
+
+void TypeRef::release(void)
+{
+	if(ref)
+		ref->release();
+	ref = NULL;
+}
+
+void TypeRef::set(TypeRef ptr)
+{
+	if(ptr.ref)
+		ptr.ref->retain();
+	release();
+	ref = ptr.ref;
+}
+
+void TypeRef::set(TypeCounted *object)
+{
+	object->retain();
+	release();
+	ref = object;
 }
 
 } // namespace
