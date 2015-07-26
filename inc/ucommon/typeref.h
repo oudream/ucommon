@@ -54,6 +54,8 @@ namespace ucommon {
 class __EXPORT TypeCounted : public ObjectProtocol
 {
 protected:
+	friend class TypeRef;
+
 	mutable atomic::counter count;
 	size_t size;
 	void *memory;
@@ -100,7 +102,7 @@ protected:
 public:
 	virtual ~TypeRef();
 
-	void set(TypeRef ptr);
+	void set(const TypeRef& ptr);
 	void release(void);
 	
 	inline bool is() const {
@@ -115,6 +117,12 @@ public:
 		if(!ref)
 			return 0;
 		return ref->copies();
+	}
+
+	inline size_t size() const {
+		if(!ref)
+			return 0;
+		return ref->size;
 	}
 };
 
@@ -147,11 +155,15 @@ public:
 	}
 
 	inline T* operator->() {
+		if(!ref)
+			return NULL;
 		value *v = polystatic_cast<value *>(ref);
 		return &(v->data);
 	}
 
 	inline const T *operator*() const {
+		if(!ref)
+			return NULL;
 		value *v = polystatic_cast<value*>(ref);
 		return &(v->data);
 	}
@@ -162,7 +174,7 @@ public:
 	}
 
 	inline typeref& operator=(const typeref& ptr) {
-		set(ptr);
+		TypeRef::set(ptr);
 		return *this;
 	}
 
@@ -176,6 +188,33 @@ public:
 		set(object);
 		return *this;
 	}
+};
+
+class __EXPORT stringref : public TypeRef
+{
+private:
+	class value : public TypeCounted
+	{
+	public:
+		value(caddr_t addr, size_t size, const char *str);
+
+		char mem[1];
+	};
+
+public:
+	stringref();
+	
+	stringref(const stringref& copy);
+
+	stringref(const char *str);
+
+	const char *operator*() const;
+
+	stringref& operator=(const stringref& objref);
+
+	stringref& operator=(const char *str);
+
+	void set(const char *str);
 };
 
 } // namespace
