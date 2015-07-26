@@ -54,6 +54,18 @@ extern "C" {
     }
 }
 
+void memalloc::assign(memalloc& source)
+{
+    memalloc::purge();
+    pagesize = source.pagesize;
+    align = source.align;
+    count = source.count;
+    page = source.page;
+    limit = source.limit;
+    source.count = 0;
+    source.page = NULL;
+}
+
 memalloc::memalloc(size_t ps)
 {
 #ifdef  HAVE_SYSCONF
@@ -256,6 +268,16 @@ void *mempager::_alloc(size_t size)
     return mem;
 }
 
+void mempager::assign(mempager& source)
+{
+    pthread_mutex_lock(&source.mutex);
+    pthread_mutex_lock(&mutex);
+    memalloc::assign(source);
+    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&source.mutex);
+}
+
+
 ObjectPager::member::member(LinkedObject **root) :
 LinkedObject(root)
 {
@@ -276,6 +298,22 @@ memalloc(size)
     last = NULL;
     index = NULL;
     typesize = objsize;
+}
+
+void ObjectPager::assign(ObjectPager& source)
+{
+    members = source.members;
+    root = source.root;
+    last = source.last;
+    index = source.index;
+    typesize = source.typesize;
+
+    memalloc::assign(source);
+
+    source.members = 0;
+    source.root = NULL;
+    source.last = NULL;
+    source.index = NULL;
 }
 
 void *ObjectPager::get(unsigned ind) const
@@ -423,6 +461,21 @@ memalloc(size)
     root = NULL;
     last = NULL;
     index = NULL;
+}
+
+void StringPager::assign(StringPager& source)
+{
+    members = source.members;
+    root = source.root;
+    last = source.last;
+    index = source.index;
+
+    memalloc::assign(source);
+
+    source.members = 0;
+    source.root = NULL;
+    source.last = NULL;
+    source.index = NULL;
 }
 
 StringPager::StringPager(char **list, size_t size) :
@@ -744,6 +797,13 @@ DirPager::DirPager() :
 StringPager()
 {
     dir = NULL;
+}
+
+void DirPager::assign(DirPager& source)
+{
+    dir = source.dir;
+    StringPager::assign(source);
+    source.dir = NULL;
 }
 
 DirPager::DirPager(const char *path) :
@@ -1141,6 +1201,22 @@ memalloc(ps), CharacterProtocol()
     ccount = 0;
     cpos = 0;
     eom = false;
+}
+
+void bufpager::assign(bufpager& source)
+{
+    first = source.first;
+    last = source.last;
+    current = source.current;
+    freelist = source.freelist;
+    ccount = source.ccount;
+    cpos = source.cpos;
+    eom = source.eom;
+    memalloc::assign(source);
+    source.first = source.last = source.current = source.freelist = NULL;
+    source.ccount = 0;
+    source.cpos = 0;
+    source.eom = false;
 }
 
 void bufpager::set(const char *text)
