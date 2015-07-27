@@ -277,7 +277,7 @@ Socket(fam, SOCK_DCCP, IPPROTO_DCCP)
 }
 #endif
 
-DCCPSocket::DCCPSocket(const IPV4Address &ia, tpport_t port, unsigned backlog) :
+DCCPSocket::DCCPSocket(const IPV4Address &ia, in_port_t port, unsigned backlog) :
 Socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP)
 {
     struct sockaddr_in addr;
@@ -310,7 +310,7 @@ Socket(AF_INET, SOCK_DCCP, IPPROTO_DCCP)
 }
 
 #ifdef CCXX_IPV6
-DCCPSocket::DCCPSocket(const IPV6Address &ia, tpport_t port, unsigned backlog) :
+DCCPSocket::DCCPSocket(const IPV6Address &ia, in_port_t port, unsigned backlog) :
 Socket(AF_INET6, SOCK_DCCP, IPPROTO_DCCP)
 {
     struct sockaddr_in6 addr;
@@ -342,19 +342,19 @@ Socket(AF_INET6, SOCK_DCCP, IPPROTO_DCCP)
     state = BOUND;
 }
 
-bool DCCPSocket::onAccept(const IPV6Host &ia, tpport_t port)
+bool DCCPSocket::onAccept(const IPV6Host &ia, in_port_t port)
 {
     return true;
 }
 
 #endif
 
-bool DCCPSocket::onAccept(const IPV4Host &ia, tpport_t port)
+bool DCCPSocket::onAccept(const IPV4Host &ia, in_port_t port)
 {
     return true;
 }
 
-IPV4Host DCCPSocket::getIPV4Sender(tpport_t *port) const
+IPV4Host DCCPSocket::getIPV4Sender(in_port_t *port) const
 {
     if(port)
         *port = ntohs(peer.ipv4.sin_port);
@@ -362,7 +362,7 @@ IPV4Host DCCPSocket::getIPV4Sender(tpport_t *port) const
 }
 
 #ifdef  CCXX_IPV6
-IPV6Host DCCPSocket::getIPV6Sender(tpport_t *port) const
+IPV6Host DCCPSocket::getIPV6Sender(in_port_t *port) const
 {
     return IPV6Host(peer.ipv6.sin6_addr);
 }
@@ -440,7 +440,7 @@ void DCCPSocket::connect(const char *target)
     char namebuf[128];
     char *cp;
     struct servent *svc;
-    tpport_t port;
+    in_port_t port;
 
     snprintf(namebuf, sizeof(namebuf), "%s", target);
     cp = strrchr(namebuf, '/');
@@ -481,7 +481,7 @@ void DCCPSocket::connect(const char *target)
 }
 #endif
 
-void DCCPSocket::connect(const IPV4Host &host, tpport_t port, timeout_t timeout)
+void DCCPSocket::connect(const IPV4Host &host, in_port_t port, timeout_t timeout)
 {
     size_t i;
     fd_set fds;
@@ -550,7 +550,7 @@ void DCCPSocket::connect(const IPV4Host &host, tpport_t port, timeout_t timeout)
 }
 
 #ifdef  CCXX_IPV6
-void DCCPSocket::connect(const IPV6Host &host, tpport_t port, timeout_t timeout)
+void DCCPSocket::connect(const IPV6Host &host, in_port_t port, timeout_t timeout)
 {
     size_t i;
     fd_set fds;

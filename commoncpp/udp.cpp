@@ -225,7 +225,7 @@ Socket(ia.family(), SOCK_DGRAM, IPPROTO_UDP)
     state = BOUND;
 }
 
-UDPSocket::UDPSocket(const IPV4Address &ia, tpport_t port) :
+UDPSocket::UDPSocket(const IPV4Address &ia, in_port_t port) :
 Socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP), peer(ia.getAddress(), port), family(IPV4)
 {
 #if defined(SO_REUSEADDR)
@@ -241,7 +241,7 @@ Socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP), peer(ia.getAddress(), port), family(IP
 }
 
 #ifdef  CCXX_IPV6
-UDPSocket::UDPSocket(const IPV6Address &ia, tpport_t port) :
+UDPSocket::UDPSocket(const IPV6Address &ia, in_port_t port) :
 Socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP), peer(ia.getAddress(), port), family(IPV6)
 {
 #if defined(SO_REUSEADDR)
@@ -398,12 +398,12 @@ void UDPSocket::connect(const ucommon::Socket::address &host)
         Socket::state = CONNECTED;
 }
 
-void UDPSocket::setPeer(const IPV4Host &ia, tpport_t port)
+void UDPSocket::setPeer(const IPV4Host &ia, in_port_t port)
 {
     peer = ucommon::Socket::address(ia.getAddress(), port);
 }
 
-void UDPSocket::connect(const IPV4Host &ia, tpport_t port)
+void UDPSocket::connect(const IPV4Host &ia, in_port_t port)
 {
     setPeer(ia, port);
     if(so == INVALID_SOCKET)
@@ -414,12 +414,12 @@ void UDPSocket::connect(const IPV4Host &ia, tpport_t port)
 }
 
 #ifdef  CCXX_IPV6
-void UDPSocket::setPeer(const IPV6Host &ia, tpport_t port)
+void UDPSocket::setPeer(const IPV6Host &ia, in_port_t port)
 {
     peer = ucommon::Socket::address(ia.getAddress(), port);
 }
 
-void UDPSocket::connect(const IPV6Host &ia, tpport_t port)
+void UDPSocket::connect(const IPV6Host &ia, in_port_t port)
 {
     setPeer(ia, port);
 
@@ -461,7 +461,7 @@ ucommon::Socket::address UDPSocket::getPeer()
     return addr;
 }
 
-IPV4Host UDPSocket::getIPV4Peer(tpport_t *port)
+IPV4Host UDPSocket::getIPV4Peer(in_port_t *port)
 {
     ucommon::Socket::address addr = getPeer();
     if (addr) {
@@ -477,7 +477,7 @@ IPV4Host UDPSocket::getIPV4Peer(tpport_t *port)
 }
 
 #ifdef  CCXX_IPV6
-IPV6Host UDPSocket::getIPV6Peer(tpport_t *port)
+IPV6Host UDPSocket::getIPV6Peer(in_port_t *port)
 {
     ucommon::Socket::address addr = getPeer();
     if (addr) {
@@ -493,14 +493,14 @@ IPV6Host UDPSocket::getIPV6Peer(tpport_t *port)
 }
 #endif
 
-UDPBroadcast::UDPBroadcast(const IPV4Address &ia, tpport_t port) :
+UDPBroadcast::UDPBroadcast(const IPV4Address &ia, in_port_t port) :
 UDPSocket(ia, port)
 {
     if(so != INVALID_SOCKET)
         setBroadcast(true);
 }
 
-void UDPBroadcast::setPeer(const IPV4Broadcast &ia, tpport_t port)
+void UDPBroadcast::setPeer(const IPV4Broadcast &ia, in_port_t port)
 {
     peer = ucommon::Socket::address(ia.getAddress(), port);
 }
@@ -513,7 +513,7 @@ UDPSocket(ia)
     receiveBuffer(0);
 }
 
-UDPTransmit::UDPTransmit(const IPV4Address &ia, tpport_t port) :
+UDPTransmit::UDPTransmit(const IPV4Address &ia, in_port_t port) :
 UDPSocket(ia, port)
 {
     disconnect();   // assure not started live
@@ -522,7 +522,7 @@ UDPSocket(ia, port)
 }
 
 #ifdef  CCXX_IPV6
-UDPTransmit::UDPTransmit(const IPV6Address &ia, tpport_t port) :
+UDPTransmit::UDPTransmit(const IPV6Address &ia, in_port_t port) :
 UDPSocket(ia, port)
 {
     disconnect();   // assure not started live
@@ -548,20 +548,20 @@ Socket::Error UDPTransmit::connect(const ucommon::Socket::address &host)
     return errSuccess;
 }
 
-Socket::Error UDPTransmit::cConnect(const IPV4Address &ia, tpport_t port)
+Socket::Error UDPTransmit::cConnect(const IPV4Address &ia, in_port_t port)
 {
     return connect(ucommon::Socket::address(ia.getAddress(), port));
 }
 
 #ifdef  CCXX_IPV6
 
-Socket::Error UDPTransmit::connect(const IPV6Address &ia, tpport_t port)
+Socket::Error UDPTransmit::connect(const IPV6Address &ia, in_port_t port)
 {
     return connect(ucommon::Socket::address(ia.getAddress(), port));
 }
 #endif
 
-Socket::Error UDPTransmit::connect(const IPV4Host &ia, tpport_t port)
+Socket::Error UDPTransmit::connect(const IPV4Host &ia, in_port_t port)
 {
     if(isBroadcast())
         setBroadcast(false);
@@ -569,7 +569,7 @@ Socket::Error UDPTransmit::connect(const IPV4Host &ia, tpport_t port)
     return cConnect((IPV4Address)ia,port);
 }
 
-Socket::Error UDPTransmit::connect(const IPV4Broadcast &subnet, tpport_t  port)
+Socket::Error UDPTransmit::connect(const IPV4Broadcast &subnet, in_port_t  port)
 {
     if(!isBroadcast())
         setBroadcast(true);
@@ -577,7 +577,7 @@ Socket::Error UDPTransmit::connect(const IPV4Broadcast &subnet, tpport_t  port)
     return cConnect((IPV4Address)subnet,port);
 }
 
-Socket::Error UDPTransmit::connect(const IPV4Multicast &group, tpport_t port)
+Socket::Error UDPTransmit::connect(const IPV4Multicast &group, in_port_t port)
 {
     Error err;
     if(!( err = UDPSocket::setMulticast(true) ))
@@ -587,7 +587,7 @@ Socket::Error UDPTransmit::connect(const IPV4Multicast &group, tpport_t port)
 }
 
 #ifdef  CCXX_IPV6
-Socket::Error UDPTransmit::connect(const IPV6Multicast &group, tpport_t port)
+Socket::Error UDPTransmit::connect(const IPV6Multicast &group, in_port_t port)
 {
     Error error;
     if(!( error = UDPSocket::setMulticast(true) ))
@@ -604,7 +604,7 @@ UDPSocket(ia)
     sendBuffer(0);
 }
 
-UDPReceive::UDPReceive(const IPV4Address &ia, tpport_t port) :
+UDPReceive::UDPReceive(const IPV4Address &ia, in_port_t port) :
 UDPSocket(ia, port)
 {
     ::shutdown(so, 1);
@@ -612,7 +612,7 @@ UDPSocket(ia, port)
 }
 
 #ifdef  CCXX_IPV6
-UDPReceive::UDPReceive(const IPV6Address &ia, tpport_t port) :
+UDPReceive::UDPReceive(const IPV6Address &ia, in_port_t port) :
 UDPSocket(ia, port)
 {
     ::shutdown(so, 1);
@@ -634,13 +634,13 @@ Socket::Error UDPReceive::connect(const ucommon::Socket::address &ia)
     return errSuccess;
 }
 
-Socket::Error UDPReceive::connect(const IPV4Host &ia, tpport_t port)
+Socket::Error UDPReceive::connect(const IPV4Host &ia, in_port_t port)
 {
     return connect(ucommon::Socket::address(ia.getAddress(), port));
 }
 
 #ifdef  CCXX_IPV6
-Socket::Error UDPReceive::connect(const IPV6Host &ia, tpport_t port)
+Socket::Error UDPReceive::connect(const IPV6Host &ia, in_port_t port)
 {
     return connect(ucommon::Socket::address(ia.getAddress(), port));
 }
@@ -650,12 +650,12 @@ UDPDuplex::UDPDuplex(const ucommon::Socket::address &bind) :
 UDPTransmit(bind.withPort(bind.getPort() + 1)), UDPReceive(bind)
 {}
 
-UDPDuplex::UDPDuplex(const IPV4Address &bind, tpport_t port) :
+UDPDuplex::UDPDuplex(const IPV4Address &bind, in_port_t port) :
 UDPTransmit(bind, port + 1), UDPReceive(bind, port)
 {}
 
 #ifdef  CCXX_IPV6
-UDPDuplex::UDPDuplex(const IPV6Address &bind, tpport_t port) :
+UDPDuplex::UDPDuplex(const IPV6Address &bind, in_port_t port) :
 UDPTransmit(bind, port + 1), UDPReceive(bind, port)
 {}
 #endif
@@ -671,7 +671,7 @@ Socket::Error UDPDuplex::connect(const ucommon::Socket::address &host)
     return UDPReceive::connect(host.withPort(host.getPort() + 1));
 }
 
-Socket::Error UDPDuplex::connect(const IPV4Host &host, tpport_t port)
+Socket::Error UDPDuplex::connect(const IPV4Host &host, in_port_t port)
 {
     Error rtn = UDPTransmit::connect(host, port);
     if(rtn) {
@@ -683,7 +683,7 @@ Socket::Error UDPDuplex::connect(const IPV4Host &host, tpport_t port)
 }
 
 #ifdef  CCXX_IPV6
-Socket::Error UDPDuplex::connect(const IPV6Host &host, tpport_t port)
+Socket::Error UDPDuplex::connect(const IPV6Host &host, in_port_t port)
 {
     Error rtn = UDPTransmit::connect(host, port);
     if(rtn) {

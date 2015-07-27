@@ -71,7 +71,7 @@ typedef int socklen_t;
 #endif   // !WIN32
 
 #ifndef INADDR_LOOPBACK
-#define INADDR_LOOPBACK (uint32_t)0x7f000001
+#define INADDR_LOOPBACK (in_addr_t)0x7f000001
 #endif
 
 #ifdef HAVE_NETINET_IN_H
@@ -864,7 +864,7 @@ ucommon::Socket::address Socket::getSender() const
     return addr;
 }
 
-IPV4Host Socket::getIPV4Sender(tpport_t *port) const
+IPV4Host Socket::getIPV4Sender(in_port_t *port) const
 {
     ucommon::Socket::address addr = getSender();
     sockaddr_in* from = addr;
@@ -883,7 +883,7 @@ IPV4Host Socket::getIPV4Sender(tpport_t *port) const
 }
 
 #ifdef  CCXX_IPV6
-IPV6Host Socket::getIPV6Sender(tpport_t *port) const
+IPV6Host Socket::getIPV6Sender(in_port_t *port) const
 {
     ucommon::Socket::address addr = getSender();
     sockaddr_in6* from = addr;
@@ -913,7 +913,7 @@ ucommon::Socket::address Socket::getLocal() const
     return saddr;
 }
 
-IPV4Host Socket::getIPV4Local(tpport_t *port) const
+IPV4Host Socket::getIPV4Local(in_port_t *port) const
 {
     sockaddr_in* from = getLocal();
     struct in_addr any;
@@ -931,7 +931,7 @@ IPV4Host Socket::getIPV4Local(tpport_t *port) const
 }
 
 #ifdef  CCXX_IPV6
-IPV6Host Socket::getIPV6Local(tpport_t *port) const
+IPV6Host Socket::getIPV6Local(in_port_t *port) const
 {
     sockaddr_in6* from = getLocal();
     if (from == NULL) {
@@ -966,7 +966,7 @@ ucommon::Socket::address Socket::getPeer() const
     return saddr;
 }
 
-IPV4Host Socket::getIPV4Peer(tpport_t *port) const
+IPV4Host Socket::getIPV4Peer(in_port_t *port) const
 {
     sockaddr_in* from = getPeer();
     struct in_addr any;
@@ -984,7 +984,7 @@ IPV4Host Socket::getIPV4Peer(tpport_t *port) const
 }
 
 #ifdef  CCXX_IPV6
-IPV6Host Socket::getIPV6Peer(tpport_t *port) const
+IPV6Host Socket::getIPV6Peer(in_port_t *port) const
 {
     sockaddr_in6* from = getPeer();
     if (from == NULL) {

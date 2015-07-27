@@ -500,13 +500,13 @@ public:
      */
     ucommon::Socket::address getSender() const;
 
-    virtual IPV4Host getIPV4Sender(tpport_t *port = NULL) const;
+    virtual IPV4Host getIPV4Sender(in_port_t *port = NULL) const;
 
-    inline IPV4Host getSender(tpport_t *port) const
+    inline IPV4Host getSender(in_port_t *port) const
         {return getIPV4Sender(port);}
 
 #ifdef  CCXX_IPV6
-    virtual IPV6Host getIPV6Sender(tpport_t *port = NULL) const;
+    virtual IPV6Host getIPV6Sender(in_port_t *port = NULL) const;
 #endif
 
     /**
@@ -520,13 +520,13 @@ public:
      */
     ucommon::Socket::address getPeer() const;
 
-    IPV4Host getIPV4Peer(tpport_t *port = NULL) const;
+    IPV4Host getIPV4Peer(in_port_t *port = NULL) const;
 
-    inline IPV4Host getPeer(tpport_t *port) const
+    inline IPV4Host getPeer(in_port_t *port) const
         {return getIPV4Peer(port);}
 
 #ifdef  CCXX_IPV6
-    IPV6Host getIPV6Peer(tpport_t *port = NULL) const;
+    IPV6Host getIPV6Peer(in_port_t *port = NULL) const;
 #endif
 
     /**
@@ -536,13 +536,13 @@ public:
      * @param port ptr to port number on local host.
      * @return host address of interface this socket is bound to.
      */
-    IPV4Host getIPV4Local(tpport_t *port = NULL) const;
+    IPV4Host getIPV4Local(in_port_t *port = NULL) const;
 
-    inline IPV4Host getLocal(tpport_t *port) const
+    inline IPV4Host getLocal(in_port_t *port) const
         {return getIPV4Local(port);}
 
 #ifdef  CCXX_IPV6
-    IPV6Host getIPV6Local(tpport_t *port = NULL) const;
+    IPV6Host getIPV6Local(in_port_t *port = NULL) const;
 #endif
 
     ucommon::Socket::address getLocal() const;

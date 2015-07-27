@@ -77,7 +77,7 @@ namespace ost {
 /**
  * Transport Protocol Ports.
  */
-typedef unsigned short tpport_t;
+typedef in_port_t tpport_t;
 
 class IPV4Host;
 
@@ -461,7 +461,7 @@ public:
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(uint32_t addr);
+    IPV4Address &operator=(in_addr_t addr);
 
     inline bool operator!() const
         {return !isInetAddress();}
@@ -526,7 +526,7 @@ public:
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(uint32_t addr)
+    IPV4Address &operator=(in_addr_t addr)
         { return IPV4Address::operator =(addr); }
 };
 
@@ -570,7 +570,7 @@ public:
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(uint32_t addr)
+    IPV4Address &operator=(in_addr_t addr)
     { return IPV4Address::operator =(addr); }
 
     /**

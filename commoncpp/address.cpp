@@ -97,7 +97,7 @@ void IPV4MulticastValidator::operator()(const in_addr address) const
 IPV4Address::IPV4Address(const IPV4Validator *_validator) : 
 validator(_validator), ipaddr(NULL), addr_count(0), hostname(NULL) 
 {
-    *this = (uint32_t)INADDR_ANY;
+    *this = (in_addr_t)INADDR_ANY;
 }
 
 IPV4Address::IPV4Address(const char *address, const IPV4Validator *_validator) :
@@ -183,10 +183,10 @@ IPV4Address &IPV4Address::operator=(struct in_addr addr)
     return *this;
 }
 
-IPV4Address &IPV4Address::operator=(uint32_t addr)
+IPV4Address &IPV4Address::operator=(in_addr_t addr)
 {
     union {
-        uint32_t addr;
+        in_addr_t addr;
         struct in_addr in4;
     } aptr;
 

@@ -236,7 +236,7 @@ Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
 
 #endif
 
-TCPSocket::TCPSocket(const IPV4Address &ia, tpport_t port, unsigned backlog, unsigned mss) :
+TCPSocket::TCPSocket(const IPV4Address &ia, in_port_t port, unsigned backlog, unsigned mss) :
 Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
 {
     struct sockaddr_in addr;
@@ -266,7 +266,7 @@ Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
     state = BOUND;
 }
 
-bool TCPSocket::onAccept(const IPV4Host &ia, tpport_t port)
+bool TCPSocket::onAccept(const IPV4Host &ia, in_port_t port)
 {
     return true;
 }
@@ -349,7 +349,7 @@ Socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP)
     }
 }
 
-TCPV6Socket::TCPV6Socket(const IPV6Address &ia, tpport_t port, unsigned backlog, unsigned mss) :
+TCPV6Socket::TCPV6Socket(const IPV6Address &ia, in_port_t port, unsigned backlog, unsigned mss) :
 Socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP)
 {
     struct sockaddr_in6 addr;
@@ -379,7 +379,7 @@ Socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP)
     state = BOUND;
 }
 
-bool TCPV6Socket::onAccept(const IPV6Host &ia, tpport_t port)
+bool TCPV6Socket::onAccept(const IPV6Host &ia, in_port_t port)
 {
     return true;
 }
@@ -413,7 +413,7 @@ TCPStream::TCPStream(TCPSocket &server, bool throwflag, timeout_t to) :
     ,bufsize(0)
     ,gbuf(NULL)
     ,pbuf(NULL) {
-    tpport_t port;
+    in_port_t port;
     family = IPV4;
 
     timeout = to;
@@ -437,7 +437,7 @@ TCPStream::TCPStream(TCPV6Socket &server, bool throwflag, timeout_t to) :
     ,bufsize(0)
     ,gbuf(NULL)
     ,pbuf(NULL) {
-    tpport_t port;
+    in_port_t port;
 
     family = IPV6;
 
@@ -456,7 +456,7 @@ TCPStream::TCPStream(TCPV6Socket &server, bool throwflag, timeout_t to) :
 }
 #endif
 
-TCPStream::TCPStream(const IPV4Host &host, tpport_t port, unsigned size, bool throwflag, timeout_t to) :
+TCPStream::TCPStream(const IPV4Host &host, in_port_t port, unsigned size, bool throwflag, timeout_t to) :
     streambuf(), Socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
     ,iostream((streambuf *)this),
     bufsize(0),gbuf(NULL),pbuf(NULL) {
@@ -467,7 +467,7 @@ TCPStream::TCPStream(const IPV4Host &host, tpport_t port, unsigned size, bool th
 }
 
 #ifdef  CCXX_IPV6
-TCPStream::TCPStream(const IPV6Host &host, tpport_t port, unsigned size, bool throwflag, timeout_t to) :
+TCPStream::TCPStream(const IPV6Host &host, in_port_t port, unsigned size, bool throwflag, timeout_t to) :
     streambuf(), Socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP),
     iostream((streambuf *)this),
     bufsize(0),gbuf(NULL),pbuf(NULL) {
@@ -556,7 +556,7 @@ void TCPStream::connect(const char *target, unsigned mss)
     char namebuf[128];
     char *cp;
     struct servent *svc;
-    tpport_t port;
+    in_port_t port;
 
     snprintf(namebuf, sizeof(namebuf), "%s", target);
     cp = strrchr(namebuf, '/');
@@ -600,7 +600,7 @@ void TCPStream::connect(const char *target, unsigned mss)
 }
 #endif
 
-void TCPStream::connect(const IPV4Host &host, tpport_t port, unsigned mss)
+void TCPStream::connect(const IPV4Host &host, in_port_t port, unsigned mss)
 {
     size_t i;
     fd_set fds;
@@ -676,7 +676,7 @@ void TCPStream::connect(const IPV4Host &host, tpport_t port, unsigned mss)
 }
 
 #ifdef  CCXX_IPV6
-void TCPStream::connect(const IPV6Host &host, tpport_t port, unsigned mss)
+void TCPStream::connect(const IPV6Host &host, in_port_t port, unsigned mss)
 {
     size_t i;
     fd_set fds;
@@ -773,7 +773,7 @@ timeout(to), bufsize(0),gbuf(NULL),pbuf(NULL)
 
 void TCPStream::connect(TCPSocket &tcpip)
 {
-    tpport_t port;
+    in_port_t port;
 
     endStream();
     family = IPV4;
@@ -796,7 +796,7 @@ void TCPStream::connect(TCPSocket &tcpip)
 
 void TCPStream::connect(TCPV6Socket &tcpip)
 {
-    tpport_t port;
+    in_port_t port;
 
     endStream();
     family = IPV6;
@@ -1102,7 +1102,7 @@ int TCPStream::overflow(int c)
     return c;
 }
 
-TCPSession::TCPSession(const IPV4Host &ia, tpport_t port, size_t size, int pri, size_t stack) :
+TCPSession::TCPSession(const IPV4Host &ia, in_port_t port, size_t size, int pri, size_t stack) :
 Thread(pri, stack), TCPStream(IPV4)
 {
     setCompletion(false);
@@ -1145,7 +1145,7 @@ Thread(pri, stack), TCPStream(IPV4)
 }
 
 #ifdef  CCXX_IPV6
-TCPSession::TCPSession(const IPV6Host &ia, tpport_t port, size_t size, int pri, size_t stack) :
+TCPSession::TCPSession(const IPV6Host &ia, in_port_t port, size_t size, int pri, size_t stack) :
 Thread(pri, stack), TCPStream(IPV6)
 {
     setCompletion(false);
