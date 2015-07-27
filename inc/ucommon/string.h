@@ -66,11 +66,6 @@
 namespace ucommon {
 
 /**
- * A convenience class for size of strings.
- */
-typedef unsigned short strsize_t;
-
-/**
  * A copy-on-write string class that operates by reference count.  This string
  * class anchors a counted object that is managed as a copy-on-write
  * instance of the string data.  This means that multiple instances of the
@@ -138,8 +133,8 @@ public:
 
     public:
 #pragma pack(1)
-        strsize_t max;  /**< Allocated size of cstring text */
-        strsize_t len;  /**< Current length of cstring text */
+        size_t max;  /**< Allocated size of cstring text */
+        size_t len;  /**< Current length of cstring text */
         char text[1];   /**< Null terminated text, in overdraft space */
 #pragma pack()
 
@@ -148,13 +143,13 @@ public:
          * new operator would also need the size as an overdraft value.
          * @param size of string.
          */
-        cstring(strsize_t size);
+        cstring(size_t size);
 
         /**
          * Used to clear a string at specified offset.
          * @param offset to clear from.
          */
-        void clear(strsize_t offset);
+        void clear(size_t offset);
 
         /**
          * Set part or all of a string with new text.
@@ -162,7 +157,7 @@ public:
          * @param text to insert from null terminated string.
          * @param size of field to modify.  This is filled for fill mode.
          */
-        void set(strsize_t offset, const char *text, strsize_t size);
+        void set(size_t offset, const char *text, size_t size);
 
         /**
          * Set our string from null terminated text up to our allocated size.
@@ -192,14 +187,14 @@ public:
          * start of buffer.
          * @param number of characters to delete.
          */
-        void inc(strsize_t number);
+        void inc(size_t number);
 
         /**
          * Adjust size of our string buffer by deleting characters from
          * end of buffer.
          * @param number of characters to delete.
          */
-        void dec(strsize_t number);
+        void dec(size_t number);
     };
 
 protected:
@@ -210,7 +205,7 @@ protected:
      * @param size of allocated space for string buffer.
      * @return new cstring object.
      */
-    cstring *create(strsize_t size) const;
+    cstring *create(size_t size) const;
 
 public:
     /**
@@ -257,16 +252,16 @@ protected:
      * to disable.
      * @param size to add to allocated space when creating new cstring.
      */
-    virtual void cow(strsize_t size = 0);
+    virtual void cow(size_t size = 0);
 
-    strsize_t getStringSize(void) const;
+    size_t getStringSize(void) const;
 
 public:
 #if _MSC_VER > 1400        // windows broken dll linkage issue...
-    const static strsize_t npos = ((strsize_t)-1);
+    const static size_t npos = ((size_t)-1);
     const static char eos = '\0';
 #else
-    static const strsize_t npos;
+    static const size_t npos;
     static const char eos;
 #endif
 
@@ -292,7 +287,7 @@ public:
      * Create an empty string with a buffer pre-allocated to a specified size.
      * @param size of buffer to allocate.
      */
-    String(strsize_t size);
+    String(size_t size);
 
     /**
      * Create a string by printf-like formating into a pre-allocated space
@@ -301,7 +296,7 @@ public:
      * @param size of buffer to allocate.
      * @param format control for string.
      */
-    String(strsize_t size, const char *format, ...) __PRINTF(3, 4);
+    String(size_t size, const char *format, ...) __PRINTF(3, 4);
 
 
     /**
@@ -316,7 +311,7 @@ public:
      * @param text to use for string.
      * @param size limit of new string.
      */
-    String(const char *text, strsize_t size);
+    String(const char *text, size_t size);
 
     /**
      * Create a string for a substring.  The end of the substring is a
@@ -345,7 +340,7 @@ public:
      * @param size of substring or 0 if to end.
      * @return string object holding substring.
      */
-    String get(strsize_t offset, strsize_t size = 0) const;
+    String get(size_t offset, size_t size = 0) const;
 
     /**
      * Scan input items from a string object.
@@ -367,7 +362,7 @@ public:
      * @param format string of print format.
      * @return number of bytes written to string.
      */
-    strsize_t printf(const char *format, ...) __PRINTF(2, 3);
+    size_t printf(const char *format, ...) __PRINTF(2, 3);
 
     /**
      * Print items into a string object.
@@ -375,7 +370,7 @@ public:
      * @param args list to print.
      * @return number of bytes written to string.
      */
-    strsize_t vprintf(const char *format, va_list args) __PRINTF(2, 0);
+    size_t vprintf(const char *format, va_list args) __PRINTF(2, 0);
 
     /**
      * Get memory text buffer of string object.
@@ -394,7 +389,7 @@ public:
      * @param size to allocate for string.
      * @return true if re-allocated.  False in derived memstring.
      */
-    virtual bool resize(strsize_t size);
+    virtual bool resize(size_t size);
 
     /**
      * Set string object to text of a null terminated string.
@@ -409,7 +404,7 @@ public:
      * @param text to set at offset.
      * @param size of text area to set or 0 until end of text.
      */
-    void set(strsize_t offset, const char *text, strsize_t size = 0);
+    void set(size_t offset, const char *text, size_t size = 0);
 
     /**
      * Set a text field within our string object.
@@ -418,7 +413,7 @@ public:
      * @param offset in object string buffer to set text at.
      * @param size of part of buffer to set with text and overflow.
      */
-    void set(const char *text, char overflow, strsize_t offset, strsize_t size = 0);
+    void set(const char *text, char overflow, size_t offset, size_t size = 0);
 
     /**
      * Set a text field within our string object offset from the end of buffer.
@@ -427,7 +422,7 @@ public:
      * @param offset from end of object string buffer to set text at.
      * @param size of part of buffer to set with text and overflow.
      */
-    void rset(const char *text, char overflow, strsize_t offset, strsize_t size = 0);
+    void rset(const char *text, char overflow, size_t offset, size_t size = 0);
 
     /**
      * Append null terminated text to our string buffer.
@@ -451,7 +446,7 @@ public:
      * Trim lead characters from text.
      * @param count of characters to remove.
      */
-    inline void trim(strsize_t count = 1)
+    inline void trim(size_t count = 1)
         {operator+=(count);}
 
     /**
@@ -464,7 +459,7 @@ public:
      * Chop trailing characters from text.
      * @param count of characters to remove.
      */
-    inline void chop(strsize_t count = 1)
+    inline void chop(size_t count = 1)
         {operator-=(count);}
 
     /**
@@ -485,7 +480,7 @@ public:
      * @param offset to start of text field to remove.
      * @param size of text field to remove or 0 to remove to end of string.
      */
-    void cut(strsize_t offset, strsize_t size = 0);
+    void cut(size_t offset, size_t size = 0);
 
     /**
      * Insert (paste) text into string.
@@ -493,13 +488,13 @@ public:
      * @param text to paste.
      * @param size of text to paste.
      */
-    void paste(strsize_t offset, const char *text, strsize_t size = 0);
+    void paste(size_t offset, const char *text, size_t size = 0);
 
     /**
      * Clear a field of a filled string with filler.
      * @param offset to start of field to clear.
      */
-    void clear(strsize_t offset);
+    void clear(size_t offset);
 
     /**
      * Clear string by setting to empty.
@@ -526,19 +521,19 @@ public:
      * @param list of characters to find.
      * @return count of instances of characters in string.
      */
-    strsize_t ccount(const char *list) const;
+    size_t ccount(const char *list) const;
 
     /**
      * Count all characters in the string (strlen).
      * @return count of characters.
      */
-    strsize_t count(void) const;
+    size_t count(void) const;
 
     /**
      * Get the size of currently allocated space for string.
      * @return size allocated for text.
      */
-    strsize_t size(void) const;
+    size_t size(void) const;
 
     /**
      * Find offset of a pointer into our string buffer.  This can be used
@@ -549,7 +544,7 @@ public:
      * then npos is returned.
      * @param pointer into our object's string buffer.
      */
-    strsize_t offset(const char *pointer) const;
+    size_t offset(const char *pointer) const;
 
     /**
      * Return character found at a specific position in the string.
@@ -576,7 +571,7 @@ public:
      * @param offset to start of scan.
      * @return pointer to first part of string past skipped characters.
      */
-    const char *skip(const char *list, strsize_t offset = 0) const;
+    const char *skip(const char *list, size_t offset = 0) const;
 
     /**
      * Skip trailing characters in the string.  This searches the
@@ -585,7 +580,7 @@ public:
      * @param offset to start of scan.  Default is end of string.
      * @return pointer to first part of string before skipped characters.
      */
-    const char *rskip(const char *list, strsize_t offset = npos) const;
+    const char *rskip(const char *list, size_t offset = npos) const;
 
     /**
      * Search for a substring in the string.
@@ -606,7 +601,7 @@ public:
      * @param offset to start of search.
      * @return pointer to first occurrence of character.
      */
-    const char *find(const char *list, strsize_t offset = 0) const;
+    const char *find(const char *list, size_t offset = 0) const;
 
     /**
      * Find last occurrence of character in the string.
@@ -614,7 +609,7 @@ public:
      * @param offset to start of search.  Default is end of string.
      * @return pointer to last occurrence of character.
      */
-    const char *rfind(const char *list, strsize_t offset = npos) const;
+    const char *rfind(const char *list, size_t offset = npos) const;
 
     /**
      * Split the string by a pointer position.  Everything after the pointer
@@ -628,9 +623,9 @@ public:
      * is removed.
      * @param offset to split position in string.
      */
-    void split(strsize_t offset);
+    void split(size_t offset);
 
-    void fill(strsize_t size, char fill);
+    void fill(size_t size, char fill);
 
     /**
      * Split the string by a pointer position.  Everything before the pointer
@@ -644,7 +639,7 @@ public:
      * is removed.
      * @param offset to split position in string.
      */
-    void rsplit(strsize_t offset);
+    void rsplit(size_t offset);
 
     /**
      * Find pointer in string where specified character appears.
@@ -665,7 +660,7 @@ public:
      * Get length of string.
      * @return length of string.
      */
-    strsize_t len(void) const;
+    size_t len(void) const;
 
     /**
      * Casting reference to raw text string.
@@ -693,14 +688,14 @@ public:
      * @param size of substring or 0 if to end.
      * @return string object holding substring.
      */
-    String operator()(int offset, strsize_t size) const;
+    String operator()(int offset, size_t size) const;
 
     /**
      * Convenience method for left of string.
      * @param size of substring to gather.
      * @return string object holding substring.
      */
-    inline String left(strsize_t size) const
+    inline String left(size_t size) const
         {return operator()(0, size);}
 
     /**
@@ -708,7 +703,7 @@ public:
      * @param offset of substring from right.
      * @return string object holding substring.
      */
-    inline String right(strsize_t offset) const
+    inline String right(size_t offset) const
         {return operator()(-((int)offset), 0);}
 
     /**
@@ -717,7 +712,7 @@ public:
      * @param size of string to return.
      * @return string object holding substring.
      */
-    inline String copy(strsize_t offset, strsize_t size) const
+    inline String copy(size_t offset, size_t size) const
         {return operator()((int)offset, size);}
 
     /**
@@ -826,7 +821,7 @@ public:
      * Delete a specified number of characters from start of string.
      * @param number of characters to delete.
      */
-    String& operator+=(strsize_t number);
+    String& operator+=(size_t number);
 
     /**
      * Delete last character from string.
@@ -837,13 +832,13 @@ public:
      * Delete a specified number of characters from end of string.
      * @param number of characters to delete.
      */
-    String& operator-=(strsize_t number);
+    String& operator-=(size_t number);
 
     /**
      * Delete a specified number of characters from start of string.
      * @param number of characters to delete.
      */
-    String& operator*=(strsize_t number);
+    String& operator*=(size_t number);
 
     /**
      * Compare our object with null terminated text.
@@ -1406,8 +1401,8 @@ public:
 #endif
 
 private:
-    bool resize(strsize_t size);
-    void cow(strsize_t adj = 0);
+    bool resize(size_t size);
+    void cow(size_t adj = 0);
     void release(void);
 
 protected:
@@ -1433,7 +1428,7 @@ public:
      * @param memory to use for cstring object.
      * @param size of string.  Total size must include space for overhead.
      */
-    memstring(void *memory, strsize_t size);
+    memstring(void *memory, size_t size);
 
     /**
      * Destroy memory string.
@@ -1444,14 +1439,14 @@ public:
      * Create a memory string with memory allocated from the heap.
      * @param size of string to allocate.  Automatically adds control size.
      */
-    static memstring *create(strsize_t size);
+    static memstring *create(size_t size);
 
     /**
      * Create a memory string with memory allocated from a pager.
      * @param pager to allocate memory from.
      * @param size of string to allocate.  Automatically adds control size.
      */
-    static memstring *create(MemoryProtocol *pager, strsize_t size);
+    static memstring *create(MemoryProtocol *pager, size_t size);
 };
 
 /**
@@ -1579,7 +1574,7 @@ typedef String::regex stringex_t;
  * easily do.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-template<strsize_t S>
+template<size_t S>
 class stringbuf : public memstring
 {
 private:
@@ -1721,7 +1716,7 @@ inline String str(unsigned long value)
 inline String str(double value)
     {String temp(40, "%f", value); return temp;}
 
-String str(CharacterProtocol& cp, strsize_t size);
+String str(CharacterProtocol& cp, size_t size);
 
 template<>
 inline void swap<string_t>(string_t& s1, string_t& s2)
@@ -1766,6 +1761,9 @@ public:
     inline char *operator+(size_t size)
         {return data + size;}
 };
+
+// for older code...
+typedef size_t strsize_t;
 
 } // namespace ucommon
 

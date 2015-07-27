@@ -207,7 +207,7 @@ protected:
      * Create an empty string with a buffer pre-allocated to a specified size.
      * @param size of buffer to allocate.
      */
-    UString(strsize_t size);
+    UString(size_t size);
 
     /**
      * Create a utf8 aware string for a null terminated unicode string.
@@ -221,7 +221,7 @@ protected:
      * @param text to use for string.
      * @param size limit of new string.
      */
-    UString(const char *text, strsize_t size);
+    UString(const char *text, size_t size);
 
     /**
      * Create a string for a substring.  The end of the substring is a
@@ -250,7 +250,7 @@ protected:
      * @param size of substring in codepoints or 0 if to end.
      * @return string object holding substring.
      */
-    UString get(strsize_t codepoint, strsize_t size = 0) const;
+    UString get(size_t codepoint, size_t size = 0) const;
 
     /**
      * Extract a unicode byte sequence from utf8 object.
@@ -294,14 +294,14 @@ protected:
      * @param size of substring or 0 if to end.
      * @return string object holding substring.
      */
-    UString operator()(int codepoint, strsize_t size) const;
+    UString operator()(int codepoint, size_t size) const;
 
     /**
      * Convenience method for left of string.
      * @param size of substring to gather in codepoints.
      * @return string object holding substring.
      */
-    inline UString left(strsize_t size) const
+    inline UString left(size_t size) const
         {return operator()(0, size);}
 
     /**
@@ -309,7 +309,7 @@ protected:
      * @param offset of substring from right in codepoints.
      * @return string object holding substring.
      */
-    inline UString right(strsize_t offset) const
+    inline UString right(size_t offset) const
         {return operator()(-((int)offset), 0);}
 
     /**
@@ -318,7 +318,7 @@ protected:
      * @param size of string to return.
      * @return string object holding substring.
      */
-    inline UString copy(strsize_t offset, strsize_t size) const
+    inline UString copy(size_t offset, size_t size) const
         {return operator()((int)offset, size);}
 
     /**
@@ -326,7 +326,7 @@ protected:
      * @param offset to start of text field to remove.
      * @param size of text field to remove or 0 to remove to end of string.
      */
-    void cut(strsize_t offset, strsize_t size = 0);
+    void cut(size_t offset, size_t size = 0);
 
     /**
      * Insert (paste) text into string using codepoint offsets.
@@ -334,7 +334,7 @@ protected:
      * @param text to paste.
      * @param size of text to paste.
      */
-    void paste(strsize_t offset, const char *text, strsize_t size = 0);
+    void paste(size_t offset, const char *text, size_t size = 0);
 
     /**
      * Reference a string in the object by codepoint offset.  Positive
@@ -357,8 +357,8 @@ protected:
      * Count codepoints in current string.
      * @return count of codepoints.
      */
-    inline strsize_t count(void) const
-        {return (strsize_t)utf8::count(str->text);}
+    inline size_t count(void) const
+        {return (size_t)utf8::count(str->text);}
 
     /**
      * Count occurrences of a unicode character in string.
@@ -373,7 +373,7 @@ protected:
      * @param start offset in string in codepoints.
      * @return pointer to first instance or NULL if not found.
      */
-    const char *find(ucs4_t character, strsize_t start = 0) const;
+    const char *find(ucs4_t character, size_t start = 0) const;
 
     /**
      * Find last occurrence of character in string.
@@ -381,7 +381,7 @@ protected:
      * @param end offset to start from in codepoints.
      * @return pointer to last instance or NULL if not found.
      */
-    const char *rfind(ucs4_t character, strsize_t end = npos) const;
+    const char *rfind(ucs4_t character, size_t end = npos) const;
 };
 
 /**

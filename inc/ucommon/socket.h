@@ -2022,7 +2022,7 @@ inline bool eq_host(const struct sockaddr *s1, const struct sockaddr *s2)
 inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
     {return Socket::eq_subnet(s1, s2);}
 
-String str(Socket& so, strsize_t size);
+String str(Socket& so, size_t size);
 
 typedef TCPServer   tcpserv_t;
 

@@ -309,8 +309,8 @@ ucs4_t *utf8::udup(const char *string)
     if(!string)
         return NULL;
 
-    strsize_t len = (strsize_t)count(string);
-    strsize_t pos = 0;
+    size_t len = count(string);
+    size_t pos = 0;
     ucs4_t *out = (ucs4_t *)malloc(sizeof(ucs4_t) * (++len));
     if (!out)
         return NULL;
@@ -328,8 +328,8 @@ ucs2_t *utf8::wdup(const char *string)
     if(!string)
         return NULL;
 
-    strsize_t len = (strsize_t)count(string);
-    strsize_t pos = 0;
+    size_t len = count(string);
+    size_t pos = 0;
     ucs2_t *out = (ucs2_t *)malloc(sizeof(ucs2_t) * (++len));
     ucs4_t ch;
 
@@ -442,13 +442,13 @@ UString::UString()
 
 UString::~UString() {}
 
-UString::UString(strsize_t size)
+UString::UString(size_t size)
 {
     str = create(size);
     str->retain();
 }
 
-UString::UString(const char *text, strsize_t size)
+UString::UString(const char *text, size_t size)
 {
     str = NULL;
     String::set(0, text, size);
@@ -469,7 +469,7 @@ UString::UString(const UString& copy)
 
 void UString::set(const unicode_t text)
 {
-    strsize_t size = (strsize_t)utf8::chars(text);
+    size_t size = utf8::chars(text);
     str = NULL;
     str = create(size);
     str->retain();
@@ -481,9 +481,9 @@ void UString::set(const unicode_t text)
 
 void UString::add(const unicode_t text)
 {
-    strsize_t alloc, size;
+    size_t alloc, size;
 
-    size = alloc = (strsize_t)utf8::chars(text);
+    size = alloc = utf8::chars(text);
     if(str)
         alloc += str->len;
 
@@ -501,12 +501,12 @@ size_t UString::get(unicode_t output, size_t points) const
     return utf8::pack(output, cp, points);
 }
 
-void UString::cut(strsize_t pos, strsize_t size)
+void UString::cut(size_t pos, size_t size)
 {
     if(!str)
         return;
 
-    strsize_t bpos = 0, blen = 0;
+    size_t bpos = 0, blen = 0;
     if(pos && pos != npos)
          bpos = String::offset(utf8::offset(str->text, (ssize_t)pos));
 
@@ -516,9 +516,9 @@ void UString::cut(strsize_t pos, strsize_t size)
     String::cut(bpos, blen);
 }
 
-void UString::paste(strsize_t pos, const char *text, strsize_t size)
+void UString::paste(size_t pos, const char *text, size_t size)
 {
-    strsize_t bpos = 0, blen = 0;
+    size_t bpos = 0, blen = 0;
     if(pos && pos != npos && str)
          bpos = String::offset(utf8::offset(str->text, (ssize_t)pos));
 
@@ -528,7 +528,7 @@ void UString::paste(strsize_t pos, const char *text, strsize_t size)
     String::paste(bpos, text, blen);
 }
 
-UString UString::get(strsize_t pos, strsize_t size) const
+UString UString::get(size_t pos, size_t size) const
 {
     if(!str)
         return UString("", 0);
@@ -544,7 +544,7 @@ UString UString::get(strsize_t pos, strsize_t size) const
     if(!end)
         return UString(substr);
 
-    pos = (strsize_t)(end - substr + 1);
+    pos = (size_t)(end - substr + 1);
     return UString(substr, pos);
 }
 
@@ -563,20 +563,20 @@ ucs4_t UString::at(int offset) const
     return utf8::codepoint(cp);
 }
 
-const char *UString::find(ucs4_t code, strsize_t pos) const
+const char *UString::find(ucs4_t code, size_t pos) const
 {
     if(!str)
         return NULL;
 
-    return utf8::find(str->text, code, (size_t)pos);
+    return utf8::find(str->text, code, pos);
 }
 
-const char *UString::rfind(ucs4_t code, strsize_t pos) const
+const char *UString::rfind(ucs4_t code, size_t pos) const
 {
     if(!str)
         return NULL;
 
-    return utf8::rfind(str->text, code, (size_t)pos);
+    return utf8::rfind(str->text, code, pos);
 }
 
 unsigned UString::ccount(ucs4_t code) const
@@ -587,7 +587,7 @@ unsigned UString::ccount(ucs4_t code) const
     return utf8::ccount(str->text, code);
 }
 
-UString UString::operator()(int codepoint, strsize_t size) const
+UString UString::operator()(int codepoint, size_t size) const
 {
     return UString::get(codepoint, size);
 }

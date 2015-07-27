@@ -3558,7 +3558,7 @@ int Socket::remote(socket_t sock, struct sockaddr_storage *addr)
     return _getpeername_(sock, (struct sockaddr *)addr, &slen);
 }
 
-String str(Socket& so, strsize_t size)
+String str(Socket& so, size_t size)
 {
     String s(size);
     so.readline(s.c_mem(), s.size());
