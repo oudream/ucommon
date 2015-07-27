@@ -116,6 +116,7 @@ extern "C" int main()
     cvs.assign(cv1);
     assert(cvs.copies() == 1);
     assert(eq(cvs, "test 1\n"));
+    assert(cvs.size() == 7);
 
     return 0;
 }
