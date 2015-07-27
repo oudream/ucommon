@@ -117,7 +117,13 @@ TypeRef::Counted(addr, objsize)
     if(str)
     	String::set(mem, objsize + 1, str);
     else
-	mem[0] = 0;
+	    mem[0] = 0;
+}
+
+void stringref::value::destroy(void) 
+{
+	count.clear();
+	release();
 }
 
 stringref::stringref() :
@@ -170,6 +176,29 @@ void stringref::set(const char *str)
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
+void stringref::assign(value *chars)
+{
+    release();
+    TypeRef::set(chars);
+}
+
+stringref& stringref::operator=(value *chars)
+{
+    assign(chars);
+    return *this;
+}
+
+stringref::value *stringref::create(size_t size)
+{
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    return new(mem(p)) value(p, size, NULL);
+}
+
+void stringref::destroy(stringref::value *chars)
+{
+    chars->destroy();
+}
+
 byteref::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
 TypeRef::Counted(addr, objsize)
 {
@@ -193,6 +222,12 @@ TypeRef()
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str));
+}
+
+void byteref::value::destroy(void) 
+{
+	count.clear();
+	release();
 }
 
 const uint8_t *byteref::operator*() const 
