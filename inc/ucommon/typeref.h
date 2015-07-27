@@ -62,7 +62,7 @@ protected:
 	protected:
 		friend class TypeRef;
 
-		mutable atomic::counter count;
+		mutable Atomic::counter count;
 		size_t size;
 		void *memory;
 

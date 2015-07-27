@@ -46,7 +46,7 @@ namespace ucommon {
  * code is available.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT atomic
+class __EXPORT Atomic
 {
 public:
     /**
@@ -132,9 +132,6 @@ public:
      */
     static void *alloc(size_t size);
 };
-
-// for abi7
-typedef atomic Atomic;
 
 } // namespace ucommon
 

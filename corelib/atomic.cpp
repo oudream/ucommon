@@ -38,12 +38,12 @@
 
 namespace ucommon {
 
-atomic::counter::counter(atomic_t init)
+Atomic::counter::counter(atomic_t init)
 {
     value = init;
 }
 
-atomic::spinlock::spinlock()
+Atomic::spinlock::spinlock()
 {
     value = 0;
 }
@@ -65,32 +65,32 @@ atomic::spinlock::spinlock()
 
 #if defined(_MSWINDOWS_)
 
-atomic_t atomic::counter::fetch_add(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
     return InterlockedExchangeAdd(&value, change);
 }
 
-atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
     return InterlockedExchangeAdd(&value, -change);
 }
 
-atomic_t atomic::counter::get() volatile
+atomic_t Atomic::counter::get() volatile
 {
     return fetch_add(0);
 }
 
-void atomic::counter::clear() volatile
+void Atomic::counter::clear() volatile
 {
     _InterlockedAnd(&value, 0);
 }
 
-bool atomic::spinlock::acquire() volatile
+bool Atomic::spinlock::acquire() volatile
 {
     return !InterlockedBitTestAndSet(&value, 1);
 }
 
-void atomic::spinlock::wait() volatile
+void Atomic::spinlock::wait() volatile
 {
     while(InterlockedBitTestAndSet(&value, 1)) {
         while(value)
@@ -98,7 +98,7 @@ void atomic::spinlock::wait() volatile
     }
 }
 
-void atomic::spinlock::release() volatile
+void Atomic::spinlock::release() volatile
 {
     InterlockedBitTestAndReset(&value, 1);
 }
@@ -106,33 +106,33 @@ void atomic::spinlock::release() volatile
 #elif defined(__CLANG_ATOMICS) && defined(HAVE_ATOMICS)
 typedef _Atomic(atomic_t)   *atomic_val;
 
-atomic_t atomic::counter::get() volatile
+atomic_t Atomic::counter::get() volatile
 {
     return __c11_atomic_load((atomic_val)(&value), __ATOMIC_SEQ_CST);
 }
 
-void atomic::counter::clear() volatile
+void Atomic::counter::clear() volatile
 {
     __c11_atomic_fetch_and((atomic_val)(&value), (atomic_t)0, __ATOMIC_SEQ_CST);
 }
 
-atomic_t atomic::counter::fetch_add(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
     return __c11_atomic_fetch_add((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
 }
 
-atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
     return __c11_atomic_fetch_sub((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
 }
 
-bool atomic::spinlock::acquire(void) volatile
+bool Atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
     return (!__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST));
 }
 
-void atomic::spinlock::wait(void) volatile
+void Atomic::spinlock::wait(void) volatile
 {
     while (__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST)) {
         while (value)
@@ -140,40 +140,40 @@ void atomic::spinlock::wait(void) volatile
     }
 }
 
-void atomic::spinlock::release(void) volatile
+void Atomic::spinlock::release(void) volatile
 {
     __c11_atomic_store((atomic_val)(&value), 0, __ATOMIC_SEQ_CST);
 }
 
 #elif __GNUC_PREREQ__(4, 7) && defined(HAVE_ATOMICS)
 
-atomic_t atomic::counter::fetch_add(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
     return __atomic_fetch_add(&value, change, __ATOMIC_SEQ_CST);
 }
 
-atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
     return __atomic_fetch_sub(&value, change, __ATOMIC_SEQ_CST);
 }
 
-atomic_t atomic::counter::get() volatile
+atomic_t Atomic::counter::get() volatile
 {
     return fetch_add(0);
 }
 
-void atomic::counter::clear() volatile
+void Atomic::counter::clear() volatile
 {
     __atomic_fetch_and(&value, (atomic_t)0, __ATOMIC_SEQ_CST);
 }
 
-bool atomic::spinlock::acquire(void) volatile
+bool Atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
     return (!__atomic_test_and_set(&value, __ATOMIC_SEQ_CST));
 }
 
-void atomic::spinlock::wait(void) volatile
+void Atomic::spinlock::wait(void) volatile
 {
     while (__atomic_test_and_set(&value, __ATOMIC_SEQ_CST)) {
         while (value)
@@ -181,40 +181,40 @@ void atomic::spinlock::wait(void) volatile
     }
 }
 
-void atomic::spinlock::release(void) volatile
+void Atomic::spinlock::release(void) volatile
 {
     __atomic_clear(&value, __ATOMIC_SEQ_CST);
 }
 
 #elif __GNUC_PREREQ__(4, 1) && defined(HAVE_ATOMICS)
 
-atomic_t atomic::counter::fetch_add(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
     return __sync_fetch_and_add(&value, change);
 }
 
-atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
     return __sync_fetch_and_sub(&value, change);
 }
 
-atomic_t atomic::counter::get() volatile
+atomic_t Atomic::counter::get() volatile
 {
     return fetch_add(0);
 }
 
-void atomic::counter::clear() volatile
+void Atomic::counter::clear() volatile
 {
     __sync_fetch_and_and(&value, (atomic_t)0);
 }
 
-bool atomic::spinlock::acquire(void) volatile
+bool Atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
     return (!__sync_lock_test_and_set(&value, 1));
 }
 
-void atomic::spinlock::wait(void) volatile
+void Atomic::spinlock::wait(void) volatile
 {
     while (__sync_lock_test_and_set(&value, 1)) {
         while (value)
@@ -222,7 +222,7 @@ void atomic::spinlock::wait(void) volatile
     }
 }
 
-void atomic::spinlock::release(void) volatile
+void Atomic::spinlock::release(void) volatile
 {
     __sync_lock_release(&value);
 }
@@ -231,7 +231,7 @@ void atomic::spinlock::release(void) volatile
 
 #define SIMULATED true
 
-atomic_t atomic::counter::get() volatile
+atomic_t Atomic::counter::get() volatile
 {
     atomic_t rval;
     Mutex::protect((void *)&value);
@@ -240,14 +240,14 @@ atomic_t atomic::counter::get() volatile
     return rval;
 }
 
-void atomic::counter::clear() volatile
+void Atomic::counter::clear() volatile
 {
     Mutex::protect((void *)&value);
     value = 0;
     Mutex::release((void *)&value);
 }
 
-atomic_t atomic::counter::fetch_add(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
     atomic_t rval;
     Mutex::protect((void *)&value);
@@ -257,7 +257,7 @@ atomic_t atomic::counter::fetch_add(atomic_t change) volatile
     return rval;
 }
 
-atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
+atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
     atomic_t rval;
     Mutex::protect((void *)&value);
@@ -267,7 +267,7 @@ atomic_t atomic::counter::fetch_sub(atomic_t change) volatile
     return rval;
 }
 
-bool atomic::spinlock::acquire(void) volatile
+bool Atomic::spinlock::acquire(void) volatile
 {
     bool rtn = true;
 
@@ -280,13 +280,13 @@ bool atomic::spinlock::acquire(void) volatile
     return rtn;
 }
 
-void atomic::spinlock::wait(void) volatile
+void Atomic::spinlock::wait(void) volatile
 {
     while(!acquire())
         ;
 }
 
-void atomic::spinlock::release(void) volatile
+void Atomic::spinlock::release(void) volatile
 {
     Mutex::protect((void *)&value);
     value = 0;
@@ -297,7 +297,7 @@ void atomic::spinlock::release(void) volatile
 
 #ifdef  HAVE_POSIX_MEMALIGN
 
-void *atomic::alloc(size_t size)
+void *Atomic::alloc(size_t size)
 {
     void *addr = NULL;
     size = size + (size % 16);
@@ -308,14 +308,14 @@ void *atomic::alloc(size_t size)
 
 #elif  HAVE_ALIGNED_ALLOC
 
-void *atomic::alloc(size_t size)
+void *Atomic::alloc(size_t size)
 {
     return aligned_alloc(16, size);
 }
 
 #else
 
-void *atomic::alloc(size_t size)
+void *Atomic::alloc(size_t size)
 {
     caddr_t addr = (caddr_t)::malloc(size + 16);
     if(!addr)
@@ -328,27 +328,27 @@ void *atomic::alloc(size_t size)
 #endif
 
 #ifdef SIMULATED
-const bool atomic::simulated = true;
+const bool Atomic::simulated = true;
 #else
-const bool atomic::simulated = false;
+const bool Atomic::simulated = false;
 #endif
 
-atomic_t atomic::counter::operator++() volatile
+atomic_t Atomic::counter::operator++() volatile
 {
     return fetch_add(1) + 1;
 }
 
-atomic_t atomic::counter::operator--() volatile
+atomic_t Atomic::counter::operator--() volatile
 {
     return fetch_sub(1) - 1;
 }
 
-atomic_t atomic::counter::operator+=(atomic_t change) volatile
+atomic_t Atomic::counter::operator+=(atomic_t change) volatile
 {
     return fetch_add(change) + change;
 }
 
-atomic_t atomic::counter::operator-=(atomic_t change) volatile
+atomic_t Atomic::counter::operator-=(atomic_t change) volatile
 {
     return fetch_sub(change) - change;
 }
