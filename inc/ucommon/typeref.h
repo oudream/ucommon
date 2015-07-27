@@ -238,6 +238,8 @@ public:
 
 	void assign(value *chars);
 
+	static void expand(value **handle, size_t size);
+
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);

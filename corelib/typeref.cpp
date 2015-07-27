@@ -196,7 +196,20 @@ stringref::value *stringref::create(size_t size)
 
 void stringref::destroy(stringref::value *chars)
 {
-    chars->destroy();
+    if(chars)
+        chars->destroy();
+}
+
+void stringref::expand(stringref::value **handle, size_t size)
+{
+    if(!handle || !*handle)
+        return;
+
+    stringref::value *change = create(size + (*handle)->max());
+    if(change)
+        String::set(change->get(), change->max() + 1, (*handle)->get());
+    destroy(*handle);
+    *handle = change;
 }
 
 byteref::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
@@ -271,7 +284,8 @@ byteref::value *byteref::create(size_t size)
 
 void byteref::destroy(byteref::value *bytes)
 {
-    bytes->destroy();
+    if(bytes)
+        bytes->destroy();
 }
 
 } // namespace
