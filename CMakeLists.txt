@@ -50,7 +50,7 @@ else()
 endif()
 
 option(BUILD_EXTRAS  "Set to OFF to disable" ON)
-option(BUILD_ATOMICS "Set to ON to enable" OFF)
+option(BUILD_ATOMICS "Set to OFF to disable" ON)
 option(BUILD_TESTING "Set to ON to build test programs" OFF)
 option(CRYPTO_STATIC "Set to ON to build static crypto" OFF)
 option(CRYPTO_OPENSSL "Set to OFF to disable openssl" ON)
