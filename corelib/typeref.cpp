@@ -179,6 +179,7 @@ void stringref::set(const char *str)
 void stringref::assign(value *chars)
 {
     release();
+    chars->size = strlen(chars->mem);
     TypeRef::set(chars);
 }
 
