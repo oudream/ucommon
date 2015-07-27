@@ -468,6 +468,7 @@ inline T *init(T *memory)
 typedef long Integer;
 typedef unsigned long Unsigned;
 typedef double Real;
+typedef uint8_t ubyte_t;
 
 /**
  * Matching function for strdup().
