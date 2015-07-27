@@ -193,16 +193,29 @@ public:
 
 class __EXPORT stringref : public TypeRef
 {
-private:
+public:
 	class value : public Counted
 	{
-	public:
-		value(caddr_t addr, size_t size, const char *str);
+	protected:
+		friend class stringref;
 
 		char mem[1];
+
+		value(caddr_t addr, size_t size, const char *str);
+
+		void destroy(void);
+
+	public:
+
+		inline char *get() {
+			return &mem[0];
+		}
+
+		inline size_t max() {
+			return size;
+		}
 	};
 
-public:
 	stringref();
 	
 	stringref(const stringref& copy);
@@ -219,7 +232,17 @@ public:
 
 	stringref& operator=(const char *str);
 
+	stringref& operator=(value *chars);
+
 	void set(const char *str);
+
+	void assign(value *chars);
+
+	static void expand(value **handle, size_t size);
+
+	static value *create(size_t size);
+
+	static void destroy(value *bytes);
 };
 
 class __EXPORT byteref : public TypeRef
@@ -236,10 +259,7 @@ public:
 
 		value(caddr_t addr, size_t size);
 
-		inline void destroy(void) {
-			count.clear();
-			release();
-		}
+		void destroy(void);
 
 	public:
 		inline size_t max() {
@@ -271,11 +291,12 @@ public:
 
 	void assign(value *bytes);
 
-	static byteref::value *create(size_t size);
+	static value *create(size_t size);
 
 	static void destroy(value *bytes);
 };
 
+typedef stringref::value *charvalues_t;
 typedef	byteref::value	*bytevalues_t;
 typedef	stringref	stringref_t;
 typedef byteref		byteref_t;
