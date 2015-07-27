@@ -41,48 +41,21 @@ CountedObject()
 {
     max = size;
     len = 0;
-    fill = 0;
     text[0] = 0;
-}
-
-String::cstring::cstring(strsize_t size, char f) :
-CountedObject()
-{
-    max = size;
-    len = 0;
-    fill = f;
-
-    if(fill) {
-        memset(text, fill, max);
-        len = max;
-    }
 }
 
 void String::cstring::fix(void)
 {
-    while(fill && len < max)
-        text[len++] = fill;
     text[len] = 0;
 }
 
-void String::cstring::unfix(void)
+void String::cstring::clear(strsize_t offset)
 {
-    while(len && fill) {
-        if(text[len - 1] == fill)
-            --len;
-    }
-    text[len] = 0;
-}
-
-void String::cstring::clear(strsize_t offset, strsize_t size)
-{
-    if(!fill || offset >= max)
+    if(offset >= len)
         return;
 
-    while(size && offset < max) {
-        text[offset++] = fill;
-        --size;
-    }
+    text[offset] = 0;
+    len = offset;
 }
 
 void String::cstring::dec(strsize_t offset)
@@ -97,17 +70,7 @@ void String::cstring::dec(strsize_t offset)
         return;
     }
 
-    if(!fill) {
-        text[--len] = 0;
-        return;
-    }
-
-    while(len) {
-        if(text[--len] == fill)
-            break;
-    }
-    text[len] = 0;
-    fix();
+    text[--len] = 0;
 }
 
 void String::cstring::inc(strsize_t offset)
@@ -134,9 +97,6 @@ void String::cstring::add(const char *str)
     if(!size)
         return;
 
-    while(fill && len && text[len - 1] == fill)
-        --len;
-
     if(len + size > max)
         size = max - len;
 
@@ -152,9 +112,6 @@ void String::cstring::add(char ch)
 {
     if(!ch)
         return;
-
-    while(fill && len && text[len - 1] == fill)
-        --len;
 
     if(len == max)
         return;
@@ -178,23 +135,10 @@ void String::cstring::set(strsize_t offset, const char *str, strsize_t size)
         --size;
     }
 
-    while(size && fill) {
-        text[offset++] = fill;
-        --size;
-    }
-
     if(offset > len) {
         len = offset;
         text[len] = 0;
     }
-}
-
-char String::fill(void)
-{
-    if(!str)
-        return 0;
-
-    return str->fill;
 }
 
 strsize_t String::size(void) const
@@ -270,12 +214,6 @@ String::String(const char *s, strsize_t size)
     str->set(s);
 }
 
-String::String(strsize_t size)
-{
-    str = create(size);
-    str->retain();
-}
-
 String::String(long value)
 {
     str = create(20);
@@ -294,9 +232,9 @@ String::String(double value)
     str->fix();
 }
 
-String::String(strsize_t size, char fill)
+String::String(strsize_t size)
 {
-    str = create(size, fill);
+    str = create(size);
     str->retain();
 }
 
@@ -340,13 +278,10 @@ String String::get(strsize_t offset, strsize_t len) const
     return String(str->text + offset, len);
 }
 
-String::cstring *String::create(strsize_t size, char fill) const
+String::cstring *String::create(strsize_t size) const
 {
     void *mem = ::malloc(size + sizeof(cstring));
-    if(fill) 
-        return new(mem) cstring(size, fill);
-    else
-        return new(mem) cstring(size);
+    return new(mem) cstring(size);
 }
 
 void String::cstring::dealloc(void)
@@ -661,7 +596,6 @@ bool String::unquote(const char *clist)
     if(!str)
         return false;
 
-    str->unfix();
     s = unquote(str->text, clist);
     if(!s) {
         str->fix();
@@ -823,6 +757,17 @@ void String::split(strsize_t pos)
     str->fix();
 }
 
+void String::fill(strsize_t size, char fill)
+{
+    if(!str) {
+        str = create(size);
+        str->retain();
+    }
+    while(str->len < str->max && size--)
+        str->text[str->len++] = fill;
+    str->fix();
+}
+
 void String::set(strsize_t offset, const char *s, strsize_t size)
 {
     if(!s || !*s || !str)
@@ -831,7 +776,8 @@ void String::set(strsize_t offset, const char *s, strsize_t size)
     if(!size)
         size = (strsize_t)strlen(s);
 
-    str->set(offset, s, size);
+    if(str)
+        str->set(offset, s, size);
 }
 
 void String::set(const char *s, char overflow, strsize_t offset, strsize_t size)
@@ -861,8 +807,7 @@ void String::set(const char *s, char overflow, strsize_t offset, strsize_t size)
 void String::rset(const char *s, char overflow, strsize_t offset, strsize_t size)
 {
     strsize_t len = (strsize_t)count(s);
-    strsize_t dif;
-
+    
     if(!s || !*s || !str)
         return;
 
@@ -871,12 +816,6 @@ void String::rset(const char *s, char overflow, strsize_t offset, strsize_t size
 
     if(!size || size > str->max - offset)
         size = str->max - offset;
-
-    dif = len;
-    while(dif < size && str->fill) {
-        str->text[offset++] = str->fill;
-        ++dif;
-    }
 
     if(len > size)
         s += len - size;
@@ -998,8 +937,6 @@ void String::cut(char *text, size_t offset, size_t size)
 
 bool String::resize(strsize_t size)
 {
-    char fill = 0;
-
     if(!size) {
         release();
         str = NULL;
@@ -1007,27 +944,23 @@ bool String::resize(strsize_t size)
     }
 
     if(!str) {
-        str = create(size, fill);
+        str = create(size);
         str->retain();
     }
     else if(str->is_copied() || str->max < size) {
-        fill = str->fill;
         str->release();
-        str = create(size, fill);
+        str = create(size);
         str->retain();
     }
     return true;
 }
 
-void String::clear(strsize_t offset, strsize_t size)
+void String::clear(strsize_t offset)
 {
     if(!str)
         return;
 
-    if(!size)
-        size = str->max;
-
-    str->clear(offset, size);
+    str->clear(offset);
 }
 
 void String::clear(void)
@@ -1038,12 +971,8 @@ void String::clear(void)
 
 void String::cow(strsize_t size)
 {
-    if(str) {
-        if(str->fill)
-            size = str->max;
-        else
-            size += str->len;
-    }
+    if(str)
+        size += str->len;
 
     if(!size)
         return;
@@ -1251,8 +1180,7 @@ bool String::full(void) const
     if(!str)
         return false;
 
-    if(str->len == str->max &&
-       str->text[str->len - 1] != str->fill)
+    if(str->len == str->max)
         return true;
 
     return false;
@@ -1264,7 +1192,6 @@ bool String::operator!() const
     if(!str)
         return true;
 
-    str->unfix();
     if(!str->len)
         rtn = true;
 
@@ -1279,7 +1206,6 @@ String::operator bool() const
     if(!str)
         return false;
 
-    str->unfix();
     if(str->len)
         rtn = true;
     str->fix();
@@ -1357,12 +1283,12 @@ String &String::operator+=(const char *s)
     return *this;
 }
 
-memstring::memstring(void *mem, strsize_t size, char fill)
+memstring::memstring(void *mem, strsize_t size)
 {
     assert(mem != NULL);
     assert(size > 0);
 
-    str = new(mem) cstring(size, fill);
+    str = new(mem) cstring(size);
     str->set("");
 }
 
@@ -1371,20 +1297,20 @@ memstring::~memstring()
     str = NULL;
 }
 
-memstring *memstring::create(strsize_t size, char fill)
+memstring *memstring::create(strsize_t size)
 {
     assert(size > 0);
 
     void *mem = ::malloc(size + sizeof(memstring) + sizeof(cstring));
-    return new(mem) memstring((caddr_t)mem + sizeof(memstring), size, fill);
+    return new(mem) memstring((caddr_t)mem + sizeof(memstring), size);
 }
 
-memstring *memstring::create(MemoryProtocol *mpager, strsize_t size, char fill)
+memstring *memstring::create(MemoryProtocol *mpager, strsize_t size)
 {
     assert(size > 0);
 
     void *mem = mpager->alloc(size + sizeof(memstring) + sizeof(cstring));
-    return new(mem) memstring((caddr_t)mem + sizeof(memstring), size, fill);
+    return new(mem) memstring((caddr_t)mem + sizeof(memstring), size);
 }
 
 void memstring::release(void)
@@ -1466,7 +1392,7 @@ char *String::token(char *text, char **token, const char *clist, const char *quo
 
 String::cstring *memstring::c_copy(void) const
 {
-    cstring *tmp = String::create(str->max, str->fill);
+    cstring *tmp = String::create(str->max);
     tmp->set(str->text);
     return tmp;
 }
@@ -2012,7 +1938,7 @@ unsigned String::hexsize(const char *format)
 String String::hex(const unsigned char *binary, size_t size)
 {
     strsize_t ssize = (strsize_t)(size * 2);
-    String out(ssize, ' ');
+    String out(ssize);
     char *buf = out.c_mem();
     while(size--) {
         snprintf(buf, 3, "%02x", *(binary++));

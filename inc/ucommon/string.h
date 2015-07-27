@@ -140,7 +140,6 @@ public:
 #pragma pack(1)
         strsize_t max;  /**< Allocated size of cstring text */
         strsize_t len;  /**< Current length of cstring text */
-        char fill;      /**< Filler character or 0 for none */
         char text[1];   /**< Null terminated text, in overdraft space */
 #pragma pack()
 
@@ -152,22 +151,10 @@ public:
         cstring(strsize_t size);
 
         /**
-         * Create a filled cstring node allocated for specified string size.
-         * The new operator would also need the size as an overdraft value.
-         * The newly allocated string is filled with the fill value.
-         * @param size of string.
-         * @param fill character value to fill string with.
-         */
-        cstring(strsize_t size, char fill);
-
-        /**
-         * Used to clear a string.  If null terminated, then the string ends
-         * at the offset, otherwise it is simply filled with fill data up to
-         * the specified size.
+         * Used to clear a string at specified offset.
          * @param offset to clear from.
-         * @param size of field to clear.
          */
-        void clear(strsize_t offset, strsize_t size);
+        void clear(strsize_t offset);
 
         /**
          * Set part or all of a string with new text.
@@ -201,12 +188,6 @@ public:
         void fix(void);
 
         /**
-         * Trim filler at end to reduce filled string to null terminated
-         * string for further processing.
-         */
-        void unfix(void);
-
-        /**
          * Adjust size of our string buffer by deleting characters from
          * start of buffer.
          * @param number of characters to delete.
@@ -227,10 +208,9 @@ protected:
     /**
      * Factory create a cstring object of specified size.
      * @param size of allocated space for string buffer.
-     * @param fill character to use or 0 if null.
      * @return new cstring object.
      */
-    cstring *create(strsize_t size, char fill = 0) const;
+    cstring *create(strsize_t size) const;
 
 public:
     /**
@@ -313,13 +293,6 @@ public:
      * @param size of buffer to allocate.
      */
     String(strsize_t size);
-
-    /**
-     * Create a filled string with a buffer pre-allocated to a specified size.
-     * @param size of buffer to allocate.
-     * @param fill character to use.
-     */
-    String(strsize_t size, char fill);
 
     /**
      * Create a string by printf-like formating into a pre-allocated space
@@ -525,9 +498,8 @@ public:
     /**
      * Clear a field of a filled string with filler.
      * @param offset to start of field to clear.
-     * @param size of field to fill or 0 to fill to end of string.
      */
-    void clear(strsize_t offset, strsize_t size = 0);
+    void clear(strsize_t offset);
 
     /**
      * Clear string by setting to empty.
@@ -658,6 +630,8 @@ public:
      */
     void split(strsize_t offset);
 
+    void fill(strsize_t size, char fill);
+
     /**
      * Split the string by a pointer position.  Everything before the pointer
      * is removed.
@@ -692,12 +666,6 @@ public:
      * @return length of string.
      */
     strsize_t len(void) const;
-
-    /**
-     * Get filler character used for field array strings.
-     * @return filler character or 0 if none.
-     */
-    char fill(void);
 
     /**
      * Casting reference to raw text string.
@@ -1464,9 +1432,8 @@ public:
      * Create an instance of a memory string.
      * @param memory to use for cstring object.
      * @param size of string.  Total size must include space for overhead.
-     * @param fill character for fixed character fields.
      */
-    memstring(void *memory, strsize_t size, char fill = 0);
+    memstring(void *memory, strsize_t size);
 
     /**
      * Destroy memory string.
@@ -1476,17 +1443,15 @@ public:
     /**
      * Create a memory string with memory allocated from the heap.
      * @param size of string to allocate.  Automatically adds control size.
-     * @param fill character for fixed field strings.
      */
-    static memstring *create(strsize_t size, char fill = 0);
+    static memstring *create(strsize_t size);
 
     /**
      * Create a memory string with memory allocated from a pager.
      * @param pager to allocate memory from.
      * @param size of string to allocate.  Automatically adds control size.
-     * @param fill character for fixed field strings.
      */
-    static memstring *create(MemoryProtocol *pager, strsize_t size, char fill = 0);
+    static memstring *create(MemoryProtocol *pager, strsize_t size);
 };
 
 /**
