@@ -3,6 +3,7 @@ Changes from 6.3.6 to 6.4.0
 - heap management objects support moving heap through assignment
 - extended unit tests for typeref system
 - improved openbsd support
+- atomics enabled by default
 
 Changes from 6.3.5 to 6.3.6
 - code cleanup
