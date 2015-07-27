@@ -170,7 +170,7 @@ fi
 AC_ARG_ENABLE(atomics,
     AC_HELP_STRING([--enable-atomics],[compile with atomics]))
 if test -z "$enable_atomics" ; then
-    enable_atomics="no"
+    enable_atomics="yes"
 fi
 if test x"$enable_atomics" = "xyes" ; then
     AC_DEFINE(HAVE_ATOMICS, [1], [enable atomics support])
