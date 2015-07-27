@@ -26,7 +26,7 @@ void Random::seed(void)
     RAND_poll();
 }
 
-bool Random::seed(const unsigned char *buf, size_t size)
+bool Random::seed(const uint8_t *buf, size_t size)
 {
     secure::init();
 
@@ -34,7 +34,7 @@ bool Random::seed(const unsigned char *buf, size_t size)
     return true;
 }
 
-size_t Random::key(unsigned char *buf, size_t size)
+size_t Random::key(uint8_t *buf, size_t size)
 {
     secure::init();
 
@@ -43,7 +43,7 @@ size_t Random::key(unsigned char *buf, size_t size)
     return 0;
 }
 
-size_t Random::fill(unsigned char *buf, size_t size)
+size_t Random::fill(uint8_t *buf, size_t size)
 {
     secure::init();
 

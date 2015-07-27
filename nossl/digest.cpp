@@ -76,10 +76,10 @@ bool Digest::put(const void *address, size_t size)
 
     switch(*((char *)hashtype)) {
     case 'm':
-        MD5Update((MD5_CTX*)context, (const unsigned char *)address, size);
+        MD5Update((MD5_CTX*)context, (const uint8_t *)address, size);
         return true;
     case 's':
-        SHA1Update((SHA1_CTX*)context, (const unsigned char *)address, size);
+        SHA1Update((SHA1_CTX*)context, (const uint8_t *)address, size);
         return true;
     default:
         return false;
@@ -121,7 +121,7 @@ void Digest::recycle(bool bin)
         size = 16;
         MD5Init((MD5_CTX*)context);
         if(bin)
-            MD5Update((MD5_CTX*)context, (const unsigned char *)buffer, size);
+            MD5Update((MD5_CTX*)context, (const uint8_t *)buffer, size);
         else {
             unsigned count = 0;
             while(count < bufsize) {
@@ -129,8 +129,7 @@ void Digest::recycle(bool bin)
 "%2.2x", buffer[count]);
                 ++count;
             }
-            MD5Update((MD5_CTX*)context, (const unsigned
-char *)textbuf, size * 2);
+            MD5Update((MD5_CTX*)context, (const uint8_t *)textbuf, size * 2);
         }
         break;
     case 's':
@@ -139,7 +138,7 @@ char *)textbuf, size * 2);
         size = 20;
         SHA1Init((SHA1_CTX*)context);
         if(bin)
-            SHA1Update((SHA1_CTX*)context, (const unsigned char *)buffer, size);
+            SHA1Update((SHA1_CTX*)context, (const uint8_t *)buffer, size);
         else {
             unsigned count = 0;
             while(count < bufsize) {
@@ -157,7 +156,7 @@ char *)textbuf, size * 2);
     bufsize = 0;
 }
 
-const unsigned char *Digest::get(void)
+const uint8_t *Digest::get(void)
 {
     unsigned count = 0;
 

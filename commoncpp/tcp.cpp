@@ -953,7 +953,7 @@ int TCPStream::uflow()
 int TCPStream::underflow()
 {
     ssize_t rlen = 1;
-    unsigned char ch;
+    uint8_t ch;
 
     if(bufsize == 1) {
         if(Socket::state == STREAM)
@@ -979,7 +979,7 @@ int TCPStream::underflow()
         return EOF;
 
     if(gptr() < egptr())
-        return (unsigned char)*gptr();
+        return (uint8_t)*gptr();
 
     rlen = (ssize_t)((gbuf + bufsize) - eback());
     if(Socket::state == STREAM)
@@ -1004,7 +1004,7 @@ int TCPStream::underflow()
     error(errSuccess);
 
     setg(eback(), eback(), eback() + rlen);
-    return (unsigned char) *gptr();
+    return (uint8_t) *gptr();
 }
 
 bool TCPStream::isPending(Pending pending, timeout_t timer)
@@ -1045,14 +1045,14 @@ size_t TCPStream::printf(const char *format, ...)
 
 int TCPStream::overflow(int c)
 {
-    unsigned char ch;
+    uint8_t ch;
     ssize_t rlen, req;
 
     if(bufsize == 1) {
         if(c == EOF)
             return 0;
 
-        ch = (unsigned char)(c);
+        ch = (uint8_t)(c);
         if(Socket::state == STREAM)
             rlen = ::write((int)so, (const char *)&ch, 1);
         else
@@ -1096,7 +1096,7 @@ int TCPStream::overflow(int c)
     pbump(req);
 
     if(c != EOF) {
-        *pptr() = (unsigned char)c;
+        *pptr() = (uint8_t)c;
         pbump(1);
     }
     return c;

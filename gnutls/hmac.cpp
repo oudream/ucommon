@@ -108,7 +108,7 @@ bool HMAC::put(const void *address, size_t size)
     return true;
 }
 
-const unsigned char *HMAC::get(void)
+const uint8_t *HMAC::get(void)
 {
     unsigned count = 0;
     unsigned size = 0;

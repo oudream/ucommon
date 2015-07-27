@@ -60,11 +60,6 @@
 // broken BSD; XOPEN should not imply _POSIX_C_SOURCE,
 //  _POSIX_C_SOURCE should not stop __BSD_VISIBLE
 
-#define u_int unsigned int
-#define u_short unsigned short
-#define u_long unsigned long
-#define u_char unsigned char
-
 #include <fcntl.h>
 
 #ifdef  HAVE_SYS_PARAM_H

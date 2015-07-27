@@ -87,7 +87,7 @@ bool Digest::put(const void *address, size_t size)
 
 void Digest::reset(void)
 {
-    unsigned char temp[MAX_DIGEST_HASHSIZE / 8];
+    uint8_t temp[MAX_DIGEST_HASHSIZE / 8];
 
     if(context) {
         gnutls_hash_deinit((MD_CTX)context, temp);
@@ -136,7 +136,7 @@ buffer[count]);
     bufsize = 0;
 }
 
-const unsigned char *Digest::get(void)
+const uint8_t *Digest::get(void)
 {
     unsigned count = 0;
     unsigned size = 0;

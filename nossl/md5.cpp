@@ -61,7 +61,7 @@ MD5Init(MD5_CTX *ctx)
  * of bytes.
  */
 void
-MD5Update(MD5_CTX *ctx, const unsigned char *input, size_t len)
+MD5Update(MD5_CTX *ctx, const uint8_t *input, size_t len)
 {
     size_t have, need;
 
@@ -120,7 +120,7 @@ MD5Pad(MD5_CTX *ctx)
  * Final wrapup--call MD5Pad, fill in digest and zero out ctx.
  */
 void
-MD5Final(unsigned char digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
+MD5Final(uint8_t digest[MD5_DIGEST_LENGTH], MD5_CTX *ctx)
 {
     int i;
 

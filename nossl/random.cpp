@@ -32,7 +32,7 @@ void Random::seed(void)
     srand((int)now);
 }
 
-bool Random::seed(const unsigned char *buf, size_t size)
+bool Random::seed(const uint8_t *buf, size_t size)
 {
 #ifdef  _MSWINDOWS_
     return false;
@@ -52,7 +52,7 @@ bool Random::seed(const unsigned char *buf, size_t size)
 #endif
 }
 
-size_t Random::key(unsigned char *buf, size_t size)
+size_t Random::key(uint8_t *buf, size_t size)
 {
 #ifdef  _MSWINDOWS_
     if((__handle != (HCRYPTPROV)NULL) && CryptGenRandom(__handle, (DWORD)size, buf))
@@ -77,7 +77,7 @@ size_t Random::key(unsigned char *buf, size_t size)
 #endif
 }
 
-size_t Random::fill(unsigned char *buf, size_t size)
+size_t Random::fill(uint8_t *buf, size_t size)
 {
 #ifdef  _MSWINDOWS_
     return key(buf, size);

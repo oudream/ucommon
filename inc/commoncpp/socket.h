@@ -321,7 +321,7 @@ protected:
      * @param ttl time to live.
      * @param fam family of protocol.
      */
-    Error setTimeToLiveByFamily(unsigned char ttl, Family fam = IPV4);
+    Error setTimeToLiveByFamily(uint8_t ttl, Family fam = IPV4);
 
     /**
      * Join a multicast group.

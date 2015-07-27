@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 
     skey_t mykey("aes256", "sha", "testing");
     cipher_t enc, dec;
-    unsigned char ebuf[256], dbuf[256];
+    uint8_t ebuf[256], dbuf[256];
 
     memset(dbuf, 0, sizeof(dbuf));
 

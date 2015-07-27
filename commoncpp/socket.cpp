@@ -71,7 +71,7 @@ typedef int socklen_t;
 #endif   // !WIN32
 
 #ifndef INADDR_LOOPBACK
-#define INADDR_LOOPBACK (unsigned long)0x7f000001
+#define INADDR_LOOPBACK (uint32_t)0x7f000001
 #endif
 
 #ifdef HAVE_NETINET_IN_H
@@ -433,7 +433,7 @@ Socket::Error Socket::setMulticastByFamily(bool enable, Family family)
     }
 }
 
-Socket::Error Socket::setTimeToLiveByFamily(unsigned char ttl, Family fam)
+Socket::Error Socket::setTimeToLiveByFamily(uint8_t ttl, Family fam)
 {
     if(!flags.multicast)
         return error(errMulticastDisabled,(char *)"Multicast not enabled on socket");
@@ -458,7 +458,7 @@ Socket::Error Socket::setTimeToLiveByFamily(unsigned char ttl, Family fam)
 
 Socket::Error Socket::setLoopbackByFamily(bool enable, Family family)
 {
-    unsigned char loop;
+    uint8_t loop;
 
     if(!flags.multicast)
         return error(errMulticastDisabled,(char *)"Multicast not enabled on socket");
@@ -1057,7 +1057,7 @@ Socket::Error Socket::setLinger(bool linger)
 Socket::Error Socket::setTypeOfService(Tos service)
 {
 #ifdef  SOL_IP
-    unsigned char tos;
+    uint8_t tos;
     switch(service) {
 #ifdef  IPTOS_LOWDELAY
     case tosLowDelay:

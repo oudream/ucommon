@@ -156,7 +156,7 @@ struct addrinfo {
 
 namespace ucommon {
 
-typedef unsigned char   bit_t;
+typedef uint8_t   bit_t;
 
 static int query_family = 0;
 static int v6only = 0;
@@ -791,7 +791,7 @@ unsigned cidr::mask(const char *cp) const
     const char *sp = strchr(cp, '/');
     bool flag = false;
     const char *gp = cp;
-    unsigned char dots[4];
+    uint8_t dots[4];
     uint32_t mask;
 
     switch(Family) {
@@ -2164,7 +2164,7 @@ int Socket::loopback(socket_t so, bool enable)
     return err;
 }
 
-int Socket::ttl(socket_t so, unsigned char t)
+int Socket::ttl(socket_t so, uint8_t t)
 {
     union {
         struct sockaddr_storage saddr;
@@ -3311,15 +3311,15 @@ bool Socket::eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
 {
     assert(s1 != NULL && s2 != NULL);
 
-    unsigned char *a1, *a2;
+    uint8_t *a1, *a2;
     if(s1->sa_family != s2->sa_family)
         return false;
 
     if(s1->sa_family != AF_INET)
         return true;
 
-    a1 = (unsigned char *)&(((const struct sockaddr_in *)(s1))->sin_addr);
-    a2 = (unsigned char *)&(((const struct sockaddr_in *)(s1))->sin_addr);
+    a1 = (uint8_t *)&(((const struct sockaddr_in *)(s1))->sin_addr);
+    a2 = (uint8_t *)&(((const struct sockaddr_in *)(s1))->sin_addr);
 
     if(*a1 == *a2 && *a1 < 128)
         return true;

@@ -291,7 +291,7 @@ public:
         int modeid;
 
         // assume 512 bit cipher keys possible...
-        unsigned char keybuf[MAX_CIPHER_KEYSIZE / 8], ivbuf[MAX_CIPHER_KEYSIZE / 8];
+        uint8_t keybuf[MAX_CIPHER_KEYSIZE / 8], ivbuf[MAX_CIPHER_KEYSIZE / 8];
 
         // generated keysize
         size_t keysize, blksize;
@@ -303,7 +303,7 @@ public:
     public:
         Key();
 
-        Key(const char *cipher, const char *digest, const char *text, size_t size = 0, const unsigned char *salt = NULL, unsigned rounds = 1);
+        Key(const char *cipher, const char *digest, const char *text, size_t size = 0, const uint8_t *salt = NULL, unsigned rounds = 1);
 
         Key(const char *cipher, const uint8_t *iv, size_t ivsize);
 
@@ -311,13 +311,13 @@ public:
 
         ~Key();
 
-        void set(const unsigned char *key, size_t size);
+        void set(const uint8_t *key, size_t size);
 
         void set(const char *cipher, const char *digest);
 
         void set(const char *cipher, const uint8_t *iv, size_t ivsize);
 
-        void assign(const char *key, size_t size, const unsigned char *salt, unsigned rounds);
+        void assign(const char *key, size_t size, const uint8_t *salt, unsigned rounds);
 
         void assign(const char *key, size_t size = 0);
 
@@ -344,7 +344,7 @@ public:
         inline Key& operator=(const char *pass)
             {assign(pass); return *this;}
 
-        static void options(const unsigned char *salt = NULL, unsigned rounds = 1);
+        static void options(const uint8_t *salt = NULL, unsigned rounds = 1);
     };
 
     typedef Key *key_t;
@@ -353,24 +353,24 @@ private:
     Key keys;
     size_t bufsize, bufpos;
     mode_t bufmode;
-    unsigned char *bufaddr;
+    uint8_t *bufaddr;
     void *context;
 
 protected:
-    virtual void push(unsigned char *address, size_t size);
+    virtual void push(uint8_t *address, size_t size);
 
     void release(void);
 
 public:
     Cipher();
 
-    Cipher(const key_t key, mode_t mode, unsigned char *address = NULL, size_t size = 0);
+    Cipher(const key_t key, mode_t mode, uint8_t *address = NULL, size_t size = 0);
 
     virtual ~Cipher();
 
-    void set(unsigned char *address, size_t size = 0);
+    void set(uint8_t *address, size_t size = 0);
 
-    void set(const key_t key, mode_t mode, unsigned char *address, size_t size = 0);
+    void set(const key_t key, mode_t mode, uint8_t *address, size_t size = 0);
 
     /**
      * Push a final cipher block.  This is used to push the final buffer into
@@ -386,7 +386,7 @@ public:
      * @param size of data to process.
      * @return size of processed output, should be same as size or 0 if error.
      */
-    size_t put(const unsigned char *data, size_t size);
+    size_t put(const uint8_t *data, size_t size);
 
     /**
      * This essentially encrypts a single string and pads with NULL bytes
@@ -407,7 +407,7 @@ public:
      * @param size of data to add before final pad.
      * @return actual bytes encrypted or decrypted.
      */
-    size_t pad(const unsigned char *address, size_t size);
+    size_t pad(const uint8_t *address, size_t size);
 
     /**
      * Process encrypted data in-place.  This assumes no need to set the
@@ -417,7 +417,7 @@ public:
      * @param flag if to pad data.
      * @return bytes processed and written back to buffer.
      */
-    size_t process(unsigned char *address, size_t size, bool flag = false);
+    size_t process(uint8_t *address, size_t size, bool flag = false);
 
     inline size_t size(void) const
         {return bufsize;}
@@ -453,7 +453,7 @@ private:
     };
 
     unsigned bufsize;
-    unsigned char buffer[MAX_DIGEST_HASHSIZE / 8];
+    uint8_t buffer[MAX_DIGEST_HASHSIZE / 8];
     char textbuf[MAX_DIGEST_HASHSIZE / 8 + 1];
 
 protected:
@@ -486,7 +486,7 @@ public:
     inline unsigned size() const
         {return bufsize;}
 
-    const unsigned char *get(void);
+    const uint8_t *get(void);
 
     const char *c_str(void);
 
@@ -535,9 +535,9 @@ public:
      */
     static bool has(const char *name);
 
-    static void uuid(char *string, const char *name, const unsigned char *ns = NULL);
+    static void uuid(char *string, const char *name, const uint8_t *ns = NULL);
 
-    static String uuid(const char *name, const unsigned char *ns = NULL);
+    static String uuid(const char *name, const uint8_t *ns = NULL);
 
     /**
      * Shortcut for short md5 digests if supported...
@@ -568,7 +568,7 @@ private:
     };
 
     unsigned bufsize;
-    unsigned char buffer[MAX_DIGEST_HASHSIZE / 8];
+    uint8_t buffer[MAX_DIGEST_HASHSIZE / 8];
     char textbuf[MAX_DIGEST_HASHSIZE / 8 + 1];
 
 protected:
@@ -601,7 +601,7 @@ public:
     inline unsigned size() const
         {return bufsize;}
 
-    const unsigned char *get(void);
+    const uint8_t *get(void);
 
     const char *c_str(void);
 
@@ -650,7 +650,7 @@ public:
      * @param size of buffer.
      * @return true if successful.
      */
-    static bool seed(const unsigned char *buffer, size_t size);
+    static bool seed(const uint8_t *buffer, size_t size);
 
     /**
      * Re-seed pseudo-random generation and entropy pools.
@@ -665,7 +665,7 @@ public:
      * @param size of buffer.
      * @return number of bytes filled.
      */
-    static size_t key(unsigned char *memory, size_t size);
+    static size_t key(uint8_t *memory, size_t size);
 
     /**
      * Fill memory with pseudo-random values.  This is used
@@ -675,7 +675,7 @@ public:
      * @param size of buffer to fill.
      * @return number of bytes set.
      */
-    static size_t fill(unsigned char *memory, size_t size);
+    static size_t fill(uint8_t *memory, size_t size);
 
     /**
      * Get a pseudo-random integer, range 0 - 32767.
@@ -723,7 +723,7 @@ public:
     template <class T>
     inline static T value(void) {
         T tmp;
-        Random::key(reinterpret_cast<unsigned char *>(&tmp), sizeof(tmp));
+        Random::key(reinterpret_cast<uint8_t *>(&tmp), sizeof(tmp));
         return tmp;
     }
 
@@ -954,7 +954,7 @@ template<size_t S>
 class keyrandom
 {
 private:
-    unsigned char buffer[S];
+    uint8_t buffer[S];
 
     /**
      * Disable copy constructor.
@@ -990,14 +990,14 @@ public:
      * Get text by casting reference.
      * @return pointer to text in object.
      */
-    inline operator unsigned char *()
+    inline operator uint8_t *()
         {return buffer;}
 
     /**
      * Get text by object pointer reference.
      * @return pointer to text in object.
      */
-    inline unsigned char *operator*()
+    inline uint8_t *operator*()
         {return buffer;}
 
     /**

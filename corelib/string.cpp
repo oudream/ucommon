@@ -1935,7 +1935,7 @@ unsigned String::hexsize(const char *format)
     return count;
 }
 
-String String::hex(const unsigned char *binary, size_t size)
+String String::hex(const uint8_t *binary, size_t size)
 {
     String out(size * 2);
     char *buf = out.c_mem();
@@ -1946,7 +1946,7 @@ String String::hex(const unsigned char *binary, size_t size)
     return out;
 } 
 
-unsigned String::hexdump(const unsigned char *binary, char *string, const char *format)
+unsigned String::hexdump(const uint8_t *binary, char *string, const char *format)
 {
     unsigned count = 0;
     char *ep;
@@ -1979,7 +1979,7 @@ static unsigned hexcode(char ch)
         return toupper(ch) - 'A' + 10;
 }
 
-unsigned String::hexpack(unsigned char *binary, const char *string, const char *format)
+unsigned String::hexpack(uint8_t *binary, const char *string, const char *format)
 {
     unsigned count = 0;
     char *ep;
@@ -2149,7 +2149,7 @@ String str(CharacterProtocol *p, size_t size)
     return temp;
 }
 
-static const unsigned char alphabet[65] =
+static const uint8_t alphabet[65] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 String String::b64(const uint8_t *bin, size_t size)

@@ -58,13 +58,13 @@ extern "C" int main()
     assert(eq_case(array[1], "is"));
     assert(eq_case(array[2], "a test"));
 
-    unsigned char core[4] = {0x01, 0x10, 0x2f, 0x45};
+    uint8_t core[4] = {0x01, 0x10, 0x2f, 0x45};
     char hexbuf[12];
 
     assert(String::hexdump(core, hexbuf, "3-1") == 9);
     assert(eq(hexbuf, "01102f-45"));
 
-    unsigned char hcore[4];
+    uint8_t hcore[4];
 
     String::hexpack(hcore, hexbuf, "3-1");
     assert(String::hexdump(hcore, hexbuf, "3-1") == 9);
@@ -95,7 +95,7 @@ extern "C" int main()
     assert(String::check("xxx", 3));
     assert(!String::check("xxxx", 3));
 
-    unsigned char hbuf[2];
+    uint8_t hbuf[2];
     hbuf[0] = 0x23;
     hbuf[1] = 0xa9;
     string_t hex = String::hex(hbuf, 2);

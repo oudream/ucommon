@@ -742,7 +742,7 @@ private:
 
     cpage_t *first, *last, *current, *freelist;
     unsigned cpos;
-    unsigned long ccount;
+    unsigned ccount;
     bool eom;       /* null written or out of memory */
 
     virtual int _getch(void);

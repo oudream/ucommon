@@ -220,7 +220,7 @@ protected:
      * @param size of packet read request.
      * @param btimer optional inter-byte data packet timeout.
      */
-    int setPacketInput(int size, unsigned char btimer = 0);
+    int setPacketInput(int size, uint8_t btimer = 0);
 
     /**
      * Set "line buffering" read mode and specifies the newline
@@ -797,7 +797,7 @@ protected:
      *
      * @param flag of update request.
      */
-    virtual void onUpdate(unsigned char flag);
+    virtual void onUpdate(uint8_t flag);
 
     /**
      * A virtual handler for event loop calls.  This can be
@@ -823,7 +823,7 @@ public:
      *
      * @param flag event for OnUpdate, termination, or reschedule.
      */
-    void update(unsigned char flag = 0xff);
+    void update(uint8_t flag = 0xff);
 
     /**
      * Create a service thread for attaching serial ports.  The

@@ -968,7 +968,7 @@ public:
      * @param time to live to set.
      * @return 0 on success, -1 on error.
      */
-    inline int ttl(unsigned char time)
+    inline int ttl(uint8_t time)
         {return ttl(so, time);}
 
     /**
@@ -1370,7 +1370,7 @@ public:
      * @param time to live to set.
      * @return 0 on success, -1 on error.
      */
-    static int ttl(socket_t socket, unsigned char time);
+    static int ttl(socket_t socket, uint8_t time);
 
     /**
      * Get the address family of the socket descriptor.

@@ -896,7 +896,7 @@ public:
     String &operator%(short& value);
 
     /**
-     * Parse long integer value from a string.
+     * Parse short integer value from a string.
      * @param value to store.
      * @return object in expression.
      */
@@ -1361,7 +1361,7 @@ public:
      * @param size of data.
      * @return string from data.
      */
-    static String hex(const unsigned char *binary, size_t size);
+    static String hex(const uint8_t *binary, size_t size);
 
     /**
      * Dump hex data to a string buffer.
@@ -1370,7 +1370,7 @@ public:
      * @param format string to convert with.
      * @return number of bytes processed.
      */
-    static unsigned hexdump(const unsigned char *binary, char *string, const char *format);
+    static unsigned hexdump(const uint8_t *binary, char *string, const char *format);
 
     /**
      * Pack hex data from a string buffer.
@@ -1379,7 +1379,7 @@ public:
      * @param format string to convert with.
      * @return number of bytes processed.
      */
-    static unsigned hexpack(unsigned char *binary, const char *string, const char *format);
+    static unsigned hexpack(uint8_t *binary, const char *string, const char *format);
 
     static unsigned hexsize(const char *format);
 };

@@ -38,7 +38,7 @@ static shell::flagopt yes('y', "--overwrite", _TEXT("overwrite existing files"))
 static bool binary = false;
 static int exit_code = 0;
 static const char *argv0 = "car";
-static unsigned char frame[48], cbuf[48];
+static uint8_t frame[48], cbuf[48];
 static cipher_t cipher;
 static FILE *output = stdout;
 static enum {d_text, d_file, d_scan, d_init} decoder = d_init;

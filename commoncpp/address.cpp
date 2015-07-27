@@ -97,7 +97,7 @@ void IPV4MulticastValidator::operator()(const in_addr address) const
 IPV4Address::IPV4Address(const IPV4Validator *_validator) : 
 validator(_validator), ipaddr(NULL), addr_count(0), hostname(NULL) 
 {
-    *this = (long unsigned int)INADDR_ANY;
+    *this = (uint32_t)INADDR_ANY;
 }
 
 IPV4Address::IPV4Address(const char *address, const IPV4Validator *_validator) :
@@ -183,7 +183,7 @@ IPV4Address &IPV4Address::operator=(struct in_addr addr)
     return *this;
 }
 
-IPV4Address &IPV4Address::operator=(unsigned long addr)
+IPV4Address &IPV4Address::operator=(uint32_t addr)
 {
     union {
         uint32_t addr;
@@ -259,8 +259,8 @@ IPV4Host &IPV4Host::operator&=(const IPV4Mask &ma)
 {
     for(size_t i = 0; i < addr_count; i++) {
         struct in_addr mask = ma.getAddress();
-        unsigned char *a = (unsigned char *)&ipaddr[i];
-        unsigned char *m = (unsigned char *)&mask;
+        uint8_t *a = (uint8_t *)&ipaddr[i];
+        uint8_t *m = (uint8_t *)&mask;
 
         for(size_t j = 0; j < sizeof(struct in_addr); ++j)
             *(a++) &= *(m++);
@@ -640,8 +640,8 @@ IPV6Host &IPV6Host::operator&=(const IPV6Mask &ma)
 {
     for(size_t i = 0; i < addr_count; i++) {
         struct in6_addr mask = ma.getAddress();
-        unsigned char *a = (unsigned char *)&ipaddr[i];
-        unsigned char *m = (unsigned char *)&mask;
+        uint8_t *a = (uint8_t *)&ipaddr[i];
+        uint8_t *m = (uint8_t *)&mask;
 
         for(size_t j = 0; j < sizeof(struct in6_addr); ++j)
             *(a++) &= *(m++);
@@ -911,7 +911,7 @@ ostream& operator<<(ostream &os, const IPV4Address &ia)
     return os;
 }
 
-typedef unsigned char   bit_t;
+typedef uint8_t   bit_t;
 
 static void bitmask(bit_t *bits, bit_t *mask, unsigned len)
 {
@@ -1015,7 +1015,7 @@ unsigned IPV4Cidr::getMask(const char *cp) const
     unsigned dcount = 0;
     const char *gp = cp;
     const char *mp = strchr(cp, '/');
-    unsigned char dots[4];
+    uint8_t dots[4];
 #ifdef  _MSWINDOWS_
     DWORD mask;
 #else

@@ -88,7 +88,7 @@ class __EXPORT HEXdump
      * @param max_len   max number of bytes to be "hexdumped". Usefull to
      *                  truncate output. mas_len=0 does prints all.
      */
-    HEXdump(const unsigned char *buffer, int buff_len, int max_len = 200);
+    HEXdump(const uint8_t *buffer, int buff_len, int max_len = 200);
 
     /**
      * HEXdump destructor.

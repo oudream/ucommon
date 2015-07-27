@@ -24,7 +24,7 @@ static shell::flagopt helpflag('h',"--help",    _TEXT("display this list"));
 static shell::flagopt althelp('?', NULL, NULL);
 static shell::numericopt passes('r', "--random", _TEXT("optional passes with randomized data (0-x)"), "count", 0);
 
-static unsigned char buffer[65536];
+static uint8_t buffer[65536];
 static bool live = false;
 static bool temp = false;
 

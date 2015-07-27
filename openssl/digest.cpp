@@ -109,7 +109,7 @@ buffer[count]);
 
 }
 
-const unsigned char *Digest::get(void)
+const uint8_t *Digest::get(void)
 {
     unsigned count = 0;
     unsigned size = 0;

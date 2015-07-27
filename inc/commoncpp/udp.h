@@ -398,7 +398,7 @@ protected:
     inline Error setMulticast(bool enable)
         {return Socket::setMulticastByFamily(enable, family);}
 
-    inline Error setTimeToLive(unsigned char ttl)
+    inline Error setTimeToLive(uint8_t ttl)
         {return Socket::setTimeToLiveByFamily(ttl, family);}
 
 public:

@@ -25,19 +25,19 @@ void Random::seed(void)
     secure::init();
 }
 
-bool Random::seed(const unsigned char *buf, size_t size)
+bool Random::seed(const uint8_t *buf, size_t size)
 {
     secure::init();
     return true;
 }
 
-size_t Random::key(unsigned char *buf, size_t size)
+size_t Random::key(uint8_t *buf, size_t size)
 {
     gnutls_rnd(GNUTLS_RND_KEY, buf, size);
     return 0;
 }
 
-size_t Random::fill(unsigned char *buf, size_t size)
+size_t Random::fill(uint8_t *buf, size_t size)
 {
     gnutls_rnd(GNUTLS_RND_RANDOM, buf, size);
     return 0;

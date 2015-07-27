@@ -325,7 +325,7 @@ Serial::Error Serial::error(Error err, char *errs)
     return err;
 }
 
-int Serial::setPacketInput(int size, unsigned char btimer)
+int Serial::setPacketInput(int size, uint8_t btimer)
 {
 #ifdef  _MSWINDOWS_
     //  Still to be done......
@@ -343,7 +343,7 @@ int Serial::setPacketInput(int size, unsigned char btimer)
         size = max;
 
     attr->c_cc[VEOL] = attr->c_cc[VEOL2] = 0;
-    attr->c_cc[VMIN] = (unsigned char)size;
+    attr->c_cc[VMIN] = (uint8_t)size;
     attr->c_cc[VTIME] = btimer;
     attr->c_lflag &= ~ICANON;
     tcsetattr(dev, TCSANOW, attr);
@@ -1136,7 +1136,7 @@ void TTYStream::interactive(bool iflag)
 int TTYStream::uflow(void)
 {
     int rlen;
-    unsigned char ch;
+    uint8_t ch;
 
     if(bufsize < 2) {
         if(timeout) {
@@ -1169,7 +1169,7 @@ int TTYStream::underflow(void)
         return EOF;
 
     if(gptr() < egptr())
-        return (unsigned char)*gptr();
+        return (uint8_t)*gptr();
 
     rlen = (ssize_t)((gbuf + bufsize) - eback());
     if(timeout && !Serial::isPending(pendingInput, timeout))
@@ -1186,7 +1186,7 @@ int TTYStream::underflow(void)
     }
 
     setg(eback(), eback(), eback() + rlen);
-    return (unsigned char) *gptr();
+    return (uint8_t) *gptr();
 }
 
 int TTYStream::sync(void)
@@ -1202,14 +1202,14 @@ int TTYStream::sync(void)
 
 int TTYStream::overflow(int c)
 {
-    unsigned char ch;
+    uint8_t ch;
     ssize_t rlen, req;
 
     if(bufsize < 2) {
         if(c == EOF)
             return 0;
 
-        ch = (unsigned char)(c);
+        ch = (uint8_t)(c);
         rlen = aWrite((char *)&ch, 1);
         if(rlen < 1) {
             if(rlen < 0)
@@ -1240,7 +1240,7 @@ int TTYStream::overflow(int c)
     setp(pbuf + req, pbuf + bufsize);
 
     if(c != EOF) {
-        *pptr() = (unsigned char)c;
+        *pptr() = (uint8_t)c;
         pbump(1);
     }
     return c;
@@ -1554,7 +1554,7 @@ SerialService::~SerialService()
     }
 }
 
-void SerialService::onUpdate(unsigned char flag)
+void SerialService::onUpdate(uint8_t flag)
 {
 }
 
@@ -1617,7 +1617,7 @@ void SerialService::detach(SerialPort *port)
     update();
 }
 
-void SerialService::update(unsigned char flag)
+void SerialService::update(uint8_t flag)
 {
     if(::write(iosync[1], (char *)&flag, 1) < 1) {
 
@@ -1645,7 +1645,7 @@ void SerialService::run(void)
 {
     timeout_t timer, expires;
     SerialPort *port;
-    unsigned char buf;
+    uint8_t buf;
 
 #ifdef  USE_POLL
 

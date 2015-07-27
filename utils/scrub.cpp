@@ -97,7 +97,7 @@ static void scrub(const char *path)
 {
     fsys_t fs;
     fsys::fileinfo_t ino;
-    unsigned char block[1024];
+    uint8_t block[1024];
     unsigned long count;
     fsys::offset_t pos = 0l;
     unsigned dots = 0;

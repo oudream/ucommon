@@ -53,7 +53,7 @@ const char *Digest::c_str(void)
     return textbuf;
 }
 
-void Digest::uuid(char *str, const char *name, const unsigned char *ns)
+void Digest::uuid(char *str, const char *name, const uint8_t *ns)
 {
     unsigned mask = 0x50;
     const char *type = "sha1";
@@ -66,7 +66,7 @@ void Digest::uuid(char *str, const char *name, const unsigned char *ns)
     if(ns)
         md.put(ns, 16);
     md.puts(name);
-    unsigned char *buf = (unsigned char *)md.get();
+    uint8_t *buf = (uint8_t *)md.get();
 
     buf[6] &= 0x0f;
     buf[6] |= mask;
@@ -76,7 +76,7 @@ void Digest::uuid(char *str, const char *name, const unsigned char *ns)
     String::hexdump(buf, str, "4-2-2-2-6");
 }
 
-String Digest::uuid(const char *name, const unsigned char *ns)
+String Digest::uuid(const char *name, const uint8_t *ns)
 {
     char buf[38];
     uuid(buf, name, ns);
@@ -219,7 +219,7 @@ int secure::oscerts(const char *pathname)
 
 void secure::uuid(char *str)
 {
-    static unsigned char buf[16];
+    static uint8_t buf[16];
     static Timer::tick_t prior = 0l;
     static unsigned short seq;
     Timer::tick_t current = Timer::ticks();
@@ -233,18 +233,18 @@ void secure::uuid(char *str)
     if(current == prior)
         ++seq;
     else
-        Random::fill((unsigned char *)&seq, sizeof(seq));
+        Random::fill((uint8_t *)&seq, sizeof(seq));
 
-    buf[8] = (unsigned char)((seq >> 8) & 0xff);
-    buf[9] = (unsigned char)(seq & 0xff);
-    buf[3] = (unsigned char)(current & 0xff);
-    buf[2] = (unsigned char)((current >> 8) & 0xff);
-    buf[1] = (unsigned char)((current >> 16) & 0xff);
-    buf[0] = (unsigned char)((current >> 24) & 0xff);
-    buf[5] = (unsigned char)((current >> 32) & 0xff);
-    buf[4] = (unsigned char)((current >> 40) & 0xff);
-    buf[7] = (unsigned char)((current >> 48) & 0xff);
-    buf[6] = (unsigned char)((current >> 56) & 0xff);
+    buf[8] = (uint8_t)((seq >> 8) & 0xff);
+    buf[9] = (uint8_t)(seq & 0xff);
+    buf[3] = (uint8_t)(current & 0xff);
+    buf[2] = (uint8_t)((current >> 8) & 0xff);
+    buf[1] = (uint8_t)((current >> 16) & 0xff);
+    buf[0] = (uint8_t)((current >> 24) & 0xff);
+    buf[5] = (uint8_t)((current >> 32) & 0xff);
+    buf[4] = (uint8_t)((current >> 40) & 0xff);
+    buf[7] = (uint8_t)((current >> 48) & 0xff);
+    buf[6] = (uint8_t)((current >> 56) & 0xff);
 
     buf[6] &= 0x0f;
     buf[6] |= 0x10;
@@ -323,7 +323,7 @@ Cipher::Key::Key(const char *cipher, const char *digest)
     set(cipher, digest);
 }
 
-Cipher::Key::Key(const char *cipher, const char *digest, const char *text, size_t size, const unsigned char *salt, unsigned rounds)
+Cipher::Key::Key(const char *cipher, const char *digest, const char *text, size_t size, const uint8_t *salt, unsigned rounds)
 {
     hashtype = algotype = NULL;
     hashid = algoid = 0;
@@ -351,7 +351,7 @@ void Cipher::Key::b64(const char *key)
     String::b64decode(keybuf, key, sizeof(keybuf));
 }
 
-void Cipher::Key::set(const unsigned char *key, size_t size)
+void Cipher::Key::set(const uint8_t *key, size_t size)
 {
     if(!size || size >= sizeof(keybuf))
         return;
@@ -401,7 +401,7 @@ void Cipher::Key::clear(void)
     zerofill(ivbuf, sizeof(ivbuf));
 }
 
-Cipher::Cipher(const key_t key, mode_t mode, unsigned char *address, size_t size)
+Cipher::Cipher(const key_t key, mode_t mode, uint8_t *address, size_t size)
 {
     bufaddr = NULL;
     bufsize = bufpos = 0;
@@ -443,17 +443,17 @@ size_t Cipher::puts(const char *text)
     size_t len = strlen(text) + 1;
     size_t pad = len % keys.iosize();
 
-    put((const unsigned char *)text, len - pad);
+    put((const uint8_t *)text, len - pad);
     if(pad) {
         memcpy(padbuf, text + len - pad, pad);
         memset(padbuf + pad, 0, keys.iosize() - pad);
-        put((const unsigned char *)padbuf, keys.iosize());
+        put((const uint8_t *)padbuf, keys.iosize());
         zerofill(padbuf, sizeof(padbuf));
     }
     return flush();
 }
 
-void Cipher::set(unsigned char *address, size_t size)
+void Cipher::set(uint8_t *address, size_t size)
 {
     flush();
     bufsize = size;
@@ -461,7 +461,7 @@ void Cipher::set(unsigned char *address, size_t size)
     bufpos = 0;
 }
 
-size_t Cipher::process(unsigned char *buf, size_t len, bool flag)
+size_t Cipher::process(uint8_t *buf, size_t len, bool flag)
 {
     set(buf);
     if(flag)
@@ -473,7 +473,7 @@ size_t Cipher::process(unsigned char *buf, size_t len, bool flag)
 int Random::get(void)
 {
     uint16_t v;;
-    fill((unsigned char *)&v, sizeof(v));
+    fill((uint8_t *)&v, sizeof(v));
     v /= 2;
     return (int)v;
 }
@@ -490,7 +490,7 @@ int Random::get(int min, int max)
     memset(&umax, 0xff, sizeof(umax));
 
     do {
-        fill((unsigned char *)&rand, sizeof(rand));
+        fill((uint8_t *)&rand, sizeof(rand));
     } while(rand > umax - (umax % range));
 
     return min + (rand % range);
@@ -502,7 +502,7 @@ double Random::real(void)
     unsigned rand;
 
     memset(&umax, 0xff, sizeof(umax));
-    fill((unsigned char *)&rand, sizeof(rand));
+    fill((uint8_t *)&rand, sizeof(rand));
 
     return ((double)rand) / ((double)umax);
 }
@@ -514,7 +514,7 @@ double Random::real(double min, double max)
 
 void Random::uuid(char *str)
 {
-    unsigned char buf[16];
+    uint8_t buf[16];
 
     fill(buf, sizeof(buf));
     buf[6] &= 0x0f;

@@ -461,10 +461,7 @@ public:
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(unsigned long addr);
-
-    inline IPV4Address &operator=(unsigned int addr)
-        {return *this = (unsigned long) addr; }
+    IPV4Address &operator=(uint32_t addr);
 
     inline bool operator!() const
         {return !isInetAddress();}
@@ -529,7 +526,7 @@ public:
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(unsigned long addr)
+    IPV4Address &operator=(uint32_t addr)
         { return IPV4Address::operator =(addr); }
 };
 
@@ -573,7 +570,7 @@ public:
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(unsigned long addr)
+    IPV4Address &operator=(uint32_t addr)
     { return IPV4Address::operator =(addr); }
 
     /**

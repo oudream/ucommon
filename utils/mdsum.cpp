@@ -97,7 +97,7 @@ static void digest(const char *path = NULL)
 {
     fsys_t fs;
     fsys::fileinfo_t ino;
-    unsigned char buffer[1024];
+    uint8_t buffer[1024];
 
     if(path) {
         int err = fsys::info(path, &ino);

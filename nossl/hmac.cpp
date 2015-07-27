@@ -43,7 +43,7 @@ bool HMAC::put(const void *address, size_t size)
     return false;
 }
 
-const unsigned char *HMAC::get(void)
+const uint8_t *HMAC::get(void)
 {
     if(bufsize)
         return buffer;

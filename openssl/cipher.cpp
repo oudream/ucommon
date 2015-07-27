@@ -18,7 +18,7 @@
 
 #include "local.h"
 
-static const unsigned char *_salt = NULL;
+static const uint8_t *_salt = NULL;
 static unsigned _rounds = 1;
 
 namespace ucommon {
@@ -28,13 +28,13 @@ void Cipher::Key::assign(const char *text, size_t size)
     assign(text, size, _salt, _rounds);
 }
 
-void Cipher::Key::options(const unsigned char *salt, unsigned rounds)
+void Cipher::Key::options(const uint8_t *salt, unsigned rounds)
 {
     _salt = salt;
     _rounds = rounds;
 }
 
-void Cipher::Key::assign(const char *text, size_t size, const unsigned char *salt, unsigned rounds)
+void Cipher::Key::assign(const char *text, size_t size, const uint8_t *salt, unsigned rounds)
 {
     if(!algotype || !hashtype)
         return;
@@ -48,7 +48,7 @@ void Cipher::Key::assign(const char *text, size_t size, const unsigned char *sal
     if(!salt)
         salt = _salt;
 
-    if(EVP_BytesToKey((const EVP_CIPHER*)algotype, (const EVP_MD*)hashtype, salt, (const unsigned char *)text, (int)size, rounds, keybuf, ivbuf) < (int)keysize)
+    if(EVP_BytesToKey((const EVP_CIPHER*)algotype, (const EVP_MD*)hashtype, salt, (const uint8_t *)text, (int)size, rounds, keybuf, ivbuf) < (int)keysize)
         keysize = 0;
 }
 
@@ -99,7 +99,7 @@ bool Cipher::has(const char *id)
     return (EVP_get_cipherbyname(algoname) != NULL);
 }
 
-void Cipher::push(unsigned char *address, size_t size)
+void Cipher::push(uint8_t *address, size_t size)
 {
 }
 
@@ -113,7 +113,7 @@ void Cipher::release(void)
     }
 }
 
-void Cipher::set(const key_t key, mode_t mode, unsigned char *address, size_t size)
+void Cipher::set(const key_t key, mode_t mode, uint8_t *address, size_t size)
 {
     release();
 
@@ -131,7 +131,7 @@ void Cipher::set(const key_t key, mode_t mode, unsigned char *address, size_t si
     EVP_CIPHER_CTX_set_padding((EVP_CIPHER_CTX *)context, 0);
 }
 
-size_t Cipher::put(const unsigned char *data, size_t size)
+size_t Cipher::put(const uint8_t *data, size_t size)
 {
     int outlen;
     size_t count = 0;
@@ -162,11 +162,11 @@ size_t Cipher::put(const unsigned char *data, size_t size)
     return count;
 }
 
-size_t Cipher::pad(const unsigned char *data, size_t size)
+size_t Cipher::pad(const uint8_t *data, size_t size)
 {
     size_t padsize = 0;
-    unsigned char padbuf[64];
-    const unsigned char *ep;
+    uint8_t padbuf[64];
+    const uint8_t *ep;
 
     if(!bufaddr)
         return 0;
@@ -193,7 +193,7 @@ size_t Cipher::pad(const unsigned char *data, size_t size)
             memset(padbuf, (int)keys.iosize(), keys.iosize());
         }
 
-        put((const unsigned char *)padbuf, keys.iosize());
+        put((const uint8_t *)padbuf, keys.iosize());
         zerofill(padbuf, sizeof(padbuf));
     }
 
