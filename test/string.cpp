@@ -35,7 +35,7 @@ extern "C" int main()
     unsigned count = 0;
     const char *tp;
     const char *array[5];
-    stringref sref = "ABC";
+    stringref_t sref = "ABC";
     string_t tref(sref);
 
     assert(eq(tref, "ABC"));
@@ -103,6 +103,19 @@ extern "C" int main()
 
     strfree(test);
     strfree(cdup);
+
+    stringref_t cvs;
+    charvalues_t cv1 = stringref::create(64);
+    charvalues_t cv2 = cv1;
+
+    snprintf(cv1->get(), cv1->max(), "test %d\n", 1);
+    stringref::expand(&cv1, 64);
+    assert(cv1->max() == 128);
+    assert(cv2 != cv1);
+    assert(eq(cv1->get(), "test 1\n"));
+    cvs.assign(cv1);
+    assert(cvs.copies() == 1);
+    assert(eq(cvs, "test 1\n"));
 
     return 0;
 }
