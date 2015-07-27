@@ -211,6 +211,10 @@ public:
 			return &mem[0];
 		}
 
+		inline size_t len() {
+			return strlen(mem);
+		}
+
 		inline size_t max() {
 			return size;
 		}
