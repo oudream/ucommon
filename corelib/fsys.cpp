@@ -38,6 +38,7 @@
 #include <ucommon/thread.h>
 #include <ucommon/fsys.h>
 #include <ucommon/string.h>
+#include <ucommon/typeref.h>
 #include <ucommon/memory.h>
 #include <ucommon/shell.h>
 
@@ -256,7 +257,7 @@ int fsys::prefix(const char *path)
 
 int fsys::prefix(char *path, size_t len)
 {
-    if (_getcwd(path, (socksize_t)len))
+    if (NULL == _getcwd(path, (socksize_t)len))
         return remapError();
     return 0;
 }
@@ -1016,7 +1017,7 @@ int fsys::prefix(const char *path)
 
 int fsys::prefix(char *path, size_t len)
 {
-    if(::getcwd(path, len))
+    if(NULL == ::getcwd(path, len))
         return remapError();
     return 0;
 }
@@ -1789,14 +1790,45 @@ int fsys::exec(const char *path, char **argv, char **envp)
     return shell::wait(pid);
 }
 
-string_t fsys::prefix(void)
-{
-    String cwd((strsize_t)256, String::eos);
-    char *buf = cwd.c_mem();
+#ifdef _MSWINDOWS_
 
-    prefix(buf, 256);
-    string_t s = buf;
-    return s;
+static stringref_t sysprefix(void)
+{
+    char *cp = _getcwd(NULL, 0);
+    stringref result(cp);
+    if(cp)
+        ::free(cp);
+    return result;
 }
 
+#else
+
+static stringref_t sysprefix(void)
+{
+    size_t size = 40;
+    charvalues_t buf = stringref::create(40);
+    stringref_t out;
+    for(;;) {
+        if(NULL != (getcwd(buf->get(), buf->max())))
+            break;
+        if(errno != ERANGE) {
+            *(buf->get()) = 0;
+            break;
+        }
+        stringref::expand(&buf, size);
+        size += 40;
+    }
+    out.assign(buf);
+    return out;
+}
+
+#endif
+
+string_t fsys::prefix(void)
+{
+    stringref_t sys = sysprefix();
+    string_t out = *sys;
+    return out;
+}
+        
 } // namespace ucommon
