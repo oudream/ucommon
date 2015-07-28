@@ -44,6 +44,10 @@
 #include <ucommon/string.h>
 #endif
 
+#ifndef _UCOMMON_TYPEREF_H_
+#include <ucommon/typeref.h>
+#endif
+
 #ifndef _UCOMMON_MEMORY_H_
 #include <ucommon/memory.h>
 #endif
@@ -372,7 +376,7 @@ public:
      */
     static int prefix(char *path, size_t size);
 
-    static string_t prefix(void);
+    static stringref_t prefix(void);
 
     /**
      * Stat a file.
