@@ -20,6 +20,7 @@
 #include <ucommon/export.h>
 #include <ucommon/socket.h>
 #include <ucommon/string.h>
+#include <ucommon/typeref.h>
 #include <ucommon/thread.h>
 #include <ucommon/fsys.h>
 #ifndef _MSWINDOWS_
@@ -2054,6 +2055,21 @@ size_t Socket::readline(String& s)
     }
     String::fix(s);
     return (size_t)result;
+}
+
+stringref_t Socket::readline(size_t size)
+{
+	charvalues_t buf = stringref::create(size);
+	if(!buf)
+		return stringref(NULL);
+
+	ssize_t result = Socket::readline(so, buf->get(), buf->max() + 1, iowait);
+	if(result < 0)
+		return stringref(NULL);
+
+	stringref_t out;
+	out.assign(buf);
+	return out;
 }
 
 ssize_t Socket::readline(socket_t so, char *data, size_t max, timeout_t timeout)

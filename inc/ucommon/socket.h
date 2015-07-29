@@ -39,6 +39,10 @@
 #include <ucommon/string.h>
 #endif
 
+#ifndef _UCOMMON_TYPEREF_H_
+#include <ucommon/typeref.h>
+#endif
+
 extern "C" {
     struct addrinfo;
 }
@@ -1166,6 +1170,8 @@ public:
      * @return number of bytes read, 0 if none, err() has error.
      */
     size_t readline(String& buffer);
+
+    stringref_t readline(size_t maxsize);
 
     /**
      * Read a newline of text data from the socket and save in NULL terminated
