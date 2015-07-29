@@ -708,7 +708,8 @@ public:
          * Returns the port of the socket address.
          * @return port associated to the socket address.
          */
-        static in_port_t getPort(const struct sockaddr *address);
+        inline static in_port_t getPort(const struct sockaddr *address)
+            {return Socket::port(address);}
 
         /**
          * Set the port of the socket address.

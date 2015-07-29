@@ -1354,21 +1354,6 @@ void Socket::address::copy(const struct addrinfo *addr)
     }
 }
 
-in_port_t Socket::address::getPort(const struct sockaddr *address)
-{
-    if (address == NULL)
-        return 0;
-
-    switch (address->sa_family) {
-    case AF_INET:
-        return ntohs(reinterpret_cast<const sockaddr_in* >(address)->sin_port);
-    case AF_INET6:
-        return ntohs(reinterpret_cast<const sockaddr_in6*>(address)->sin6_port);
-    default:
-        return 0;
-    }
-}
-
 void Socket::address::setPort(struct sockaddr *address, in_port_t port)
 {
     if (address == NULL)
@@ -3186,7 +3171,8 @@ switch(addr->sa_family) {
 
 in_port_t Socket::port(const struct sockaddr *addr)
 {
-    assert(addr != NULL);
+	if(!addr)
+		return 0;
 
     switch(addr->sa_family) {
 #ifdef  AF_INET6
