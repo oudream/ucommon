@@ -1518,7 +1518,7 @@ void Socket::address::add(struct sockaddr *addr)
     char svc[8];
 
     Socket::query(addr, buffer, sizeof(buffer));
-    snprintf(svc, sizeof(svc), "%d", Socket::service(addr));
+    snprintf(svc, sizeof(svc), "%d", Socket::port(addr));
     add(buffer, svc, addr->sa_family);
 }
 
@@ -3166,13 +3166,13 @@ switch(addr->sa_family) {
     case AF_INET6:
         cp = (caddr_t)(&((const struct sockaddr_in6 *)(addr))->sin6_addr);
         len = 16;
-        key = service(addr);
+        key = port(addr);
         break;
 #endif
     case AF_INET:
         cp = (caddr_t)(&((const struct sockaddr_in *)(addr))->sin_addr);
         len = 4;
-        key = service(addr);
+        key = port(addr);
         break;
     default:
         return 0;
@@ -3184,7 +3184,7 @@ switch(addr->sa_family) {
     return key % keysize;
 }
 
-short Socket::service(const struct sockaddr *addr)
+in_port_t Socket::port(const struct sockaddr *addr)
 {
     assert(addr != NULL);
 

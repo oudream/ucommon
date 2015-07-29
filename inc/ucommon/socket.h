@@ -1660,15 +1660,19 @@ public:
      * @param address of socket to examine.
      * @return service port number.
      */
-    static short service(const struct sockaddr *address);
+    static in_port_t port(const struct sockaddr *address);
 
     /**
      * Get the service port of an inet socket.
      * @param address of internet socket to examine.
      * @return service port number.
      */
-    inline static short service(const struct sockaddr_internet *address)
-        {return service((const struct sockaddr *)address);}
+    inline static in_port_t port(const struct sockaddr_internet *address)
+        {return port((const struct sockaddr *)address);}
+
+    // depricated
+    inline static in_port_t service(const struct sockaddr *address)
+        {return port(address);}
 
     /**
      * Convert a socket address and service into a hash map index.
