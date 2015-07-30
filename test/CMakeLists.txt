@@ -16,8 +16,7 @@ cmake_minimum_required(VERSION 2.6)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
                     ${CMAKE_CURRENT_SOURCE_DIR}/../inc)
 
-link_directories(${CMAKE_CURRENT_BINARY_DIR}
-         ${CMAKE_CURRENT_BINARY_DIR}/../src)
+link_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/keydata.conf ${CMAKE_CURRENT_BINARY_DIR}/keydata.conf COPYONLY)
 
