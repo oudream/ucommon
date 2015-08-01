@@ -14,7 +14,7 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #=============================================================================
 
-set (CMAKE_REQUIRED_LIBRARIES ${UCOMMON_LIBS})
+set (CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} ${UCOMMON_LIBS})
 check_function_exists(getaddrinfo HAVE_GETADDRINFO)
 check_function_exists(socketpair HAVE_SOCKETPAIR)
 check_function_exists(inet_ntop HAVE_INET_NTOP)
