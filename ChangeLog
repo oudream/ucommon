@@ -1,3 +1,7 @@
+Changes from 6.4.1 to 6.4.2
+- solaris related cmake fixes
+- cleanup of test build and osx fixes
+
 Changes from 6.4.0 to 6.4.1
 - keyfile fixed constructor issue
 
