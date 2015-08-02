@@ -156,8 +156,6 @@ private:
     keydata *defaults;
     int errcode;
 
-    inline keyfile(const keyfile& copy) {};
-
 protected:
     keydata *create(const char *section);
 

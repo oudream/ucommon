@@ -1,3 +1,10 @@
+Changes from 6.4.1 to 6.4.2
+- solaris related cmake fixes
+- cleanup of test build and osx fixes
+
+Changes from 6.4.0 to 6.4.1
+- keyfile fixed constructor issue
+
 Changes from 6.3.6 to 6.4.0
 - new typeref system for immutable atomic reference counted objects
 - heap management objects support moving heap through assignment

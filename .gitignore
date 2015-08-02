@@ -55,6 +55,7 @@ directive
 *.lo
 *.la
 *.so*
+*.dylib
 *.authors
 *.kdev4
 *.deps
