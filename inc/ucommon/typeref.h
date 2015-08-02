@@ -238,6 +238,8 @@ public:
 
 	stringref& operator=(value *chars);
 
+	const char *operator()(ssize_t offset) const;
+
 	void set(const char *str);
 
 	void assign(value *chars);

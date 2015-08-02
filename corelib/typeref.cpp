@@ -144,6 +144,24 @@ TypeRef()
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
+const char *stringref::operator()(ssize_t offset) const
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return NULL;
+
+    if(offset < 0 && offset < -((ssize_t)v->len()))
+        return NULL;
+
+    if(offset < 0)
+        return &v->mem[v->len() + offset];
+
+    if(offset > (ssize_t)v->len())
+        return NULL;
+
+    return &v->mem[v->len() + offset];
+}
+
 const char *stringref::operator*() const 
 {
     if(!ref)

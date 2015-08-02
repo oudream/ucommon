@@ -1,3 +1,6 @@
+Changes from 6.4.3 to 6.4.4
+- additional typeref operators
+
 Changes from 6.4.2 to 6.4.3
 - fix for broken windows setuid macro
 
