@@ -108,6 +108,10 @@ extern "C" int main()
     ints(6, 30);
     assert(ints.size() == 32);
     assert(ints[4] == 27);
+    typeref<int> member = ints.at(6);
+    assert(member.copies() == 2);
+    ints.put(member, 6);
+    assert(member.copies() == 2);
 
     return 0;
 }

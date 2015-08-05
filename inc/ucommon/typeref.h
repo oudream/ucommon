@@ -115,6 +115,10 @@ public:
 	inline bool operator!() const {
 		return ref == NULL;
 	}
+
+	inline static void put(TypeRef& target, Counted *obj) {
+		target.set(obj);
+	}
 };
 
 template<typename T>
@@ -144,6 +148,8 @@ public:
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object)); 
 	}
+
+	inline typeref(Counted *object) : TypeRef(object) {};
 
 	inline T* operator->() {
 		if(!ref)
@@ -348,13 +354,20 @@ public:
 	}
 
 	inline const T& operator[](size_t index) {
-		TypeRef::Counted *obj = ArrayRef::get(index);
-		const T* p = typeref<T>::data(obj);
+		const T* p = typeref<T>::data(ArrayRef::get(index));
 		return *p;
 	}
 
-	inline const T* operator()(size_t index) {
-		return typeref<T>::data(ArrayRef::get(index));
+	inline typeref<T> operator()(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> at(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline void put(typeref<T>& target, size_t index) {
+		TypeRef::put(target, ArrayRef::get(index));
 	}
 
 	inline void operator()(size_t index, typeref<T>& t) {
