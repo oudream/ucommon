@@ -312,7 +312,7 @@ protected:
 		virtual void dealloc();
 
 		inline Counted **get(void) {
-			return reinterpret_cast<Counted **>(this + sizeof(Array));
+			return reinterpret_cast<Counted **>(((caddr_t)(this)) + sizeof(Array));
 		}
 
 		Counted *get(size_t index);
@@ -333,12 +333,14 @@ public:
 };
 
 template<typename T>
-class arrayref
+class arrayref : public ArrayRef
 {
 public:
 	inline arrayref() :	ArrayRef() {};
 
 	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
+
+	inline arrayref(size_t size) : ArrayRef(size) {};
 
 	inline arrayref& operator=(const arrayref& copy) {
 		TypeRef::set(copy);
@@ -359,16 +361,16 @@ public:
 		ArrayRef::assign(index, t);
 	}
 
-	inline void operator()(size_t index, const T& t) {
+	inline void operator()(size_t index, T t) {
 		typeref<T> v(t);
-		ArrayRef::assign(index, t);
+		ArrayRef::assign(index, v);
 	}
 
 	inline void release(void) {
 		TypeRef::set(NULL);
 	}
 
-	inline void dim(size_t size) {
+	inline void realloc(size_t size) {
 		TypeRef::set(ArrayRef::create(size));
 	}
 };

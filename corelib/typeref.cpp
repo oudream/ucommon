@@ -353,11 +353,14 @@ void ArrayRef::Array::dealloc()
         return;
 
     while(index < size) {
-        Counted *object = list[index++];
-        if(object)
+        Counted *object = list[index];
+        if(object) {
             object->release();
+            list[index] = NULL;
+        }
+        ++index;
     }
-    
+    size = 0;
     Counted::dealloc();
 }
     
@@ -396,7 +399,8 @@ ArrayRef::Array *ArrayRef::create(size_t size)
     if(!size)
         return NULL;
 
-    caddr_t p = TypeRef::alloc(sizeof(Array) + (size * sizeof(Counted)));
+    size_t s = sizeof(Array) + (size * sizeof(Counted *));
+    caddr_t p = TypeRef::alloc(s);
     return new(mem(p)) Array(p, size);
 }
 
