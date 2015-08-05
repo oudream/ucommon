@@ -307,4 +307,73 @@ void byteref::destroy(byteref::value *bytes)
         bytes->destroy();
 }
 
+TypeRef::Counted *ArrayRef::Array::get(size_t index)
+{
+    if(index >= size)
+        return NULL;
+
+    return (get())[index];
+}
+
+ArrayRef::Array::Array(void *addr, size_t size) :
+Counted(addr, size)
+{
+    unsigned index = 0;
+    Counted **list = get();
+
+    if(!size)
+        return;
+
+    while(index < size) {
+        list[index++] = NULL;
+    }
+}
+
+void ArrayRef::Array::dealloc()
+{
+    unsigned index = 0;
+    Counted **list = get();
+
+    if(!size)
+        return;
+
+    while(index < size) {
+        Counted *object = list[index++];
+        if(object)
+            object->release();
+    }
+    
+    Counted::dealloc();
+}
+    
+void ArrayRef::Array::assign(size_t index, Counted *object)
+{
+    if(index >= size)
+        return;
+    
+    if(object)
+        object->retain();
+
+    Counted *replace = get(index);
+    if(replace)
+        replace->release();
+
+    (get())[index] = object;
+}    
+
+ArrayRef ArrayRef::create(size_t size)
+{
+    caddr_t p = TypeRef::alloc(sizeof(Array) + (size * sizeof(Counted)));
+    return ArrayRef(new(mem(p)) Array(p, size));
+}
+
+TypeRef::Counted *ArrayRef::get(size_t index)
+{
+    Array *array = polystatic_cast<Array*>(ref);
+    if(!array)
+        return NULL;
+
+    return array->get(index);
+}
+
 } // namespace
