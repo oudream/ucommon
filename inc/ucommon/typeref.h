@@ -105,6 +105,8 @@ public:
 
 	void set(const TypeRef& ptr);
 	void release(void);
+	size_t size(void) const;
+	unsigned copies() const;
 	
 	inline bool is() const {
 		return ref != NULL;
@@ -112,18 +114,6 @@ public:
 
 	inline bool operator!() const {
 		return ref == NULL;
-	}
-
-	inline unsigned copies() const {
-		if(!ref)
-			return 0;
-		return ref->copies();
-	}
-
-	inline size_t size() const {
-		if(!ref)
-			return 0;
-		return ref->size;
 	}
 };
 
@@ -328,15 +318,18 @@ protected:
 		Counted *get(size_t index);
 	};
 
-	inline ArrayRef(Array *objects) : TypeRef(objects) {};
-	inline ArrayRef(const ArrayRef& copy) : TypeRef(copy) {};
-	inline ArrayRef() : TypeRef() {};
+	ArrayRef(size_t size);
+	ArrayRef(const ArrayRef& copy);
+	ArrayRef();
 
 	void assign(size_t index, TypeRef& t);
 
 	Counted *get(size_t index);
 
-	static ArrayRef create(size_t size);
+	static Array *create(size_t size);
+
+public:
+	void resize(size_t size);
 };
 
 template<typename T>
@@ -364,6 +357,19 @@ public:
 
 	inline void operator()(size_t index, typeref<T>& t) {
 		ArrayRef::assign(index, t);
+	}
+
+	inline void operator()(size_t index, const T& t) {
+		typeref<T> v(t);
+		ArrayRef::assign(index, t);
+	}
+
+	inline void release(void) {
+		TypeRef::set(NULL);
+	}
+
+	inline void dim(size_t size) {
+		TypeRef::set(ArrayRef::create(size));
 	}
 };
 

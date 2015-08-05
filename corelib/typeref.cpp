@@ -315,6 +315,21 @@ TypeRef::Counted *ArrayRef::Array::get(size_t index)
     return (get())[index];
 }
 
+size_t TypeRef::size(void) const
+{
+    if(!ref)
+        return 0;
+
+    return ref->size;
+}
+
+unsigned TypeRef::copies() const 
+{
+	if(!ref)
+		return 0;
+	return ref->copies();
+}
+
 ArrayRef::Array::Array(void *addr, size_t size) :
 Counted(addr, size)
 {
@@ -359,12 +374,30 @@ void ArrayRef::Array::assign(size_t index, Counted *object)
         replace->release();
 
     (get())[index] = object;
-}    
+}   
 
-ArrayRef ArrayRef::create(size_t size)
+ArrayRef::ArrayRef() :
+TypeRef()
 {
+}
+
+ArrayRef::ArrayRef(size_t size) :
+TypeRef(create(size))
+{
+} 
+
+ArrayRef::ArrayRef(const ArrayRef& copy) :
+TypeRef(copy)
+{
+}
+
+ArrayRef::Array *ArrayRef::create(size_t size)
+{
+    if(!size)
+        return NULL;
+
     caddr_t p = TypeRef::alloc(sizeof(Array) + (size * sizeof(Counted)));
-    return ArrayRef(new(mem(p)) Array(p, size));
+    return new(mem(p)) Array(p, size);
 }
 
 void ArrayRef::assign(size_t index, TypeRef& t)
@@ -375,6 +408,21 @@ void ArrayRef::assign(size_t index, TypeRef& t)
 
     Counted *obj = t.ref;
     array->assign(index, obj);
+}
+
+void ArrayRef::resize(size_t size)
+{
+    Array *array = create(size);
+    Array *current = polystatic_cast<Array *>(ref);
+    unsigned index = 0;
+
+    if(array && current) {
+        while(index < size && index < current->size) {
+            array->assign(index, current->get(index));
+            ++index;
+        }
+    }
+    TypeRef::set(array);
 }
 
 TypeRef::Counted *ArrayRef::get(size_t index)
