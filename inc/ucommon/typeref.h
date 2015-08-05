@@ -53,6 +53,7 @@ namespace ucommon {
 class __EXPORT TypeRef
 {
 protected:
+	friend class ArrayRef;
     /**
 	 * Heap base-class container for typeref objects.
 	 * @author David Sugar <dyfet@gnutelephony.org>
@@ -331,6 +332,8 @@ protected:
 	inline ArrayRef(const ArrayRef& copy) : TypeRef(copy) {};
 	inline ArrayRef() : TypeRef() {};
 
+	void assign(size_t index, TypeRef& t);
+
 	Counted *get(size_t index);
 
 	static ArrayRef create(size_t size);
@@ -349,10 +352,18 @@ public:
 		return *this;
 	}
 
-	inline T& operator[](size_t index) {
+	inline const T& operator[](size_t index) {
 		TypeRef::Counted *obj = ArrayRef::get(index);
-		T* p = typeref<T>::data(obj);
+		const T* p = typeref<T>::data(obj);
 		return *p;
+	}
+
+	inline const T* operator()(size_t index) {
+		return typeref<T>::data(ArrayRef::get(index));
+	}
+
+	inline void operator()(size_t index, typeref<T>& t) {
+		ArrayRef::assign(index, t);
 	}
 };
 

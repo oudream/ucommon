@@ -367,6 +367,16 @@ ArrayRef ArrayRef::create(size_t size)
     return ArrayRef(new(mem(p)) Array(p, size));
 }
 
+void ArrayRef::assign(size_t index, TypeRef& t)
+{
+    Array *array = polystatic_cast<Array *>(ref);
+    if(!array || index >= array->size)
+        return;
+
+    Counted *obj = t.ref;
+    array->assign(index, obj);
+}
+
 TypeRef::Counted *ArrayRef::get(size_t index)
 {
     Array *array = polystatic_cast<Array*>(ref);
