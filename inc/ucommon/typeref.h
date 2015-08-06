@@ -158,9 +158,15 @@ public:
 		return &(v->data);
 	}
 
-	inline const T *operator*() const {
+	inline const T& operator*() const {
+		value *v = polystatic_cast<value*>(ref);
+		return *(&(v->data));
+	}
+
+	inline const T* operator()() const {
 		if(!ref)
 			return NULL;
+
 		value *v = polystatic_cast<value*>(ref);
 		return &(v->data);
 	}
@@ -330,6 +336,8 @@ protected:
 
 	void assign(size_t index, TypeRef& t);
 
+	void init(TypeRef& object);
+
 	Counted *get(size_t index);
 
 	static Array *create(size_t size);
@@ -347,6 +355,11 @@ public:
 	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
 
 	inline arrayref(size_t size) : ArrayRef(size) {};
+
+	inline arrayref(size_t size, T t) : ArrayRef(size) {
+		typeref<T> v(t);
+		init(v);
+	}
 
 	inline arrayref& operator=(const arrayref& copy) {
 		TypeRef::set(copy);

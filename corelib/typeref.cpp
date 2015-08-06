@@ -333,7 +333,7 @@ unsigned TypeRef::copies() const
 ArrayRef::Array::Array(void *addr, size_t size) :
 Counted(addr, size)
 {
-    unsigned index = 0;
+    size_t index = 0;
     Counted **list = get();
 
     if(!size)
@@ -346,7 +346,7 @@ Counted(addr, size)
 
 void ArrayRef::Array::dealloc()
 {
-    unsigned index = 0;
+    size_t index = 0;
     Counted **list = get();
 
     if(!size)
@@ -363,7 +363,7 @@ void ArrayRef::Array::dealloc()
     size = 0;
     Counted::dealloc();
 }
-    
+
 void ArrayRef::Array::assign(size_t index, Counted *object)
 {
     if(index >= size)
@@ -394,6 +394,20 @@ TypeRef(copy)
 {
 }
 
+void ArrayRef::init(TypeRef& var)
+{
+    size_t index = 0;
+    Array *array = polystatic_cast<Array *>(ref);
+    Counted *object = var.ref;
+
+    if(!array || !array->size || !object)
+        return;
+
+    while(index < array->size) {
+        array->assign(index++, object);
+    }
+}
+
 ArrayRef::Array *ArrayRef::create(size_t size)
 {
     if(!size)
@@ -418,7 +432,7 @@ void ArrayRef::resize(size_t size)
 {
     Array *array = create(size);
     Array *current = polystatic_cast<Array *>(ref);
-    unsigned index = 0;
+    size_t index = 0;
 
     if(array && current) {
         while(index < size && index < current->size) {
