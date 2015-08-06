@@ -149,7 +149,7 @@ public:
 		TypeRef::set(new(mem(p)) value(p, object)); 
 	}
 
-	inline typeref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	inline T* operator->() {
 		if(!ref)
@@ -193,7 +193,9 @@ public:
 	}
 
 	inline static T* data(Counted *obj) {
-		value *v = polystatic_cast<value*>(obj);
+		value *v = polydynamic_cast<value*>(obj);
+		if(!v)
+			return NULL;
 		return &v->data;
 	}
 };
@@ -233,6 +235,8 @@ public:
 
 	stringref(const char *str);
 
+	inline explicit stringref(Counted *object) : TypeRef(object) {};
+
 	const char *operator*() const;
 
 	inline operator const char *() const {
@@ -256,6 +260,13 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
+
+	inline static const char *str(Counted *obj) {
+		value *v = polydynamic_cast<value*>(obj);
+		if(!v)
+			return NULL;
+		return &v->mem[0];
+	}
 };
 
 class __EXPORT byteref : public TypeRef
@@ -290,6 +301,8 @@ public:
 
 	byteref(const uint8_t *str, size_t size);
 
+	inline explicit byteref(Counted *object) : TypeRef(object) {};
+
 	const uint8_t *operator*() const;
 
 	inline operator const uint8_t *() const {
@@ -307,97 +320,12 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
-};
 
-class __EXPORT ArrayRef : public TypeRef
-{
-protected:
-	class Array : public Counted
-	{
-	protected:
-		friend class ArrayRef;
-
-		explicit Array(void *addr, size_t size);
-
-		void assign(size_t index, Counted *object);
-
-		virtual void dealloc();
-
-		inline Counted **get(void) {
-			return reinterpret_cast<Counted **>(((caddr_t)(this)) + sizeof(Array));
-		}
-
-		Counted *get(size_t index);
-	};
-
-	ArrayRef(size_t size);
-	ArrayRef(const ArrayRef& copy);
-	ArrayRef();
-
-	void assign(size_t index, TypeRef& t);
-
-	void init(TypeRef& object);
-
-	Counted *get(size_t index);
-
-	static Array *create(size_t size);
-
-public:
-	void resize(size_t size);
-};
-
-template<typename T>
-class arrayref : public ArrayRef
-{
-public:
-	inline arrayref() :	ArrayRef() {};
-
-	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
-
-	inline arrayref(size_t size) : ArrayRef(size) {};
-
-	inline arrayref(size_t size, T t) : ArrayRef(size) {
-		typeref<T> v(t);
-		init(v);
-	}
-
-	inline arrayref& operator=(const arrayref& copy) {
-		TypeRef::set(copy);
-		return *this;
-	}
-
-	inline const T& operator[](size_t index) {
-		const T* p = typeref<T>::data(ArrayRef::get(index));
-		return *p;
-	}
-
-	inline typeref<T> operator()(size_t index) {
-		return typeref<T>(ArrayRef::get(index));
-	}
-
-	inline typeref<T> at(size_t index) {
-		return typeref<T>(ArrayRef::get(index));
-	}
-
-	inline void put(typeref<T>& target, size_t index) {
-		TypeRef::put(target, ArrayRef::get(index));
-	}
-
-	inline void operator()(size_t index, typeref<T>& t) {
-		ArrayRef::assign(index, t);
-	}
-
-	inline void operator()(size_t index, T t) {
-		typeref<T> v(t);
-		ArrayRef::assign(index, v);
-	}
-
-	inline void release(void) {
-		TypeRef::set(NULL);
-	}
-
-	inline void realloc(size_t size) {
-		TypeRef::set(ArrayRef::create(size));
+	inline static const uint8_t *data(Counted *obj) {
+		value *v = polydynamic_cast<value*>(obj);
+		if(!v)
+			return NULL;
+		return &v->mem[0];
 	}
 };
 
