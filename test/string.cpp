@@ -118,5 +118,12 @@ extern "C" int main()
     assert(eq(cvs, "test 1\n"));
     assert(cvs.size() == 7);
 
+    stringarray_t strs(32, "here");
+    strs(4, "test");
+    assert(eq(strs[4], "test"));
+    assert(eq(strs[7], "here"));
+    strs.put(cvs, 7);
+    assert(cvs.copies() == 32);
+    assert(eq(*cvs, "here"));
     return 0;
 }

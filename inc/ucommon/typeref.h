@@ -149,7 +149,7 @@ public:
 		TypeRef::set(new(mem(p)) value(p, object)); 
 	}
 
-	inline typeref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	inline T* operator->() {
 		if(!ref)
@@ -233,6 +233,8 @@ public:
 
 	stringref(const char *str);
 
+	inline explicit stringref(Counted *object) : TypeRef(object) {};
+
 	const char *operator*() const;
 
 	inline operator const char *() const {
@@ -256,6 +258,11 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
+
+	inline static const char *str(Counted *obj) {
+		value *v = polystatic_cast<value*>(obj);
+		return &v->mem[0];
+	}
 };
 
 class __EXPORT byteref : public TypeRef
@@ -416,7 +423,77 @@ public:
 	}
 };
 
+template<>
+class arrayref<stringref> : public ArrayRef
+{
+public:
+	inline arrayref() :	ArrayRef() {};
+
+	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
+
+	inline arrayref(size_t size) : ArrayRef(size) {};
+
+	inline arrayref(size_t size, stringref s) : ArrayRef(size) {
+		reset(s);
+	}
+
+	inline arrayref(size_t size, const char *s) : ArrayRef(size) {
+		stringref v(s);
+		reset(v);
+	}
+
+	inline arrayref& operator=(const arrayref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline arrayref& operator=(const char *s) {
+		stringref v(s);
+		reset(v);
+		return *this;
+	}
+
+	inline arrayref& operator=(stringref t) {
+		reset(t);
+		return *this;
+	}
+
+	inline const char *operator[](size_t index) {
+		return stringref::str(ArrayRef::get(index));
+	}
+
+	inline stringref operator()(size_t index) {
+		return stringref(ArrayRef::get(index));
+	}
+
+	inline stringref at(size_t index) {
+		return stringref(ArrayRef::get(index));
+	}
+
+	inline void put(stringref& target, size_t index) {
+		TypeRef::put(target, ArrayRef::get(index));
+	}
+
+	inline void operator()(size_t index, stringref& t) {
+		ArrayRef::assign(index, t);
+	}
+
+	inline void operator()(size_t index, const char *s) {
+		stringref v(s);
+		ArrayRef::assign(index, v);
+	}
+
+	inline void release(void) {
+		TypeRef::set(NULL);
+	}
+
+	inline void realloc(size_t size) {
+		TypeRef::set(ArrayRef::create(size));
+	}
+};
+
 typedef stringref::value *charvalues_t;
+typedef arrayref<stringref> stringarray_t;
 typedef	byteref::value	*bytevalues_t;
 typedef	stringref	stringref_t;
 typedef byteref		byteref_t;
