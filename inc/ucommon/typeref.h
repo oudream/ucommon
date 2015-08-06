@@ -336,7 +336,7 @@ protected:
 
 	void assign(size_t index, TypeRef& t);
 
-	void init(TypeRef& object);
+	void reset(TypeRef& object);
 
 	Counted *get(size_t index);
 
@@ -356,13 +356,28 @@ public:
 
 	inline arrayref(size_t size) : ArrayRef(size) {};
 
+	inline arrayref(size_t size, typeref<T> t) : ArrayRef(size) {
+		reset(t);
+	}
+
 	inline arrayref(size_t size, T t) : ArrayRef(size) {
 		typeref<T> v(t);
-		init(v);
+		reset(v);
 	}
 
 	inline arrayref& operator=(const arrayref& copy) {
 		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline arrayref& operator=(T t) {
+		typeref<T> v(t);
+		reset(v);
+		return *this;
+	}
+
+	inline arrayref& operator=(typeref<T> t) {
+		reset(t);
 		return *this;
 	}
 

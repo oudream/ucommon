@@ -394,7 +394,7 @@ TypeRef(copy)
 {
 }
 
-void ArrayRef::init(TypeRef& var)
+void ArrayRef::reset(TypeRef& var)
 {
     size_t index = 0;
     Array *array = polystatic_cast<Array *>(ref);
