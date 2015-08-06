@@ -37,7 +37,7 @@ macro(check_headers)
 endmacro()
 
 macro(target_setuid_properties)
-    if(NOT WINDOWS AND NOT MINGW AND NOT MSYS)
+    if(UNIX)
         if(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_COMPILE_SETUID_FLAGS)
             set(CMAKE_COMPILE_SETUID_FLAGS "-O2 -fPIE -fstack-protector -D_FORTIFY_SOURCE=2 --param ssp-buffer-size=4 -pie") 
             if(${CMAKE_SYSTEM_NAME} MATCHES "OpenBSD")

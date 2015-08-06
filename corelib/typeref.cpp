@@ -144,6 +144,24 @@ TypeRef()
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
+const char *stringref::operator()(ssize_t offset) const
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return NULL;
+
+    if(offset < 0 && offset < -((ssize_t)v->len()))
+        return NULL;
+
+    if(offset < 0)
+        return &v->mem[v->len() + offset];
+
+    if(offset > (ssize_t)v->len())
+        return NULL;
+
+    return &v->mem[v->len() + offset];
+}
+
 const char *stringref::operator*() const 
 {
     if(!ref)
@@ -287,6 +305,151 @@ void byteref::destroy(byteref::value *bytes)
 {
     if(bytes)
         bytes->destroy();
+}
+
+TypeRef::Counted *ArrayRef::Array::get(size_t index)
+{
+    if(index >= size)
+        return NULL;
+
+    return (get())[index];
+}
+
+size_t TypeRef::size(void) const
+{
+    if(!ref)
+        return 0;
+
+    return ref->size;
+}
+
+unsigned TypeRef::copies() const 
+{
+	if(!ref)
+		return 0;
+	return ref->copies();
+}
+
+ArrayRef::Array::Array(void *addr, size_t size) :
+Counted(addr, size)
+{
+    size_t index = 0;
+    Counted **list = get();
+
+    if(!size)
+        return;
+
+    while(index < size) {
+        list[index++] = NULL;
+    }
+}
+
+void ArrayRef::Array::dealloc()
+{
+    size_t index = 0;
+    Counted **list = get();
+
+    if(!size)
+        return;
+
+    while(index < size) {
+        Counted *object = list[index];
+        if(object) {
+            object->release();
+            list[index] = NULL;
+        }
+        ++index;
+    }
+    size = 0;
+    Counted::dealloc();
+}
+
+void ArrayRef::Array::assign(size_t index, Counted *object)
+{
+    if(index >= size)
+        return;
+    
+    if(object)
+        object->retain();
+
+    Counted *replace = get(index);
+    if(replace)
+        replace->release();
+
+    (get())[index] = object;
+}   
+
+ArrayRef::ArrayRef() :
+TypeRef()
+{
+}
+
+ArrayRef::ArrayRef(size_t size) :
+TypeRef(create(size))
+{
+} 
+
+ArrayRef::ArrayRef(const ArrayRef& copy) :
+TypeRef(copy)
+{
+}
+
+void ArrayRef::init(TypeRef& var)
+{
+    size_t index = 0;
+    Array *array = polystatic_cast<Array *>(ref);
+    Counted *object = var.ref;
+
+    if(!array || !array->size || !object)
+        return;
+
+    while(index < array->size) {
+        array->assign(index++, object);
+    }
+}
+
+ArrayRef::Array *ArrayRef::create(size_t size)
+{
+    if(!size)
+        return NULL;
+
+    size_t s = sizeof(Array) + (size * sizeof(Counted *));
+    caddr_t p = TypeRef::alloc(s);
+    return new(mem(p)) Array(p, size);
+}
+
+void ArrayRef::assign(size_t index, TypeRef& t)
+{
+    Array *array = polystatic_cast<Array *>(ref);
+    if(!array || index >= array->size)
+        return;
+
+    Counted *obj = t.ref;
+    array->assign(index, obj);
+}
+
+void ArrayRef::resize(size_t size)
+{
+    Array *array = create(size);
+    Array *current = polystatic_cast<Array *>(ref);
+    size_t index = 0;
+
+    if(array && current) {
+        while(index < size && index < current->size) {
+            array->assign(index, current->get(index));
+            ++index;
+        }
+    }
+    TypeRef::set(array);
+}
+
+TypeRef::Counted *ArrayRef::get(size_t index)
+{
+    Array *array = polystatic_cast<Array*>(ref);
+    if(!array)
+        return NULL;
+
+    return array->get(index);
 }
 
 } // namespace

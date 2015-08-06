@@ -53,6 +53,7 @@ namespace ucommon {
 class __EXPORT TypeRef
 {
 protected:
+	friend class ArrayRef;
     /**
 	 * Heap base-class container for typeref objects.
 	 * @author David Sugar <dyfet@gnutelephony.org>
@@ -87,7 +88,6 @@ protected:
 	};
 
 
-
 	Counted *ref;		// heap reference...
 
 	TypeRef(Counted *object);
@@ -105,6 +105,8 @@ public:
 
 	void set(const TypeRef& ptr);
 	void release(void);
+	size_t size(void) const;
+	unsigned copies() const;
 	
 	inline bool is() const {
 		return ref != NULL;
@@ -114,16 +116,8 @@ public:
 		return ref == NULL;
 	}
 
-	inline unsigned copies() const {
-		if(!ref)
-			return 0;
-		return ref->copies();
-	}
-
-	inline size_t size() const {
-		if(!ref)
-			return 0;
-		return ref->size;
+	inline static void put(TypeRef& target, Counted *obj) {
+		target.set(obj);
 	}
 };
 
@@ -155,6 +149,8 @@ public:
 		TypeRef::set(new(mem(p)) value(p, object)); 
 	}
 
+	inline typeref(Counted *object) : TypeRef(object) {};
+
 	inline T* operator->() {
 		if(!ref)
 			return NULL;
@@ -162,9 +158,15 @@ public:
 		return &(v->data);
 	}
 
-	inline const T *operator*() const {
+	inline const T& operator*() const {
+		value *v = polystatic_cast<value*>(ref);
+		return *(&(v->data));
+	}
+
+	inline const T* operator()() const {
 		if(!ref)
 			return NULL;
+
 		value *v = polystatic_cast<value*>(ref);
 		return &(v->data);
 	}
@@ -188,6 +190,11 @@ public:
 	inline typeref& operator=(T& object) {
 		set(object);
 		return *this;
+	}
+
+	inline static T* data(Counted *obj) {
+		value *v = polystatic_cast<value*>(obj);
+		return &v->data;
 	}
 };
 
@@ -237,6 +244,8 @@ public:
 	stringref& operator=(const char *str);
 
 	stringref& operator=(value *chars);
+
+	const char *operator()(ssize_t offset) const;
 
 	void set(const char *str);
 
@@ -298,6 +307,98 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
+};
+
+class __EXPORT ArrayRef : public TypeRef
+{
+protected:
+	class Array : public Counted
+	{
+	protected:
+		friend class ArrayRef;
+
+		explicit Array(void *addr, size_t size);
+
+		void assign(size_t index, Counted *object);
+
+		virtual void dealloc();
+
+		inline Counted **get(void) {
+			return reinterpret_cast<Counted **>(((caddr_t)(this)) + sizeof(Array));
+		}
+
+		Counted *get(size_t index);
+	};
+
+	ArrayRef(size_t size);
+	ArrayRef(const ArrayRef& copy);
+	ArrayRef();
+
+	void assign(size_t index, TypeRef& t);
+
+	void init(TypeRef& object);
+
+	Counted *get(size_t index);
+
+	static Array *create(size_t size);
+
+public:
+	void resize(size_t size);
+};
+
+template<typename T>
+class arrayref : public ArrayRef
+{
+public:
+	inline arrayref() :	ArrayRef() {};
+
+	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
+
+	inline arrayref(size_t size) : ArrayRef(size) {};
+
+	inline arrayref(size_t size, T t) : ArrayRef(size) {
+		typeref<T> v(t);
+		init(v);
+	}
+
+	inline arrayref& operator=(const arrayref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline const T& operator[](size_t index) {
+		const T* p = typeref<T>::data(ArrayRef::get(index));
+		return *p;
+	}
+
+	inline typeref<T> operator()(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> at(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline void put(typeref<T>& target, size_t index) {
+		TypeRef::put(target, ArrayRef::get(index));
+	}
+
+	inline void operator()(size_t index, typeref<T>& t) {
+		ArrayRef::assign(index, t);
+	}
+
+	inline void operator()(size_t index, T t) {
+		typeref<T> v(t);
+		ArrayRef::assign(index, v);
+	}
+
+	inline void release(void) {
+		TypeRef::set(NULL);
+	}
+
+	inline void realloc(size_t size) {
+		TypeRef::set(ArrayRef::create(size));
+	}
 };
 
 typedef stringref::value *charvalues_t;

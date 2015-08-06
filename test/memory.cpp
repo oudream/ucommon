@@ -103,5 +103,18 @@ extern "C" int main()
     assert(sref.size() == 14);
     assert(sref.copies() == 2);
 
+    arrayref<int> ints(32, 99);
+    ints(4, 27);
+    ints(6, 30);
+    assert(ints.size() == 32);
+    assert(ints[4] == 27);
+    typeref<int> member = ints.at(6);
+    assert(member.copies() == 2);
+    ints.put(member, 6);
+    assert(member.copies() == 2);
+    ints.put(member, 30);
+    assert(*member == 99);
+    assert(member.copies() == 31);
+
     return 0;
 }
