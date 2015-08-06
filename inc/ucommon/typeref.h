@@ -301,6 +301,8 @@ public:
 
 	byteref(const uint8_t *str, size_t size);
 
+	inline explicit byteref(Counted *object) : TypeRef(object) {};
+
 	const uint8_t *operator*() const;
 
 	inline operator const uint8_t *() const {
@@ -318,6 +320,13 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
+
+	inline static const uint8_t *str(Counted *obj) {
+		value *v = polydynamic_cast<value*>(obj);
+		if(!v)
+			return NULL;
+		return &v->mem[0];
+	}
 };
 
 class __EXPORT ArrayRef : public TypeRef
@@ -348,6 +357,8 @@ protected:
 	void assign(size_t index, TypeRef& t);
 
 	void reset(TypeRef& object);
+
+	void reset(Counted *object);
 
 	Counted *get(size_t index);
 
@@ -441,6 +452,10 @@ public:
 		reset(s);
 	}
 
+	inline arrayref(size_t size, stringref::value *v) : ArrayRef(size) {
+		reset(v);
+	}
+
 	inline arrayref(size_t size, const char *s) : ArrayRef(size) {
 		stringref v(s);
 		reset(v);
@@ -448,6 +463,11 @@ public:
 
 	inline arrayref& operator=(const arrayref& copy) {
 		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline arrayref& operator=(stringref::value *v) {
+		reset(v);
 		return *this;
 	}
 

@@ -394,11 +394,10 @@ TypeRef(copy)
 {
 }
 
-void ArrayRef::reset(TypeRef& var)
+void ArrayRef::reset(Counted *object)
 {
     size_t index = 0;
     Array *array = polystatic_cast<Array *>(ref);
-    Counted *object = var.ref;
 
     if(!array || !array->size || !object)
         return;
@@ -406,6 +405,11 @@ void ArrayRef::reset(TypeRef& var)
     while(index < array->size) {
         array->assign(index++, object);
     }
+}
+
+void ArrayRef::reset(TypeRef& var)
+{
+    reset(var.ref);
 }
 
 ArrayRef::Array *ArrayRef::create(size_t size)
