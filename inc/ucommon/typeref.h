@@ -321,7 +321,7 @@ public:
 
 	static void destroy(value *bytes);
 
-	inline static const uint8_t *str(Counted *obj) {
+	inline static const uint8_t *data(Counted *obj) {
 		value *v = polydynamic_cast<value*>(obj);
 		if(!v)
 			return NULL;
@@ -516,7 +516,80 @@ public:
 	}
 };
 
+template<>
+class arrayref<byteref> : public ArrayRef
+{
+public:
+	inline arrayref() :	ArrayRef() {};
+
+	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
+
+	inline arrayref(size_t size) : ArrayRef(size) {};
+
+	inline arrayref(size_t size, byteref b) : ArrayRef(size) {
+		reset(b);
+	}
+
+	inline arrayref(size_t size, byteref::value *v) : ArrayRef(size) {
+		reset(v);
+	}
+
+	inline arrayref(size_t size, const uint8_t *a, size_t s) : ArrayRef(size) {
+		byteref v(a, s);
+		reset(v);
+	}
+
+	inline arrayref& operator=(const arrayref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline arrayref& operator=(byteref::value *v) {
+		reset(v);
+		return *this;
+	}
+
+	inline arrayref& operator=(byteref t) {
+		reset(t);
+		return *this;
+	}
+
+	inline const uint8_t *operator[](size_t index) {
+		return byteref::data(ArrayRef::get(index));
+	}
+
+	inline byteref operator()(size_t index) {
+		return byteref(ArrayRef::get(index));
+	}
+
+	inline byteref at(size_t index) {
+		return byteref(ArrayRef::get(index));
+	}
+
+	inline void put(byteref& target, size_t index) {
+		TypeRef::put(target, ArrayRef::get(index));
+	}
+
+	inline void operator()(size_t index, stringref& t) {
+		ArrayRef::assign(index, t);
+	}
+
+	inline void operator()(size_t index, const uint8_t *a, size_t s) {
+		byteref v(a, s);
+		ArrayRef::assign(index, v);
+	}
+
+	inline void release(void) {
+		TypeRef::set(NULL);
+	}
+
+	inline void realloc(size_t size) {
+		TypeRef::set(ArrayRef::create(size));
+	}
+};
+
 typedef stringref::value *charvalues_t;
+typedef arrayref<byteref> bytearray_t;
 typedef arrayref<stringref> stringarray_t;
 typedef	byteref::value	*bytevalues_t;
 typedef	stringref	stringref_t;
