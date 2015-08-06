@@ -21,5 +21,5 @@ libucommon_la_SOURCES = object.cpp linked.cpp string.cpp mapped.cpp \
 	thread.cpp fsys.cpp cpr.cpp vector.cpp xml.cpp stream.cpp persist.cpp \
 	keydata.cpp numbers.cpp datetime.cpp unicode.cpp atomic.cpp file.cpp \
 	regex.cpp protocols.cpp containers.cpp tcpbuffer.cpp shell.cpp \
-	typeref.cpp
+	typeref.cpp arrayref.cpp
 

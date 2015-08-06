@@ -90,6 +90,7 @@
 #include <ucommon/protocols.h>
 #include <ucommon/object.h>
 #include <ucommon/typeref.h>
+#include <ucommon/arrayref.h>
 #include <ucommon/string.h>
 #include <ucommon/counter.h>
 #include <ucommon/numbers.h>
