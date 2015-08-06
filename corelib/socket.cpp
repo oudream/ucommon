@@ -2061,11 +2061,11 @@ stringref_t Socket::readline(size_t size)
 {
 	charvalues_t buf = stringref::create(size);
 	if(!buf)
-		return stringref(NULL);
+		return stringref();
 
 	ssize_t result = Socket::readline(so, buf->get(), buf->max() + 1, iowait);
 	if(result < 0)
-		return stringref(NULL);
+		return stringref();
 
 	stringref_t out;
 	out.assign(buf);
