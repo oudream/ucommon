@@ -193,7 +193,9 @@ public:
 	}
 
 	inline static T* data(Counted *obj) {
-		value *v = polystatic_cast<value*>(obj);
+		value *v = polydynamic_cast<value*>(obj);
+		if(!v)
+			return NULL;
 		return &v->data;
 	}
 };
@@ -260,7 +262,9 @@ public:
 	static void destroy(value *bytes);
 
 	inline static const char *str(Counted *obj) {
-		value *v = polystatic_cast<value*>(obj);
+		value *v = polydynamic_cast<value*>(obj);
+		if(!v)
+			return NULL;
 		return &v->mem[0];
 	}
 };
