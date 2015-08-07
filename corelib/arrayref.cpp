@@ -24,16 +24,16 @@
 
 namespace ucommon {
 
-ArrayRef::Array::Array(void *addr, size_t size) :
-Counted(addr, size)
+ArrayRef::Array::Array(void *addr, size_t used) :
+Counted(addr, used)
 {
     size_t index = 0;
     Counted **list = get();
 
-    if(!size)
+    if(!used)
         return;
 
-    while(index < size) {
+    while(index < used) {
         list[index++] = NULL;
     }
 }
