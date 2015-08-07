@@ -1,3 +1,7 @@
+Changes from 6.4.4 to 6.5.0
+- typeref expanded
+- arrayref introduced
+
 Changes from 6.4.3 to 6.4.4
 - additional typeref operators
 
