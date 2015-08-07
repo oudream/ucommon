@@ -114,6 +114,11 @@ void ArrayRef::reset(TypeRef& var)
     reset(var.ref);
 }
 
+void ArrayRef::clear(void)
+{
+    reset(NULL);
+}
+
 ArrayRef::Array *ArrayRef::create(size_t size)
 {
     if(!size)
@@ -149,10 +154,21 @@ void ArrayRef::resize(size_t size)
     TypeRef::set(array);
 }
 
+bool ArrayRef::is(size_t index)
+{
+    if(get(index))
+        return true;
+
+    return false;
+}
+
 TypeRef::Counted *ArrayRef::get(size_t index)
 {
     Array *array = polystatic_cast<Array*>(ref);
     if(!array)
+        return NULL;
+
+    if(index >= array->size)
         return NULL;
 
     return array->get(index);

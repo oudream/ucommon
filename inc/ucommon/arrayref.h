@@ -83,10 +83,14 @@ protected:
 
 	Counted *get(size_t index);
 
+	bool is(size_t index);
+
 	static Array *create(size_t size);
 
 public:
 	void resize(size_t size);
+
+	void clear(void);
 };
 
 template<typename T>
