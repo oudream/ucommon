@@ -231,6 +231,60 @@ void stringref::expand(stringref::value **handle, size_t size)
     *handle = change;
 }
 
+bool stringref::operator==(const stringref& ptr) const
+{
+    value *v1 = polystatic_cast<value*>(ref);
+    value *v2 = polystatic_cast<value*>(ptr.ref);
+    if(!v1 || !v2)
+        return false;
+    return eq(&(v1->mem[0]), &(v2->mem[0]));
+}
+
+bool stringref::operator==(const char *obj) const
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return false;
+    return eq(&(v->mem[0]), obj);
+}
+
+bool stringref::operator==(value *chars) const
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v || !chars)
+        return false;
+    return eq(&(v->mem[0]), &(chars->mem[0]));
+}
+
+const char *stringref::str(Counted *obj)
+{
+    value *v = polydynamic_cast<value*>(obj);
+    if(!v)
+        return NULL;
+    return &v->mem[0];
+}
+
+bool stringref::operator<(const stringref& ptr) const
+{
+    value *v1 = polystatic_cast<value *>(ref);
+    value *v2 = polystatic_cast<value *>(ptr.ref);
+
+    if(!v1 && v2)
+        return true;
+
+    if(!v1 && !v2)
+        return true;
+
+    if(v1 && !v2)
+        return false;
+
+#ifdef  HAVE_STRCOLL
+    return strcoll(&(v1->mem[0]), &(v2->mem[0])) < 0;
+#else
+    return strcmp(&(v1->mem[0]), &(v2->mem[0])) < 0:
+#endif
+}
+    
 byteref::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
 TypeRef::Counted(addr, objsize)
 {
@@ -320,6 +374,31 @@ unsigned TypeRef::copies() const
 	if(!ref)
 		return 0;
 	return ref->copies();
+}
+
+const uint8_t *byteref::data(Counted *obj) 
+{
+    value *v = polydynamic_cast<value*>(obj);
+    if(!v)
+        return NULL;
+    return &v->mem[0];
+}
+
+bool byteref::operator==(const byteref& ptr) const 
+{
+    value *v1 = polystatic_cast<value*>(ref);
+    value *v2 = polystatic_cast<value*>(ptr.ref);
+    if(!v1 || !v2 || v1->size != v2->size)
+        return false;
+    return !memcmp(&(v1->mem[0]), &(v2->mem[0]), v1->size);
+}
+
+bool byteref::operator==(value *bytes) const 
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v || !bytes || v->size != bytes->size)
+        return false;
+    return !memcmp(&(v->mem[0]), &(bytes->mem[0]), v->size);
 }
 
 } // namespace
