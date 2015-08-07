@@ -151,7 +151,7 @@ public:
 
 	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
-	inline T* operator->() {
+	inline const T* operator->() const {
 		if(!ref)
 			return NULL;
 		value *v = polystatic_cast<value *>(ref);
@@ -179,6 +179,29 @@ public:
 	inline typeref& operator=(const typeref& ptr) {
 		TypeRef::set(ptr);
 		return *this;
+	}
+
+	inline bool operator==(const typeref& ptr) const {
+		value *v1 = polystatic_cast<value*>(ref);
+		value *v2 = polystatic_cast<value*>(ptr.ref);
+		if(!v1 || !v2)
+			return false;
+		return v1->data == v2->data;
+	}	
+
+	inline bool operator==(const T& obj) const {
+		value *v = polystatic_cast<value *>(ref);
+		if(!v)
+			return false;
+		return v->data == obj;
+	}
+
+	inline bool operator!=(const typeref& ptr) const {
+		return !(*this == ptr);
+	}
+
+	inline bool operator!=(const T& obj) const {
+		return !(*this == obj);
 	}
 
 	inline void set(T& object) {
@@ -243,6 +266,38 @@ public:
 		return operator*();
 	}
 
+	bool operator==(const stringref& ptr) const;
+
+	bool operator==(const char *obj) const;
+
+	bool operator==(value *chars) const;
+
+	inline bool operator!=(const stringref& ptr) const {
+		return !(*this == ptr);
+	}
+
+	inline bool operator!=(value *chars) const {
+		return !(*this == chars);
+	}
+
+	inline bool operator!=(const char *obj) const {
+		return !(*this == obj);
+	}
+
+	bool operator<(const stringref& ptr) const;
+
+	inline bool operator>(const stringref& ptr) const {
+		return (ptr < *this);
+	}
+
+	inline bool operator<=(const stringref& ptr) const {
+		return !(*this > ptr);
+	}
+
+	inline bool operator>=(const stringref& ptr) const {
+		return !(*this < ptr);
+	}
+
 	stringref& operator=(const stringref& objref);
 
 	stringref& operator=(const char *str);
@@ -261,12 +316,7 @@ public:
 
 	static void destroy(value *bytes);
 
-	inline static const char *str(Counted *obj) {
-		value *v = polydynamic_cast<value*>(obj);
-		if(!v)
-			return NULL;
-		return &v->mem[0];
-	}
+	static const char *str(Counted *obj);
 };
 
 class __EXPORT byteref : public TypeRef
@@ -313,6 +363,18 @@ public:
 
 	byteref& operator=(value *bytes);
 
+	bool operator==(const byteref& ptr) const;
+
+	bool operator==(value *bytes) const;
+
+	inline bool operator!=(const byteref& ptr) const {
+		return !(*this == ptr);
+	}
+
+	inline bool operator!=(value *bytes) const {
+		return !(*this == bytes);
+	}
+
 	void set(const uint8_t *str, size_t size);
 
 	void assign(value *bytes);
@@ -321,12 +383,7 @@ public:
 
 	static void destroy(value *bytes);
 
-	inline static const uint8_t *data(Counted *obj) {
-		value *v = polydynamic_cast<value*>(obj);
-		if(!v)
-			return NULL;
-		return &v->mem[0];
-	}
+	static const uint8_t *data(Counted *obj);
 };
 
 typedef stringref::value *charvalues_t;
