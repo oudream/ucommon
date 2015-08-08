@@ -209,6 +209,10 @@ public:
 		return ref != NULL;
 	}
 
+	inline operator bool() const {
+		return ref != NULL;
+	}
+
 	/**
 	 * Check if we are currently not pointing to anything.
 	 * @return true if not referencing a container.

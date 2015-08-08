@@ -267,6 +267,9 @@ public:
 template <typename T>
 class temporary
 {
+private:
+    inline temporary(const temporary<T>&) {};
+
 protected:
     T *object;
 public:
@@ -275,13 +278,6 @@ public:
      */
     inline temporary() {
         object = NULL;
-    }
-
-    /**
-     * Disable copy constructor.
-     */
-    temporary(const temporary<T>&) {
-        ::abort();
     }
 
     /**
@@ -297,7 +293,7 @@ public:
      * already assigned, then it is deleted.
      * @param temp object to assign.
      */
-    inline T& operator=(T *temp) {
+    inline temporary& operator=(T *temp) {
         if(object)
             delete object;
         object = temp;
@@ -315,6 +311,10 @@ public:
             delete object;
         object = temp;
     }
+
+    inline operator T&() const {
+        return *object;
+    }        
 
     /**
      * Access heap object through our temporary directly.
@@ -340,10 +340,18 @@ public:
         return object == NULL;
     }
 
-    inline ~temporary() {
-        if(object)
+    inline void release() {
+        if(object) {
             delete object;
-        object = NULL;
+            object = NULL;
+        }
+    }
+
+    inline ~temporary() {
+        if(object) {
+            delete object;
+            object = NULL;
+        }
     }
 };
 
