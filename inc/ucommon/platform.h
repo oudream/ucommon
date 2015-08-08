@@ -109,11 +109,10 @@
 
 #if __cplusplus <= 199711L && !defined(_MSC_VER)
 #if defined(__GNUC_MINOR__)
-#warning "__GNUC_MAJOR__ HERE"
 #define nullptr __null
 #else
 #define nullptr NULL
-#warning "Obsolete C++ compiler used."
+#warning "Obsolete C++ compiler used, no nullptr support."
 #endif
 #endif
 
