@@ -220,7 +220,9 @@ typedef size_t socksize_t;
 #include <io.h>
 
 // gcc c++11 support on mingw requires pthread support library
-#if __GNUC_PREREQ__(4, 8) && !defined(UCOMMON_SYSRUNTIME) && defined(__MINGW_WINPTHREAD__)
+#if __GNUC_PREREQ__(4, 8) && !defined(UCOMMON_SYSRUNTIME)
+// && defined(__MINGW_WINPTHREAD__)
+#define __MINGW_WINPTHREAD__
 #include <pthread.h>   // gnu libstdc++ now requires a win pthread
 typedef size_t stacksize_t;
 #else   
