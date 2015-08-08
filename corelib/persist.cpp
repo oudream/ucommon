@@ -17,7 +17,6 @@
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
 #ifndef UCOMMON_SYSRUNTIME
-#if !defined(_MSC_VER) || _MSC_VER >= 1400
 
 #include <ucommon-config.h>
 #include <ucommon/export.h>
@@ -287,5 +286,4 @@ void PersistEngine::read(std::string& str) throw(PersistException)
 
 } // namespace ucommon
 
-#endif
 #endif

@@ -138,6 +138,9 @@
 
 #if defined(_MSC_VER)
 #define NOMINMAX
+#if _MSC_VER < 1500
+#warning "Probably won't build, need VS >= 2010 or later"
+#endif
 #endif
 
 // minimum required version requires conditional
