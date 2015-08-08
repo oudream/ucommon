@@ -48,15 +48,6 @@ atomic::spinlock::spinlock()
     value = 0;
 }
 
-#if !defined(__GNUC_PREREQ__)
-#if defined(__GNUC__) && defined(__GNUC_MINOR__)
-#define __GNUC_PREREQ__(maj, min) \
-((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
-#else
-#define __GNUC_PREREQ__(maj, min) 0
-#endif
-#endif 
-
 #if defined(__has_feature) && defined(__has_extension)
 #if __has_feature(c_atomic) || __has_extension(c_atomic)
 #define __CLANG_ATOMICS

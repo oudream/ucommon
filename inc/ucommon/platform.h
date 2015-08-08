@@ -92,10 +92,22 @@
 #define _GNU_SOURCE
 #endif
 
-#if __GNUC__ > 3 || (__GNUC__ == 3 && (__GNU_MINOR__ > 3))
+#if !defined(__GNUC_PREREQ__)
+#if defined(__GNUC__) && defined(__GNUC_MINOR__)
+#define __GNUC_PREREQ__(maj, min) ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((maj) << 16) + (min))
+#else
+#define __GNUC_PREREQ__(maj, min) 0
+#endif
+#endif
+
+#if __GNUC_PREREQ__(3,3)
 #define __PRINTF(x,y)   __attribute__ ((format (printf, x, y)))
 #define __SCANF(x, y) __attribute__ ((format (scanf, x, y)))
 #define __MALLOC      __attribute__ ((malloc))
+#endif
+
+#if defined(__GNUC_MINOR__) && !__GNUC_PREREQ__(4,6)
+#define nullptr __null
 #endif
 
 #ifndef __MALLOC
