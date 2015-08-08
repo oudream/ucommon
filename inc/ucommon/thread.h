@@ -89,15 +89,9 @@ class __EXPORT Conditional
 private:
     friend class ConditionalAccess;
 
-#if defined(_MSCONDITIONAL_)
+#if defined(_MSTHREADS_)
     mutable CRITICAL_SECTION mutex;
     mutable CONDITION_VARIABLE cond;
-#elif defined(_MSTHREADS_)
-    enum {SIGNAL = 0, BROADCAST = 1};
-    HANDLE events[2];
-    unsigned waiting;
-    mutable CRITICAL_SECTION mlock;
-    mutable CRITICAL_SECTION mutex;
 #else
 #ifndef __PTH__
     class __LOCAL attribute
@@ -244,9 +238,9 @@ public:
 class __EXPORT ConditionalAccess : private Conditional
 {
 protected:
-#if defined _MSCONDITIONAL_
+#if defined _MSTHREADS_
     CONDITION_VARIABLE bcast;
-#elif !defined(_MSTHREADS_)
+#else
     mutable pthread_cond_t bcast;
 #endif
 

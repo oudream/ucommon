@@ -169,7 +169,7 @@ public:
 	}
 
 	inline void release(void) {
-		TypeRef::set(NULL);
+		TypeRef::set(nullptr);
 	}
 
 	inline void realloc(size_t size) {
@@ -260,7 +260,7 @@ public:
 	}
 
 	inline void release(void) {
-		TypeRef::set(NULL);
+		TypeRef::set(nullptr);
 	}
 
 	inline void realloc(size_t size) {
@@ -345,7 +345,7 @@ public:
 	}
 
 	inline void release(void) {
-		TypeRef::set(NULL);
+		TypeRef::set(nullptr);
 	}
 
 	inline void realloc(size_t size) {

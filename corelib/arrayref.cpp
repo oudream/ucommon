@@ -116,7 +116,7 @@ void ArrayRef::reset(TypeRef& var)
 
 void ArrayRef::clear(void)
 {
-    reset(NULL);
+    reset(nullptr);
 }
 
 ArrayRef::Array *ArrayRef::create(size_t size)

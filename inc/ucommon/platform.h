@@ -27,6 +27,7 @@
 
 
 #include <cstdlib>
+#include <cstddef>
 #if defined(sun) && defined(unix)
 #include <malloc.h>
 #endif
@@ -106,8 +107,10 @@
 #define __MALLOC      __attribute__ ((malloc))
 #endif
 
-#if defined(__GNUC_MINOR__) && !__GNUC_PREREQ__(4,6)
+#if __cplusplus <= 199711L
+#if defined(__GNUC_MINOR__)
 #define nullptr __null
+#endif
 #endif
 
 #ifndef __MALLOC
@@ -137,21 +140,10 @@
 #define NOMINMAX
 #endif
 
-#if defined(_M_X64) || defined(_M_ARM)
-#define _MSCONDITIONALS_
+// minimum required version requires conditional
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT    0x0600
 #endif
-#endif
-
-//#if defined(_WIN32_WINNT) && _WIN32_WINNT < 0x0501
-//#undef    _WIN32_WINNT
-//#define   _WIN32_WINNT 0x0501
-//#endif
-
-//#ifndef _WIN32_WINNT
-//#define   _WIN32_WINNT 0x0501
-//#endif
 
 #ifdef  _MSC_VER
 #pragma warning(disable: 4251)
@@ -228,9 +220,8 @@ typedef size_t socksize_t;
 #include <io.h>
 
 // gcc c++11 support on mingw requires pthread support library
-#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)) && !defined(UCOMMON_SYSRUNTIME) && defined(__MINGW_WINPTHREAD__)
+#if __GNUC_PREREQ__(4, 8) && !defined(UCOMMON_SYSRUNTIME) && defined(__MINGW_WINPTHREAD__)
 #include <pthread.h>   // gnu libstdc++ now requires a win pthread
-#undef  _MSCONDITIONALS_
 typedef size_t stacksize_t;
 #else   
 #define _MSTHREADS_
