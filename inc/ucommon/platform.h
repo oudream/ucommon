@@ -107,7 +107,7 @@
 #define __MALLOC      __attribute__ ((malloc))
 #endif
 
-#if __cplusplus <= 199711L && !defined(_MSC_VER)
+#if __cplusplus <= 199711L && !defined(_MSC_VER) && !defined(__clang__)
 #if defined(__GNUC_MINOR__)
 #define nullptr __null
 #else
