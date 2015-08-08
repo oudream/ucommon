@@ -47,7 +47,9 @@
 namespace ucommon {
 
 /**
- * Smart pointer base class for auto-retained objects.
+ * Smart pointer base class for auto-retained objects.  The underlying
+ * container is heap allocated and page aligned.  A heap object is
+ * automatically de-referenced by release during destruction.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 class __EXPORT TypeRef
@@ -55,7 +57,8 @@ class __EXPORT TypeRef
 protected:
 	friend class ArrayRef;
     /**
-	 * Heap base-class container for typeref objects.
+	 * Heap base-class container for typeref objects.  This uses atomic
+	 * reference counters for thread safety with maximal performance.
 	 * @author David Sugar <dyfet@gnutelephony.org>
 	 */
 	class __EXPORT Counted : public ObjectProtocol
@@ -67,26 +70,59 @@ protected:
 		size_t size;
 		void *memory;
 
-		explicit Counted(void *addr, size_t size);
+		/**
+		 * Construction of aligned container.  This is used to inform the
+		 * object of the underlying real address it exists on the heap 
+		 * since malloc is not assured to be atomically aligned by default.
+		 * @param address of actual allocation.
+		 * @param size of object allocated.
+		 */
+		explicit Counted(void *address, size_t size);
 
+		/**
+		 * Release memory and delete object when no longer referenced.
+		 * This gets called with the atomic reference counter < 1, such
+		 * as when the last smart pointer de-references.
+		 */
 		virtual void dealloc();
 
 	public:
+		/**
+		 * Is this object not empty?
+		 * @return true if not empty.
+		 */
 		inline bool is() const {
 			return (count.get() > 0);
 		}
 
+		/**
+		 * Number of retains (smart pointers) referencing us.
+		 * @return number of copies of pointers referencing.
+		 */
 		inline unsigned copies() const {
 			return ((unsigned)count.get());
 		}
 
-		void operator delete(void *addr);
+		/**
+		 * Override delete to de-allocate actual heap.  This
+		 * is used because the object is atomically aligned, but
+		 * the heap may not be.
+		 * @param address of our object.
+		 */
+		void operator delete(void *address);
 
+		/**
+		 * Retain a copy of this object.  Usually a smart pointer
+		 * referencing.
+		 */
 		void retain();
 
+		/**
+		 * Release a copy of this object.  Only when the reference
+		 * count reaches 0 is it destroyed. 
+		 */
 		void release();
 	};
-
 
 	Counted *ref;		// heap reference...
 
