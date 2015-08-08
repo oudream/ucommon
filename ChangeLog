@@ -1,6 +1,10 @@
 Changes from 6.4.4 to 6.5.0
 - typeref expanded
 - arrayref introduced
+- nullptr and other c++ modernizations
+- clang now defaulted to c++11
+- minimum native windows now requires conditionals
+- mingw has to use win32 pthread support
 
 Changes from 6.4.3 to 6.4.4
 - additional typeref operators
