@@ -49,7 +49,9 @@ namespace ucommon {
 /**
  * Smart pointer base class for auto-retained objects.  The underlying
  * container is heap allocated and page aligned.  A heap object is
- * automatically de-referenced by release during destruction.
+ * automatically de-referenced by release during destruction.  The smart
+ * pointer is a protected base class used to derive strongly typed
+ * templates.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 class __EXPORT TypeRef
@@ -58,7 +60,9 @@ protected:
 	friend class ArrayRef;
     /**
 	 * Heap base-class container for typeref objects.  This uses atomic
-	 * reference counters for thread safety with maximal performance.
+	 * reference counters for thread safety with maximal performance.  This
+	 * is used as a protected base class used for strongly typed heap
+	 * containers through templates.
 	 * @author David Sugar <dyfet@gnutelephony.org>
 	 */
 	class __EXPORT Counted : public ObjectProtocol
@@ -126,34 +130,104 @@ protected:
 
 	Counted *ref;		// heap reference...
 
+	/**
+	 * Create a smart pointer referencing an existing heap object.
+	 * @param object to reference.
+	 */
 	TypeRef(Counted *object);
-	TypeRef(const TypeRef& copy);
+
+	/**
+	 * Create a smart pointer based on another pointer.  Both
+	 * pointers then reference the same object.
+	 * @param pointer instance to share reference with.
+	 */
+	TypeRef(const TypeRef& pointer);
+
+	/**
+	 * Create a smart pointer referencing nothing.
+	 */
 	TypeRef();
 
+	/**
+	 * Set our smart pointer to a specific heap container.  If
+	 * we were pointing to something already we release that.
+	 * @param object to reference.
+	 */
 	void set(Counted *object);
 
+	/**
+	 * Allocate memory from heap.  This may not be atomically aligned.
+	 * The underlying alloc is larger to account for alignment.
+	 * @param size of object to allocate.
+	 * @return memory address allocated.
+	 */
 	static caddr_t alloc(size_t size);
 
-	static caddr_t mem(caddr_t addr);
+	/**
+	 * Adjust memory pointer to atomic boundry.
+	 * @param address that was allocated.
+	 * @return address for actual atomic aligned object.
+	 */
+	static caddr_t mem(caddr_t address);
 
 public:
+	/**
+	 * Destroy pointer when falling out of scope.  This de-references
+	 * the heap container.
+	 */
 	virtual ~TypeRef();
 
-	void set(const TypeRef& ptr);
+	/**
+	 * Set our smart pointer based on another pointer instance.  If
+	 * we are already referencing, we release the current container.
+	 * @param pointer instance to share reference with.
+	 */
+	void set(const TypeRef& pointer);
+
+	/**
+	 * Manually release the current container.
+	 */
 	void release(void);
+
+	/**
+	 * Get size of referenced heap object.
+	 * @return size of container or 0 if none.
+	 */
 	size_t size(void) const;
+
+	/**
+	 * Get number of references to container.
+	 * @return total number of pointers referencing container.
+	 */	
 	unsigned copies() const;
 	
+	/**
+	 * Check if pointer currently has a heap container.
+	 * @return true if we are referencing a container.
+	 */
 	inline bool is() const {
 		return ref != NULL;
 	}
 
+	/**
+	 * Check if we are currently not pointing to anything.
+	 * @return true if not referencing a container.
+	 */
 	inline bool operator!() const {
 		return ref == NULL;
 	}
 
-	inline static void put(TypeRef& target, Counted *obj) {
-		target.set(obj);
+	/**
+	 * Special weak-public means to copy a container reference.
+	 * This uses the base class container which is not public, so
+	 * only derived type specific smart pointers can actually use 
+	 * this method.  It is made public because making it protected
+	 * actually makes it inaccessible to template derived classes.
+	 * @param target smart pointer object to set.
+	 * @param object to have it reference.
+	 */
+	inline static void put(TypeRef& target, Counted *object) {
+		target.set(object);
 	}
 };
 

@@ -16,13 +16,10 @@
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A thread-safe atomic heap management system.  This is used to manage
- * immutable heap instances of object types that are reference counted
- * and automatically deleted when no longer used.  All references to the
- * object are through smart typeref pointers.  Both specific classes for
- * strings and byte arrays, and generic templates to support generic
- * types in the heap are offered.
- * @file ucommon/typeref.h
+ * Arrays of thread-safe strongly typed heap objects.  This is used for
+ * arrays of smart pointers to immutable heap instances of object types 
+ * that are reference counted and automatically deleted when no longer used.
+ * @file ucommon/arrayref.h
  */
 
 #ifndef _UCOMMON_ARRAYREF_H_
