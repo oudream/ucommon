@@ -277,7 +277,7 @@ public:
      * Construct a temporary object, create our stack frame reference.
      */
     inline temporary() {
-        object = NULL;
+        object = new T;
     }
 
     /**
@@ -285,31 +285,6 @@ public:
      */
     inline temporary(T *ptr) {
         object = ptr;
-    }
-
-    /**
-     * Assign a temporary object.  This adds a pointer to an existing
-     * type to the current temporary pointer.  If the temporary was
-     * already assigned, then it is deleted.
-     * @param temp object to assign.
-     */
-    inline temporary& operator=(T *temp) {
-        if(object)
-            delete object;
-        object = temp;
-        return *this;
-    }
-
-    /**
-     * Assign a temporary object.  This adds a pointer to an existing
-     * type to the current temporary pointer.  If the temporary was
-     * already assigned, then it is deleted.
-     * @param temp object to assign.
-     */
-    inline void set(T *temp) {
-        if(object)
-            delete object;
-        object = temp;
     }
 
     inline operator T&() const {
@@ -350,6 +325,122 @@ public:
     inline ~temporary() {
         if(object) {
             delete object;
+            object = NULL;
+        }
+    }
+};
+
+template<>
+class temporary<char *>
+{
+private:
+    inline temporary(const temporary<char *>&) {};
+
+protected:
+    char *object;
+    size_t used;
+
+public:
+    /**
+     * Construct a temporary object, create our stack frame reference.
+     */
+    inline temporary(size_t size) {
+        object = (char *)::malloc(size);
+        used = size;
+    }
+
+    inline operator char *() const {
+        return object;
+    }
+
+    inline size_t size() const {
+        return used;
+    }
+
+    /**
+     * Access heap object through our temporary directly.
+     * @return reference to heap resident object.
+     */
+    inline char *operator*() const {
+        return object;
+    }
+
+    inline operator bool() const {
+        return object != NULL;
+    }
+
+    inline bool operator!() const {
+        return object == NULL;
+    }
+
+    inline void release() {
+        if(object) {
+            ::free(object);
+            object = NULL;
+        }
+    }
+
+    inline ~temporary() {
+        if(object) {
+            ::free(object);
+            object = NULL;
+        }
+    }
+};
+
+template<>
+class temporary<uint8_t *>
+{
+private:
+    inline temporary(const temporary<uint8_t *>&) {};
+
+protected:
+    uint8_t *object;
+    size_t used;
+
+public:
+    /**
+     * Construct a temporary object, create our stack frame reference.
+     */
+    inline temporary(size_t size) {
+        object = (uint8_t *)::malloc(size);
+        used = size;
+    }
+
+    inline operator uint8_t *() const {
+        return object;
+    }
+
+    inline size_t size() const {
+        return used;
+    }
+
+    /**
+     * Access heap object through our temporary directly.
+     * @return reference to heap resident object.
+     */
+    inline uint8_t *operator*() const {
+        return object;
+    }
+
+    inline operator bool() const {
+        return object != NULL;
+    }
+
+    inline bool operator!() const {
+        return object == NULL;
+    }
+
+    inline void release() {
+        if(object) {
+            ::free(object);
+            object = NULL;
+        }
+    }
+
+    inline ~temporary() {
+        if(object) {
+            ::free(object);
             object = NULL;
         }
     }
