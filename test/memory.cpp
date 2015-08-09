@@ -116,5 +116,13 @@ extern "C" int main()
     assert(*member == 99);
     assert(member.copies() == 31);
 
+    int memval = member;
+    member = 95;
+    assert(memval == 99);
+    assert(*member == 95);
+    assert(member.copies() == 1);
+    ints(17, memval);
+    ints(18, member);
+    assert(*ints[18] == 95);
     return 0;
 }
