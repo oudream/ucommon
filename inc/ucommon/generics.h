@@ -460,39 +460,42 @@ public:
 template <typename T>
 class temp_array
 {
+private:
+    inline temp_array(const temp_array<T>&) {};
+
 protected:
     T *array;
-    size_t size;
+    size_t used;
 
 public:
     /**
      * Construct a temporary object, create our stack frame reference.
      */
     inline temp_array(size_t s) {
-        array =  new T[s]; size = s;
+        array =  new T[s]; used = s;
     }
 
     /**
      * Construct a temporary object with a copy of some initial value.
      * @param initial object value to use.
      */
-    inline temp_array(const T& initial, size_t s) {
-        array = new T[s];
-        size = s;
-        for(size_t p = 0; p < s; ++p)
+    inline temp_array(size_t size, const T& initial) {
+        array = new T[size];
+        used = size;
+        for(size_t p = 0; p < size; ++p)
             array[p] = initial;
     }
 
-    inline void reset(size_t s) {
-        delete[] array; array = new T[s]; size = s;
+    inline void reset(size_t size) {
+        delete[] array; array = new T[size]; used = size;
     }
 
-    inline void reset(const T& initial, size_t s) {
+    inline void reset(size_t size, const T& initial) {
         if(array)
             delete[] array;
-        array = new T[s];
-        size = s;
-        for(size_t p = 0; p < s; ++p)
+        array = new T[size];
+        used = size;
+        for(size_t p = 0; p < size; ++p)
             array[p] = initial;
     }
 
@@ -501,11 +504,8 @@ public:
             array[p] = initial;
     }
 
-    /**
-     * Disable copy constructor.
-     */
-    temp_array(const temp_array<T>&) {
-        ::abort();
+    inline size_t size(void) const {
+        return used;
     }
 
     inline operator bool() const {
@@ -523,14 +523,29 @@ public:
         size = 0;
     }
 
-    inline T& operator[](size_t offset) const {
-        crit(offset < size, "array out of bound");
-        return array[offset];
+    inline T& operator[](size_t index) const {
+        crit(index < used, "array out of bound");
+        return array[index];
     }
 
-    inline T* operator()(size_t offset) const {
-        crit(offset < size, "array out of bound");
-        return &array[offset];
+    inline T* operator()(size_t index) const {
+        crit(index < size, "array out of bound");
+        return &array[index];
+    }
+
+    inline void operator()(size_t index, const T& value) {
+        crit(index < size, "array out of bound");
+        array[index] = value;
+    }
+
+    inline T& value(size_t index) const {
+        crit(index < size, "array out of bound");
+        return array[index];
+    }
+
+    inline void value(size_t index, const T& value) {
+        crit(index < size, "array out of bound");
+        array[index] = value;
     }
 };
 
