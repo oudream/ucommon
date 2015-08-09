@@ -436,18 +436,24 @@ ConditionalAccess::~ConditionalAccess()
 
 bool ConditionalAccess::waitBroadcast(timeout_t timeout)
 {
-    assert(ts != NULL);
-
     if(SleepConditionVariableCS(&bcast, &mutex, timeout))
         return true;
 
     return false;
 }
 
+void ConditionalAccess::waitBroadcast()
+{
+    SleepConditionVariableCS(&bcast, &mutex, INFINITE);
+}
+
+void ConditionalAccess::waitSignal()
+{
+    SleepConditionVariableCS(&cond, &mutex, INFINITE);
+}
+
 bool ConditionalAccess::waitSignal(timeout_t timeout)
 {
-    assert(ts != NULL);
-
     if(SleepConditionVariableCS(&cond, &mutex, timeout))
         return true;
 
