@@ -20,20 +20,21 @@
 #include <ucommon/typeref.h>
 #include <ucommon/arrayref.h>
 #include <ucommon/string.h>
+#include <ucommon/thread.h>
 #include <cstdlib>
 
 namespace ucommon {
 
-ArrayRef::Array::Array(void *addr, size_t size) :
-Counted(addr, size)
+ArrayRef::Array::Array(void *addr, size_t used) :
+Counted(addr, used)
 {
     size_t index = 0;
     Counted **list = get();
 
-    if(!size)
+    if(!used)
         return;
 
-    while(index < size) {
+    while(index < used) {
         list[index++] = NULL;
     }
 }
@@ -105,13 +106,20 @@ void ArrayRef::reset(Counted *object)
         return;
 
     while(index < array->size) {
+        array->lock.acquire();
         array->assign(index++, object);
+        array->lock.release();
     }
 }
 
 void ArrayRef::reset(TypeRef& var)
 {
     reset(var.ref);
+}
+
+void ArrayRef::clear(void)
+{
+    reset(nullptr);
 }
 
 ArrayRef::Array *ArrayRef::create(size_t size)
@@ -131,7 +139,9 @@ void ArrayRef::assign(size_t index, TypeRef& t)
         return;
 
     Counted *obj = t.ref;
+    array->lock.acquire();
     array->assign(index, obj);
+    array->lock.release();
 }
 
 void ArrayRef::resize(size_t size)
@@ -149,13 +159,27 @@ void ArrayRef::resize(size_t size)
     TypeRef::set(array);
 }
 
+bool ArrayRef::is(size_t index)
+{
+    if(get(index))
+        return true;
+
+    return false;
+}
+
 TypeRef::Counted *ArrayRef::get(size_t index)
 {
     Array *array = polystatic_cast<Array*>(ref);
     if(!array)
         return NULL;
 
-    return array->get(index);
+    if(index >= array->size)
+        return NULL;
+
+    array->lock.acquire();
+    Counted *object = array->get(index);
+    array->lock.release();
+    return object;
 }
 
 } // namespace

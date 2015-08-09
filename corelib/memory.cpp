@@ -879,7 +879,7 @@ void autorelease::operator+=(LinkedObject *obj)
 }
 
 PagerObject::PagerObject() :
-LinkedObject(NULL), CountedObject()
+LinkedObject(nullptr), CountedObject()
 {
 }
 

@@ -134,7 +134,7 @@ void *MapTable::getFirst()
 
     enterMutex();
     obj = *map;
-    for (register unsigned i = 0; obj == NULL && i < range; i++)
+    for (unsigned i = 0; obj == NULL && i < range; i++)
         obj = map[i];
     leaveMutex();
     return obj;
@@ -148,7 +148,7 @@ void *MapTable::getLast()
         return NULL;
 
     enterMutex();
-    for (register int i = range - 1; obj == NULL && i >= 0; i--)
+    for (int i = range - 1; obj == NULL && i >= 0; i--)
         obj = map[i];
 
     if ( obj != NULL )

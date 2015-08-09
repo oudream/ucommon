@@ -22,7 +22,6 @@
  */
 
 #ifndef UCOMMON_SYSRUNTIME
-#if !defined(_MSC_VER) || _MSC_VER >= 1400
 #ifndef _UCOMMON_PERSIST_H_
 #define _UCOMMON_PERSIST_H_
 
@@ -500,6 +499,5 @@ PersistEngine& operator >>(PersistEngine& ar, std::pair<x, y> &ob) throw(Persist
 
 } // namespace ucommon
 
-#endif
 #endif
 #endif

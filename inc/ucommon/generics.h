@@ -267,6 +267,9 @@ public:
 template <typename T>
 class temporary
 {
+private:
+    inline temporary(const temporary<T>&) {};
+
 protected:
     T *object;
 public:
@@ -274,14 +277,7 @@ public:
      * Construct a temporary object, create our stack frame reference.
      */
     inline temporary() {
-        object = NULL;
-    }
-
-    /**
-     * Disable copy constructor.
-     */
-    temporary(const temporary<T>&) {
-        ::abort();
+        object = new T;
     }
 
     /**
@@ -291,30 +287,9 @@ public:
         object = ptr;
     }
 
-    /**
-     * Assign a temporary object.  This adds a pointer to an existing
-     * type to the current temporary pointer.  If the temporary was
-     * already assigned, then it is deleted.
-     * @param temp object to assign.
-     */
-    inline T& operator=(T *temp) {
-        if(object)
-            delete object;
-        object = temp;
-        return *this;
-    }
-
-    /**
-     * Assign a temporary object.  This adds a pointer to an existing
-     * type to the current temporary pointer.  If the temporary was
-     * already assigned, then it is deleted.
-     * @param temp object to assign.
-     */
-    inline void set(T *temp) {
-        if(object)
-            delete object;
-        object = temp;
-    }
+    inline operator T&() const {
+        return *object;
+    }        
 
     /**
      * Access heap object through our temporary directly.
@@ -340,10 +315,134 @@ public:
         return object == NULL;
     }
 
-    inline ~temporary() {
-        if(object)
+    inline void release() {
+        if(object) {
             delete object;
-        object = NULL;
+            object = NULL;
+        }
+    }
+
+    inline ~temporary() {
+        if(object) {
+            delete object;
+            object = NULL;
+        }
+    }
+};
+
+template<>
+class temporary<char *>
+{
+private:
+    inline temporary(const temporary<char *>&) {};
+
+protected:
+    char *object;
+    size_t used;
+
+public:
+    /**
+     * Construct a temporary object, create our stack frame reference.
+     */
+    inline temporary(size_t size) {
+        object = (char *)::malloc(size);
+        used = size;
+    }
+
+    inline operator char *() const {
+        return object;
+    }
+
+    inline size_t size() const {
+        return used;
+    }
+
+    /**
+     * Access heap object through our temporary directly.
+     * @return reference to heap resident object.
+     */
+    inline char *operator*() const {
+        return object;
+    }
+
+    inline operator bool() const {
+        return object != NULL;
+    }
+
+    inline bool operator!() const {
+        return object == NULL;
+    }
+
+    inline void release() {
+        if(object) {
+            ::free(object);
+            object = NULL;
+        }
+    }
+
+    inline ~temporary() {
+        if(object) {
+            ::free(object);
+            object = NULL;
+        }
+    }
+};
+
+template<>
+class temporary<uint8_t *>
+{
+private:
+    inline temporary(const temporary<uint8_t *>&) {};
+
+protected:
+    uint8_t *object;
+    size_t used;
+
+public:
+    /**
+     * Construct a temporary object, create our stack frame reference.
+     */
+    inline temporary(size_t size) {
+        object = (uint8_t *)::malloc(size);
+        used = size;
+    }
+
+    inline operator uint8_t *() const {
+        return object;
+    }
+
+    inline size_t size() const {
+        return used;
+    }
+
+    /**
+     * Access heap object through our temporary directly.
+     * @return reference to heap resident object.
+     */
+    inline uint8_t *operator*() const {
+        return object;
+    }
+
+    inline operator bool() const {
+        return object != NULL;
+    }
+
+    inline bool operator!() const {
+        return object == NULL;
+    }
+
+    inline void release() {
+        if(object) {
+            ::free(object);
+            object = NULL;
+        }
+    }
+
+    inline ~temporary() {
+        if(object) {
+            ::free(object);
+            object = NULL;
+        }
     }
 };
 
@@ -361,39 +460,42 @@ public:
 template <typename T>
 class temp_array
 {
+private:
+    inline temp_array(const temp_array<T>&) {};
+
 protected:
     T *array;
-    size_t size;
+    size_t used;
 
 public:
     /**
      * Construct a temporary object, create our stack frame reference.
      */
     inline temp_array(size_t s) {
-        array =  new T[s]; size = s;
+        array =  new T[s]; used = s;
     }
 
     /**
      * Construct a temporary object with a copy of some initial value.
      * @param initial object value to use.
      */
-    inline temp_array(const T& initial, size_t s) {
-        array = new T[s];
-        size = s;
-        for(size_t p = 0; p < s; ++p)
+    inline temp_array(size_t size, const T& initial) {
+        array = new T[size];
+        used = size;
+        for(size_t p = 0; p < size; ++p)
             array[p] = initial;
     }
 
-    inline void reset(size_t s) {
-        delete[] array; array = new T[s]; size = s;
+    inline void reset(size_t size) {
+        delete[] array; array = new T[size]; used = size;
     }
 
-    inline void reset(const T& initial, size_t s) {
+    inline void reset(size_t size, const T& initial) {
         if(array)
             delete[] array;
-        array = new T[s];
-        size = s;
-        for(size_t p = 0; p < s; ++p)
+        array = new T[size];
+        used = size;
+        for(size_t p = 0; p < size; ++p)
             array[p] = initial;
     }
 
@@ -402,11 +504,8 @@ public:
             array[p] = initial;
     }
 
-    /**
-     * Disable copy constructor.
-     */
-    temp_array(const temp_array<T>&) {
-        ::abort();
+    inline size_t size(void) const {
+        return used;
     }
 
     inline operator bool() const {
@@ -424,14 +523,29 @@ public:
         size = 0;
     }
 
-    inline T& operator[](size_t offset) const {
-        crit(offset < size, "array out of bound");
-        return array[offset];
+    inline T& operator[](size_t index) const {
+        crit(index < used, "array out of bound");
+        return array[index];
     }
 
-    inline T* operator()(size_t offset) const {
-        crit(offset < size, "array out of bound");
-        return &array[offset];
+    inline T* operator()(size_t index) const {
+        crit(index < size, "array out of bound");
+        return &array[index];
+    }
+
+    inline void operator()(size_t index, const T& value) {
+        crit(index < size, "array out of bound");
+        array[index] = value;
+    }
+
+    inline T& value(size_t index) const {
+        crit(index < size, "array out of bound");
+        return array[index];
+    }
+
+    inline void value(size_t index, const T& value) {
+        crit(index < size, "array out of bound");
+        array[index] = value;
     }
 };
 

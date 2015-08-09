@@ -256,14 +256,6 @@ bool stringref::operator==(value *chars) const
     return eq(&(v->mem[0]), &(chars->mem[0]));
 }
 
-const char *stringref::str(Counted *obj)
-{
-    value *v = polydynamic_cast<value*>(obj);
-    if(!v)
-        return NULL;
-    return &v->mem[0];
-}
-
 bool stringref::operator<(const stringref& ptr) const
 {
     value *v1 = polystatic_cast<value *>(ref);
@@ -374,14 +366,6 @@ unsigned TypeRef::copies() const
 	if(!ref)
 		return 0;
 	return ref->copies();
-}
-
-const uint8_t *byteref::data(Counted *obj) 
-{
-    value *v = polydynamic_cast<value*>(obj);
-    if(!v)
-        return NULL;
-    return &v->mem[0];
 }
 
 bool byteref::operator==(const byteref& ptr) const 

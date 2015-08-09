@@ -313,8 +313,6 @@ bool Thread::equal(pthread_t t1, pthread_t t2)
     return t1 == t2;
 }
 
-#ifdef  _MSCONDITIONAL_
-
 Conditional::Conditional()
 {
     InitializeCriticalSection(&mutex);
@@ -348,86 +346,6 @@ void Conditional::broadcast(void)
 {
     WakeAllConditionVariable(&cond);
 }
-
-#else
-void Conditional::wait(void)
-{
-    int result;
-
-    EnterCriticalSection(&mlock);
-    ++waiting;
-    LeaveCriticalSection(&mlock);
-    LeaveCriticalSection(&mutex);
-    result = WaitForMultipleObjects(2, events, FALSE, INFINITE);
-    EnterCriticalSection(&mlock);
-    --waiting;
-    result = ((result == WAIT_OBJECT_0 + BROADCAST) && (waiting == 0));
-    LeaveCriticalSection(&mlock);
-    if(result)
-        ResetEvent(&events[BROADCAST]);
-    EnterCriticalSection(&mutex);
-}
-
-void Conditional::signal(void)
-{
-    EnterCriticalSection(&mlock);
-    if(waiting)
-        SetEvent(&events[SIGNAL]);
-    LeaveCriticalSection(&mlock);
-}
-
-void Conditional::broadcast(void)
-{
-    EnterCriticalSection(&mlock);
-    if(waiting)
-        SetEvent(&events[BROADCAST]);
-    LeaveCriticalSection(&mlock);
-
-}
-
-Conditional::Conditional()
-{
-    waiting = 0;
-
-    InitializeCriticalSection(&mutex);
-    InitializeCriticalSection(&mlock);
-    events[SIGNAL] = CreateEvent(NULL, FALSE, FALSE, NULL);
-    events[BROADCAST] = CreateEvent(NULL, TRUE, FALSE, NULL);
-}
-
-Conditional::~Conditional()
-{
-    DeleteCriticalSection(&mlock);
-    DeleteCriticalSection(&mutex);
-    CloseHandle(events[SIGNAL]);
-    CloseHandle(events[BROADCAST]);
-}
-
-bool Conditional::wait(timeout_t timeout)
-{
-    int result;
-    bool rtn = true;
-
-    if(!timeout)
-        return false;
-
-    EnterCriticalSection(&mlock);
-    ++waiting;
-    LeaveCriticalSection(&mlock);
-    LeaveCriticalSection(&mutex);
-    result = WaitForMultipleObjects(2, events, FALSE, timeout);
-    EnterCriticalSection(&mlock);
-    --waiting;
-    if(result == WAIT_OBJECT_0 || result == WAIT_OBJECT_0 + BROADCAST)
-        rtn = true;
-    result = ((result == WAIT_OBJECT_0 + BROADCAST) && (waiting == 0));
-    LeaveCriticalSection(&mlock);
-    if(result)
-        ResetEvent(&events[BROADCAST]);
-    EnterCriticalSection(&mutex);
-    return rtn;
-}
-#endif
 
 bool Conditional::wait(struct timespec *ts)
 {
@@ -504,7 +422,7 @@ bool Conditional::wait(struct timespec *ts)
 #endif
 
 
-#if defined(_MSCONDITIONAL_)
+#if defined(_MSTHREADS_)
 
 ConditionalAccess::ConditionalAccess()
 {
@@ -548,98 +466,6 @@ bool ConditionalAccess::waitSignal(struct timespec *ts)
     assert(ts != NULL);
 
     return waitSignal((timeout_t)(ts->tv_sec * 1000 + (ts->tv_nsec / 1000000l)));
-}
-
-#elif defined(_MSTHREADS_)
-
-void ConditionalAccess::waitSignal(void)
-{
-    LeaveCriticalSection(&mutex);
-    WaitForSingleObject(&events[SIGNAL], INFINITE);
-    EnterCriticalSection(&mutex);
-}
-
-void ConditionalAccess::waitBroadcast(void)
-{
-    int result;
-
-    EnterCriticalSection(&mlock);
-    ++waiting;
-    LeaveCriticalSection(&mlock);
-    LeaveCriticalSection(&mutex);
-    result = WaitForSingleObject(&events[BROADCAST], INFINITE);
-    EnterCriticalSection(&mlock);
-    --waiting;
-    result = ((result == WAIT_OBJECT_0) && (waiting == 0));
-    LeaveCriticalSection(&mlock);
-    if(result)
-        ResetEvent(&events[BROADCAST]);
-    EnterCriticalSection(&mutex);
-}
-
-ConditionalAccess::ConditionalAccess() : Conditional()
-{
-    pending = waiting = sharing = 0;
-}
-
-ConditionalAccess::~ConditionalAccess()
-{
-}
-
-bool ConditionalAccess::waitSignal(timeout_t timeout)
-{
-    int result;
-    bool rtn = true;
-
-    if(!timeout)
-        return false;
-
-    LeaveCriticalSection(&mutex);
-    result = WaitForSingleObject(events[SIGNAL], timeout);
-    if(result == WAIT_OBJECT_0)
-        rtn = true;
-    EnterCriticalSection(&mutex);
-    return rtn;
-}
-
-bool ConditionalAccess::waitSignal(struct timespec *ts)
-{
-    assert(ts != NULL);
-
-    return waitSignal((timeout_t)(ts->tv_sec * 1000 + (ts->tv_nsec / 1000000l)));
-}
-
-
-bool ConditionalAccess::waitBroadcast(timeout_t timeout)
-{
-    int result;
-    bool rtn = true;
-
-    if(!timeout)
-        return false;
-
-    EnterCriticalSection(&mlock);
-    ++waiting;
-    LeaveCriticalSection(&mlock);
-    LeaveCriticalSection(&mutex);
-    result = WaitForSingleObject(events[BROADCAST], timeout);
-    EnterCriticalSection(&mlock);
-    --waiting;
-    if(result == WAIT_OBJECT_0)
-        rtn = true;
-    result = ((result == WAIT_OBJECT_0) && (waiting == 0));
-    LeaveCriticalSection(&mlock);
-    if(result)
-        ResetEvent(&events[BROADCAST]);
-    EnterCriticalSection(&mutex);
-    return rtn;
-}
-
-bool ConditionalAccess::waitBroadcast(struct timespec *ts)
-{
-    assert(ts != NULL);
-
-    return waitBroadcast((timeout_t)(ts->tv_sec * 1000 + (ts->tv_nsec / 1000000l)));
 }
 
 #else

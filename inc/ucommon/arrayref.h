@@ -16,13 +16,10 @@
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A thread-safe atomic heap management system.  This is used to manage
- * immutable heap instances of object types that are reference counted
- * and automatically deleted when no longer used.  All references to the
- * object are through smart typeref pointers.  Both specific classes for
- * strings and byte arrays, and generic templates to support generic
- * types in the heap are offered.
- * @file ucommon/typeref.h
+ * Arrays of thread-safe strongly typed heap objects.  This is used for
+ * arrays of smart pointers to immutable heap instances of object types 
+ * that are reference counted and automatically deleted when no longer used.
+ * @file ucommon/arrayref.h
  */
 
 #ifndef _UCOMMON_ARRAYREF_H_
@@ -48,6 +45,10 @@
 #include <ucommon/typeref.h>
 #endif
 
+#ifndef _UCOMMON_THREAD_H_
+#include <ucommon/thread.h>
+#endif
+
 namespace ucommon {
 
 class __EXPORT ArrayRef : public TypeRef
@@ -57,6 +58,8 @@ protected:
 	{
 	protected:
 		friend class ArrayRef;
+
+		Mutex lock;
 
 		explicit Array(void *addr, size_t size);
 
@@ -83,10 +86,14 @@ protected:
 
 	Counted *get(size_t index);
 
+	bool is(size_t index);
+
 	static Array *create(size_t size);
 
 public:
 	void resize(size_t size);
+
+	void clear(void);
 };
 
 template<typename T>
@@ -124,9 +131,8 @@ public:
 		return *this;
 	}
 
-	inline const T& operator[](size_t index) {
-		const T* p = typeref<T>::data(ArrayRef::get(index));
-		return *p;
+	inline typeref<T> operator[](size_t index) {
+		return typeref<T>(ArrayRef::get(index));
 	}
 
 	inline typeref<T> operator()(size_t index) {
@@ -137,9 +143,8 @@ public:
 		return typeref<T>(ArrayRef::get(index));
 	}
 
-	inline const T& value(size_t index) {
-		const T* p = typeref<T>::data(ArrayRef::get(index));
-		return *p;
+	inline typeref<T>  value(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
 	}
 
 	inline void value(size_t index, T t) {
@@ -165,7 +170,7 @@ public:
 	}
 
 	inline void release(void) {
-		TypeRef::set(NULL);
+		TypeRef::set(nullptr);
 	}
 
 	inline void realloc(size_t size) {
@@ -217,8 +222,8 @@ public:
 		return *this;
 	}
 
-	inline const char *operator[](size_t index) {
-		return stringref::str(ArrayRef::get(index));
+	inline stringref operator[](size_t index) {
+		return stringref(ArrayRef::get(index));
 	}
 
 	inline stringref operator()(size_t index) {
@@ -242,8 +247,8 @@ public:
 		ArrayRef::assign(index, v);
 	}
 
-	inline const char *value(size_t index) {
-		return stringref::str(ArrayRef::get(index));
+	inline stringref value(size_t index) {
+		return stringref(ArrayRef::get(index));
 	}
 
 	inline void value(size_t index, const char *s) {
@@ -256,7 +261,7 @@ public:
 	}
 
 	inline void release(void) {
-		TypeRef::set(NULL);
+		TypeRef::set(nullptr);
 	}
 
 	inline void realloc(size_t size) {
@@ -302,8 +307,8 @@ public:
 		return *this;
 	}
 
-	inline const uint8_t *operator[](size_t index) {
-		return byteref::data(ArrayRef::get(index));
+	inline byteref operator[](size_t index) {
+		return byteref(ArrayRef::get(index));
 	}
 
 	inline byteref operator()(size_t index) {
@@ -327,8 +332,8 @@ public:
 		ArrayRef::assign(index, v);
 	}
 
-	inline const uint8_t *value(size_t index) {
-		return byteref::data(ArrayRef::get(index));
+	inline byteref value(size_t index) {
+		return byteref(ArrayRef::get(index));
 	}
 
 	inline void value(size_t index, const uint8_t *p, size_t s) {
@@ -341,7 +346,7 @@ public:
 	}
 
 	inline void release(void) {
-		TypeRef::set(NULL);
+		TypeRef::set(nullptr);
 	}
 
 	inline void realloc(size_t size) {

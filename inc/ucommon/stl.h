@@ -22,7 +22,6 @@
  */
 
 #ifndef	UCOMMON_SYSRUNTIME
-#if !defined(_MSC_VER) || _MSC_VER >= 1400
 #ifndef _UCOMMON_STL_H_
 #define _UCOMMON_STL_H_
 
@@ -42,6 +41,5 @@ namespace ucommon {
 
 } // namespace ucommon
 
-#endif
 #endif
 #endif

@@ -123,10 +123,8 @@ bool bitmap::get(size_t offset) const
         return false;
 
     switch(bus) {
-#if !defined(_MSC_VER) || _MSC_VER >= 1400
     case B64:
         return (addr.d[pos] & 1ll<<rem) > 0;
-#endif
     case B32:
         return (addr.l[pos] & 1l<<rem) > 0;
     case B16:
@@ -145,11 +143,9 @@ void bitmap::clear(void)
 
     while(size--) {
         switch(bus) {
-#if !defined(_MSC_VER) || _MSC_VER >= 1400
         case B64:
             *(addr.d++) = 0ll;
             break;
-#endif
         case B32:
             *(addr.l++) = 0l;
             break;
