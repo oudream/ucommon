@@ -247,8 +247,8 @@ public:
 		ArrayRef::assign(index, v);
 	}
 
-	inline const char *value(size_t index) {
-		return stringref::str(ArrayRef::get(index));
+	inline stringref value(size_t index) {
+		return stringref(ArrayRef::get(index));
 	}
 
 	inline void value(size_t index, const char *s) {
@@ -332,8 +332,8 @@ public:
 		ArrayRef::assign(index, v);
 	}
 
-	inline const uint8_t *value(size_t index) {
-		return byteref::data(ArrayRef::get(index));
+	inline byteref value(size_t index) {
+		return byteref(ArrayRef::get(index));
 	}
 
 	inline void value(size_t index, const uint8_t *p, size_t s) {

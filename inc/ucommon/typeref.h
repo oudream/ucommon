@@ -324,13 +324,6 @@ public:
 		set(object);
 		return *this;
 	}
-
-	inline static T* data(Counted *obj) {
-		value *v = polydynamic_cast<value*>(obj);
-		if(!v)
-			return NULL;
-		return &v->data;
-	}
 };
 
 class __EXPORT stringref : public TypeRef
@@ -425,8 +418,6 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
-
-	static const char *str(Counted *obj);
 };
 
 class __EXPORT byteref : public TypeRef
@@ -492,8 +483,6 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
-
-	static const uint8_t *data(Counted *obj);
 };
 
 typedef stringref::value *charvalues_t;
