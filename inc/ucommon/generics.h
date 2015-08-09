@@ -500,7 +500,7 @@ public:
     }
 
     inline void set(const T& initial) {
-        for(size_t p = 0; p < size; ++p)
+        for(size_t p = 0; p < used; ++p)
             array[p] = initial;
     }
 
@@ -520,7 +520,7 @@ public:
         if(array)
             delete[] array;
         array = NULL;
-        size = 0;
+        used = 0;
     }
 
     inline T& operator[](size_t index) const {
@@ -529,22 +529,22 @@ public:
     }
 
     inline T* operator()(size_t index) const {
-        crit(index < size, "array out of bound");
+        crit(index < used, "array out of bound");
         return &array[index];
     }
 
     inline void operator()(size_t index, const T& value) {
-        crit(index < size, "array out of bound");
+        crit(index < used, "array out of bound");
         array[index] = value;
     }
 
     inline T& value(size_t index) const {
-        crit(index < size, "array out of bound");
+        crit(index < used, "array out of bound");
         return array[index];
     }
 
     inline void value(size_t index, const T& value) {
-        crit(index < size, "array out of bound");
+        crit(index < used, "array out of bound");
         array[index] = value;
     }
 };
