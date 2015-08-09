@@ -271,24 +271,40 @@ private:
     inline temporary(const temporary<T>&) {};
 
 protected:
-    T *object;
+    T *array;
+    size_t used;
+
 public:
     /**
      * Construct a temporary object, create our stack frame reference.
      */
-    inline temporary() {
-        object = new T;
+    inline temporary(size_t size = 1) {
+        array = new T[size];
+        used = size;
+    }    
+
+    inline temporary(size_t size, const T initial) {
+        array = new T[size];
+        used = size;
+        for(size_t p = 0; p < size; ++p)
+            array[p] = initial;
     }
 
-    /**
-     * Construct an assigned pointer.
-     */
-    inline temporary(T *ptr) {
-        object = ptr;
+    inline explicit temporary(const T initial) {
+        array = new T[1];
+        used = 1;
+        array[0] = initial;
+    }
+
+    inline ~temporary() {
+        if(array) {
+            delete[] array;
+            array = NULL;
+        }
     }
 
     inline operator T&() const {
-        return *object;
+        return array[0];
     }        
 
     /**
@@ -296,7 +312,7 @@ public:
      * @return reference to heap resident object.
      */
     inline T& operator*() const {
-        return *object;
+        return array[0];
     }
 
     /**
@@ -304,29 +320,52 @@ public:
      * @return member reference of heap object.
      */
     inline T* operator->() const {
-        return object;
+        return &array[0];
     }
 
     inline operator bool() const {
-        return object != NULL;
+        return array != NULL;
     }
 
     inline bool operator!() const {
-        return object == NULL;
+        return array == NULL;
+    }
+
+    inline temporary& operator=(const T initial) {
+        array[0] = initial;
+        return *this;
     }
 
     inline void release() {
-        if(object) {
-            delete object;
-            object = NULL;
+        if(array) {
+            delete[] array;
+            array = NULL;
         }
     }
 
-    inline ~temporary() {
-        if(object) {
-            delete object;
-            object = NULL;
-        }
+    inline T& operator[](size_t index) const {
+        crit(index < used, "array out of bound");
+        return array[index];
+    }
+
+    inline T* operator()(size_t index) const {
+        crit(index < used, "array out of bound");
+        return &array[index];
+    }
+
+    inline void operator()(size_t index, const T value) {
+        crit(index < used, "array out of bound");
+        array[index] = value;
+    }
+
+    inline T& value(size_t index) const {
+        crit(index < used, "array out of bound");
+        return array[index];
+    }
+
+    inline void value(size_t index, const T value) {
+        crit(index < used, "array out of bound");
+        array[index] = value;
     }
 };
 
@@ -443,109 +482,6 @@ public:
             ::free(object);
             object = NULL;
         }
-    }
-};
-
-/**
- * Manage temporary array stored on the heap.   This is used to create an
- * array on the heap who's scope is controlled by the scope of a member
- * function call.  Sometimes we have data types and structures which cannot
- * themselves appear as auto variables.  We may also have a limited stack
- * frame size in a thread context, and yet have a dynamic object that we
- * only want to exist during the life of the method call.  Using temporary
- * allows any type to be created from the heap but have a lifespan of a
- * method's stack frame.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template <typename T>
-class temp_array
-{
-private:
-    inline temp_array(const temp_array<T>&) {};
-
-protected:
-    T *array;
-    size_t used;
-
-public:
-    /**
-     * Construct a temporary object, create our stack frame reference.
-     */
-    inline temp_array(size_t s) {
-        array =  new T[s]; used = s;
-    }
-
-    /**
-     * Construct a temporary object with a copy of some initial value.
-     * @param initial object value to use.
-     */
-    inline temp_array(size_t size, const T& initial) {
-        array = new T[size];
-        used = size;
-        for(size_t p = 0; p < size; ++p)
-            array[p] = initial;
-    }
-
-    inline void reset(size_t size) {
-        delete[] array; array = new T[size]; used = size;
-    }
-
-    inline void reset(size_t size, const T& initial) {
-        if(array)
-            delete[] array;
-        array = new T[size];
-        used = size;
-        for(size_t p = 0; p < size; ++p)
-            array[p] = initial;
-    }
-
-    inline void set(const T& initial) {
-        for(size_t p = 0; p < used; ++p)
-            array[p] = initial;
-    }
-
-    inline size_t size(void) const {
-        return used;
-    }
-
-    inline operator bool() const {
-        return array != NULL;
-    }
-
-    inline bool operator!() const {
-        return array == NULL;
-    }
-
-    inline ~temp_array() {
-        if(array)
-            delete[] array;
-        array = NULL;
-        used = 0;
-    }
-
-    inline T& operator[](size_t index) const {
-        crit(index < used, "array out of bound");
-        return array[index];
-    }
-
-    inline T* operator()(size_t index) const {
-        crit(index < used, "array out of bound");
-        return &array[index];
-    }
-
-    inline void operator()(size_t index, const T& value) {
-        crit(index < used, "array out of bound");
-        array[index] = value;
-    }
-
-    inline T& value(size_t index) const {
-        crit(index < used, "array out of bound");
-        return array[index];
-    }
-
-    inline void value(size_t index, const T& value) {
-        crit(index < used, "array out of bound");
-        array[index] = value;
     }
 };
 

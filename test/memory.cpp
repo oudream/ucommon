@@ -124,5 +124,16 @@ extern "C" int main()
     ints(17, memval);
     ints(18, member);
     assert(*ints[18] == 95);
+
+    temporary<int> itemp;
+    itemp = 37;
+    itemp[0] = 39;
+    assert(*itemp == 39);
+
+    temporary<int> atemp(7, 2);
+    assert(atemp[3] == 2);
+    atemp[5] = 9;
+    assert(atemp[5] == 9);
+
     return 0;
 }
