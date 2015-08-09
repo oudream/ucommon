@@ -105,11 +105,11 @@ void ArrayRef::reset(Counted *object)
     if(!array || !array->size || !object)
         return;
 
+    array->lock.acquire();
     while(index < array->size) {
-        array->lock.acquire();
         array->assign(index++, object);
-        array->lock.release();
     }
+    array->lock.release();
 }
 
 void ArrayRef::reset(TypeRef& var)
@@ -151,10 +151,12 @@ void ArrayRef::resize(size_t size)
     size_t index = 0;
 
     if(array && current) {
+        array->lock.acquire();
         while(index < size && index < current->size) {
             array->assign(index, current->get(index));
             ++index;
         }
+        array->lock.release();
     }
     TypeRef::set(array);
 }
