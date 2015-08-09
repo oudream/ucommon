@@ -293,6 +293,7 @@ protected:
         {LeaveCriticalSection(&mutex);};
 
     void waitSignal(void);
+
     void waitBroadcast(void);
 
     inline void signal(void)
