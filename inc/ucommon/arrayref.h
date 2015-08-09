@@ -45,6 +45,10 @@
 #include <ucommon/typeref.h>
 #endif
 
+#ifndef _UCOMMON_THREAD_H_
+#include <ucommon/thread.h>
+#endif
+
 namespace ucommon {
 
 class __EXPORT ArrayRef : public TypeRef
@@ -54,6 +58,8 @@ protected:
 	{
 	protected:
 		friend class ArrayRef;
+
+		Mutex lock;
 
 		explicit Array(void *addr, size_t size);
 
@@ -125,9 +131,8 @@ public:
 		return *this;
 	}
 
-	inline const T& operator[](size_t index) {
-		const T* p = typeref<T>::data(ArrayRef::get(index));
-		return *p;
+	inline typeref<T> operator[](size_t index) {
+		return typeref<T>(ArrayRef::get(index));
 	}
 
 	inline typeref<T> operator()(size_t index) {
@@ -138,9 +143,8 @@ public:
 		return typeref<T>(ArrayRef::get(index));
 	}
 
-	inline const T& value(size_t index) {
-		const T* p = typeref<T>::data(ArrayRef::get(index));
-		return *p;
+	inline typeref<T>  value(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
 	}
 
 	inline void value(size_t index, T t) {
@@ -218,8 +222,8 @@ public:
 		return *this;
 	}
 
-	inline const char *operator[](size_t index) {
-		return stringref::str(ArrayRef::get(index));
+	inline stringref operator[](size_t index) {
+		return stringref(ArrayRef::get(index));
 	}
 
 	inline stringref operator()(size_t index) {
@@ -303,8 +307,8 @@ public:
 		return *this;
 	}
 
-	inline const uint8_t *operator[](size_t index) {
-		return byteref::data(ArrayRef::get(index));
+	inline byteref operator[](size_t index) {
+		return byteref(ArrayRef::get(index));
 	}
 
 	inline byteref operator()(size_t index) {

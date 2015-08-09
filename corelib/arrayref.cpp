@@ -20,6 +20,7 @@
 #include <ucommon/typeref.h>
 #include <ucommon/arrayref.h>
 #include <ucommon/string.h>
+#include <ucommon/thread.h>
 #include <cstdlib>
 
 namespace ucommon {
@@ -105,7 +106,9 @@ void ArrayRef::reset(Counted *object)
         return;
 
     while(index < array->size) {
+        array->lock.acquire();
         array->assign(index++, object);
+        array->lock.release();
     }
 }
 
@@ -136,7 +139,9 @@ void ArrayRef::assign(size_t index, TypeRef& t)
         return;
 
     Counted *obj = t.ref;
+    array->lock.acquire();
     array->assign(index, obj);
+    array->lock.release();
 }
 
 void ArrayRef::resize(size_t size)
@@ -171,7 +176,10 @@ TypeRef::Counted *ArrayRef::get(size_t index)
     if(index >= array->size)
         return NULL;
 
-    return array->get(index);
+    array->lock.acquire();
+    Counted *object = array->get(index);
+    array->lock.release();
+    return object;
 }
 
 } // namespace
