@@ -75,6 +75,7 @@ protected:
 	};
 
 	ArrayRef(size_t size);
+	ArrayRef(size_t size, TypeRef& object); 
 	ArrayRef(const ArrayRef& copy);
 	ArrayRef();
 
@@ -93,6 +94,8 @@ protected:
 public:
 	void resize(size_t size);
 
+	void realloc(size_t size);
+
 	void clear(void);
 };
 
@@ -106,9 +109,7 @@ public:
 
 	inline arrayref(size_t size) : ArrayRef(size) {};
 
-	inline arrayref(size_t size, typeref<T>& t) : ArrayRef(size) {
-		reset(t);
-	}
+	inline arrayref(size_t size, typeref<T>& t) : ArrayRef(size, t) {};
 
 	inline arrayref(size_t size, T t) : ArrayRef(size) {
 		typeref<T> v(t);
@@ -165,10 +166,6 @@ public:
 
 	inline void release(void) {
 		TypeRef::set(nullptr);
-	}
-
-	inline void realloc(size_t size) {
-		TypeRef::set(ArrayRef::create(size));
 	}
 };
 
