@@ -92,6 +92,20 @@ TypeRef(create(size))
 {
 } 
 
+ArrayRef::ArrayRef(size_t size, TypeRef& object) :
+TypeRef(create(size))
+{
+    size_t index = 0;
+    Array *array = polystatic_cast<Array *>(ref);
+
+    if(!array || !array->size)
+        return;
+
+    while(index < array->size) {
+        array->assign(index++, object.ref);
+    }
+}
+
 ArrayRef::ArrayRef(const ArrayRef& copy) :
 TypeRef(copy)
 {
@@ -105,11 +119,11 @@ void ArrayRef::reset(Counted *object)
     if(!array || !array->size || !object)
         return;
 
+    array->lock.acquire();
     while(index < array->size) {
-        array->lock.acquire();
         array->assign(index++, object);
-        array->lock.release();
     }
+    array->lock.release();
 }
 
 void ArrayRef::reset(TypeRef& var)
@@ -151,12 +165,19 @@ void ArrayRef::resize(size_t size)
     size_t index = 0;
 
     if(array && current) {
+        current->lock.acquire();
         while(index < size && index < current->size) {
             array->assign(index, current->get(index));
             ++index;
         }
+        current->lock.release();
     }
     TypeRef::set(array);
+}
+
+void ArrayRef::realloc(size_t size)
+{
+    TypeRef::set(create(size));
 }
 
 bool ArrayRef::is(size_t index)
