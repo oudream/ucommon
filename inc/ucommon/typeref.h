@@ -238,6 +238,8 @@ private:
 	class value : public Counted
 	{
 	public:
+		T data;
+
 		inline value(caddr_t mem) : 
 		Counted(mem, sizeof(value)) {};
 
@@ -245,8 +247,6 @@ private:
 		Counted(mem, sizeof(value)) {
 			data = object;
 		}
-
-		T data;
 	};
  
 public:
@@ -326,13 +326,14 @@ public:
 	}
 };
 
-class __EXPORT stringref : public TypeRef
+template<>
+class __EXPORT typeref<const char *> : public TypeRef
 {
 public:
 	class value : public Counted
 	{
 	protected:
-		friend class stringref;
+		friend class typeref;
 
 		char mem[1];
 
@@ -355,13 +356,13 @@ public:
 		}
 	};
 
-	stringref();
+	typeref();
 	
-	stringref(const stringref& copy);
+	typeref(const typeref& copy);
 
-	stringref(const char *str);
+	typeref(const char *str);
 
-	inline explicit stringref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	const char *operator*() const;
 
@@ -369,13 +370,13 @@ public:
 		return operator*();
 	}
 
-	bool operator==(const stringref& ptr) const;
+	bool operator==(const typeref& ptr) const;
 
 	bool operator==(const char *obj) const;
 
 	bool operator==(value *chars) const;
 
-	inline bool operator!=(const stringref& ptr) const {
+	inline bool operator!=(const typeref& ptr) const {
 		return !(*this == ptr);
 	}
 
@@ -387,25 +388,25 @@ public:
 		return !(*this == obj);
 	}
 
-	bool operator<(const stringref& ptr) const;
+	bool operator<(const typeref& ptr) const;
 
-	inline bool operator>(const stringref& ptr) const {
+	inline bool operator>(const typeref& ptr) const {
 		return (ptr < *this);
 	}
 
-	inline bool operator<=(const stringref& ptr) const {
+	inline bool operator<=(const typeref& ptr) const {
 		return !(*this > ptr);
 	}
 
-	inline bool operator>=(const stringref& ptr) const {
+	inline bool operator>=(const typeref& ptr) const {
 		return !(*this < ptr);
 	}
 
-	stringref& operator=(const stringref& objref);
+	typeref& operator=(const typeref& objref);
 
-	stringref& operator=(const char *str);
+	typeref& operator=(const char *str);
 
-	stringref& operator=(value *chars);
+	typeref& operator=(value *chars);
 
 	const char *operator()(ssize_t offset) const;
 
@@ -420,13 +421,14 @@ public:
 	static void destroy(value *bytes);
 };
 
-class __EXPORT byteref : public TypeRef
+template<>
+class __EXPORT typeref<const uint8_t *> : public TypeRef
 {
 public:
 	class value : public Counted
 	{
 	protected:
-		friend class byteref;
+		friend class typeref;
 
 		uint8_t mem[1];
 
@@ -446,13 +448,13 @@ public:
 		}
 	};
 
-	byteref();
+	typeref();
 	
-	byteref(const byteref& copy);
+	typeref(const typeref& copy);
 
-	byteref(const uint8_t *str, size_t size);
+	typeref(uint8_t *str, size_t size);
 
-	inline explicit byteref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	const uint8_t *operator*() const;
 
@@ -460,15 +462,15 @@ public:
 		return operator*();
 	}
 
-	byteref& operator=(const byteref& objref);
+	typeref& operator=(const typeref& objref);
 
-	byteref& operator=(value *bytes);
+	typeref& operator=(value *bytes);
 
-	bool operator==(const byteref& ptr) const;
+	bool operator==(const typeref& ptr) const;
 
 	bool operator==(value *bytes) const;
 
-	inline bool operator!=(const byteref& ptr) const {
+	inline bool operator!=(const typeref& ptr) const {
 		return !(*this == ptr);
 	}
 
@@ -485,10 +487,18 @@ public:
 	static void destroy(value *bytes);
 };
 
-typedef stringref::value *charvalues_t;
-typedef	byteref::value	*bytevalues_t;
-typedef	stringref	stringref_t;
-typedef byteref		byteref_t;
+typedef typeref<const char*>::value *charvalues_t;
+typedef	typeref<const uint8_t *>::value	*bytevalues_t;
+typedef	typeref<const char*> stringref_t;
+typedef typeref<const char*> stringref;
+typedef typeref<const uint8_t *> byteref_t;
+typedef typeref<const uint8_t *> byteref;
+
+template<typename T>
+inline typeref<T> typeref_cast(T x) {
+	return typeref<T>(x);
+}
+
 
 } // namespace
 

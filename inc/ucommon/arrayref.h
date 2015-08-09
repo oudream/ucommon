@@ -106,7 +106,7 @@ public:
 
 	inline arrayref(size_t size) : ArrayRef(size) {};
 
-	inline arrayref(size_t size, typeref<T> t) : ArrayRef(size) {
+	inline arrayref(size_t size, typeref<T>& t) : ArrayRef(size) {
 		reset(t);
 	}
 
@@ -120,15 +120,14 @@ public:
 		return *this;
 	}
 
-	inline arrayref& operator=(T t) {
-		typeref<T> v(t);
-		reset(v);
+	inline arrayref& operator=(typeref<T>& t) {
+		reset(t);
 		return *this;
 	}
 
-	inline arrayref& operator=(typeref<T> t) {
-		reset(t);
-		return *this;
+	inline arrayref& operator=(T t) {
+		typeref<T> v(t);
+		reset(v);
 	}
 
 	inline typeref<T> operator[](size_t index) {
@@ -145,11 +144,6 @@ public:
 
 	inline typeref<T>  value(size_t index) {
 		return typeref<T>(ArrayRef::get(index));
-	}
-
-	inline void value(size_t index, T t) {
-		typeref<T> v(t);
-		ArrayRef::assign(index, v);
 	}
 
 	inline void value(size_t index, typeref<T>& t) {
@@ -178,184 +172,8 @@ public:
 	}
 };
 
-template<>
-class arrayref<stringref> : public ArrayRef
-{
-public:
-	inline arrayref() :	ArrayRef() {};
-
-	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
-
-	inline arrayref(size_t size) : ArrayRef(size) {};
-
-	inline arrayref(size_t size, stringref s) : ArrayRef(size) {
-		reset(s);
-	}
-
-	inline arrayref(size_t size, stringref::value *v) : ArrayRef(size) {
-		reset(v);
-	}
-
-	inline arrayref(size_t size, const char *s) : ArrayRef(size) {
-		stringref v(s);
-		reset(v);
-	}
-
-	inline arrayref& operator=(const arrayref& copy) {
-		TypeRef::set(copy);
-		return *this;
-	}
-
-	inline arrayref& operator=(stringref::value *v) {
-		reset(v);
-		return *this;
-	}
-
-	inline arrayref& operator=(const char *s) {
-		stringref v(s);
-		reset(v);
-		return *this;
-	}
-
-	inline arrayref& operator=(stringref t) {
-		reset(t);
-		return *this;
-	}
-
-	inline stringref operator[](size_t index) {
-		return stringref(ArrayRef::get(index));
-	}
-
-	inline stringref operator()(size_t index) {
-		return stringref(ArrayRef::get(index));
-	}
-
-	inline stringref at(size_t index) {
-		return stringref(ArrayRef::get(index));
-	}
-
-	inline void put(stringref& target, size_t index) {
-		TypeRef::put(target, ArrayRef::get(index));
-	}
-
-	inline void operator()(size_t index, stringref& t) {
-		ArrayRef::assign(index, t);
-	}
-
-	inline void operator()(size_t index, const char *s) {
-		stringref v(s);
-		ArrayRef::assign(index, v);
-	}
-
-	inline stringref value(size_t index) {
-		return stringref(ArrayRef::get(index));
-	}
-
-	inline void value(size_t index, const char *s) {
-		stringref v(s);
-		ArrayRef::assign(index, v);
-	}
-
-	inline void value(size_t index, stringref& t) {
-		ArrayRef::assign(index, t);
-	}
-
-	inline void release(void) {
-		TypeRef::set(nullptr);
-	}
-
-	inline void realloc(size_t size) {
-		TypeRef::set(ArrayRef::create(size));
-	}
-};
-
-template<>
-class arrayref<byteref> : public ArrayRef
-{
-public:
-	inline arrayref() :	ArrayRef() {};
-
-	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
-
-	inline arrayref(size_t size) : ArrayRef(size) {};
-
-	inline arrayref(size_t size, byteref b) : ArrayRef(size) {
-		reset(b);
-	}
-
-	inline arrayref(size_t size, byteref::value *v) : ArrayRef(size) {
-		reset(v);
-	}
-
-	inline arrayref(size_t size, const uint8_t *a, size_t s) : ArrayRef(size) {
-		byteref v(a, s);
-		reset(v);
-	}
-
-	inline arrayref& operator=(const arrayref& copy) {
-		TypeRef::set(copy);
-		return *this;
-	}
-
-	inline arrayref& operator=(byteref::value *v) {
-		reset(v);
-		return *this;
-	}
-
-	inline arrayref& operator=(byteref t) {
-		reset(t);
-		return *this;
-	}
-
-	inline byteref operator[](size_t index) {
-		return byteref(ArrayRef::get(index));
-	}
-
-	inline byteref operator()(size_t index) {
-		return byteref(ArrayRef::get(index));
-	}
-
-	inline byteref at(size_t index) {
-		return byteref(ArrayRef::get(index));
-	}
-
-	inline void put(byteref& target, size_t index) {
-		TypeRef::put(target, ArrayRef::get(index));
-	}
-
-	inline void operator()(size_t index, stringref& t) {
-		ArrayRef::assign(index, t);
-	}
-
-	inline void operator()(size_t index, const uint8_t *a, size_t s) {
-		byteref v(a, s);
-		ArrayRef::assign(index, v);
-	}
-
-	inline byteref value(size_t index) {
-		return byteref(ArrayRef::get(index));
-	}
-
-	inline void value(size_t index, const uint8_t *p, size_t s) {
-		byteref v(p, s);
-		ArrayRef::assign(index, v);
-	}
-
-	inline void value(size_t index, byteref& t) {
-		ArrayRef::assign(index, t);
-	}
-
-	inline void release(void) {
-		TypeRef::set(nullptr);
-	}
-
-	inline void realloc(size_t size) {
-		TypeRef::set(ArrayRef::create(size));
-	}
-};
-
-typedef arrayref<byteref> bytearray_t;
-typedef arrayref<stringref> stringarray_t;
+typedef arrayref<const uint8_t *> bytearray_t;
+typedef arrayref<const char *> stringarray_t;
 
 } // namespace
 
