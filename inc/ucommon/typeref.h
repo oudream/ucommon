@@ -58,6 +58,8 @@ class __EXPORT TypeRef
 {
 protected:
 	friend class ArrayRef;
+	friend class SharedRef;
+
     /**
 	 * Heap base-class container for typeref objects.  This uses atomic
 	 * reference counters for thread safety with maximal performance.  This

@@ -1,3 +1,6 @@
+Changes from 6.5.0 to 6.5.1
+- thread shared references added
+
 Changes from 6.4.4 to 6.5.0
 - typeref expanded
 - arrayref introduced

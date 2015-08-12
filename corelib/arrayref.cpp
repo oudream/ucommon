@@ -18,9 +18,9 @@
 #include <ucommon-config.h>
 #include <ucommon/export.h>
 #include <ucommon/typeref.h>
-#include <ucommon/arrayref.h>
 #include <ucommon/string.h>
 #include <ucommon/thread.h>
+#include <ucommon/arrayref.h>
 #include <cstdlib>
 
 namespace ucommon {

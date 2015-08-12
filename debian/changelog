@@ -1,3 +1,9 @@
+ucommon (1:6.5.1-1) UNRELEASED; urgency=low
+
+  * Thread shared references added
+
+ -- David Sugar <dyfet@gnutelephony.org>  Wed, 12 Aug 2015 08:22:45 -0400
+
 ucommon (1:6.5.0-1) UNRELEASED; urgency=low
 
   * Core typeref expanded, arrayref introduced

@@ -135,5 +135,10 @@ extern "C" int main()
     atemp[5] = 9;
     assert(atemp[5] == 9);
 
+    sharedref<int> sint;
+    sint = 3;
+    typeref<int> sv = sint;
+    assert(sv.copies() == 2); 
+
     return 0;
 }
