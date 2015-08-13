@@ -116,6 +116,9 @@ extern "C" int main()
     assert(*member == 99);
     assert(member.copies() == 31);
 
+    assert(ints.find(30) == 6);
+    assert(ints.count(99) == 30);
+
     int memval = member;
     member = 95;
     assert(memval == 99);
