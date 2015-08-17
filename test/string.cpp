@@ -125,5 +125,8 @@ extern "C" int main()
     strs.put(cvs, 7);
     assert(cvs.copies() == 32);
     assert(eq(*cvs, "here"));
+
+    stringref_t myref = cvs + " now" + "!";
+    assert(eq(*myref, "here now!"));
     return 0;
 }
