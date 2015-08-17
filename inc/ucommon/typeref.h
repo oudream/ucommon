@@ -326,14 +326,6 @@ public:
 		set(object);
 		return *this;
 	}
-
-	inline typeref operator+(const T object) const {
-		return typeref(operator*() + object);
-	}
-
-	inline typeref operator+(const typeref& ptr) const {
-		return typeref(operator*() + *ptr);
-	}
 };
 
 template<>
