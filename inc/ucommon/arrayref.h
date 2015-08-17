@@ -191,6 +191,75 @@ public:
 };
 
 template<typename T>
+class queueref : public ArrayRef
+{
+public:
+	inline queueref() :	ArrayRef() {};
+
+	inline queueref(const queueref& copy) : ArrayRef(copy) {};
+
+	inline queueref(size_t size, bool fallback = false) : ArrayRef(fallback ? FALLBACK : QUEUE, size + 1) {};
+
+	inline queueref& operator=(const queueref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline typeref<T> operator[](size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> operator()(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> at(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline void release(void) {
+		TypeRef::set(nullptr);
+	}
+
+	inline typeref<T> pull() {
+		typeref<T> obj;
+		ArrayRef::pull(obj);
+		return obj;
+	}
+
+	inline typeref<T> pull(timeout_t timeout) {
+		typeref<T> obj;
+		ArrayRef::pull(obj, timeout);
+		return obj;
+	}
+
+	inline queueref& operator>>(typeref<T>& target) {
+		ArrayRef::pull(target);
+		return *this;
+	}
+
+	inline void push(const typeref<T>& source) {
+		ArrayRef::push(source);
+	}
+
+	inline bool push(const typeref<T>& source, timeout_t timeout) {
+		return ArrayRef::push(source, timeout);
+	}
+
+	inline queueref& operator<<(const typeref<T>& source) {
+		ArrayRef::push(source);
+		return *this;
+	}
+
+	inline queueref& operator<<(T t) {
+		typeref<T> v(t);
+		ArrayRef::push(v);
+		return *this;
+	}
+};
+
+
+template<typename T>
 class arrayref : public ArrayRef
 {
 public:

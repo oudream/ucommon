@@ -144,7 +144,6 @@ extern "C" int main()
     assert(sv.copies() == 2); 
 
     stackref<int> stackofints(20);
-
     stackofints << 17;
     stackofints << 25;
     stackofints << 333;
@@ -154,5 +153,13 @@ extern "C" int main()
     assert(stackofints.count() == 1);
     assert(sv == 25);
     assert(sv.copies() == 1);
+
+    queueref<int> queueofints(20);
+    queueofints << 44;
+    queueofints << 55;
+    assert(queueofints.count() == 2);
+    queueofints >> sv;
+    assert(sv == 44);
+
     return 0;
 }
