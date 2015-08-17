@@ -208,6 +208,17 @@ bool ArrayRef::push(Counted *object, timeout_t timeout)
     return true;
 } 
 
+size_t ArrayRef::count()
+{
+    size_t result = 0;
+    Array *array = polystatic_cast<Array *>(ref);
+    if(array) {
+        array->cond.lock();
+        result = array->count();
+        array->cond.unlock();
+    }
+    return result;
+}   
 
 void ArrayRef::push(Counted *object)
 {
