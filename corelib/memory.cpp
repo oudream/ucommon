@@ -34,9 +34,11 @@
 #include <stdalign.h>
 #endif
 
-#if !defined(HAVE_ALIGNED_ALLOC) && defined(_MSC_VER) && _MSC_VER >= 1800
+#if defined(_MSC_VER) && _MSC_VER >= 1800
 #include <malloc.h>
+#ifndef HAVE_ALIGNED_ALLOC
 #define HAVE_ALIGNED_ALLOC 1
+#endif
 #define aligned_alloc(a, s) _aligned_malloc(s, a)
 #endif
 
@@ -167,17 +169,15 @@ memalloc::page_t *memalloc::pager(void)
         npage = (page_t *)addr;
         goto use;
     }
-#elif defined(HAVE_ALIGNED_ALLOC) && defined(_MSWINDOWS_)
-    if(align) {
-        npage = (page_t *)_aligned_malloc(align, pagesize);
-        goto use;
-    }
-#endif
+#elif defined(HAVE_ALIGNED_ALLOC)
+    if (align)
+        npage = (page_t *)aligned_alloc(align, pagesize);
+    else
+        npage = (page_t *)malloc(pagesize);
+#else
     npage = (page_t *)malloc(pagesize);
-
-#if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_ALIGNED_ALLOC)
-use:
 #endif
+
 	if (!npage) {
 		fault();
 		return NULL;
