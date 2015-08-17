@@ -160,6 +160,13 @@ extern "C" int main()
     assert(queueofints.count() == 2);
     queueofints >> sv;
     assert(sv == 44);
+    queueofints >> sv;
+    assert(sv == 55);
+
+    // flush without delay...
+    sv = queueofints.pull(0);
+    assert(!sv.is());
+    assert(sv.copies() == 0);
 
     return 0;
 }
