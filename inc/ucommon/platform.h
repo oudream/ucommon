@@ -147,6 +147,13 @@
 #endif
 
 // minimum required version requires conditional
+#ifdef _WIN32_WINNT
+#if _WIN32_WINNT < 0x0600
+#undef _WIN32_WINNT
+#undef WINVER
+#endif
+#endif
+
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT    0x0600
 #endif
@@ -165,11 +172,6 @@
 
 #if defined(_MSC_VER) && !defined(_MT)
 #error Please enable multithreading (Project -> Settings -> C/C++ -> Code Generation -> Use Runtime Library)
-#endif
-
-// Require for compiling with critical sections.
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
 #endif
 
 // Make sure we're consistent with _WIN32_WINNT
@@ -225,8 +227,8 @@ typedef size_t socksize_t;
 #include <sys/stat.h>
 #include <io.h>
 
-// gcc c++11 support on mingw requires pthread support library
-#if __GNUC_PREREQ__(4, 8) && !defined(UCOMMON_SYSRUNTIME)
+// gcc mingw can do native high performance win32 conditionals...
+#if defined(UCOMMON_WINPTHREAD) && __GNUC_PREREQ__(4, 8) && !defined(UCOMMON_SYSRUNTIME)
 #define __MINGW_WINPTHREAD__
 #include <pthread.h>   // gnu libstdc++ now requires a win pthread
 typedef size_t stacksize_t;

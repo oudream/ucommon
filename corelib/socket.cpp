@@ -356,6 +356,7 @@ static int getaddrinfo(const char *hostname, const char *servname, const struct 
             ipv6->sin6_family = AF_INET6;
             ipv6->sin6_port = port;
             aip->ai_addr = (struct sockaddr *)ipv6;
+			aip->ai_addrlen = sizeof(struct sockaddr_in6);
             *res = aip;
             return 0;
         }
@@ -368,6 +369,7 @@ static int getaddrinfo(const char *hostname, const char *servname, const struct 
         if(!(hints.ai_flags & AI_PASSIVE))
             inet_pton(AF_INET, "127.0.0.1", &ipv4->sin_addr);
         aip->ai_addr = (struct sockaddr *)ipv4;
+		aip->ai_addrlen = sizeof(struct sockaddr_in);
         *res = aip;
         return 0;
     }
@@ -412,6 +414,7 @@ static int getaddrinfo(const char *hostname, const char *servname, const struct 
             ipv6->sin6_family = AF_INET6;
             ipv6->sin6_port = port;
             aip->ai_addr = (struct sockaddr *)ipv6;
+			aip->ai_addrlen = sizeof(struct sockaddr_in6);
             continue;
         }
 #endif
@@ -422,6 +425,7 @@ static int getaddrinfo(const char *hostname, const char *servname, const struct 
         ipv4->sin_port = port;
         memcpy(&ipv4->sin_addr, *np, sizeof(&ipv4->sin_addr));
         aip->ai_addr = (struct sockaddr *)ipv4;
+		aip->ai_addrlen = sizeof(struct sockaddr_in);
     }
 
     hostmutex.unlock();
@@ -1028,8 +1032,10 @@ void Socket::address::clear(void)
 
 void Socket::release(struct addrinfo *list)
 {
-    if(list)
+    if (list) {
         freeaddrinfo(list);
+        list = NULL;
+    }
 }
 
 struct ::addrinfo *Socket::query(const char *hp, const char *svc, int type, int protocol)
@@ -1311,7 +1317,7 @@ bool Socket::address::insert(const struct sockaddr *addr)
 {
     assert(addr != NULL);
 
-    struct addrinfo *node = list;
+    struct addrinfo *node = list, hints;
 
     while(node && node->ai_addr) {
         if(node->ai_addr && equal(addr, node->ai_addr))
@@ -1319,38 +1325,31 @@ bool Socket::address::insert(const struct sockaddr *addr)
         node = node->ai_next;
     }
 
-    node = (struct addrinfo *)malloc(sizeof(struct addrinfo));
+    char buf[256], svc[16];
+    query(addr, buf, sizeof(buf));
+    snprintf(svc, sizeof(svc), "%d", service(addr));
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = addr->sa_family;
+    hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV;
+    node = NULL;
+    getaddrinfo(buf, svc, &hints, &node);
     if (!node)
         return false;
-    memset(node, 0, sizeof(struct addrinfo));
-    node->ai_family = addr->sa_family;
-    node->ai_addrlen = len(addr);
+
+    if (node->ai_next)
+        freeaddrinfo(node->ai_next);
+
     node->ai_next = list;
-    node->ai_addr = (struct sockaddr *)malloc(node->ai_addrlen);
-	if (node->ai_addr)
-		memcpy(node->ai_addr, addr, node->ai_addrlen);
     list = node;
     return true;
 }
 
 void Socket::address::copy(const struct addrinfo *addr)
 {
-    struct addrinfo *last = NULL;
-    struct addrinfo *node;
-
     clear();
-    while(addr) {
-        node = (struct addrinfo *)malloc(sizeof(struct addrinfo));
-        if (!node)
-            break;
-        memcpy(node, addr, sizeof(struct addrinfo));
-        node->ai_next = NULL;
-        node->ai_addr = dup(addr->ai_addr);
-        if(last)
-            last->ai_next = node;
-        else
-            list = node;
-        last = node;
+    while (addr) {
+        if (addr->ai_addr)
+            insert(addr->ai_addr);
         addr = addr->ai_next;
     }
 }

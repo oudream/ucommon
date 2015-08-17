@@ -34,9 +34,11 @@
 #include <stdalign.h>
 #endif
 
-#if !defined(HAVE_ALIGNED_ALLOC) && defined(_MSC_VER) && _MSC_VER >= 1800
+#if defined(_MSC_VER) && _MSC_VER >= 1800
 #include <malloc.h>
+#ifndef HAVE_ALIGNED_ALLOC
 #define HAVE_ALIGNED_ALLOC 1
+#endif
 #define aligned_alloc(a, s) _aligned_malloc(s, a)
 #endif
 
@@ -82,7 +84,7 @@ memalloc::memalloc(size_t ps)
     else if(ps > paging)
         ps = (((ps + paging - 1) / paging)) * paging;
 
-#ifdef  HAVE_POSIX_MEMALIGN
+#if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_ALIGNED_ALLOC)
     if(ps >= paging)
         align = sizeof(void *);
     else
@@ -134,7 +136,14 @@ void memalloc::purge(void)
     page_t *next;
     while(page) {
         next = page->next;
+#if defined(HAVE_ALIGNED_ALLOC) && defined(_MSWINDOWS_)
+        if (align)
+            _aligned_free(page);
+        else
+            free(page);
+#else
         free(page);
+#endif
         page = next;
     }
     count = 0;
@@ -156,21 +165,19 @@ memalloc::page_t *memalloc::pager(void)
         fault();
 
 #if defined(HAVE_POSIX_MEMALIGN)
-    if(align && !posix_memalign(&addr, align, pagesize)) {
+    if(align && !posix_memalign(&addr, align, pagesize))
         npage = (page_t *)addr;
-        goto use;
-    }
+    else
+        npage = (page_t *)malloc(pagesize);
 #elif defined(HAVE_ALIGNED_ALLOC)
-    if(align) {
+    if (align)
         npage = (page_t *)aligned_alloc(align, pagesize);
-        goto use;
-    }
-#endif
+    else
+        npage = (page_t *)malloc(pagesize);
+#else
     npage = (page_t *)malloc(pagesize);
-
-#if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_ALIGNED_ALLOC)
-use:
 #endif
+
 	if (!npage) {
 		fault();
 		return NULL;

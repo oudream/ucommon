@@ -40,6 +40,7 @@ extern "C" int main()
 
     char addrbuf[128];
     addrbuf[0] = 0;
+
     assert(localhost.get(AF_INET) != NULL);
     Socket::query(localhost.get(AF_INET), addrbuf, sizeof(addrbuf));
     assert(0 == strcmp(addrbuf, "127.0.0.1"));
@@ -48,6 +49,7 @@ extern "C" int main()
     assert(0 == strcmp(addrbuf, "127.0.0.1"));
     assert(eq((struct sockaddr *)&addr, localhost.get(AF_INET)));
     assert(eq_subnet((struct sockaddr *)&addr, localhost.get(AF_INET)));
+
     memset(addrbuf, 0, sizeof(addrbuf));
     size_t len = localhost.print(addrbuf, sizeof(addrbuf));
     assert(len == strlen(addrbuf));
@@ -57,8 +59,10 @@ extern "C" int main()
     assert(testing.isAny());
     assert(testing.family() == AF_INET);
     testing.setLoopback();
+
     assert(testing.isLoopback());
     assert(testing.family() == AF_INET);
+
     testing.setPort(4444);
     assert(testing.getPort() == 4444);
     assert(testing == localhost);
