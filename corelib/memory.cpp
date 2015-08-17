@@ -165,10 +165,10 @@ memalloc::page_t *memalloc::pager(void)
         fault();
 
 #if defined(HAVE_POSIX_MEMALIGN)
-    if(align && !posix_memalign(&addr, align, pagesize)) {
+    if(align && !posix_memalign(&addr, align, pagesize))
         npage = (page_t *)addr;
-        goto use;
-    }
+    else
+        npage = (page_t *)malloc(pagesize);
 #elif defined(HAVE_ALIGNED_ALLOC)
     if (align)
         npage = (page_t *)aligned_alloc(align, pagesize);
