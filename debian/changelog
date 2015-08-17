@@ -1,3 +1,10 @@
+ucommon (1:6.5.2-1) UNRELEASED; urgency=low
+
+  * Memory allocation and socket management fixes
+  * Lots of expansion of arrayref uses
+
+ -- David Sugar <dyfet@gnutelephony.org>  Mon, 17 Aug 2015 15:40:14 -0400
+
 ucommon (1:6.5.1-1) UNRELEASED; urgency=low
 
   * Thread shared references added
