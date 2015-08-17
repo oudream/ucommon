@@ -164,12 +164,33 @@ const char *typeref<const char *>::operator()(ssize_t offset) const
 
 const char *typeref<const char *>::operator*() const 
 {
-    if(!ref)
-	    return NULL;
     value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return NULL;
+
     return &v->mem[0];
 }
 
+typeref<const char *> typeref<const char *>::operator+(const char *str2) const 
+{
+    value *v1 = polystatic_cast<value *>(ref);
+    const char *str1 = "";
+
+    if(v1)
+        str1 = &v1->mem[0];
+
+    if(!str2)
+        str2 = "";
+
+    size_t ss = strlen(str1);
+    ss += strlen(str2);
+    charvalues_t results = stringref::create(ss);
+    snprintf(results->get(), results->max() + 1, "%s%s", str1, str2);
+    stringref_t result;
+    result.assign(results);
+    return result;
+}
+        
 typeref<const char *>& typeref<const char *>::operator=(const typeref<const char *>& objref)
 {
     TypeRef::set(objref);
@@ -384,5 +405,39 @@ bool typeref<const uint8_t *>::operator==(value *bytes) const
         return false;
     return !memcmp(&(v->mem[0]), &(bytes->mem[0]), v->size);
 }
+
+typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref<const uint8_t *>&add) const 
+{
+    value *v1 = polystatic_cast<value *>(ref);
+    value *v2 = polystatic_cast<value *>(add.ref);
+    const uint8_t *b1 = NULL, *b2 = NULL;
+    uint8_t *out;
+    size_t s1 = 0, s2 = 0, max;
+    typeref<const uint8_t*> result;
+
+    if(v1) {
+        s1 = v1->max();
+        b1 = v1->get();
+    }
+
+    if(v2) {
+        s2 = v2->max();
+        b2 = v2->get();
+    }
+
+    max = s1 + s2;
+    if(!max)
+        return result;
+
+    bytevalues_t bytes = byteref::create(max);
+    out = const_cast<uint8_t *>(bytes->get());
+    if(s1)
+        memcpy(out, b1, s1);
+    if(s2)
+        memcpy(out + s1, b2, s2);
+    result.assign(bytes);
+    return result;
+}
+
 
 } // namespace

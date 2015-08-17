@@ -326,6 +326,14 @@ public:
 		set(object);
 		return *this;
 	}
+
+	inline typeref operator+(const T object) const {
+		return typeref(operator*() + object);
+	}
+
+	inline typeref operator+(const typeref& ptr) const {
+		return typeref(operator*() + *ptr);
+	}
 };
 
 template<>
@@ -410,6 +418,10 @@ public:
 
 	typeref& operator=(value *chars);
 
+	typeref operator+(const char *str) const;
+
+	typeref operator+(const typeref& ptr) const;
+
 	const char *operator()(ssize_t offset) const;
 
 	void set(const char *str);
@@ -479,6 +491,8 @@ public:
 	inline bool operator!=(value *bytes) const {
 		return !(*this == bytes);
 	}
+
+	typeref operator+(const typeref& ptr) const;
 
 	void set(const uint8_t *str, size_t size);
 
