@@ -82,7 +82,7 @@ memalloc::memalloc(size_t ps)
     else if(ps > paging)
         ps = (((ps + paging - 1) / paging)) * paging;
 
-#ifdef  HAVE_POSIX_MEMALIGN
+#if defined(HAVE_POSIX_MEMALIGN) || defined(HAVE_ALIGNED_ALLOC)
     if(ps >= paging)
         align = sizeof(void *);
     else
@@ -134,7 +134,14 @@ void memalloc::purge(void)
     page_t *next;
     while(page) {
         next = page->next;
+#if defined(HAVE_ALIGNED_ALLOC) && defined(_MSWINDOWS_)
+        if (align)
+            _aligned_free(page);
+        else
+            free(page);
+#else
         free(page);
+#endif
         page = next;
     }
     count = 0;
@@ -160,9 +167,9 @@ memalloc::page_t *memalloc::pager(void)
         npage = (page_t *)addr;
         goto use;
     }
-#elif defined(HAVE_ALIGNED_ALLOC)
+#elif defined(HAVE_ALIGNED_ALLOC) && defined(_MSWINDOWS_)
     if(align) {
-        npage = (page_t *)aligned_alloc(align, pagesize);
+        npage = (page_t *)_aligned_malloc(align, pagesize);
         goto use;
     }
 #endif

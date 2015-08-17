@@ -1027,8 +1027,10 @@ void Socket::address::clear(void)
 
 void Socket::release(struct addrinfo *list)
 {
-    if(list)
+    if (list) {
         freeaddrinfo(list);
+        list = NULL;
+    }
 }
 
 struct ::addrinfo *Socket::query(const char *hp, const char *svc, int type, int protocol)
