@@ -167,6 +167,44 @@ void ArrayRef::reset(Counted *object)
     array->cond.unlock();
 }
 
+void ArrayRef::pop(void)
+{
+    bool popped = false;
+    Array *array = polystatic_cast<Array *>(ref);
+
+    if(!array || !array->size)
+        return;
+   
+    array->cond.lock();
+    switch(array->type) {
+    case STACK:
+        if(array->head != array->tail) {
+            if(array->tail == 0)
+                array->tail = array->size;
+            --array->tail;
+            array->assign(array->tail, NULL);
+            popped = true;
+        }
+        break;
+    case FALLBACK:
+        if(array->count() == 1)
+            break;
+    case QUEUE:
+        if(array->head != array->tail) {
+            array->assign(array->head, NULL);
+            if(++array->head >= array->size)
+                array->head = 0;
+            popped = true;
+        }
+        break;
+    default:
+        break;
+    }
+    if(popped)
+        array->cond.signal();
+    array->cond.unlock();
+}
+
 void ArrayRef::reset(TypeRef& var)
 {
     reset(var.ref);
@@ -187,7 +225,7 @@ ArrayRef::Array *ArrayRef::create(arraytype_t mode, size_t size)
     return new(mem(p)) Array(mode, p, size);
 }
 
-bool ArrayRef::push(Counted *object, timeout_t timeout)
+bool ArrayRef::push(const TypeRef& object, timeout_t timeout)
 {
     Array *array = polystatic_cast<Array *>(ref);
     if(!array || array->type == ARRAY)
@@ -200,7 +238,7 @@ bool ArrayRef::push(Counted *object, timeout_t timeout)
             return false;
         }
     }
-    array->assign(array->tail, object);
+    array->assign(array->tail, object.ref);
     if(++array->tail >= array->size)
         array->tail = 0;
     array->cond.signal();
@@ -220,7 +258,7 @@ size_t ArrayRef::count()
     return result;
 }   
 
-void ArrayRef::push(Counted *object)
+void ArrayRef::push(const TypeRef& object)
 {
     Array *array = polystatic_cast<Array *>(ref);
     if(!array || array->type == ARRAY)
@@ -230,18 +268,20 @@ void ArrayRef::push(Counted *object)
     while(array->count() >= (array->size - 1)) {
         array->cond.wait();
     }
-    array->assign(array->tail, object);
+    array->assign(array->tail, object.ref);
     if(++array->tail >= array->size)
         array->tail = 0;
     array->cond.signal();
     array->cond.unlock();
 } 
 
-TypeRef::Counted *ArrayRef::pull(timeout_t timeout)
+void ArrayRef::pull(TypeRef& object, timeout_t timeout)
 {
+    object.release();
     Array *array = polystatic_cast<Array *>(ref);
-    if(!array || array->type == ARRAY)
-        return NULL;
+    if(!array || array->type == ARRAY) {
+        return;
+    }
 
     array->cond.lock();
     for(;;) {
@@ -270,22 +310,25 @@ TypeRef::Counted *ArrayRef::pull(timeout_t timeout)
             if(value) {
                 array->cond.signal();
                 array->cond.unlock();
-                return value;
+                object.ref = value;
+                return;
             }        
         }
         if(!array->cond.wait(timeout)) {
             array->cond.unlock();
-            return NULL;
+            object.release();
+            return;
         }
     }
 }
 
-
-TypeRef::Counted *ArrayRef::pull()
+void ArrayRef::pull(TypeRef& object)
 {
+    object.release();
     Array *array = polystatic_cast<Array *>(ref);
-    if(!array || array->type == ARRAY)
-        return NULL;
+    if(!array || array->type == ARRAY) {
+        return;
+    }
 
     array->cond.lock();
     for(;;) {
@@ -314,7 +357,8 @@ TypeRef::Counted *ArrayRef::pull()
             if(value) {
                 array->cond.signal();
                 array->cond.unlock();
-                return value;
+                object.ref = value;
+                return;
             }        
         }
         array->cond.wait();

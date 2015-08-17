@@ -102,13 +102,13 @@ protected:
 	static Array *create(arraytype_t type, size_t size);
 
 protected:
-	void push(Counted *object);
+	void push(const TypeRef& object);
 
-	Counted *pull(void);	
+	void pull(TypeRef& object);	
 
-	bool push(Counted *object, timeout_t timeout);
+	bool push(const TypeRef& object, timeout_t timeout);
 
-	Counted *pull(timeout_t timeout);	
+	void pull(TypeRef& object, timeout_t timeout);	
 
 public:
 	size_t count(void);
@@ -118,6 +118,76 @@ public:
 	void realloc(size_t size);
 
 	void clear(void);
+
+	void pop(void);
+};
+
+template<typename T>
+class stackref : public ArrayRef
+{
+public:
+	inline stackref() :	ArrayRef() {};
+
+	inline stackref(const stackref& copy) : ArrayRef(copy) {};
+
+	inline stackref(size_t size) : ArrayRef(STACK, size + 1) {};
+
+	inline stackref& operator=(const stackref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline typeref<T> operator[](size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> operator()(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> at(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline void release(void) {
+		TypeRef::set(nullptr);
+	}
+
+	inline typeref<T> pull() {
+		typeref<T> obj;
+		ArrayRef::pull(obj);
+		return obj;
+	}
+
+	inline typeref<T> pull(timeout_t timeout) {
+		typeref<T> obj;
+		ArrayRef::pull(obj, timeout);
+		return obj;
+	}
+
+	inline stackref& operator>>(typeref<T>& target) {
+		ArrayRef::pull(target);
+		return *this;
+	}
+
+	inline void push(const typeref<T>& source) {
+		ArrayRef::push(source);
+	}
+
+	inline bool push(const typeref<T>& source, timeout_t timeout) {
+		return ArrayRef::push(source, timeout);
+	}
+
+	inline stackref& operator<<(const typeref<T>& source) {
+		ArrayRef::push(source);
+		return *this;
+	}
+
+	inline stackref& operator<<(T t) {
+		typeref<T> v(t);
+		ArrayRef::push(v);
+		return *this;
+	}
 };
 
 template<typename T>

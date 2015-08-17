@@ -143,5 +143,16 @@ extern "C" int main()
     typeref<int> sv = sint;
     assert(sv.copies() == 2); 
 
+    stackref<int> stackofints(20);
+
+    stackofints << 17;
+    stackofints << 25;
+    stackofints << 333;
+    assert(stackofints.count() == 3);
+    stackofints.pop();
+    stackofints >> sv;
+    assert(stackofints.count() == 1);
+    assert(sv == 25);
+    assert(sv.copies() == 1);
     return 0;
 }
