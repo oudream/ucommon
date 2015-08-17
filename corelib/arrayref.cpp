@@ -25,11 +25,18 @@
 
 namespace ucommon {
 
-ArrayRef::Array::Array(void *addr, size_t used) :
+ArrayRef::Array::Array(arraytype_t arraymode, void *addr, size_t used) :
 Counted(addr, used)
 {
     size_t index = 0;
     Counted **list = get();
+
+    head = 0;
+    type = arraymode;
+    if(type == ARRAY)
+        tail = size;
+    else
+        tail = 0;
 
     if(!used)
         return;
@@ -59,6 +66,14 @@ void ArrayRef::Array::dealloc()
     Counted::dealloc();
 }
 
+size_t ArrayRef::Array::count(void)
+{
+    if(head <= tail)
+        return tail - head;
+
+    return (tail + size) - head;
+}
+
 TypeRef::Counted *ArrayRef::Array::get(size_t index)
 {
     if(index >= size)
@@ -66,6 +81,17 @@ TypeRef::Counted *ArrayRef::Array::get(size_t index)
 
     return (get())[index];
 }
+
+TypeRef::Counted *ArrayRef::Array::remove(size_t index)
+{
+    if(index >= size)
+        return NULL;
+    
+    Counted *result = get(index);
+
+    (get())[index] = NULL;
+    return result;
+}   
 
 void ArrayRef::Array::assign(size_t index, Counted *object)
 {
@@ -87,13 +113,13 @@ TypeRef()
 {
 }
 
-ArrayRef::ArrayRef(size_t size) :
-TypeRef(create(size))
+ArrayRef::ArrayRef(arraytype_t type, size_t size) :
+TypeRef(create(type, size))
 {
 } 
 
-ArrayRef::ArrayRef(size_t size, TypeRef& object) :
-TypeRef(create(size))
+ArrayRef::ArrayRef(arraytype_t type, size_t size, TypeRef& object) :
+TypeRef(create(type, size))
 {
     size_t index = 0;
     Array *array = polystatic_cast<Array *>(ref);
@@ -114,16 +140,31 @@ TypeRef(copy)
 void ArrayRef::reset(Counted *object)
 {
     size_t index = 0;
+    size_t max;
     Array *array = polystatic_cast<Array *>(ref);
 
     if(!array || !array->size || !object)
         return;
 
-    array->lock.acquire();
-    while(index < array->size) {
+    switch(array->type) {
+    case ARRAY:
+        max = array->size;
+        break;
+    case FALLBACK:
+        max = 1;
+        break;
+    default:
+        max = 0;
+    }
+
+    array->cond.lock();
+    array->head = 0;
+    array->tail = max;
+    while(index < max) {
         array->assign(index++, object);
     }
-    array->lock.release();
+    array->cond.broadcast();
+    array->cond.unlock();
 }
 
 void ArrayRef::reset(TypeRef& var)
@@ -136,14 +177,137 @@ void ArrayRef::clear(void)
     reset(nullptr);
 }
 
-ArrayRef::Array *ArrayRef::create(size_t size)
+ArrayRef::Array *ArrayRef::create(arraytype_t mode, size_t size)
 {
     if(!size)
         return NULL;
 
     size_t s = sizeof(Array) + (size * sizeof(Counted *));
     caddr_t p = TypeRef::alloc(s);
-    return new(mem(p)) Array(p, size);
+    return new(mem(p)) Array(mode, p, size);
+}
+
+bool ArrayRef::push(Counted *object, timeout_t timeout)
+{
+    Array *array = polystatic_cast<Array *>(ref);
+    if(!array || array->type == ARRAY)
+        return false;
+
+    array->cond.lock();
+    while(array->count() >= (array->size - 1)) {
+        if(!array->cond.wait(timeout)) {
+            array->cond.unlock();
+            return false;
+        }
+    }
+    array->assign(array->tail, object);
+    if(++array->tail >= array->size)
+        array->tail = 0;
+    array->cond.signal();
+    array->cond.unlock();
+    return true;
+} 
+
+
+void ArrayRef::push(Counted *object)
+{
+    Array *array = polystatic_cast<Array *>(ref);
+    if(!array || array->type == ARRAY)
+        return;
+
+    array->cond.lock();
+    while(array->count() >= (array->size - 1)) {
+        array->cond.wait();
+    }
+    array->assign(array->tail, object);
+    if(++array->tail >= array->size)
+        array->tail = 0;
+    array->cond.signal();
+    array->cond.unlock();
+} 
+
+TypeRef::Counted *ArrayRef::pull(timeout_t timeout)
+{
+    Array *array = polystatic_cast<Array *>(ref);
+    if(!array || array->type == ARRAY)
+        return NULL;
+
+    array->cond.lock();
+    for(;;) {
+        if(array->head != array->tail) {
+            Counted *value = NULL;
+            switch(array->type) {
+            case STACK:
+                if(array->tail == 0)
+                    array->tail = array->size;
+                --array->tail;
+                value = array->remove(array->tail);
+                break;
+            case FALLBACK:
+                if(array->count() == 1) {
+                    value = array->get(array->head);
+                    break;
+                }
+            case QUEUE:
+                value = array->remove(array->head);
+                if(++array->head == array->size)
+                    array->head = 0;
+                break;
+            default:
+                break;
+            }  
+            if(value) {
+                array->cond.signal();
+                array->cond.unlock();
+                return value;
+            }        
+        }
+        if(!array->cond.wait(timeout)) {
+            array->cond.unlock();
+            return NULL;
+        }
+    }
+}
+
+
+TypeRef::Counted *ArrayRef::pull()
+{
+    Array *array = polystatic_cast<Array *>(ref);
+    if(!array || array->type == ARRAY)
+        return NULL;
+
+    array->cond.lock();
+    for(;;) {
+        if(array->head != array->tail) {
+            Counted *value = NULL;
+            switch(array->type) {
+            case STACK:
+                if(array->tail == 0)
+                    array->tail = array->size;
+                --array->tail;
+                value = array->remove(array->tail);
+                break;
+            case FALLBACK:
+                if(array->count() == 1) {
+                    value = array->get(array->head);
+                    break;
+                }
+            case QUEUE:
+                value = array->remove(array->head);
+                if(++array->head == array->size)
+                    array->head = 0;
+                break;
+            default:
+                break;
+            }  
+            if(value) {
+                array->cond.signal();
+                array->cond.unlock();
+                return value;
+            }        
+        }
+        array->cond.wait();
+    }
 }
 
 void ArrayRef::assign(size_t index, TypeRef& t)
@@ -152,32 +316,47 @@ void ArrayRef::assign(size_t index, TypeRef& t)
     if(!array || index >= array->size)
         return;
 
+    assert(array->type == ARRAY);
+
     Counted *obj = t.ref;
-    array->lock.acquire();
+    array->cond.lock();
+    index += array->head;
+    if(index >= array->size)
+        index -= array->size;
     array->assign(index, obj);
-    array->lock.release();
+    array->cond.unlock();
 }
 
 void ArrayRef::resize(size_t size)
 {
-    Array *array = create(size);
     Array *current = polystatic_cast<Array *>(ref);
     size_t index = 0;
 
-    if(array && current) {
-        current->lock.acquire();
-        while(index < size && index < current->size) {
-            array->assign(index, current->get(index));
-            ++index;
+    if(current) {
+        Array *array = create(current->type, size);
+        current->cond.lock();
+        switch(array->type) {
+        case ARRAY:
+            while(index < size && index < current->size) {
+                array->assign(index, current->get(index));
+                ++index;
+            }
+            array->tail = size;
+            break;
+        default:
+            array->head = array->tail = 0;
+            break;
         }
-        current->lock.release();
+        current->cond.unlock();
+        TypeRef::set(array);
     }
-    TypeRef::set(array);
 }
 
 void ArrayRef::realloc(size_t size)
 {
-    TypeRef::set(create(size));
+    Array *current = polystatic_cast<Array *>(ref);
+    if(current)
+        TypeRef::set(create(current->type, size));
 }
 
 bool ArrayRef::is(size_t index)
@@ -194,12 +373,25 @@ TypeRef::Counted *ArrayRef::get(size_t index)
     if(!array)
         return NULL;
 
-    if(index >= array->size)
+    if(index >= array->size || array->head == array->tail)
         return NULL;
 
-    array->lock.acquire();
+    array->cond.lock();
+    index += array->head;
+    if(array->head <= array->tail && index >= array->tail) {
+        array->cond.unlock();
+        return NULL;
+    }
+    if(index >= array->size)
+        index -= array->size;
+
+    if(index >= array->tail) {
+        array->cond.unlock();
+        return NULL;
+    }
+
     Counted *object = array->get(index);
-    array->lock.release();
+    array->cond.unlock();
     return object;
 }
 

@@ -54,16 +54,26 @@ namespace ucommon {
 class __EXPORT ArrayRef : public TypeRef
 {
 protected:
+	typedef enum {ARRAY, STACK, QUEUE, FALLBACK} arraytype_t;
+
 	class Array : public Counted
 	{
 	protected:
 		friend class ArrayRef;
 
-		Mutex lock;
+		Conditional cond;
 
-		explicit Array(void *addr, size_t size);
+		size_t head, tail;
+
+		arraytype_t type;
+
+		explicit Array(arraytype_t mode, void *addr, size_t size);
 
 		void assign(size_t index, Counted *object);
+
+		Counted *remove(size_t index);
+
+		size_t count(void);
 
 		virtual void dealloc();
 
@@ -74,8 +84,8 @@ protected:
 		Counted *get(size_t index);
 	};
 
-	ArrayRef(size_t size);
-	ArrayRef(size_t size, TypeRef& object); 
+	ArrayRef(arraytype_t mode, size_t size);
+	ArrayRef(arraytype_t mode, size_t size, TypeRef& object);
 	ArrayRef(const ArrayRef& copy);
 	ArrayRef();
 
@@ -89,9 +99,20 @@ protected:
 
 	bool is(size_t index);
 
-	static Array *create(size_t size);
+	static Array *create(arraytype_t type, size_t size);
+
+protected:
+	void push(Counted *object);
+
+	Counted *pull(void);	
+
+	bool push(Counted *object, timeout_t timeout);
+
+	Counted *pull(timeout_t timeout);	
 
 public:
+	size_t count(void);
+
 	void resize(size_t size);
 
 	void realloc(size_t size);
@@ -107,11 +128,11 @@ public:
 
 	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
 
-	inline arrayref(size_t size) : ArrayRef(size) {};
+	inline arrayref(size_t size) : ArrayRef(ARRAY, size) {};
 
-	inline arrayref(size_t size, typeref<T>& t) : ArrayRef(size, t) {};
+	inline arrayref(size_t size, typeref<T>& t) : ArrayRef(ARRAY, size, t) {};
 
-	inline arrayref(size_t size, T t) : ArrayRef(size) {
+	inline arrayref(size_t size, T t) : ArrayRef(ARRAY, size) {
 		typeref<T> v(t);
 		reset(v);
 	}
