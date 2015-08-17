@@ -116,6 +116,9 @@ extern "C" int main()
     assert(*member == 99);
     assert(member.copies() == 31);
 
+    assert(ints.find(30) == 6);
+    assert(ints.count(99) == 30);
+
     int memval = member;
     member = 95;
     assert(memval == 99);
@@ -139,6 +142,31 @@ extern "C" int main()
     sint = 3;
     typeref<int> sv = sint;
     assert(sv.copies() == 2); 
+
+    stackref<int> stackofints(20);
+    stackofints << 17;
+    stackofints << 25;
+    stackofints << 333;
+    assert(stackofints.count() == 3);
+    stackofints.pop();
+    stackofints >> sv;
+    assert(stackofints.count() == 1);
+    assert(sv == 25);
+    assert(sv.copies() == 1);
+
+    queueref<int> queueofints(20);
+    queueofints << 44;
+    queueofints << 55;
+    assert(queueofints.count() == 2);
+    queueofints >> sv;
+    assert(sv == 44);
+    queueofints >> sv;
+    assert(sv == 55);
+
+    // flush without delay...
+    sv = queueofints.pull(0);
+    assert(!sv.is());
+    assert(sv.copies() == 0);
 
     return 0;
 }

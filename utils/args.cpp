@@ -131,7 +131,7 @@ int main(int argc, char **argv)
         if(fsys::is_dir(args[count]) && (is(directory) || is(recursive) || is(follow)))
             dirpath(middle, (String)args[count++]);
         else
-            output(middle, (String)args[count++]);
+            output(middle, args[count++]);
         middle = true;
     }
 

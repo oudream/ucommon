@@ -54,16 +54,26 @@ namespace ucommon {
 class __EXPORT ArrayRef : public TypeRef
 {
 protected:
+	typedef enum {ARRAY, STACK, QUEUE, FALLBACK} arraytype_t;
+
 	class Array : public Counted
 	{
 	protected:
 		friend class ArrayRef;
 
-		Mutex lock;
+		Conditional cond;
 
-		explicit Array(void *addr, size_t size);
+		size_t head, tail;
+
+		arraytype_t type;
+
+		explicit Array(arraytype_t mode, void *addr, size_t size);
 
 		void assign(size_t index, Counted *object);
+
+		Counted *remove(size_t index);
+
+		size_t count(void);
 
 		virtual void dealloc();
 
@@ -74,8 +84,8 @@ protected:
 		Counted *get(size_t index);
 	};
 
-	ArrayRef(size_t size);
-	ArrayRef(size_t size, TypeRef& object); 
+	ArrayRef(arraytype_t mode, size_t size);
+	ArrayRef(arraytype_t mode, size_t size, TypeRef& object);
 	ArrayRef(const ArrayRef& copy);
 	ArrayRef();
 
@@ -89,15 +99,165 @@ protected:
 
 	bool is(size_t index);
 
-	static Array *create(size_t size);
+	static Array *create(arraytype_t type, size_t size);
+
+protected:
+	void push(const TypeRef& object);
+
+	void pull(TypeRef& object);	
+
+	bool push(const TypeRef& object, timeout_t timeout);
+
+	void pull(TypeRef& object, timeout_t timeout);	
 
 public:
+	size_t count(void);
+
 	void resize(size_t size);
 
 	void realloc(size_t size);
 
 	void clear(void);
+
+	void pop(void);
 };
+
+template<typename T>
+class stackref : public ArrayRef
+{
+public:
+	inline stackref() :	ArrayRef() {};
+
+	inline stackref(const stackref& copy) : ArrayRef(copy) {};
+
+	inline stackref(size_t size) : ArrayRef(STACK, size + 1) {};
+
+	inline stackref& operator=(const stackref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline typeref<T> operator[](size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> operator()(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> at(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline void release(void) {
+		TypeRef::set(nullptr);
+	}
+
+	inline typeref<T> pull() {
+		typeref<T> obj;
+		ArrayRef::pull(obj);
+		return obj;
+	}
+
+	inline typeref<T> pull(timeout_t timeout) {
+		typeref<T> obj;
+		ArrayRef::pull(obj, timeout);
+		return obj;
+	}
+
+	inline stackref& operator>>(typeref<T>& target) {
+		ArrayRef::pull(target);
+		return *this;
+	}
+
+	inline void push(const typeref<T>& source) {
+		ArrayRef::push(source);
+	}
+
+	inline bool push(const typeref<T>& source, timeout_t timeout) {
+		return ArrayRef::push(source, timeout);
+	}
+
+	inline stackref& operator<<(const typeref<T>& source) {
+		ArrayRef::push(source);
+		return *this;
+	}
+
+	inline stackref& operator<<(T t) {
+		typeref<T> v(t);
+		ArrayRef::push(v);
+		return *this;
+	}
+};
+
+template<typename T>
+class queueref : public ArrayRef
+{
+public:
+	inline queueref() :	ArrayRef() {};
+
+	inline queueref(const queueref& copy) : ArrayRef(copy) {};
+
+	inline queueref(size_t size, bool fallback = false) : ArrayRef(fallback ? FALLBACK : QUEUE, size + 1) {};
+
+	inline queueref& operator=(const queueref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline typeref<T> operator[](size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> operator()(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline typeref<T> at(size_t index) {
+		return typeref<T>(ArrayRef::get(index));
+	}
+
+	inline void release(void) {
+		TypeRef::set(nullptr);
+	}
+
+	inline typeref<T> pull() {
+		typeref<T> obj;
+		ArrayRef::pull(obj);
+		return obj;
+	}
+
+	inline typeref<T> pull(timeout_t timeout) {
+		typeref<T> obj;
+		ArrayRef::pull(obj, timeout);
+		return obj;
+	}
+
+	inline queueref& operator>>(typeref<T>& target) {
+		ArrayRef::pull(target);
+		return *this;
+	}
+
+	inline void push(const typeref<T>& source) {
+		ArrayRef::push(source);
+	}
+
+	inline bool push(const typeref<T>& source, timeout_t timeout) {
+		return ArrayRef::push(source, timeout);
+	}
+
+	inline queueref& operator<<(const typeref<T>& source) {
+		ArrayRef::push(source);
+		return *this;
+	}
+
+	inline queueref& operator<<(T t) {
+		typeref<T> v(t);
+		ArrayRef::push(v);
+		return *this;
+	}
+};
+
 
 template<typename T>
 class arrayref : public ArrayRef
@@ -107,13 +267,31 @@ public:
 
 	inline arrayref(const arrayref& copy) : ArrayRef(copy) {};
 
-	inline arrayref(size_t size) : ArrayRef(size) {};
+	inline arrayref(size_t size) : ArrayRef(ARRAY, size) {};
 
-	inline arrayref(size_t size, typeref<T>& t) : ArrayRef(size, t) {};
+	inline arrayref(size_t size, typeref<T>& t) : ArrayRef(ARRAY, size, t) {};
 
-	inline arrayref(size_t size, T t) : ArrayRef(size) {
+	inline arrayref(size_t size, T t) : ArrayRef(ARRAY, size) {
 		typeref<T> v(t);
 		reset(v);
+	}
+
+	inline size_t find(typeref<T> v, size_t start = 0) {
+		for(size_t index = start; index < size(); ++index) {
+			if(is(index) && at(index) == v) {
+				return index;
+			}
+		}
+		return (size_t)(-1);
+	}
+
+	inline size_t count(typeref<T> v) {
+		size_t found = 0;
+		for(size_t index = 0; index < size(); ++index) {
+			if(is(index) && at(index) == v)
+				++found;
+		}
+		return found;
 	}
 
 	inline arrayref& operator=(const arrayref& copy) {
