@@ -1,3 +1,9 @@
+Changes from 6.5.1 to 6.5.2
+- memory management cleanup and mingw32 support for native conditionals
+- new methodology of having getaddrinfo allocate memory
+- introduction of queueref and stackref; arrayref becomes useful
+- typeref concatenation operators
+
 Changes from 6.5.0 to 6.5.1
 - thread shared references added
 
