@@ -267,6 +267,10 @@ public:
     size_t scanf(const char *format, ...) __SCANF(2, 3);
 
     bool is_tty(void) const;
+
+    inline FILE *operator*() const {
+        return fp;
+    }
 };
 
 /**
