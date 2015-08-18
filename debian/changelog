@@ -1,3 +1,9 @@
+ucommon (1:6.5.2-2) UNRELEASED; urgency=low
+
+  * Resolved Conditional and arrayref now uses ConditionalAccess
+
+ -- David Sugar <dyfet@gnutelephony.org>  Tue, 18 Aug 2015 04:53:20 -0400
+
 ucommon (1:6.5.2-1) UNRELEASED; urgency=low
 
   * Memory allocation and socket management fixes
