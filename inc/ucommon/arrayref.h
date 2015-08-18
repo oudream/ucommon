@@ -56,12 +56,10 @@ class __EXPORT ArrayRef : public TypeRef
 protected:
 	typedef enum {ARRAY, STACK, QUEUE, FALLBACK} arraytype_t;
 
-	class Array : public Counted
+	class Array : public Counted, public ConditionalAccess
 	{
 	protected:
 		friend class ArrayRef;
-
-		Conditional cond;
 
 		size_t head, tail;
 
