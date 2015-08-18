@@ -26,7 +26,7 @@
 namespace ucommon {
 
 ArrayRef::Array::Array(arraytype_t arraymode, void *addr, size_t used) :
-Counted(addr, used)
+Counted(addr, used), ConditionalAccess()
 {
     size_t index = 0;
     Counted **list = get();
@@ -157,14 +157,14 @@ void ArrayRef::reset(Counted *object)
         max = 0;
     }
 
-    array->cond.lock();
+    array->lock();
     array->head = 0;
     array->tail = max;
     while(index < max) {
         array->assign(index++, object);
     }
-    array->cond.broadcast();
-    array->cond.unlock();
+    array->signal();
+    array->unlock();
 }
 
 void ArrayRef::pop(void)
@@ -175,7 +175,7 @@ void ArrayRef::pop(void)
     if(!array || !array->size)
         return;
    
-    array->cond.lock();
+    array->lock();
     switch(array->type) {
     case STACK:
         if(array->head != array->tail) {
@@ -201,8 +201,8 @@ void ArrayRef::pop(void)
         break;
     }
     if(popped)
-        array->cond.signal();
-    array->cond.unlock();
+        array->signal();
+    array->unlock();
 }
 
 void ArrayRef::reset(TypeRef& var)
@@ -231,18 +231,18 @@ bool ArrayRef::push(const TypeRef& object, timeout_t timeout)
     if(!array || array->type == ARRAY)
         return false;
 
-    array->cond.lock();
+    array->lock();
     while(array->count() >= (array->size - 1)) {
-        if(!array->cond.wait(timeout)) {
-            array->cond.unlock();
+        if(!array->waitSignal(timeout)) {
+            array->unlock();
             return false;
         }
     }
     array->assign(array->tail, object.ref);
     if(++array->tail >= array->size)
         array->tail = 0;
-    array->cond.signal();
-    array->cond.unlock();
+    array->broadcast();
+    array->unlock();
     return true;
 } 
 
@@ -251,9 +251,9 @@ size_t ArrayRef::count()
     size_t result = 0;
     Array *array = polystatic_cast<Array *>(ref);
     if(array) {
-        array->cond.lock();
+        array->lock();
         result = array->count();
-        array->cond.unlock();
+        array->unlock();
     }
     return result;
 }   
@@ -264,15 +264,15 @@ void ArrayRef::push(const TypeRef& object)
     if(!array || array->type == ARRAY)
         return;
 
-    array->cond.lock();
+    array->lock();
     while(array->count() >= (array->size - 1)) {
-        array->cond.wait();
+        array->waitSignal();
     }
     array->assign(array->tail, object.ref);
     if(++array->tail >= array->size)
         array->tail = 0;
-    array->cond.signal();
-    array->cond.unlock();
+    array->broadcast();
+    array->unlock();
 } 
 
 void ArrayRef::pull(TypeRef& object, timeout_t timeout)
@@ -283,7 +283,7 @@ void ArrayRef::pull(TypeRef& object, timeout_t timeout)
         return;
     }
 
-    array->cond.lock();
+    array->lock();
     for(;;) {
         if(array->head != array->tail) {
             Counted *value = NULL;
@@ -308,14 +308,14 @@ void ArrayRef::pull(TypeRef& object, timeout_t timeout)
                 break;
             }  
             if(value) {
-                array->cond.signal();
-                array->cond.unlock();
+                array->signal();
+                array->unlock();
                 object.ref = value;
                 return;
             }        
         }
-        if(!array->cond.wait(timeout)) {
-            array->cond.unlock();
+        if(!array->waitBroadcast(timeout)) {
+            array->unlock();
             object.release();
             return;
         }
@@ -330,7 +330,7 @@ void ArrayRef::pull(TypeRef& object)
         return;
     }
 
-    array->cond.lock();
+    array->lock();
     for(;;) {
         if(array->head != array->tail) {
             Counted *value = NULL;
@@ -355,13 +355,13 @@ void ArrayRef::pull(TypeRef& object)
                 break;
             }  
             if(value) {
-                array->cond.signal();
-                array->cond.unlock();
+                array->signal();
+                array->unlock();
                 object.ref = value;
                 return;
             }        
         }
-        array->cond.wait();
+        array->waitBroadcast();
     }
 }
 
@@ -374,12 +374,12 @@ void ArrayRef::assign(size_t index, TypeRef& t)
     assert(array->type == ARRAY);
 
     Counted *obj = t.ref;
-    array->cond.lock();
+    array->lock();
     index += array->head;
     if(index >= array->size)
         index -= array->size;
     array->assign(index, obj);
-    array->cond.unlock();
+    array->unlock();
 }
 
 void ArrayRef::resize(size_t size)
@@ -389,7 +389,7 @@ void ArrayRef::resize(size_t size)
 
     if(current) {
         Array *array = create(current->type, size);
-        current->cond.lock();
+        current->lock();
         switch(array->type) {
         case ARRAY:
             while(index < size && index < current->size) {
@@ -402,7 +402,7 @@ void ArrayRef::resize(size_t size)
             array->head = array->tail = 0;
             break;
         }
-        current->cond.unlock();
+        current->unlock();
         TypeRef::set(array);
     }
 }
@@ -431,22 +431,22 @@ TypeRef::Counted *ArrayRef::get(size_t index)
     if(index >= array->size || array->head == array->tail)
         return NULL;
 
-    array->cond.lock();
+    array->lock();
     index += array->head;
     if(array->head <= array->tail && index >= array->tail) {
-        array->cond.unlock();
+        array->unlock();
         return NULL;
     }
     if(index >= array->size)
         index -= array->size;
 
     if(index >= array->tail) {
-        array->cond.unlock();
+        array->unlock();
         return NULL;
     }
 
     Counted *object = array->get(index);
-    array->cond.unlock();
+    array->unlock();
     return object;
 }
 
