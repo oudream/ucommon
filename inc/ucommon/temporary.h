@@ -338,6 +338,20 @@ public:
             0 : fseek(*fp, pos, SEEK_CUR);
     }
 
+    inline size_t read(fsys& fs) {
+        ssize_t result;
+        if(!object || (result = fs.read(object, used)) < 0)
+            return 0;
+        return (size_t)result;
+    }
+
+    inline size_t write(fsys& fs) {
+        ssize_t result;
+        if(!object || (result = fs.write(object, used)) < 0)
+            return 0;
+        return (size_t)result;
+    }
+
     inline ~temporary() {
         if(object) {
             ::free(object);
