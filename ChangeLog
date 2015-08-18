@@ -1,3 +1,6 @@
+Changes from 6.5.2 to 6.5.3
+- arrayref now uses ConditionalAccess, fix for Conditional
+
 Changes from 6.5.1 to 6.5.2
 - memory management cleanup and mingw32 support for native conditionals
 - new methodology of having getaddrinfo allocate memory

@@ -108,7 +108,7 @@ private:
     mutable pthread_mutex_t mutex;
 #endif
 
-public:
+protected:
     friend class TimedEvent;
 
     /**
@@ -180,6 +180,7 @@ public:
 
     friend class autolock;
 
+public:
     class __EXPORT autolock
     {
     private:
