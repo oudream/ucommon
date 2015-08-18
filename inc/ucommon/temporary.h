@@ -256,6 +256,21 @@ public:
             object = NULL;
         }
     }
+
+    inline size_t read(file& fp) {
+        return (*fp == NULL) || (object == NULL) ? 
+            0 : String::count(fgets(object, (socksize_t)used, *fp));
+    }
+    
+    inline size_t write(file& fp) {
+        return (*fp == NULL) || (object == NULL) ? 
+            0 : fputs(object, *fp);
+    }
+
+    inline size_t seek(file& fp, long pos) {
+        return (*fp == NULL) ? 
+            0 : fseek(*fp, pos, SEEK_CUR);
+    }
 };
 
 template<>
@@ -306,6 +321,21 @@ public:
             ::free(object);
             object = NULL;
         }
+    }
+
+    inline size_t read(file& fp) {
+        return (*fp == NULL) || (object == NULL) ? 
+            0 : fread(object, 1, used, *fp);
+    }
+    
+    inline size_t write(file& fp) {
+        return (*fp == NULL) || (object == NULL) ? 
+            0 : fwrite(object, 1, used, *fp);
+    }
+
+    inline size_t seek(file& fp, long pos) {
+        return (*fp == NULL) ? 
+            0 : fseek(*fp, pos, SEEK_CUR);
     }
 
     inline ~temporary() {
