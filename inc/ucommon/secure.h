@@ -548,11 +548,11 @@ public:
 
     const char *c_str(void);
 
-    inline String str(void)
-        {return String(c_str());}
+    inline secure::string str(void)
+        {return secure::string(c_str());}
 
-    inline operator String()
-        {return String(c_str());}
+    inline operator secure::string()
+        {return secure::string(c_str());}
 
     void set(const char *id);
 
