@@ -63,6 +63,64 @@ namespace ucommon {
 class __SHARED secure
 {
 public:
+    class __SHARED string : protected TypeRef
+    {
+    public:
+        class storage : public Counted
+        {
+        private:
+            friend class secure::string;
+
+            char mem[1];
+
+            storage(caddr_t addr, size_t size, const char *str);
+
+            virtual void dealloc();
+
+            inline char *get() {
+                return &mem[0];
+            }
+
+            inline size_t len() {
+                return strlen(mem);
+            }
+
+            inline size_t max() {
+                return size;
+            }
+        };
+
+        string();
+        
+        string(const string& copy);
+
+        string(const char *str);
+
+        const char *operator*() const;
+
+        inline operator const char *() const {
+            return operator*();
+        }
+
+        bool operator==(const string& ptr) const;
+
+        bool operator==(const char *obj) const;
+
+        inline bool operator!=(const string& ptr) const {
+            return !(*this == ptr);
+        }
+
+        inline bool operator!=(const char *obj) const {
+            return !(*this == obj);
+        }
+
+        string& operator=(const string& objref);
+
+        string& operator=(const char *str);
+
+        void set(const char *str);
+    };
+
     /**
      * Different error states of the security context.
      */
@@ -544,11 +602,11 @@ public:
      * @param text to create a digest for.
      * @return digest string.
      */
-    static String md5(const char *text);
+    static secure::string md5(const char *text);
 
-    static String sha1(const char *text);
+    static secure::string sha1(const char *text);
 
-    static String sha256(const char *text);
+    static secure::string sha256(const char *text);
 };
 
 /**
@@ -605,11 +663,11 @@ public:
 
     const char *c_str(void);
 
-    inline String str(void)
-        {return String(c_str());}
+    inline secure::string str(void)
+        {return secure::string(c_str());}
 
-    inline operator String()
-        {return String(c_str());}
+    inline operator secure::string()
+        {return secure::string(c_str());}
 
     void set(const char *digest, const char *key, size_t len);
 
@@ -718,7 +776,7 @@ public:
      */
     static void uuid(char *string);
 
-    static String uuid(void);
+    static secure::string uuid(void);
 
     template <class T>
     inline static T value(void) {
@@ -825,125 +883,7 @@ public:
         {return bio != NULL;}
 };
 
-/**
- * A template to create a string array that automatically erases.
- * This is a mini string/stringbuf class that supports a subset of
- * functionality but does not require a complex supporting object.  Like
- * stringbuf, this can be used to create local string variables.  When
- * the object falls out of scope it's memory is reset.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template<size_t S>
-class keystring
-{
-private:
-    char buffer[S];
-
-    /**
-     * Disable copy constructor.
-     */
-    inline keystring(const keystring& copy) {}
-
-public:
-    /**
-     * Create a new character buffer with an empty string.
-     */
-    inline keystring()
-        {buffer[0] = 0;}
-
-    /**
-     * Create a character buffer with assigned text.  If the text is
-     * larger than the size of the object, it is truncated.
-     * @param text to assign.
-     */
-    inline keystring(const char *text)
-        {String::set(buffer, S, text);}
-
-    /**
-     * Clear memory when destroyed.
-     */
-    inline ~keystring()
-        {memset(buffer, 0, S);}
-
-    /**
-     * Clear current key memory.
-     */
-    inline void clear(void)
-        {memset(buffer, 0, S);}
-
-    /**
-     * Assign null terminated text to the object.
-     * @param text to assign.
-     */
-    inline void operator=(const char *text)
-        {String::set(buffer, S, text);}
-
-    /**
-     * Concatenate text into the object.  If the text is larger than the
-     * size of the object, then it is truncated.
-     * @param text to append.
-     */
-    inline void operator+=(const char *text)
-        {String::add(buffer, S, text);}
-
-    /**
-     * Test if data is contained in the object.
-     * @return true if there is text.
-     */
-    inline operator bool() const
-        {return buffer[0];}
-
-    /**
-     * Test if the object is empty.
-     * @return true if the object is empty.
-     */
-    inline bool operator!() const
-        {return buffer[0] == 0;}
-
-    /**
-     * Get text by casting reference.
-     * @return pointer to text in object.
-     */
-    inline operator char *()
-        {return buffer;}
-
-    /**
-     * Get text by object pointer reference.
-     * @return pointer to text in object.
-     */
-    inline char *operator*()
-        {return buffer;}
-
-    /**
-     * Array operator to get a character from the object.
-     * @param offset of character in string buffer.
-     * @return character at offset.
-     */
-    inline char& operator[](size_t offset) const
-        {return buffer[offset];}
-
-    /**
-     * Get a pointer to an offset in the object by expression operator.
-     * @param offset of character in string buffer.
-     * @return pointer to offset in object.
-     */
-    inline char *operator()(size_t offset)
-        {return buffer + offset;}
-
-    /**
-     * Get allocated size of the object.
-     * @return allocated size.
-     */
-    inline size_t size(void) const
-        {return S;}
-
-    /**
-     * Get current length of string.
-     * @return length of string.
-     */
-    inline size_t len(void) const
-        {return strlen(buffer);}
-};
+typedef secure::string keystring_t;
 
 /**
  * A template to create a random generated key of specified size.  The

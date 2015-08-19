@@ -84,34 +84,34 @@ String Digest::uuid(const char *name, const unsigned char *ns)
     return String(buf);
 }
 
-String Digest::md5(const char *text)
+secure::string Digest::md5(const char *text)
 {
     if(!has("md5"))
-        return String("");
+        return secure::string();
 
     digest_t digest = "md5";
     digest.puts(text);
-    return String(*digest);
+    return secure::string(*digest);
 }
 
-String Digest::sha1(const char *text)
+secure::string Digest::sha1(const char *text)
 {
     if(!has("sha1"))
-        return String("");
+        return secure::string();
 
     digest_t digest = "sha1";
     digest.puts(text);
-    return String(*digest);
+    return secure::string(*digest);
 }
 
-String Digest::sha256(const char *text)
+secure::string Digest::sha256(const char *text)
 {
     if(!has("sha256"))
-        return String("");
+        return secure::string();
 
     digest_t digest = "sha256";
     digest.puts(text);
-    return String(*digest);
+    return secure::string(*digest);
 }
 
 #if defined(_MSWINDOWS_)
@@ -525,11 +525,11 @@ void Random::uuid(char *str)
     String::hexdump(buf, str, "4-2-2-2-6");
 }
 
-String Random::uuid(void)
+secure::string Random::uuid(void)
 {
     char buf[38];
     uuid(buf);
-    return String(buf);
+    return secure::string(buf);
 }
 
 } // namespace ucommon
