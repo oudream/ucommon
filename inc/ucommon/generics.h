@@ -518,7 +518,7 @@ public:
  * @param object we are testing.
  * @return true if object valid.
  */
-template<class T>
+template<typename T>
 inline bool is(T& object) {
     return object.operator bool();
 }

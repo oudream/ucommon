@@ -40,6 +40,10 @@
 #include <ucommon/protocols.h>
 #endif
 
+#ifndef _UCOMMON_GENERICS_H_
+#include <ucommon/generics.h>
+#endif
+
 #ifndef _UCOMMON_OBJECT_H_
 #include <ucommon/object.h>
 #endif
@@ -507,6 +511,10 @@ inline typeref<T> typeref_cast(T x) {
 	return typeref<T>(x);
 }
 
+template<>
+inline bool is<TypeRef>(TypeRef& obj) {
+	return obj.is();
+}
 
 } // namespace
 
