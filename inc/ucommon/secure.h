@@ -251,7 +251,7 @@ public:
      */
     static void uuid(char *string);
 
-    static String uuid(void);
+    static secure::string uuid(void);
 
     template <typename T>
     inline static void erase(T *object)
@@ -595,7 +595,7 @@ public:
 
     static void uuid(char *string, const char *name, const unsigned char *ns = NULL);
 
-    static String uuid(const char *name, const unsigned char *ns = NULL);
+    static secure::string uuid(const char *name, const unsigned char *ns = NULL);
 
     /**
      * Shortcut for short md5 digests if supported...

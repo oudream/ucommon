@@ -77,11 +77,11 @@ void Digest::uuid(char *str, const char *name, const unsigned char *ns)
     String::hexdump(buf, str, "4-2-2-2-6");
 }
 
-String Digest::uuid(const char *name, const unsigned char *ns)
+secure::string Digest::uuid(const char *name, const unsigned char *ns)
 {
     char buf[38];
     uuid(buf, name, ns);
-    return String(buf);
+    return secure::string(buf);
 }
 
 secure::string Digest::md5(const char *text)
@@ -254,11 +254,11 @@ void secure::uuid(char *str)
     Mutex::release(&buf);
 }
 
-String secure::uuid(void)
+secure::string secure::uuid(void)
 {
     char buf[38];
     uuid(buf);
-    return String(buf);
+    return secure::string(buf);
 }
 
 HMAC::HMAC()
