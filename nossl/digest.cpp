@@ -53,9 +53,11 @@ void Digest::release(void)
     if(context && hashtype) {
         switch(*((char *)hashtype)) {
         case 'm':
+            memset(context, 0, sizeof(MD5_CTX));
             delete (MD5_CTX*)context;
             break;
         case 's':
+            memset(context, 0, sizeof(SHA1_CTX));
             delete (SHA1_CTX *)context;
             break;
         default:
@@ -65,7 +67,7 @@ void Digest::release(void)
     }
 
     bufsize = 0;
-    textbuf[0] = 0;
+    memset(textbuf, 0, sizeof(textbuf));
     hashtype = NULL;
 }
 
