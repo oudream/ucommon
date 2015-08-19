@@ -25,7 +25,7 @@ static size_t fix(size_t size)
 
 namespace ucommon {
 
-secure::string::storage::storage(caddr_t addr, size_t objsize, const char *str) : 
+typeref<secure_chars_t>::storage::storage(caddr_t addr, size_t objsize, const char *str) : 
 TypeRef::Counted(addr, objsize)
 {
     if(str)
@@ -35,19 +35,19 @@ TypeRef::Counted(addr, objsize)
 }
 
 
-void secure::string::storage::dealloc(void)
+void typeref<secure_chars_t>::storage::dealloc(void)
 {
 	memset(&mem[0], 0, size);
 	Counted::dealloc();
 }
 
-secure::string::string() :
+typeref<secure_chars_t>::typeref() :
 TypeRef() {}
 
-secure::string::string(const secure::string& copy) :
+typeref<secure_chars_t>::typeref(const typeref<secure_chars_t>& copy) :
 TypeRef(copy) {}
 
-secure::string::string(const char *str) :
+typeref<secure_chars_t>::typeref(const char *str) :
 TypeRef()
 {
     size_t size = 16;
@@ -59,7 +59,7 @@ TypeRef()
     TypeRef::set(new(mem(p)) storage(p, size, str));
 }
 
-void secure::string::set(const char *str)
+void typeref<secure_chars_t>::set(const char *str)
 {
     release();
     size_t size = 16;
@@ -71,7 +71,7 @@ void secure::string::set(const char *str)
     TypeRef::set(new(mem(p)) storage(p, size, str));
 }
 
-const char *secure::string::operator*() const 
+const char *typeref<secure_chars_t>::operator*() const 
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -80,7 +80,7 @@ const char *secure::string::operator*() const
     return &v->mem[0];
 }
 
-bool secure::string::operator==(const secure::string& ptr) const
+bool typeref<secure_chars_t>::operator==(const typeref<secure_chars_t>& ptr) const
 {
     storage *v1 = polystatic_cast<storage*>(ref);
     storage *v2 = polystatic_cast<storage*>(ptr.ref);
@@ -89,7 +89,7 @@ bool secure::string::operator==(const secure::string& ptr) const
     return eq(&(v1->mem[0]), &(v2->mem[0]));
 }
 
-bool secure::string::operator==(const char *obj) const
+bool typeref<secure_chars_t>::operator==(const char *obj) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -97,13 +97,13 @@ bool secure::string::operator==(const char *obj) const
     return eq(&(v->mem[0]), obj);
 }
 
-secure::string& secure::string::operator=(const secure::string& objref)
+typeref<secure_chars_t>& typeref<secure_chars_t>::operator=(const typeref<secure_chars_t>& objref)
 {
     TypeRef::set(objref);
     return *this;
 }
 
-secure::string& secure::string::operator=(const char *str)
+typeref<secure_chars_t>& typeref<secure_chars_t>::operator=(const char *str)
 {
     set(str);
     return *this;

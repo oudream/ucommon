@@ -55,6 +55,67 @@
 
 namespace ucommon {
 
+class secure_chars_t {};
+
+template <>
+class __SHARED typeref<secure_chars_t> : protected TypeRef
+{
+public:
+    class storage : public Counted
+    {
+    private:
+        friend class typeref;
+
+        char mem[1];
+
+        storage(caddr_t addr, size_t size, const char *str);
+
+        virtual void dealloc();
+
+        inline char *get() {
+            return &mem[0];
+        }
+
+        inline size_t len() {
+            return strlen(mem);
+        }
+
+        inline size_t max() {
+            return size;
+        }
+    };
+
+    typeref();
+    
+    typeref(const typeref& copy);
+
+    typeref(const char *str);
+
+    const char *operator*() const;
+
+    inline operator const char *() const {
+        return operator*();
+    }
+
+    bool operator==(const typeref& ptr) const;
+
+    bool operator==(const char *obj) const;
+
+    inline bool operator!=(const typeref& ptr) const {
+        return !(*this == ptr);
+    }
+
+    inline bool operator!=(const char *obj) const {
+        return !(*this == obj);
+    }
+
+    typeref& operator=(const typeref& objref);
+
+    typeref& operator=(const char *str);
+
+    void set(const char *str);
+};
+
 /**
  * Common secure socket support.  This offers common routines needed for
  * secure/ssl socket support code.
@@ -63,68 +124,12 @@ namespace ucommon {
 class __SHARED secure
 {
 public:
-    class __SHARED string : protected TypeRef
-    {
-    public:
-        class storage : public Counted
-        {
-        private:
-            friend class secure::string;
-
-            char mem[1];
-
-            storage(caddr_t addr, size_t size, const char *str);
-
-            virtual void dealloc();
-
-            inline char *get() {
-                return &mem[0];
-            }
-
-            inline size_t len() {
-                return strlen(mem);
-            }
-
-            inline size_t max() {
-                return size;
-            }
-        };
-
-        string();
-        
-        string(const string& copy);
-
-        string(const char *str);
-
-        const char *operator*() const;
-
-        inline operator const char *() const {
-            return operator*();
-        }
-
-        bool operator==(const string& ptr) const;
-
-        bool operator==(const char *obj) const;
-
-        inline bool operator!=(const string& ptr) const {
-            return !(*this == ptr);
-        }
-
-        inline bool operator!=(const char *obj) const {
-            return !(*this == obj);
-        }
-
-        string& operator=(const string& objref);
-
-        string& operator=(const char *str);
-
-        void set(const char *str);
-    };
-
     /**
      * Different error states of the security context.
      */
     typedef enum {OK=0, INVALID, MISSING_CERTIFICATE, MISSING_PRIVATEKEY, INVALID_CERTIFICATE, INVALID_AUTHORITY, INVALID_PEERNAME, INVALID_CIPHER} error_t;
+
+    typedef typeref<secure_chars_t> string;
 
 protected:
     /**
