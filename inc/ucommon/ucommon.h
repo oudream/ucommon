@@ -110,6 +110,7 @@
 #include <ucommon/containers.h>
 #include <ucommon/fsys.h>
 #include <ucommon/file.h>
+#include <ucommon/temporary.h>
 #include <ucommon/buffer.h>
 #include <ucommon/shell.h>
 #include <ucommon/xml.h>

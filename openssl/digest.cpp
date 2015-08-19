@@ -49,12 +49,13 @@ void Digest::release(void)
         EVP_MD_CTX_cleanup((EVP_MD_CTX *)context);
 
     if(context) {
+        memset(context, 0, sizeof(EVP_MD_CTX));
         delete (EVP_MD_CTX *)context;
         context = NULL;
     }
 
     bufsize = 0;
-    textbuf[0] = 0;
+    memset(textbuf, 0, sizeof(textbuf));
 }
 
 bool Digest::put(const void *address, size_t size)

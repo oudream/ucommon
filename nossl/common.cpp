@@ -43,6 +43,7 @@ Digest::Digest(const char *type)
 Digest::~Digest()
 {
     release();
+    memset(buffer, 0, sizeof(buffer));
 }
 
 const char *Digest::c_str(void)
