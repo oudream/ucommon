@@ -140,6 +140,10 @@ public:
 
     typedef typeref<secure_chars> string;
 
+    typedef arrayref<secure_chars> strarray;
+
+    typedef queueref<secure_chars> strqueue;
+
 protected:
     /**
      * Last error flagged for this context.
