@@ -55,10 +55,14 @@
 
 namespace ucommon {
 
-class secure_chars_t {};
+class secure_chars 
+{
+public:
+    typedef enum {GENERIC_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
+};
 
 template <>
-class __SHARED typeref<secure_chars_t> : protected TypeRef
+class __SHARED typeref<secure_chars> : protected TypeRef, public secure_chars
 {
 public:
     class storage : public Counted
@@ -66,9 +70,10 @@ public:
     private:
         friend class typeref;
 
+        secure_chars::strtype_t type;
         char mem[1];
 
-        storage(caddr_t addr, size_t size, const char *str);
+        storage(caddr_t addr, size_t size, const char *str, strtype_t strtype = GENERIC_STRING);
 
         virtual void dealloc();
 
@@ -89,7 +94,7 @@ public:
     
     typeref(const typeref& copy);
 
-    typeref(const char *str);
+    typeref(const char *str, strtype_t strtype = GENERIC_STRING);
 
     const char *operator*() const;
 
@@ -113,7 +118,9 @@ public:
 
     typeref& operator=(const char *str);
 
-    void set(const char *str);
+    void set(const char *str, strtype_t strtype = GENERIC_STRING);
+
+    strtype_t type(void);
 };
 
 /**
@@ -121,7 +128,7 @@ public:
  * secure/ssl socket support code.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __SHARED secure
+class __SHARED secure : public secure_chars
 {
 public:
     /**
@@ -129,7 +136,7 @@ public:
      */
     typedef enum {OK=0, INVALID, MISSING_CERTIFICATE, MISSING_PRIVATEKEY, INVALID_CERTIFICATE, INVALID_AUTHORITY, INVALID_PEERNAME, INVALID_CIPHER} error_t;
 
-    typedef typeref<secure_chars_t> string;
+    typedef typeref<secure_chars> string;
 
 protected:
     /**

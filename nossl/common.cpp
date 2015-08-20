@@ -91,7 +91,7 @@ secure::string Digest::md5(const char *text)
 
     digest_t digest = "md5";
     digest.puts(text);
-    return secure::string(*digest);
+    return secure::string(*digest, secure::MD5_DIGEST);
 }
 
 secure::string Digest::sha1(const char *text)
@@ -101,7 +101,7 @@ secure::string Digest::sha1(const char *text)
 
     digest_t digest = "sha1";
     digest.puts(text);
-    return secure::string(*digest);
+    return secure::string(*digest, secure::SHA_DIGEST);
 }
 
 secure::string Digest::sha256(const char *text)
@@ -111,7 +111,7 @@ secure::string Digest::sha256(const char *text)
 
     digest_t digest = "sha256";
     digest.puts(text);
-    return secure::string(*digest);
+    return secure::string(*digest, secure::SHA_DIGEST);
 }
 
 #if defined(_MSWINDOWS_)

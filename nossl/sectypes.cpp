@@ -25,29 +25,31 @@ static size_t fix(size_t size)
 
 namespace ucommon {
 
-typeref<secure_chars_t>::storage::storage(caddr_t addr, size_t objsize, const char *str) : 
+typeref<secure_chars>::storage::storage(caddr_t addr, size_t objsize, const char *str, strtype_t strtype) : 
 TypeRef::Counted(addr, objsize)
 {
     if(str)
     	String::set(mem, objsize + 1, str);
     else
 	    mem[0] = 0;
+
+    type = strtype;
 }
 
 
-void typeref<secure_chars_t>::storage::dealloc(void)
+void typeref<secure_chars>::storage::dealloc(void)
 {
 	memset(&mem[0], 0, size);
 	Counted::dealloc();
 }
 
-typeref<secure_chars_t>::typeref() :
+typeref<secure_chars>::typeref() :
 TypeRef() {}
 
-typeref<secure_chars_t>::typeref(const typeref<secure_chars_t>& copy) :
+typeref<secure_chars>::typeref(const typeref<secure_chars>& copy) :
 TypeRef(copy) {}
 
-typeref<secure_chars_t>::typeref(const char *str) :
+typeref<secure_chars>::typeref(const char *str, strtype_t strtype) :
 TypeRef()
 {
     size_t size = 16;
@@ -56,10 +58,10 @@ TypeRef()
         size = fix(strlen(str));
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + size);
-    TypeRef::set(new(mem(p)) storage(p, size, str));
+    TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
-void typeref<secure_chars_t>::set(const char *str)
+void typeref<secure_chars>::set(const char *str, strtype_t strtype)
 {
     release();
     size_t size = 16;
@@ -68,10 +70,10 @@ void typeref<secure_chars_t>::set(const char *str)
         size = fix(strlen(str));
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + size);
-    TypeRef::set(new(mem(p)) storage(p, size, str));
+    TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
-const char *typeref<secure_chars_t>::operator*() const 
+const char *typeref<secure_chars>::operator*() const 
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -80,7 +82,7 @@ const char *typeref<secure_chars_t>::operator*() const
     return &v->mem[0];
 }
 
-bool typeref<secure_chars_t>::operator==(const typeref<secure_chars_t>& ptr) const
+bool typeref<secure_chars>::operator==(const typeref<secure_chars>& ptr) const
 {
     storage *v1 = polystatic_cast<storage*>(ref);
     storage *v2 = polystatic_cast<storage*>(ptr.ref);
@@ -89,7 +91,7 @@ bool typeref<secure_chars_t>::operator==(const typeref<secure_chars_t>& ptr) con
     return eq(&(v1->mem[0]), &(v2->mem[0]));
 }
 
-bool typeref<secure_chars_t>::operator==(const char *obj) const
+bool typeref<secure_chars>::operator==(const char *obj) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -97,13 +99,13 @@ bool typeref<secure_chars_t>::operator==(const char *obj) const
     return eq(&(v->mem[0]), obj);
 }
 
-typeref<secure_chars_t>& typeref<secure_chars_t>::operator=(const typeref<secure_chars_t>& objref)
+typeref<secure_chars>& typeref<secure_chars>::operator=(const typeref<secure_chars>& objref)
 {
     TypeRef::set(objref);
     return *this;
 }
 
-typeref<secure_chars_t>& typeref<secure_chars_t>::operator=(const char *str)
+typeref<secure_chars>& typeref<secure_chars>::operator=(const char *str)
 {
     set(str);
     return *this;
