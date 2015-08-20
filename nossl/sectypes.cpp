@@ -134,4 +134,100 @@ typeref<secure_chars>& typeref<secure_chars>::operator=(const char *str)
     return *this;
 }
 
+typeref<secure_keybytes>::storage::storage(caddr_t addr, size_t objsize, const uint8_t *key, keytype_t keytype) : 
+TypeRef::Counted(addr, objsize)
+{
+    if(key)
+        memcpy(&mem[0], key, objsize);
+    else
+        Random::key(&mem[0], objsize);
+
+    type = keytype;
+}
+
+void typeref<secure_keybytes>::storage::dealloc(void)
+{
+	memset(&mem[0], 0, size);
+	Counted::dealloc();
+}
+
+typeref<secure_keybytes>::typeref() :
+TypeRef() {}
+
+typeref<secure_keybytes>::typeref(const typeref<secure_keybytes>& copy) :
+TypeRef(copy) {}
+
+typeref<secure_keybytes>::typeref(const uint8_t *key, size_t keysize, keytype_t keytype) :
+TypeRef()
+{
+    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
+}
+
+typeref<secure_keybytes>::typeref(size_t keysize, keytype_t keytype) :
+TypeRef()
+{
+    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
+}
+
+secure_keybytes::keytype_t typeref<secure_keybytes>::type(void)
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(v)
+        return v->type;
+
+    return UNDEFINED_KEYTYPE;
+}
+
+size_t typeref<secure_keybytes>::bits(void)
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(!v)
+        return 0;
+
+    return v->size * 8;
+}
+
+void typeref<secure_keybytes>::set(const uint8_t *key, size_t keysize, keytype_t keytype)
+{
+    release();
+    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
+}
+
+void typeref<secure_keybytes>::generate(size_t keysize, keytype_t keytype)
+{
+    release();
+    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
+}
+
+
+const uint8_t *typeref<secure_keybytes>::operator*() const 
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(!v)
+        return NULL;
+
+    return &v->mem[0];
+}
+
+bool typeref<secure_keybytes>::operator==(const typeref<secure_keybytes>& ptr) const
+{
+    storage *v1 = polystatic_cast<storage*>(ref);
+    storage *v2 = polystatic_cast<storage*>(ptr.ref);
+    if(!v1 || !v2)
+        return false;
+    if(v1->size != v2->size)
+        return false;
+    return !memcmp(&(v1->mem[0]), &(v2->mem[0]), v1->size);
+}
+
+typeref<secure_keybytes>& typeref<secure_keybytes>::operator=(const typeref<secure_keybytes>& objref)
+{
+    TypeRef::set(objref);
+    return *this;
+}
+
 } // namespace ucommon

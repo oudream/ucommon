@@ -64,7 +64,7 @@ public:
 class secure_keybytes
 {
 public:
-    typedef enum {UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+    typedef enum {UNDEFINED_KEYTYPE, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
 };
 
 template <>
@@ -143,7 +143,7 @@ public:
         secure_keybytes::keytype_t type;
         uint8_t mem[1];
 
-        storage(caddr_t addr, size_t size, const uint8_t *key, keytype_t keytype = UNPAIRED_KEYTYPE);
+        storage(caddr_t addr, size_t size, const uint8_t *key = NULL, keytype_t keytype = UNPAIRED_KEYTYPE);
 
         virtual void dealloc();
 
