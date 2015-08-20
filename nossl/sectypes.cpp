@@ -61,6 +61,29 @@ TypeRef()
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
+secure_chars::strtype_t typeref<secure_chars>::type(void)
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(v)
+        return v->type;
+
+    return GENERIC_STRING;
+}
+
+size_t typeref<secure_chars>::bits(void)
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(!v)
+        return 0;
+
+    switch(v->type) {
+    case GENERIC_STRING:
+        return v->len() * 8;
+    default:
+        return v->len() * 4;
+    }
+}
+
 void typeref<secure_chars>::set(const char *str, strtype_t strtype)
 {
     release();

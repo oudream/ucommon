@@ -121,6 +121,8 @@ public:
     void set(const char *str, strtype_t strtype = GENERIC_STRING);
 
     strtype_t type(void);
+
+    size_t bits(void);
 };
 
 /**
