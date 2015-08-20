@@ -61,6 +61,12 @@ public:
     typedef enum {GENERIC_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
 };
 
+class secure_keybytes
+{
+public:
+    typedef enum {UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+};
+
 template <>
 class __SHARED typeref<secure_chars> : protected TypeRef, public secure_chars
 {
@@ -77,7 +83,7 @@ public:
 
         virtual void dealloc();
 
-        inline char *get() {
+        inline const char *get() {
             return &mem[0];
         }
 
@@ -125,12 +131,65 @@ public:
     size_t bits(void);
 };
 
+template <>
+class __SHARED typeref<secure_keybytes> : protected TypeRef, public secure_keybytes
+{
+public:
+    class storage : public Counted
+    {
+    private:
+        friend class typeref;
+
+        secure_keybytes::keytype_t type;
+        uint8_t mem[1];
+
+        storage(caddr_t addr, size_t size, const uint8_t *key, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+        virtual void dealloc();
+
+        inline const uint8_t *get() {
+            return &mem[0];
+        }
+    };
+
+    typeref();
+    
+    typeref(const typeref& copy);
+
+    typeref(size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    typeref(const uint8_t *key, size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    const uint8_t *operator*() const;
+
+    inline operator const uint8_t *() const {
+        return operator*();
+    }
+
+    bool operator==(const typeref& ptr) const;
+
+    inline bool operator!=(const typeref& ptr) const {
+        return !(*this == ptr);
+    }
+
+    typeref& operator=(const typeref& objref);
+
+    void set(const uint8_t *str, size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    void generate(size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    keytype_t type(void);
+
+    size_t bits(void);
+};
+
+
 /**
  * Common secure socket support.  This offers common routines needed for
  * secure/ssl socket support code.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __SHARED secure : public secure_chars
+class __SHARED secure : public secure_chars, public secure_keybytes
 {
 public:
     /**
@@ -143,6 +202,12 @@ public:
     typedef arrayref<secure_chars> strarray;
 
     typedef queueref<secure_chars> strqueue;
+
+    typedef typeref<secure_keybytes> keybytes;
+    
+    typedef typeref<secure_keybytes> keyarray;
+
+    typedef typeref<secure_keybytes> keyqueue;
 
 protected:
     /**
