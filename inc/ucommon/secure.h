@@ -447,9 +447,7 @@ public:
 
         Key(const char *cipher, const uint8_t *iv, size_t ivsize);
 
-        inline Key(const char *cipher, secure::keybytes& iv) {
-            Key(cipher, *iv, iv.size() / 8);
-        }
+        Key(const char *cipher, secure::keybytes& iv);
 
         Key(const char *cipher, const char *digest);
 
@@ -465,17 +463,13 @@ public:
 
         void set(const unsigned char *key, size_t size);
 
-        inline void set(secure::keybytes& key) {
-            set(*key, key.size() / 8);
-        }
+        bool set(secure::keybytes& key);
 
         void set(const char *cipher, const char *digest);
 
         void set(const char *cipher, const uint8_t *iv, size_t ivsize);
 
-        inline void set(const char *cipher, secure::keybytes& iv) {
-            set(cipher, *iv, size() / 8);
-        }
+        bool set(const char *cipher, secure::keybytes& iv);
 
         void assign(const char *key, size_t size, const unsigned char *salt, unsigned rounds);
 

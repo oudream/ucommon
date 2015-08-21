@@ -315,6 +315,16 @@ Cipher::Key::Key(const char *cipher, const uint8_t *iv, size_t ivsize)
     set(cipher, iv, ivsize);
 }
 
+Cipher::Key::Key(const char *cipher, secure::keybytes& iv)
+{
+    hashtype = algotype = NULL;
+    hashid = algoid = 0;
+
+    secure::init();
+
+    set(cipher, *iv, iv.size() / 8);
+}
+
 Cipher::Key::Key(const char *cipher, const char *digest)
 {
     hashtype = algotype = NULL;
@@ -384,6 +394,42 @@ size_t Cipher::Key::get(uint8_t *keyout, uint8_t *ivout)
         }
     }
     return size;
+}
+
+bool Cipher::Key::set(const char *cipher, secure::keybytes& iv)
+{
+    const uint8_t *ivp = *iv;
+    size_t size = iv.size() / 8;
+
+    if(!ivp)
+        return false;
+
+    if(iv.type() != secure::IV_BUFFER)
+        return false;
+
+    if(size != blksize)
+        return false;
+
+    set(cipher, ivp, size);
+    return true;
+}
+
+bool Cipher::Key::set(secure::keybytes& key) 
+{
+    const uint8_t *kvp = *key;
+    size_t size = key.size() / 8;
+
+    if(!kvp)
+        return false;
+
+    if(key.type() != secure::UNPAIRED_KEYTYPE)
+        return false;
+
+    if(size != keysize)
+        return false;
+
+    set(kvp, size);
+    return true;
 }
 
 String Cipher::Key::b64(void)
