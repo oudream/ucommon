@@ -55,18 +55,162 @@
 
 namespace ucommon {
 
+class secure_chars 
+{
+public:
+    typedef enum {GENERIC_STRING, B64_STRING, HEX_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
+};
+
+class secure_keybytes
+{
+public:
+    typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+};
+
+template <>
+class __SHARED typeref<secure_chars> : protected TypeRef, public secure_chars
+{
+public:
+    class storage : public Counted
+    {
+    private:
+        friend class typeref;
+
+        secure_chars::strtype_t type;
+        char mem[1];
+
+        storage(caddr_t addr, size_t size, const char *str, strtype_t strtype = GENERIC_STRING);
+
+        virtual void dealloc();
+
+        inline const char *get() {
+            return &mem[0];
+        }
+
+        inline size_t len() {
+            return strlen(mem);
+        }
+
+        inline size_t max() {
+            return size;
+        }
+    };
+
+    typeref();
+    
+    typeref(const typeref& copy);
+
+    typeref(const char *str, strtype_t strtype = GENERIC_STRING);
+
+    const char *operator*() const;
+
+    inline operator const char *() const {
+        return operator*();
+    }
+
+    bool operator==(const typeref& ptr) const;
+
+    bool operator==(const char *obj) const;
+
+    inline bool operator!=(const typeref& ptr) const {
+        return !(*this == ptr);
+    }
+
+    inline bool operator!=(const char *obj) const {
+        return !(*this == obj);
+    }
+
+    typeref& operator=(const typeref& objref);
+
+    typeref& operator=(const char *str);
+
+    void set(const char *str, strtype_t strtype = GENERIC_STRING);
+
+    void b64(const uint8_t *bytes, size_t bsize);
+
+    void hex(const uint8_t *bytes, size_t bsize);
+
+    strtype_t type(void);
+
+    size_t size(void);
+};
+
+template <>
+class __SHARED typeref<secure_keybytes> : protected TypeRef, public secure_keybytes
+{
+public:
+    class storage : public Counted
+    {
+    private:
+        friend class typeref;
+
+        secure_keybytes::keytype_t type;
+        uint8_t mem[1];
+
+        storage(caddr_t addr, size_t size, const uint8_t *key = NULL, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+        virtual void dealloc();
+
+        inline const uint8_t *get() {
+            return &mem[0];
+        }
+    };
+
+    typeref();
+    
+    typeref(const typeref& copy);
+
+    typeref(size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    typeref(const uint8_t *key, size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    const uint8_t *operator*() const;
+
+    inline operator const uint8_t *() const {
+        return operator*();
+    }
+
+    bool operator==(const typeref& ptr) const;
+
+    inline bool operator!=(const typeref& ptr) const {
+        return !(*this == ptr);
+    }
+
+    typeref& operator=(const typeref& objref);
+
+    void set(const uint8_t *str, size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    void generate(size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
+
+    keytype_t type(void);
+
+    size_t size(void);
+};
+
 /**
  * Common secure socket support.  This offers common routines needed for
  * secure/ssl socket support code.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __SHARED secure
+class __SHARED secure : public secure_chars, public secure_keybytes
 {
 public:
     /**
      * Different error states of the security context.
      */
     typedef enum {OK=0, INVALID, MISSING_CERTIFICATE, MISSING_PRIVATEKEY, INVALID_CERTIFICATE, INVALID_AUTHORITY, INVALID_PEERNAME, INVALID_CIPHER} error_t;
+
+    typedef typeref<secure_chars> string;
+
+    typedef arrayref<secure_chars> strarray;
+
+    typedef queueref<secure_chars> strqueue;
+
+    typedef typeref<secure_keybytes> keybytes;
+    
+    typedef typeref<secure_keybytes> keyarray;
+
+    typedef typeref<secure_keybytes> keyqueue;
 
 protected:
     /**
@@ -193,7 +337,7 @@ public:
      */
     static void uuid(char *string);
 
-    static String uuid(void);
+    static secure::string uuid(void);
 
     template <typename T>
     inline static void erase(T *object)
@@ -307,11 +451,23 @@ public:
 
         Key(const char *cipher, const uint8_t *iv, size_t ivsize);
 
+        Key(const char *cipher, secure::keybytes& iv);
+
         Key(const char *cipher, const char *digest);
 
         ~Key();
 
         void set(const uint8_t *key, size_t size);
+
+        inline secure::keybytes key() {
+            return secure::keybytes(keybuf, keysize);
+        }
+
+        inline secure::keybytes iv() {
+            return secure::keybytes(ivbuf, blksize, secure::IV_BUFFER);
+        }
+
+        bool set(secure::keybytes& key);
 
         void set(const char *cipher, const char *digest);
 
@@ -319,11 +475,13 @@ public:
 
         void assign(const char *key, size_t size, const uint8_t *salt, unsigned rounds);
 
+        bool set(const char *cipher, secure::keybytes& iv);
+
         void assign(const char *key, size_t size = 0);
 
         void clear(void);
 
-        String b64(void);
+        secure::string b64(void);
 
         void b64(const char *string);
 
@@ -371,6 +529,14 @@ public:
     void set(uint8_t *address, size_t size = 0);
 
     void set(const key_t key, mode_t mode, uint8_t *address, size_t size = 0);
+
+    inline secure::keybytes iv() {
+        return keys.iv();
+    }
+
+    inline secure::keybytes key() {
+        return keys.key();
+    }
 
     /**
      * Push a final cipher block.  This is used to push the final buffer into
@@ -490,11 +656,11 @@ public:
 
     const char *c_str(void);
 
-    inline String str(void)
-        {return String(c_str());}
+    inline secure::string str(void)
+        {return secure::string(c_str());}
 
-    inline operator String()
-        {return String(c_str());}
+    inline operator secure::string()
+        {return secure::string(c_str());}
 
     void set(const char *id);
 
@@ -537,18 +703,18 @@ public:
 
     static void uuid(char *string, const char *name, const uint8_t *ns = NULL);
 
-    static String uuid(const char *name, const uint8_t *ns = NULL);
+    static secure::string uuid(const char *name, const uint8_t *ns = NULL);
 
     /**
      * Shortcut for short md5 digests if supported...
      * @param text to create a digest for.
      * @return digest string.
      */
-    static String md5(const char *text);
+    static secure::string md5(const char *text);
 
-    static String sha1(const char *text);
+    static secure::string sha1(const char *text);
 
-    static String sha256(const char *text);
+    static secure::string sha256(const char *text);
 };
 
 /**
@@ -605,11 +771,11 @@ public:
 
     const char *c_str(void);
 
-    inline String str(void)
-        {return String(c_str());}
+    inline secure::string str(void)
+        {return secure::string(c_str());}
 
-    inline operator String()
-        {return String(c_str());}
+    inline operator secure::string()
+        {return secure::string(c_str());}
 
     void set(const char *digest, const char *key, size_t len);
 
@@ -718,7 +884,7 @@ public:
      */
     static void uuid(char *string);
 
-    static String uuid(void);
+    static secure::string uuid(void);
 
     template <class T>
     inline static T value(void) {
@@ -825,125 +991,7 @@ public:
         {return bio != NULL;}
 };
 
-/**
- * A template to create a string array that automatically erases.
- * This is a mini string/stringbuf class that supports a subset of
- * functionality but does not require a complex supporting object.  Like
- * stringbuf, this can be used to create local string variables.  When
- * the object falls out of scope it's memory is reset.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template<size_t S>
-class keystring
-{
-private:
-    char buffer[S];
-
-    /**
-     * Disable copy constructor.
-     */
-    inline keystring(const keystring& copy) {}
-
-public:
-    /**
-     * Create a new character buffer with an empty string.
-     */
-    inline keystring()
-        {buffer[0] = 0;}
-
-    /**
-     * Create a character buffer with assigned text.  If the text is
-     * larger than the size of the object, it is truncated.
-     * @param text to assign.
-     */
-    inline keystring(const char *text)
-        {String::set(buffer, S, text);}
-
-    /**
-     * Clear memory when destroyed.
-     */
-    inline ~keystring()
-        {memset(buffer, 0, S);}
-
-    /**
-     * Clear current key memory.
-     */
-    inline void clear(void)
-        {memset(buffer, 0, S);}
-
-    /**
-     * Assign null terminated text to the object.
-     * @param text to assign.
-     */
-    inline void operator=(const char *text)
-        {String::set(buffer, S, text);}
-
-    /**
-     * Concatenate text into the object.  If the text is larger than the
-     * size of the object, then it is truncated.
-     * @param text to append.
-     */
-    inline void operator+=(const char *text)
-        {String::add(buffer, S, text);}
-
-    /**
-     * Test if data is contained in the object.
-     * @return true if there is text.
-     */
-    inline operator bool() const
-        {return buffer[0];}
-
-    /**
-     * Test if the object is empty.
-     * @return true if the object is empty.
-     */
-    inline bool operator!() const
-        {return buffer[0] == 0;}
-
-    /**
-     * Get text by casting reference.
-     * @return pointer to text in object.
-     */
-    inline operator char *()
-        {return buffer;}
-
-    /**
-     * Get text by object pointer reference.
-     * @return pointer to text in object.
-     */
-    inline char *operator*()
-        {return buffer;}
-
-    /**
-     * Array operator to get a character from the object.
-     * @param offset of character in string buffer.
-     * @return character at offset.
-     */
-    inline char& operator[](size_t offset) const
-        {return buffer[offset];}
-
-    /**
-     * Get a pointer to an offset in the object by expression operator.
-     * @param offset of character in string buffer.
-     * @return pointer to offset in object.
-     */
-    inline char *operator()(size_t offset)
-        {return buffer + offset;}
-
-    /**
-     * Get allocated size of the object.
-     * @return allocated size.
-     */
-    inline size_t size(void) const
-        {return S;}
-
-    /**
-     * Get current length of string.
-     * @return length of string.
-     */
-    inline size_t len(void) const
-        {return strlen(buffer);}
-};
+typedef secure::string keystring_t;
 
 /**
  * A template to create a random generated key of specified size.  The

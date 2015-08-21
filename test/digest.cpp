@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     md5.puts("this is some text");
     assert(eq("684d9d89b9de8178dcd80b7b4d018103", *md5));
 
-    string_t dig = Digest::md5("this is some text");
+    secure::string dig = Digest::md5("this is some text");
     assert(eq("684d9d89b9de8178dcd80b7b4d018103", *dig));
 
     return 0;

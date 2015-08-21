@@ -274,7 +274,7 @@ public:
 		reset(v);
 	}
 
-	inline size_t find(typeref<T> v, size_t start = 0) {
+	size_t find(typeref<T> v, size_t start = 0) {
 		for(size_t index = start; index < size(); ++index) {
 			if(is(index) && at(index) == v) {
 				return index;
@@ -283,7 +283,7 @@ public:
 		return (size_t)(-1);
 	}
 
-	inline size_t count(typeref<T> v) {
+	size_t count(typeref<T> v) {
 		size_t found = 0;
 		for(size_t index = 0; index < size(); ++index) {
 			if(is(index) && at(index) == v)

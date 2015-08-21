@@ -43,6 +43,7 @@ Digest::Digest(const char *type)
 Digest::~Digest()
 {
     release();
+    memset(buffer, 0, sizeof(buffer));
 }
 
 const char *Digest::c_str(void)
@@ -76,41 +77,41 @@ void Digest::uuid(char *str, const char *name, const uint8_t *ns)
     String::hexdump(buf, str, "4-2-2-2-6");
 }
 
-String Digest::uuid(const char *name, const uint8_t *ns)
+secure::string Digest::uuid(const char *name, const uint8_t *ns)
 {
     char buf[38];
     uuid(buf, name, ns);
-    return String(buf);
+    return secure::string(buf);
 }
 
-String Digest::md5(const char *text)
+secure::string Digest::md5(const char *text)
 {
     if(!has("md5"))
-        return String("");
+        return secure::string();
 
     digest_t digest = "md5";
     digest.puts(text);
-    return String(*digest);
+    return secure::string(*digest, secure::MD5_DIGEST);
 }
 
-String Digest::sha1(const char *text)
+secure::string Digest::sha1(const char *text)
 {
     if(!has("sha1"))
-        return String("");
+        return secure::string();
 
     digest_t digest = "sha1";
     digest.puts(text);
-    return String(*digest);
+    return secure::string(*digest, secure::SHA_DIGEST);
 }
 
-String Digest::sha256(const char *text)
+secure::string Digest::sha256(const char *text)
 {
     if(!has("sha256"))
-        return String("");
+        return secure::string();
 
     digest_t digest = "sha256";
     digest.puts(text);
-    return String(*digest);
+    return secure::string(*digest, secure::SHA_DIGEST);
 }
 
 #if defined(_MSWINDOWS_)
@@ -253,11 +254,11 @@ void secure::uuid(char *str)
     Mutex::release(&buf);
 }
 
-String secure::uuid(void)
+secure::string secure::uuid(void)
 {
     char buf[38];
     uuid(buf);
-    return String(buf);
+    return secure::string(buf);
 }
 
 HMAC::HMAC()
@@ -312,6 +313,19 @@ Cipher::Key::Key(const char *cipher, const uint8_t *iv, size_t ivsize)
     secure::init();
 
     set(cipher, iv, ivsize);
+}
+
+Cipher::Key::Key(const char *cipher, secure::keybytes& iv)
+{
+    hashtype = algotype = NULL;
+    hashid = algoid = 0;
+
+    secure::init();
+
+    if(iv.type() == secure::IV_BUFFER)
+        set(cipher, *iv, iv.size() / 8);
+    else
+        set(cipher);
 }
 
 Cipher::Key::Key(const char *cipher, const char *digest)
@@ -385,9 +399,47 @@ size_t Cipher::Key::get(uint8_t *keyout, uint8_t *ivout)
     return size;
 }
 
-String Cipher::Key::b64(void)
+bool Cipher::Key::set(const char *cipher, secure::keybytes& iv)
 {
-    return String::b64(keybuf, keysize);
+    const uint8_t *ivp = *iv;
+    size_t size = iv.size() / 8;
+
+    if(!ivp)
+        return false;
+
+    if(iv.type() != secure::IV_BUFFER)
+        return false;
+
+    if(size != blksize)
+        return false;
+
+    set(cipher, ivp, size);
+    return true;
+}
+
+bool Cipher::Key::set(secure::keybytes& key) 
+{
+    const uint8_t *kvp = *key;
+    size_t size = key.size() / 8;
+
+    if(!kvp)
+        return false;
+
+    if(key.type() != secure::UNPAIRED_KEYTYPE)
+        return false;
+
+    if(size != keysize)
+        return false;
+
+    set(kvp, size);
+    return true;
+}
+
+secure::string Cipher::Key::b64(void)
+{
+    secure::string bytes;
+    bytes.b64(keybuf, keysize);
+    return bytes;
 }
 
 void Cipher::Key::clear(void)
@@ -524,11 +576,11 @@ void Random::uuid(char *str)
     String::hexdump(buf, str, "4-2-2-2-6");
 }
 
-String Random::uuid(void)
+secure::string Random::uuid(void)
 {
     char buf[38];
     uuid(buf);
-    return String(buf);
+    return secure::string(buf);
 }
 
 } // namespace ucommon

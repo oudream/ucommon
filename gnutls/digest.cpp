@@ -28,7 +28,7 @@ void Digest::release(void)
     }
 
     bufsize = 0;
-    textbuf[0] = 0;
+    memset(textbuf, 0, sizeof(textbuf));
     hashid = 0;
 }
 
