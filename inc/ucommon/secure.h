@@ -64,7 +64,7 @@ public:
 class secure_keybytes
 {
 public:
-    typedef enum {UNDEFINED_KEYTYPE, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+    typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
 };
 
 template <>
@@ -447,15 +447,35 @@ public:
 
         Key(const char *cipher, const uint8_t *iv, size_t ivsize);
 
+        inline Key(const char *cipher, secure::keybytes& iv) {
+            Key(cipher, *iv, iv.size() / 8);
+        }
+
         Key(const char *cipher, const char *digest);
 
         ~Key();
 
+        inline secure::keybytes key() {
+            return secure::keybytes(keybuf, keysize);
+        }
+
+        inline secure::keybytes iv() {
+            return secure::keybytes(ivbuf, blksize, secure::IV_BUFFER);
+        }
+
         void set(const unsigned char *key, size_t size);
+
+        inline void set(secure::keybytes& key) {
+            set(*key, key.size() / 8);
+        }
 
         void set(const char *cipher, const char *digest);
 
         void set(const char *cipher, const uint8_t *iv, size_t ivsize);
+
+        inline void set(const char *cipher, secure::keybytes& iv) {
+            set(cipher, *iv, size() / 8);
+        }
 
         void assign(const char *key, size_t size, const unsigned char *salt, unsigned rounds);
 
@@ -511,6 +531,14 @@ public:
     void set(unsigned char *address, size_t size = 0);
 
     void set(key_t key, mode_t mode, unsigned char *address, size_t size = 0);
+
+    inline secure::keybytes iv() {
+        return keys.iv();
+    }
+
+    inline secure::keybytes key() {
+        return keys.key();
+    }
 
     /**
      * Push a final cipher block.  This is used to push the final buffer into
