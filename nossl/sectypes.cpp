@@ -72,14 +72,24 @@ secure_chars::strtype_t typeref<secure_chars>::type(void)
 size_t typeref<secure_chars>::size(void)
 {
     storage *v = polystatic_cast<storage *>(ref);
+    size_t len = v->len();
+
     if(!v)
         return 0;
 
     switch(v->type) {
     case GENERIC_STRING:
-        return v->len() * 8;
+        return len * 8;
+    case B64_STRING:
+        len = (v->len() * 3) / 4;
+        if(v->mem[v->len() - 1] == '=') {
+            --len;
+            if(v->mem[v->len() - 2] == '=')
+                --len;
+        }
+        return len * 8;
     default:
-        return v->len() * 4;
+        return len * 4;
     }
 }
 
