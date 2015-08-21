@@ -150,7 +150,7 @@ void typeref<secure_chars>::hex(const uint8_t *bytes, size_t bsize)
     size_t len = bsize * 2;
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + len);
-    storage *s = new(mem(p)) storage(p, len, NULL, secure::B64_STRING);
+    storage *s = new(mem(p)) storage(p, len, NULL, secure::HEX_STRING);
 
     for(size_t index = 0; index < bsize; ++index) {
         snprintf(&s->mem[index * 2], 3, "%2.2x", bytes[index]);
