@@ -128,7 +128,7 @@ public:
 
     strtype_t type(void);
 
-    size_t bits(void);
+    size_t size(void);
 };
 
 template <>
@@ -180,9 +180,8 @@ public:
 
     keytype_t type(void);
 
-    size_t bits(void);
+    size_t size(void);
 };
-
 
 /**
  * Common secure socket support.  This offers common routines needed for

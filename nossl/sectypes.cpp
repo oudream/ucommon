@@ -36,7 +36,6 @@ TypeRef::Counted(addr, objsize)
     type = strtype;
 }
 
-
 void typeref<secure_chars>::storage::dealloc(void)
 {
 	memset(&mem[0], 0, size);
@@ -70,7 +69,7 @@ secure_chars::strtype_t typeref<secure_chars>::type(void)
     return GENERIC_STRING;
 }
 
-size_t typeref<secure_chars>::bits(void)
+size_t typeref<secure_chars>::size(void)
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -180,7 +179,7 @@ secure_keybytes::keytype_t typeref<secure_keybytes>::type(void)
     return UNDEFINED_KEYTYPE;
 }
 
-size_t typeref<secure_keybytes>::bits(void)
+size_t typeref<secure_keybytes>::size(void)
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
