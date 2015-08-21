@@ -322,7 +322,10 @@ Cipher::Key::Key(const char *cipher, secure::keybytes& iv)
 
     secure::init();
 
-    set(cipher, *iv, iv.size() / 8);
+    if(iv.type() == secure::IV_BUFFER)
+        set(cipher, *iv, iv.size() / 8);
+    else
+        set(cipher);
 }
 
 Cipher::Key::Key(const char *cipher, const char *digest)
@@ -432,9 +435,11 @@ bool Cipher::Key::set(secure::keybytes& key)
     return true;
 }
 
-String Cipher::Key::b64(void)
+secure::string Cipher::Key::b64(void)
 {
-    return String::b64(keybuf, keysize);
+    secure::string bytes;
+    bytes.b64(keybuf, keysize);
+    return bytes;
 }
 
 void Cipher::Key::clear(void)

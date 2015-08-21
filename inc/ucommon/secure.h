@@ -58,7 +58,7 @@ namespace ucommon {
 class secure_chars 
 {
 public:
-    typedef enum {GENERIC_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
+    typedef enum {GENERIC_STRING, B64_STRING, HEX_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
 };
 
 class secure_keybytes
@@ -125,6 +125,10 @@ public:
     typeref& operator=(const char *str);
 
     void set(const char *str, strtype_t strtype = GENERIC_STRING);
+
+    void b64(const uint8_t *bytes, size_t bsize);
+
+    void hex(const uint8_t *bytes, size_t bsize);
 
     strtype_t type(void);
 
@@ -477,7 +481,7 @@ public:
 
         void clear(void);
 
-        String b64(void);
+        secure::string b64(void);
 
         void b64(const char *string);
 

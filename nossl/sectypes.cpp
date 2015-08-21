@@ -133,6 +133,32 @@ typeref<secure_chars>& typeref<secure_chars>::operator=(const char *str)
     return *this;
 }
 
+void typeref<secure_chars>::b64(const uint8_t *bytes, size_t bsize)
+{
+    release();
+    size_t len = ((bsize * 4 / 3) + 1);
+
+    caddr_t p = TypeRef::alloc(sizeof(storage) + len);
+    storage *s = new(mem(p)) storage(p, len, NULL, secure::B64_STRING);
+    String::b64encode(&s->mem[0], bytes, bsize);
+    TypeRef::set(s);
+}
+
+void typeref<secure_chars>::hex(const uint8_t *bytes, size_t bsize)
+{
+    release();
+    size_t len = bsize * 2;
+
+    caddr_t p = TypeRef::alloc(sizeof(storage) + len);
+    storage *s = new(mem(p)) storage(p, len, NULL, secure::B64_STRING);
+
+    for(size_t index = 0; index < bsize; ++index) {
+        snprintf(&s->mem[index * 2], 3, "%2.2x", bytes[index]);
+    }
+
+    TypeRef::set(s);
+}
+
 typeref<secure_keybytes>::storage::storage(caddr_t addr, size_t objsize, const uint8_t *key, keytype_t keytype) : 
 TypeRef::Counted(addr, objsize)
 {
