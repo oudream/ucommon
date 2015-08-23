@@ -30,6 +30,12 @@ if (NOT UCOMMON_CONFIGURED)
         endif()
     endif()
 
+    if(NOT CMAKE_CXX_FLAGS MATCHES "-std=")
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            set(UCOMMON_FLAGS ${UCOMMON_FLAGS} "-std=c++11")
+        endif()
+    endif()
+
     if(BUILD_RUNTIME AND WIN32)
         set(UCOMMON_FLAGS ${UCOMMON_FLAGS} -DUCOMMON_RUNTIME)
     else()

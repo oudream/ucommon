@@ -1,3 +1,28 @@
+ucommon (1:6.5.4-1) UNRELEASED; urgency=low
+
+  * Improved usecure management of secure types
+
+ -- David Sugar <dyfet@gnutelephony.org>  Sun, 23 Aug 2015 07:54:53 -0400
+
+ucommon (1:6.5.3-1) UNRELEASED; urgency=low
+
+  * Resolved Conditional and arrayref now uses ConditionalAccess
+
+ -- David Sugar <dyfet@gnutelephony.org>  Tue, 18 Aug 2015 04:53:20 -0400
+
+ucommon (1:6.5.2-1) UNRELEASED; urgency=low
+
+  * Memory allocation and socket management fixes
+  * Lots of expansion of arrayref uses
+
+ -- David Sugar <dyfet@gnutelephony.org>  Mon, 17 Aug 2015 15:40:14 -0400
+
+ucommon (1:6.5.1-1) UNRELEASED; urgency=low
+
+  * Thread shared references added
+
+ -- David Sugar <dyfet@gnutelephony.org>  Wed, 12 Aug 2015 08:22:45 -0400
+
 ucommon (1:6.5.0-1) UNRELEASED; urgency=low
 
   * Core typeref expanded, arrayref introduced

@@ -90,7 +90,6 @@
 #include <ucommon/protocols.h>
 #include <ucommon/object.h>
 #include <ucommon/typeref.h>
-#include <ucommon/arrayref.h>
 #include <ucommon/string.h>
 #include <ucommon/counter.h>
 #include <ucommon/numbers.h>
@@ -106,9 +105,13 @@
 #include <ucommon/bitmap.h>
 #include <ucommon/socket.h>
 #include <ucommon/thread.h>
+#include <ucommon/arrayref.h>
+#include <ucommon/mapref.h>
+#include <ucommon/shared.h>
 #include <ucommon/containers.h>
 #include <ucommon/fsys.h>
 #include <ucommon/file.h>
+#include <ucommon/temporary.h>
 #include <ucommon/buffer.h>
 #include <ucommon/shell.h>
 #include <ucommon/xml.h>

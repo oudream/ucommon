@@ -111,7 +111,7 @@ caddr_t TypeRef::mem(caddr_t addr)
     return addr;
 }
 
-stringref::value::value(caddr_t addr, size_t objsize, const char *str) : 
+typeref<const char *>::value::value(caddr_t addr, size_t objsize, const char *str) : 
 TypeRef::Counted(addr, objsize)
 {
     if(str)
@@ -120,19 +120,19 @@ TypeRef::Counted(addr, objsize)
 	    mem[0] = 0;
 }
 
-void stringref::value::destroy(void) 
+void typeref<const char *>::value::destroy(void) 
 {
 	count.clear();
 	release();
 }
 
-stringref::stringref() :
+typeref<const char *>::typeref() :
 TypeRef() {}
 
-stringref::stringref(const stringref& copy) :
+typeref<const char *>::typeref(const typeref<const char *>& copy) :
 TypeRef(copy) {}
 
-stringref::stringref(const char *str) :
+typeref<const char *>::typeref(const char *str) :
 TypeRef()
 {
     size_t size = 0;
@@ -144,7 +144,7 @@ TypeRef()
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
-const char *stringref::operator()(ssize_t offset) const
+const char *typeref<const char *>::operator()(ssize_t offset) const
 {
     value *v = polystatic_cast<value *>(ref);
     if(!v)
@@ -162,27 +162,57 @@ const char *stringref::operator()(ssize_t offset) const
     return &v->mem[v->len() + offset];
 }
 
-const char *stringref::operator*() const 
+const char *typeref<const char *>::operator*() const 
 {
-    if(!ref)
-	    return NULL;
     value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return NULL;
+
     return &v->mem[0];
 }
 
-stringref& stringref::operator=(const stringref& objref)
+size_t typeref<const char *>::len() const
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return 0;
+
+    return v->len();
+}
+
+typeref<const char *> typeref<const char *>::operator+(const char *str2) const 
+{
+    value *v1 = polystatic_cast<value *>(ref);
+    const char *str1 = "";
+
+    if(v1)
+        str1 = &v1->mem[0];
+
+    if(!str2)
+        str2 = "";
+
+    size_t ss = strlen(str1);
+    ss += strlen(str2);
+    charvalues_t results = stringref::create(ss);
+    snprintf(results->get(), results->max() + 1, "%s%s", str1, str2);
+    stringref_t result;
+    result.assign(results);
+    return result;
+}
+        
+typeref<const char *>& typeref<const char *>::operator=(const typeref<const char *>& objref)
 {
     TypeRef::set(objref);
     return *this;
 }
 
-stringref& stringref::operator=(const char *str)
+typeref<const char *>& typeref<const char *>::operator=(const char *str)
 {
     set(str);
     return *this;
 }
 
-void stringref::set(const char *str)
+void typeref<const char *>::set(const char *str)
 {
     release();
     size_t size = 0;
@@ -194,44 +224,44 @@ void stringref::set(const char *str)
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
-void stringref::assign(value *chars)
+void typeref<const char *>::assign(value *chars)
 {
     release();
     chars->size = strlen(chars->mem);
     TypeRef::set(chars);
 }
 
-stringref& stringref::operator=(value *chars)
+typeref<const char *>& typeref<const char *>::operator=(value *chars)
 {
     assign(chars);
     return *this;
 }
 
-stringref::value *stringref::create(size_t size)
+typeref<const char *>::value *typeref<const char *>::create(size_t size)
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     return new(mem(p)) value(p, size, NULL);
 }
 
-void stringref::destroy(stringref::value *chars)
+void typeref<const char *>::destroy(typeref<const char *>::value *chars)
 {
     if(chars)
         chars->destroy();
 }
 
-void stringref::expand(stringref::value **handle, size_t size)
+void typeref<const char *>::expand(typeref<const char *>::value **handle, size_t size)
 {
     if(!handle || !*handle)
         return;
 
-    stringref::value *change = create(size + (*handle)->max());
+    typeref<const char *>::value *change = create(size + (*handle)->max());
     if(change)
         String::set(change->get(), change->max() + 1, (*handle)->get());
     destroy(*handle);
     *handle = change;
 }
 
-bool stringref::operator==(const stringref& ptr) const
+bool typeref<const char *>::operator==(const typeref<const char *>& ptr) const
 {
     value *v1 = polystatic_cast<value*>(ref);
     value *v2 = polystatic_cast<value*>(ptr.ref);
@@ -240,7 +270,7 @@ bool stringref::operator==(const stringref& ptr) const
     return eq(&(v1->mem[0]), &(v2->mem[0]));
 }
 
-bool stringref::operator==(const char *obj) const
+bool typeref<const char *>::operator==(const char *obj) const
 {
     value *v = polystatic_cast<value *>(ref);
     if(!v)
@@ -248,7 +278,7 @@ bool stringref::operator==(const char *obj) const
     return eq(&(v->mem[0]), obj);
 }
 
-bool stringref::operator==(value *chars) const
+bool typeref<const char *>::operator==(value *chars) const
 {
     value *v = polystatic_cast<value *>(ref);
     if(!v || !chars)
@@ -256,15 +286,7 @@ bool stringref::operator==(value *chars) const
     return eq(&(v->mem[0]), &(chars->mem[0]));
 }
 
-const char *stringref::str(Counted *obj)
-{
-    value *v = polydynamic_cast<value*>(obj);
-    if(!v)
-        return NULL;
-    return &v->mem[0];
-}
-
-bool stringref::operator<(const stringref& ptr) const
+bool typeref<const char *>::operator<(const typeref<const char *>& ptr) const
 {
     value *v1 = polystatic_cast<value *>(ref);
     value *v2 = polystatic_cast<value *>(ptr.ref);
@@ -285,38 +307,38 @@ bool stringref::operator<(const stringref& ptr) const
 #endif
 }
     
-byteref::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
+typeref<const uint8_t *>::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
 TypeRef::Counted(addr, objsize)
 {
     if(objsize)
         memcpy(mem, str, objsize);
 }
 
-byteref::value::value(caddr_t addr, size_t size) : 
+typeref<const uint8_t *>::value::value(caddr_t addr, size_t size) : 
 TypeRef::Counted(addr, size)
 {
 }
 
-byteref::byteref() :
+typeref<const uint8_t *>::typeref() :
 TypeRef() {}
 
-byteref::byteref(const byteref& copy) :
+typeref<const uint8_t *>::typeref(const typeref<const uint8_t *>& copy) :
 TypeRef(copy) {}
 
-byteref::byteref(const uint8_t *str, size_t size) :
+typeref<const uint8_t *>::typeref(uint8_t *str, size_t size) :
 TypeRef()
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
-void byteref::value::destroy(void) 
+void typeref<const uint8_t *>::value::destroy(void) 
 {
 	count.clear();
 	release();
 }
 
-const uint8_t *byteref::operator*() const 
+const uint8_t *typeref<const uint8_t *>::operator*() const 
 {
     if(!ref)
 	    return NULL;
@@ -324,38 +346,38 @@ const uint8_t *byteref::operator*() const
     return &v->mem[0];
 }
 
-byteref& byteref::operator=(const byteref& objref)
+typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(const byteref& objref)
 {
     TypeRef::set(objref);
     return *this;
 }
 
-byteref& byteref::operator=(value *bytes)
+typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(value *bytes)
 {
     assign(bytes);
     return *this;
 }
 
-void byteref::set(const uint8_t *str, size_t size)
+void typeref<const uint8_t *>::set(const uint8_t *str, size_t size)
 {
     release();
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
-void byteref::assign(value *bytes)
+void typeref<const uint8_t *>::assign(value *bytes)
 {
     release();
     TypeRef::set(bytes);
 }
 
-byteref::value *byteref::create(size_t size)
+typeref<const uint8_t *>::value *typeref<const uint8_t *>::create(size_t size)
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     return new(mem(p)) value(p, size);
 }
 
-void byteref::destroy(byteref::value *bytes)
+void typeref<const uint8_t *>::destroy(typeref<const uint8_t *>::value *bytes)
 {
     if(bytes)
         bytes->destroy();
@@ -376,15 +398,7 @@ unsigned TypeRef::copies() const
 	return ref->copies();
 }
 
-const uint8_t *byteref::data(Counted *obj) 
-{
-    value *v = polydynamic_cast<value*>(obj);
-    if(!v)
-        return NULL;
-    return &v->mem[0];
-}
-
-bool byteref::operator==(const byteref& ptr) const 
+bool typeref<const uint8_t *>::operator==(const typeref<const uint8_t *>& ptr) const 
 {
     value *v1 = polystatic_cast<value*>(ref);
     value *v2 = polystatic_cast<value*>(ptr.ref);
@@ -393,12 +407,45 @@ bool byteref::operator==(const byteref& ptr) const
     return !memcmp(&(v1->mem[0]), &(v2->mem[0]), v1->size);
 }
 
-bool byteref::operator==(value *bytes) const 
+bool typeref<const uint8_t *>::operator==(value *bytes) const 
 {
     value *v = polystatic_cast<value *>(ref);
     if(!v || !bytes || v->size != bytes->size)
         return false;
     return !memcmp(&(v->mem[0]), &(bytes->mem[0]), v->size);
+}
+
+typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref<const uint8_t *>&add) const 
+{
+    value *v1 = polystatic_cast<value *>(ref);
+    value *v2 = polystatic_cast<value *>(add.ref);
+    const uint8_t *b1 = NULL, *b2 = NULL;
+    uint8_t *out;
+    size_t s1 = 0, s2 = 0, max;
+    typeref<const uint8_t*> result;
+
+    if(v1) {
+        s1 = v1->max();
+        b1 = v1->get();
+    }
+
+    if(v2) {
+        s2 = v2->max();
+        b2 = v2->get();
+    }
+
+    max = s1 + s2;
+    if(!max)
+        return result;
+
+    bytevalues_t bytes = byteref::create(max);
+    out = const_cast<uint8_t *>(bytes->get());
+    if(s1)
+        memcpy(out, b1, s1);
+    if(s2)
+        memcpy(out + s1, b2, s2);
+    result.assign(bytes);
+    return result;
 }
 
 } // namespace

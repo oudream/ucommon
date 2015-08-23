@@ -1,6 +1,28 @@
+Changes from 6.5.3 to 6.5.4
+- secure string and key management types
+- better cleanup of secure objects
+- file i/o for heap temporary
+
+Changes from 6.5.2 to 6.5.3
+- arrayref now uses ConditionalAccess, fix for Conditional
+
+Changes from 6.5.1 to 6.5.2
+- memory management cleanup and mingw32 support for native conditionals
+- new methodology of having getaddrinfo allocate memory
+- introduction of queueref and stackref; arrayref becomes useful
+- typeref concatenation operators
+
+Changes from 6.5.0 to 6.5.1
+- thread shared references added
+
 Changes from 6.4.4 to 6.5.0
 - typeref expanded
 - arrayref introduced
+- nullptr and other c++ modernizations
+- clang now defaulted to c++11
+- minimum native windows now requires conditionals
+- mingw has to use win32 pthread support
+- somewhat more usable heap temporary templates
 
 Changes from 6.4.3 to 6.4.4
 - additional typeref operators

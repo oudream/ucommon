@@ -178,9 +178,9 @@ protected:
      */
     ~Conditional();
 
-public:
     friend class autolock;
 
+public:
     class __EXPORT autolock
     {
     private:
@@ -293,6 +293,7 @@ protected:
         {LeaveCriticalSection(&mutex);};
 
     void waitSignal(void);
+
     void waitBroadcast(void);
 
     inline void signal(void)

@@ -1,4 +1,3 @@
-// Copyright (C) 2006-2014 David Sugar, Tycho Softworks.
 // Copyright (C) 2015 Cherokees of Idaho.
 //
 // This file is part of GNU uCommon C++.
@@ -16,35 +15,45 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef DEBUG
-#define DEBUG
-#endif
-
 #include <ucommon-config.h>
-#include <ucommon/secure.h>
+#include <ucommon/export.h>
+#include <ucommon/typeref.h>
+#include <ucommon/string.h>
+#include <ucommon/thread.h>
+#include <ucommon/shared.h>
+#include <cstdlib>
 
-#include <stdio.h>
+namespace ucommon {
 
-using namespace ucommon;
-
-int main(int argc, char **argv)
+SharedRef::SharedRef() : TypeRef()
 {
-    digest_t md5 = "md5";
-
-    md5.puts("this is some text");
-    assert(eq("684d9d89b9de8178dcd80b7b4d018103", *md5));
-
-    md5 = "sha";
-    md5.puts("something else");
-    assert(!eq("684d9d89b9de8178dcd80b7b4d018103", *md5));
-
-    md5 = "md5";
-    md5.puts("this is some text");
-    assert(eq("684d9d89b9de8178dcd80b7b4d018103", *md5));
-
-    secure::string dig = Digest::md5("this is some text");
-    assert(eq("684d9d89b9de8178dcd80b7b4d018103", *dig));
-
-    return 0;
 }
 
+TypeRef SharedRef::get()
+{
+	lock.acquire();
+	TypeRef ptr(ref);
+	lock.release();
+	return ptr;
+}
+
+void SharedRef::get(TypeRef& ptr)
+{
+	lock.acquire();
+	Counted *old = ref;
+	ref = ptr.ref;
+	if(ref)
+		ref->retain();
+	lock.release();
+	if(old)
+		old->release();
+}
+
+void SharedRef::put(TypeRef& ptr)
+{
+	lock.acquire();
+	ptr.ref = ref;
+	lock.release();
+}
+
+} // namespace

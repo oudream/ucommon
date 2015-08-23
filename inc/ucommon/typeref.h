@@ -40,6 +40,10 @@
 #include <ucommon/protocols.h>
 #endif
 
+#ifndef _UCOMMON_GENERICS_H_
+#include <ucommon/generics.h>
+#endif
+
 #ifndef _UCOMMON_OBJECT_H_
 #include <ucommon/object.h>
 #endif
@@ -47,15 +51,25 @@
 namespace ucommon {
 
 /**
- * Smart pointer base class for auto-retained objects.
+ * Smart pointer base class for auto-retained objects.  The underlying
+ * container is heap allocated and page aligned.  A heap object is
+ * automatically de-referenced by release during destruction.  The smart
+ * pointer is a protected base class used to derive strongly typed
+ * templates.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 class __EXPORT TypeRef
 {
 protected:
 	friend class ArrayRef;
+	friend class SharedRef;
+	friend class MapRef;
+
     /**
-	 * Heap base-class container for typeref objects.
+	 * Heap base-class container for typeref objects.  This uses atomic
+	 * reference counters for thread safety with maximal performance.  This
+	 * is used as a protected base class used for strongly typed heap
+	 * containers through templates.
 	 * @author David Sugar <dyfet@gnutelephony.org>
 	 */
 	class __EXPORT Counted : public ObjectProtocol
@@ -67,57 +81,160 @@ protected:
 		size_t size;
 		void *memory;
 
-		explicit Counted(void *addr, size_t size);
+		/**
+		 * Construction of aligned container.  This is used to inform the
+		 * object of the underlying real address it exists on the heap 
+		 * since malloc is not assured to be atomically aligned by default.
+		 * @param address of actual allocation.
+		 * @param size of object allocated.
+		 */
+		explicit Counted(void *address, size_t size);
 
+		/**
+		 * Release memory and delete object when no longer referenced.
+		 * This gets called with the atomic reference counter < 1, such
+		 * as when the last smart pointer de-references.
+		 */
 		virtual void dealloc();
 
 	public:
+		/**
+		 * Is this object not empty?
+		 * @return true if not empty.
+		 */
 		inline bool is() const {
 			return (count.get() > 0);
 		}
 
+		/**
+		 * Number of retains (smart pointers) referencing us.
+		 * @return number of copies of pointers referencing.
+		 */
 		inline unsigned copies() const {
 			return ((unsigned)count.get());
 		}
 
-		void operator delete(void *addr);
+		/**
+		 * Override delete to de-allocate actual heap.  This
+		 * is used because the object is atomically aligned, but
+		 * the heap may not be.
+		 * @param address of our object.
+		 */
+		void operator delete(void *address);
 
+		/**
+		 * Retain a copy of this object.  Usually a smart pointer
+		 * referencing.
+		 */
 		void retain();
 
+		/**
+		 * Release a copy of this object.  Only when the reference
+		 * count reaches 0 is it destroyed. 
+		 */
 		void release();
 	};
 
-
 	Counted *ref;		// heap reference...
 
+	/**
+	 * Create a smart pointer referencing an existing heap object.
+	 * @param object to reference.
+	 */
 	TypeRef(Counted *object);
-	TypeRef(const TypeRef& copy);
+
+	/**
+	 * Create a smart pointer based on another pointer.  Both
+	 * pointers then reference the same object.
+	 * @param pointer instance to share reference with.
+	 */
+	TypeRef(const TypeRef& pointer);
+
+	/**
+	 * Create a smart pointer referencing nothing.
+	 */
 	TypeRef();
 
+	/**
+	 * Set our smart pointer to a specific heap container.  If
+	 * we were pointing to something already we release that.
+	 * @param object to reference.
+	 */
 	void set(Counted *object);
 
+	/**
+	 * Allocate memory from heap.  This may not be atomically aligned.
+	 * The underlying alloc is larger to account for alignment.
+	 * @param size of object to allocate.
+	 * @return memory address allocated.
+	 */
 	static caddr_t alloc(size_t size);
 
-	static caddr_t mem(caddr_t addr);
+	/**
+	 * Adjust memory pointer to atomic boundry.
+	 * @param address that was allocated.
+	 * @return address for actual atomic aligned object.
+	 */
+	static caddr_t mem(caddr_t address);
 
 public:
+	/**
+	 * Destroy pointer when falling out of scope.  This de-references
+	 * the heap container.
+	 */
 	virtual ~TypeRef();
 
-	void set(const TypeRef& ptr);
+	/**
+	 * Set our smart pointer based on another pointer instance.  If
+	 * we are already referencing, we release the current container.
+	 * @param pointer instance to share reference with.
+	 */
+	void set(const TypeRef& pointer);
+
+	/**
+	 * Manually release the current container.
+	 */
 	void release(void);
+
+	/**
+	 * Get size of referenced heap object.
+	 * @return size of container or 0 if none.
+	 */
 	size_t size(void) const;
+
+	/**
+	 * Get number of references to container.
+	 * @return total number of pointers referencing container.
+	 */	
 	unsigned copies() const;
 	
+	/**
+	 * Check if pointer currently has a heap container.
+	 * @return true if we are referencing a container.
+	 */
 	inline bool is() const {
 		return ref != NULL;
 	}
 
+	/**
+	 * Check if we are currently not pointing to anything.
+	 * @return true if not referencing a container.
+	 */
 	inline bool operator!() const {
 		return ref == NULL;
 	}
 
-	inline static void put(TypeRef& target, Counted *obj) {
-		target.set(obj);
+	/**
+	 * Special weak-public means to copy a container reference.
+	 * This uses the base class container which is not public, so
+	 * only derived type specific smart pointers can actually use 
+	 * this method.  It is made public because making it protected
+	 * actually makes it inaccessible to template derived classes.
+	 * @param target smart pointer object to set.
+	 * @param object to have it reference.
+	 */
+	inline static void put(TypeRef& target, Counted *object) {
+		target.set(object);
 	}
 };
 
@@ -128,6 +245,8 @@ private:
 	class value : public Counted
 	{
 	public:
+		T data;
+
 		inline value(caddr_t mem) : 
 		Counted(mem, sizeof(value)) {};
 
@@ -135,8 +254,6 @@ private:
 		Counted(mem, sizeof(value)) {
 			data = object;
 		}
-
-		T data;
 	};
  
 public:
@@ -214,22 +331,16 @@ public:
 		set(object);
 		return *this;
 	}
-
-	inline static T* data(Counted *obj) {
-		value *v = polydynamic_cast<value*>(obj);
-		if(!v)
-			return NULL;
-		return &v->data;
-	}
 };
 
-class __EXPORT stringref : public TypeRef
+template<>
+class __EXPORT typeref<const char *> : public TypeRef
 {
 public:
 	class value : public Counted
 	{
 	protected:
-		friend class stringref;
+		friend class typeref;
 
 		char mem[1];
 
@@ -252,13 +363,13 @@ public:
 		}
 	};
 
-	stringref();
+	typeref();
 	
-	stringref(const stringref& copy);
+	typeref(const typeref& copy);
 
-	stringref(const char *str);
+	typeref(const char *str);
 
-	inline explicit stringref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	const char *operator*() const;
 
@@ -266,13 +377,15 @@ public:
 		return operator*();
 	}
 
-	bool operator==(const stringref& ptr) const;
+	size_t len() const;
+
+	bool operator==(const typeref& ptr) const;
 
 	bool operator==(const char *obj) const;
 
 	bool operator==(value *chars) const;
 
-	inline bool operator!=(const stringref& ptr) const {
+	inline bool operator!=(const typeref& ptr) const {
 		return !(*this == ptr);
 	}
 
@@ -284,25 +397,29 @@ public:
 		return !(*this == obj);
 	}
 
-	bool operator<(const stringref& ptr) const;
+	bool operator<(const typeref& ptr) const;
 
-	inline bool operator>(const stringref& ptr) const {
+	inline bool operator>(const typeref& ptr) const {
 		return (ptr < *this);
 	}
 
-	inline bool operator<=(const stringref& ptr) const {
+	inline bool operator<=(const typeref& ptr) const {
 		return !(*this > ptr);
 	}
 
-	inline bool operator>=(const stringref& ptr) const {
+	inline bool operator>=(const typeref& ptr) const {
 		return !(*this < ptr);
 	}
 
-	stringref& operator=(const stringref& objref);
+	typeref& operator=(const typeref& objref);
 
-	stringref& operator=(const char *str);
+	typeref& operator=(const char *str);
 
-	stringref& operator=(value *chars);
+	typeref& operator=(value *chars);
+
+	typeref operator+(const char *str) const;
+
+	typeref operator+(const typeref& ptr) const;
 
 	const char *operator()(ssize_t offset) const;
 
@@ -315,17 +432,16 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
-
-	static const char *str(Counted *obj);
 };
 
-class __EXPORT byteref : public TypeRef
+template<>
+class __EXPORT typeref<const uint8_t *> : public TypeRef
 {
 public:
 	class value : public Counted
 	{
 	protected:
-		friend class byteref;
+		friend class typeref;
 
 		uint8_t mem[1];
 
@@ -345,13 +461,13 @@ public:
 		}
 	};
 
-	byteref();
+	typeref();
 	
-	byteref(const byteref& copy);
+	typeref(const typeref& copy);
 
-	byteref(const uint8_t *str, size_t size);
+	typeref(uint8_t *str, size_t size);
 
-	inline explicit byteref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	const uint8_t *operator*() const;
 
@@ -359,21 +475,23 @@ public:
 		return operator*();
 	}
 
-	byteref& operator=(const byteref& objref);
+	typeref& operator=(const typeref& objref);
 
-	byteref& operator=(value *bytes);
+	typeref& operator=(value *bytes);
 
-	bool operator==(const byteref& ptr) const;
+	bool operator==(const typeref& ptr) const;
 
 	bool operator==(value *bytes) const;
 
-	inline bool operator!=(const byteref& ptr) const {
+	inline bool operator!=(const typeref& ptr) const {
 		return !(*this == ptr);
 	}
 
 	inline bool operator!=(value *bytes) const {
 		return !(*this == bytes);
 	}
+
+	typeref operator+(const typeref& ptr) const;
 
 	void set(const uint8_t *str, size_t size);
 
@@ -382,14 +500,24 @@ public:
 	static value *create(size_t size);
 
 	static void destroy(value *bytes);
-
-	static const uint8_t *data(Counted *obj);
 };
 
-typedef stringref::value *charvalues_t;
-typedef	byteref::value	*bytevalues_t;
-typedef	stringref	stringref_t;
-typedef byteref		byteref_t;
+typedef typeref<const char*>::value *charvalues_t;
+typedef	typeref<const uint8_t *>::value	*bytevalues_t;
+typedef	typeref<const char*> stringref_t;
+typedef typeref<const char*> stringref;
+typedef typeref<const uint8_t *> byteref_t;
+typedef typeref<const uint8_t *> byteref;
+
+template<typename T>
+inline typeref<T> typeref_cast(T x) {
+	return typeref<T>(x);
+}
+
+template<>
+inline bool is<TypeRef>(TypeRef& obj) {
+	return obj.is();
+}
 
 } // namespace
 

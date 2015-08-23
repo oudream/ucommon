@@ -116,5 +116,77 @@ extern "C" int main()
     assert(*member == 99);
     assert(member.copies() == 31);
 
+    assert(ints.find(30) == 6);
+    assert(ints.count(99) == 30);
+
+    int memval = member;
+    member = 95;
+    assert(memval == 99);
+    assert(*member == 95);
+    assert(member.copies() == 1);
+    ints(17, memval);
+    ints(18, member);
+    assert(*ints[18] == 95);
+
+    temporary<int> itemp;
+    itemp = 37;
+    itemp[0] = 39;
+    assert(*itemp == 39);
+
+    temporary<int> atemp(7, 2);
+    assert(atemp[3] == 2);
+    atemp[5] = 9;
+    assert(atemp[5] == 9);
+
+    sharedref<int> sint;
+    sint = 3;
+    typeref<int> sv = sint;
+    assert(sv.copies() == 2); 
+
+    stackref<int> stackofints(20);
+    stackofints << 17;
+    stackofints << 25;
+    stackofints << 333;
+    assert(stackofints.count() == 3);
+    stackofints.pop();
+    stackofints >> sv;
+    assert(stackofints.count() == 1);
+    assert(sv == 25);
+    assert(sv.copies() == 1);
+
+    queueref<int> queueofints(20);
+    queueofints << 44;
+    queueofints << 55;
+    assert(queueofints.count() == 2);
+    queueofints >> sv;
+    assert(sv == 44);
+    queueofints >> sv;
+    assert(sv == 55);
+    assert(mapkeypath(sv) == 8779);
+
+    // flush without delay...
+    sv = queueofints.pull(0);
+    assert(!sv.is());
+    assert(sv.copies() == 0);
+
+    mapref<int, const char *> map;
+    map(3, "hello");
+    stringref_t sr = map(3);
+    assert(eq(*sr, "hello"));
+    sr = map(2);
+    assert(*sr == nullptr);
+    typeref<int> ki(3);
+    sr = "goodbye";
+    map(ki, sr);
+    sr = map(3);
+    assert(eq(*sr, "goodbye"));
+    map(7, "test");
+    assert(map.count() == 2);
+
+    map.remove(7);
+    map(9, "9");
+    assert(map.used() == 2);
+    sr = map(7);
+    assert(*sr == nullptr);
     return 0;
 }
