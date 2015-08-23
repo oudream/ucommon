@@ -26,6 +26,69 @@
 
 namespace ucommon {
 
+MapRef::Map::Map(void *addr, size_t indexes, size_t paging) :
+Counted(addr, indexes), pool(paging)
+{
+    size_t index = 0;
+    LinkedObject **list = get();
+    free = NULL;
+    
+    while(index < indexes) {
+        list[index++] = NULL;
+    }
+}
+
+LinkedObject *MapRef::Map::path(size_t key)
+{
+	return (get())[key % size];
+}
+
+LinkedObject **MapRef::Map::root(size_t key)
+{
+    LinkedObject **list = get();
+    return &list[key % size];
+}
+
+void MapRef::Map::dealloc()
+{
+    size_t index = 0;
+    LinkedObject **list = get();
+    linked_pointer<Index> ip;
+
+    if(!size)
+        return;
+
+    while(index < size) {
+		ip = list[index];
+		while(ip) {
+			if(ip->key)
+				ip->key->release();
+			if(ip->value)
+				ip->value->release();
+			ip.next();
+		}
+		++index;
+	}	
+    size = 0;
+	free = NULL;
+	pool.purge();
+    Counted::dealloc();
+}
+
+MapRef::MapRef() :
+TypeRef()
+{
+}
+
+LinkedObject *MapRef::path(size_t key)
+{
+	Map *m = polydynamic_cast<Map *>(ref);
+	if(!m)
+		return NULL;
+
+	return m->path(key);
+}
+
 size_t MapRef::index(size_t& key, const uint8_t *addr, size_t len)
 {
 	while(len-- && addr) {

@@ -69,20 +69,24 @@ protected:
 	class Map : public Counted
 	{
 	public:
+		friend class MapRef;
+
 		memalloc pool;
 		condlock_t lock;
 		LinkedObject *free;
 		size_t count;
 
-		explicit Map(size_t indexes, size_t paging = 0);
+		explicit Map(void *addr, size_t indexes, size_t paging = 0);
 	
 		virtual void dealloc();
 
-		inline Index *get(void) {
-			return reinterpret_cast<Index *>(((caddr_t)(this)) + sizeof(Map));
+		inline LinkedObject **get(void) {
+			return reinterpret_cast<LinkedObject **>(((caddr_t)(this)) + sizeof(Map));
 		}
 
-		LinkedObject *path(size_t keyvalue);
+		LinkedObject **root(size_t key);
+
+		LinkedObject *path(size_t key);
 	};
 
 	MapRef(size_t paths, size_t paging = 0);
