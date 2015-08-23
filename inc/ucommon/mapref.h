@@ -135,7 +135,7 @@ inline size_t mapkeypath<const uint8_t *>(typeref<const uint8_t *>& object)
 	return MapRef::index(path, *object, object.size());
 }
 
-template<typename T>
+template<typename K, typename V>
 class mapref : public MapRef
 {
 public:
@@ -149,6 +149,20 @@ public:
 		TypeRef::set(copy);
 		return *this;
 	}
+
+	typeref<V> find(typeref<K>& key) {
+		linked_pointer<Index> ip = shared(mapkeypath<K>(key));
+		while(ip) {
+			if(*(ip->key) == key) {
+				typeref<V> result(ip->value);
+				unlock();
+				return result;
+			}
+			ip.next();
+		}
+		unlock();
+		return typeref<V>();
+	}	
 };
 
 } // namespace
