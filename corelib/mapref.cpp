@@ -30,6 +30,7 @@ size_t MapRef::index(size_t& key, const uint8_t *addr, size_t len)
 {
 	while(len && addr) {
 		key ^= (key << 3) ^ *addr;
+		++addr;
 	}
 	return key;
 }
