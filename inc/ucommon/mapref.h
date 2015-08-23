@@ -61,9 +61,10 @@ protected:
 	class Index : public LinkedObject
 	{
 	public:
-		Index(LinkedObject **root);
+		Index(LinkedObject **origin);
 
 		Counted *key, *value;
+		LinkedObject **root;
 	};
 
 	class Map : public Counted
@@ -74,7 +75,7 @@ protected:
 		memalloc pool;
 		condlock_t lock;
 		LinkedObject *free;
-		size_t count;
+		size_t count, alloc;
 
 		explicit Map(void *addr, size_t indexes, size_t paging = 0);
 	
@@ -85,6 +86,8 @@ protected:
 		}
 
 		Index *create(size_t path);
+
+		void remove(Index *index);
 
 		LinkedObject *modify(size_t key);
 
@@ -107,12 +110,16 @@ protected:
 
 	void update(Index *ind, TypeRef& value);
 
+	void remove(Index *ind);
+
 	void release();
 
 	void commit();
 
 public:
 	size_t count(void);
+
+	size_t used(void);
 
 	void purge(void);
 
@@ -143,6 +150,22 @@ inline size_t mapkeypath<const uint8_t *>(typeref<const uint8_t *>& object)
 template<typename K, typename V>
 class mapref : public MapRef
 {
+protected:
+	bool erase(typeref<K>& key) {
+		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
+		while(ip) {
+			typeref<K> kv(ip->key);
+			if(kv.is() && *kv == key) {
+				MapRef::remove(*ip);
+				MapRef::commit();
+				return true;
+			}
+			ip.next();
+		}
+		MapRef::commit();
+		return false;
+	}	
+
 public:
 	inline mapref(const mapref& copy) : MapRef(copy) {};
 
@@ -183,6 +206,15 @@ public:
 		release();
 		return typeref<V>();
 	}	
+
+	inline bool remove(typeref<K>& key) {
+		return erase(key);
+	}
+
+	inline bool remove(K k) {
+		typeref<K> key(k);
+		return erase(key);
+	}
 
 	inline typeref<V> operator()(typeref<K>& key) {
 		return at(key);

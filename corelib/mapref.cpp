@@ -26,10 +26,11 @@
 
 namespace ucommon {
 
-MapRef::Index::Index(LinkedObject **root) :
-LinkedObject(root)
+MapRef::Index::Index(LinkedObject **origin) :
+LinkedObject(origin)
 {
     key = value = NULL;
+    root = origin;
 }
 
 MapRef::Map::Map(void *addr, size_t indexes, size_t paging) :
@@ -38,6 +39,7 @@ Counted(addr, indexes), pool(paging)
     size_t index = 0;
     LinkedObject **list = get();
     free = NULL;
+    count = alloc = 0;
     
     while(index < indexes) {
         list[index++] = NULL;
@@ -50,9 +52,28 @@ MapRef::Index *MapRef::Map::create(size_t key)
     caddr_t p = (caddr_t)(free);
     if(free)
         free = free->getNext();
-    else
+    else {
+        ++alloc;
         p = (caddr_t)pool.alloc(sizeof(Index));
+    }
+    ++count;
     return new(p) Index(&list[key % size]);
+}
+
+void MapRef::Map::remove(Index *index)
+{
+    if(!index)
+        return;
+
+    if(index->key)
+        index->key->release();
+
+    if(index->value)
+        index->value->release();
+
+    --count;
+    index->delist(index->root); 
+    index->enlist(&free);
 }
 
 LinkedObject *MapRef::Map::access(size_t key)
@@ -106,6 +127,33 @@ TypeRef(copy)
 MapRef::MapRef(size_t indexes, size_t paging) :
 TypeRef(create(indexes, paging))
 {
+}
+
+size_t MapRef::used()
+{
+    Map *m = polydynamic_cast<Map *>(ref);
+	if(!m)
+        return 0;
+
+    return m->alloc;
+}
+
+size_t MapRef::count()
+{
+    Map *m = polydynamic_cast<Map *>(ref);
+	if(!m)
+        return 0;
+
+    return m->count;
+}
+
+void MapRef::remove(Index *ind)
+{
+    Map *m = polydynamic_cast<Map *>(ref);
+	if(!m)
+        return;
+
+    m->remove(ind);
 }
 
 MapRef::Map *MapRef::create(size_t indexes, size_t paging)

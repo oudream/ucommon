@@ -175,8 +175,17 @@ extern "C" int main()
     assert(eq(*sr, "hello"));
     sr = map(2);
     assert(*sr == nullptr);
-    map(3, "goodbye");
+    typeref<int> ki(3);
+    sr = "goodbye";
+    map(ki, sr);
     sr = map(3);
     assert(eq(*sr, "goodbye"));
+    map(7, "test");
+    assert(map.count() == 2);
+
+    map.remove(7);
+    map(9, "9");
+    assert(map.used() == 2);
+
     return 0;
 }
