@@ -106,6 +106,7 @@
 #include <ucommon/socket.h>
 #include <ucommon/thread.h>
 #include <ucommon/arrayref.h>
+#include <ucommon/mapref.h>
 #include <ucommon/shared.h>
 #include <ucommon/containers.h>
 #include <ucommon/fsys.h>
