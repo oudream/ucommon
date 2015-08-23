@@ -80,13 +80,13 @@ protected:
 	
 		virtual void dealloc();
 
-		inline LinkedObject **get(void) {
+		inline LinkedObject **get(void) const {
 			return reinterpret_cast<LinkedObject **>(((caddr_t)(this)) + sizeof(Map));
 		}
 
 		LinkedObject **root(size_t key);
 
-		LinkedObject *path(size_t key);
+		LinkedObject *path(size_t key) const;
 	};
 
 	MapRef(size_t paths, size_t paging = 0);
@@ -98,7 +98,13 @@ protected:
 	static Map *create(size_t paths, size_t paging = 0);
 
 protected:
-	LinkedObject *path(size_t keyvalue);
+	LinkedObject *path(size_t keyvalue) const;
+
+	linked_pointer<Index> shared(size_t keyvalue) const;
+
+	LinkedObject **exclusive(size_t keyvalue);
+
+	void unlock();
 
 public:
 	size_t count(void);

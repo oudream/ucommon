@@ -38,7 +38,7 @@ Counted(addr, indexes), pool(paging)
     }
 }
 
-LinkedObject *MapRef::Map::path(size_t key)
+LinkedObject *MapRef::Map::path(size_t key) const
 {
 	return (get())[key % size];
 }
@@ -80,13 +80,44 @@ TypeRef()
 {
 }
 
-LinkedObject *MapRef::path(size_t key)
+LinkedObject *MapRef::path(size_t key) const
 {
 	Map *m = polydynamic_cast<Map *>(ref);
-	if(!m)
+	if(!m || !m->size)
 		return NULL;
 
 	return m->path(key);
+}
+
+linked_pointer<MapRef::Index> MapRef::shared(size_t key) const
+{
+    linked_pointer<Index> ip;
+	Map *m = polydynamic_cast<Map *>(ref);
+	if(!m || !m->size)
+		return ip;
+
+    m->lock.share();
+    ip = m->path(key);
+	return ip;
+}
+
+LinkedObject **MapRef::exclusive(size_t key)
+{
+    Map *m = polydynamic_cast<Map *>(ref);
+	if(!m || !m->size)
+		return NULL;
+
+    m->lock.exclusive();
+	return m->root(key);
+}
+
+void MapRef::unlock()
+{
+    Map *m = polydynamic_cast<Map *>(ref);
+	if(!m || !m->size)
+		return;
+
+    m->lock.release();
 }
 
 size_t MapRef::index(size_t& key, const uint8_t *addr, size_t len)
