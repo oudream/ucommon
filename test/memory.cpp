@@ -186,6 +186,7 @@ extern "C" int main()
     map.remove(7);
     map(9, "9");
     assert(map.used() == 2);
-
+    sr = map(7);
+    assert(*sr == nullptr);
     return 0;
 }
