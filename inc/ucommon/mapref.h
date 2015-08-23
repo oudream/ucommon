@@ -155,7 +155,7 @@ protected:
 		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
 		while(ip) {
 			typeref<K> kv(ip->key);
-			if(kv.is() && *kv == key) {
+			if(kv.is() && kv == key) {
 				MapRef::remove(*ip);
 				MapRef::commit();
 				return true;
@@ -181,7 +181,7 @@ public:
 		linked_pointer<Index> ip = modify(path);
 		while(ip) {
 			typeref<K> kv(ip->key);
-			if(kv.is() && *kv == key) {
+			if(kv.is() && kv == key) {
 				update(*ip, val);
 				commit();
 				return;
@@ -196,7 +196,7 @@ public:
 		linked_pointer<Index> ip = access(mapkeypath<K>(key));
 		while(ip) {
 			typeref<K> kv(ip->key);
-			if(kv.is() && *kv == key) {
+			if(kv.is() && kv == key) {
 				typeref<V> result(ip->value);
 				release();
 				return result;

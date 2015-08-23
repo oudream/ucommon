@@ -128,5 +128,11 @@ extern "C" int main()
 
     stringref_t myref = cvs + " now" + "!";
     assert(eq(*myref, "here now!"));
+
+    mapref<const char *, const char *> map;
+    map("hello", "goodbye");
+    cvs = map("hello");
+    assert(eq(*cvs, "goodbye"));
+
     return 0;
 }
