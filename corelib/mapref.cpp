@@ -96,6 +96,7 @@ linked_pointer<MapRef::Index> MapRef::shared(size_t key) const
 	if(!m || !m->size)
 		return ip;
 
+    m->retain();
     m->lock.share();
     ip = m->path(key);
 	return ip;
@@ -107,6 +108,7 @@ LinkedObject **MapRef::exclusive(size_t key)
 	if(!m || !m->size)
 		return NULL;
 
+    m->retain();
     m->lock.exclusive();
 	return m->root(key);
 }
@@ -118,6 +120,7 @@ void MapRef::unlock()
 		return;
 
     m->lock.release();
+    m->release();
 }
 
 size_t MapRef::index(size_t& key, const uint8_t *addr, size_t len)
