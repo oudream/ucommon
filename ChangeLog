@@ -1,3 +1,8 @@
+Changes from 6.5.3 to 6.5.4
+- secure string and key management types
+- better cleanup of secure objects
+- file i/o for heap temporary
+
 Changes from 6.5.2 to 6.5.3
 - arrayref now uses ConditionalAccess, fix for Conditional
 

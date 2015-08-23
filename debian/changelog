@@ -1,3 +1,9 @@
+ucommon (1:6.5.4-1) UNRELEASED; urgency=low
+
+  * Improved usecure management of secure types
+
+ -- David Sugar <dyfet@gnutelephony.org>  Sun, 23 Aug 2015 07:54:53 -0400
+
 ucommon (1:6.5.3-1) UNRELEASED; urgency=low
 
   * Resolved Conditional and arrayref now uses ConditionalAccess
