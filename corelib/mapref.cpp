@@ -26,6 +26,12 @@
 
 namespace ucommon {
 
+MapRef::Index::Index(LinkedObject **root) :
+LinkedObject(root)
+{
+    key = value = NULL;
+}
+
 MapRef::Map::Map(void *addr, size_t indexes, size_t paging) :
 Counted(addr, indexes), pool(paging)
 {
@@ -38,15 +44,27 @@ Counted(addr, indexes), pool(paging)
     }
 }
 
-LinkedObject *MapRef::Map::path(size_t key) const
+MapRef::Index *MapRef::Map::create(size_t key)
 {
+    LinkedObject **list = get();
+    caddr_t p = (caddr_t)(free);
+    if(free)
+        free = free->getNext();
+    else
+        p = (caddr_t)pool.alloc(sizeof(Index));
+    return new(p) Index(&list[key % size]);
+}
+
+LinkedObject *MapRef::Map::access(size_t key)
+{
+    lock.access();
 	return (get())[key % size];
 }
 
-LinkedObject **MapRef::Map::root(size_t key)
+LinkedObject *MapRef::Map::modify(size_t key)
 {
-    LinkedObject **list = get();
-    return &list[key % size];
+    lock.modify();
+    return (get())[key % size];
 }
 
 void MapRef::Map::dealloc()
@@ -80,16 +98,57 @@ TypeRef()
 {
 }
 
-LinkedObject *MapRef::path(size_t key) const
+MapRef::MapRef(const MapRef& copy) :
+TypeRef(copy)
 {
-	Map *m = polydynamic_cast<Map *>(ref);
-	if(!m || !m->size)
-		return NULL;
-
-	return m->path(key);
 }
 
-linked_pointer<MapRef::Index> MapRef::shared(size_t key) const
+MapRef::MapRef(size_t indexes, size_t paging) :
+TypeRef(create(indexes, paging))
+{
+}
+
+MapRef::Map *MapRef::create(size_t indexes, size_t paging)
+{
+    if(!indexes)
+        return NULL;
+
+    size_t s = sizeof(Map) + (indexes * sizeof(Index *));
+    caddr_t p = TypeRef::alloc(s);
+    return new(mem(p)) Map(p, indexes, paging);
+}
+
+void MapRef::update(Index *ind, TypeRef& value)
+{
+    if(!ind)
+        return;
+
+    if(ind->value)
+        ind->value->release();
+    ind->value = value.ref;
+    if(ind->value)
+        ind->value->retain();
+}
+
+void MapRef::add(size_t keypath, TypeRef& key, TypeRef& value)
+{
+    Map *m = polydynamic_cast<Map *>(ref);
+	if(!m || !m->size)
+		return;
+
+    Index *ind = m->create(keypath);
+    if(!ind) {
+        return;
+    }
+    ind->key = key.ref;
+    ind->value = value.ref;
+    if(ind->key)
+        ind->key->retain();
+    if(ind->value)
+        ind->value->retain();
+}
+
+linked_pointer<MapRef::Index> MapRef::access(size_t key)
 {
     linked_pointer<Index> ip;
 	Map *m = polydynamic_cast<Map *>(ref);
@@ -97,23 +156,33 @@ linked_pointer<MapRef::Index> MapRef::shared(size_t key) const
 		return ip;
 
     m->retain();
-    m->lock.share();
-    ip = m->path(key);
+    ip = m->access(key);
 	return ip;
 }
 
-LinkedObject **MapRef::exclusive(size_t key)
+linked_pointer<MapRef::Index> MapRef::modify(size_t key)
+{
+    linked_pointer<Index> ip;
+	Map *m = polydynamic_cast<Map *>(ref);
+	if(!m || !m->size)
+		return ip;
+
+    m->retain();
+    ip = m->modify(key);
+	return ip;
+}
+
+void MapRef::commit()
 {
     Map *m = polydynamic_cast<Map *>(ref);
 	if(!m || !m->size)
-		return NULL;
+		return;
 
-    m->retain();
-    m->lock.exclusive();
-	return m->root(key);
+    m->lock.commit();
+    m->release();
 }
 
-void MapRef::unlock()
+void MapRef::release()
 {
     Map *m = polydynamic_cast<Map *>(ref);
 	if(!m || !m->size)

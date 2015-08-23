@@ -63,6 +63,7 @@ class __EXPORT TypeRef
 protected:
 	friend class ArrayRef;
 	friend class SharedRef;
+	friend class MapRef;
 
     /**
 	 * Heap base-class container for typeref objects.  This uses atomic

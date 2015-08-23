@@ -61,7 +61,7 @@ protected:
 	class Index : public LinkedObject
 	{
 	public:
-		Index(LinkedObject *root);
+		Index(LinkedObject **root);
 
 		Counted *key, *value;
 	};
@@ -80,13 +80,15 @@ protected:
 	
 		virtual void dealloc();
 
-		inline LinkedObject **get(void) const {
+		inline LinkedObject **get(void) {
 			return reinterpret_cast<LinkedObject **>(((caddr_t)(this)) + sizeof(Map));
 		}
 
-		LinkedObject **root(size_t key);
+		Index *create(size_t path);
 
-		LinkedObject *path(size_t key) const;
+		LinkedObject *modify(size_t key);
+
+		LinkedObject *access(size_t key);
 	};
 
 	MapRef(size_t paths, size_t paging = 0);
@@ -97,14 +99,17 @@ protected:
 
 	static Map *create(size_t paths, size_t paging = 0);
 
-protected:
-	LinkedObject *path(size_t keyvalue) const;
+	linked_pointer<Index> access(size_t keyvalue);
 
-	linked_pointer<Index> shared(size_t keyvalue) const;
+	linked_pointer<Index> modify(size_t keyvalue);
 
-	LinkedObject **exclusive(size_t keyvalue);
+	void add(size_t path, TypeRef& key, TypeRef& value);
 
-	void unlock();
+	void update(Index *ind, TypeRef& value);
+
+	void release();
+
+	void commit();
 
 public:
 	size_t count(void);
@@ -139,30 +144,64 @@ template<typename K, typename V>
 class mapref : public MapRef
 {
 public:
-	inline mapref() :	MapRef() {};
-
 	inline mapref(const mapref& copy) : MapRef(copy) {};
 
-	inline mapref(size_t paths, size_t paging = 0) : MapRef(paths, paging) {};
+	inline mapref(size_t paths = 37, size_t paging = 0) : MapRef(paths, paging) {};
 
 	inline mapref& operator=(const mapref& copy) {
 		TypeRef::set(copy);
 		return *this;
 	}
 
-	typeref<V> find(typeref<K>& key) {
-		linked_pointer<Index> ip = shared(mapkeypath<K>(key));
+	void change(typeref<K>& key, typeref<V>& value) {
+		size_t path = mapkeypath<K>(key);
+		linked_pointer<Index> ip = modify(path);
 		while(ip) {
-			if(*(ip->key) == key) {
+			typeref<K> kv(ip->key);
+			if(kv.is() && *kv == key) {
+				update(*ip, value);
+				commit();
+				return;
+			}
+			ip.next();
+		}
+		add(path, key, value);
+		commit();
+	}
+
+	typeref<V> find(typeref<K>& key) {
+		linked_pointer<Index> ip = access(mapkeypath<K>(key));
+		while(ip) {
+			typeref<K> kv(ip->key);
+			if(kv.is() && *kv == key) {
 				typeref<V> result(ip->value);
-				unlock();
+				release();
 				return result;
 			}
 			ip.next();
 		}
-		unlock();
+		release();
 		return typeref<V>();
 	}	
+
+	inline typeref<V> operator()(typeref<K>& key) {
+		return find(key);
+	}
+
+	inline typeref<V> operator()(K k) {
+		typeref<K> key(k);
+		return find(key);
+	}
+
+	inline void operator()(typeref<K>& key, typeref<V>& value) {
+		change(key, value);
+	}	
+
+	inline void operator()(K k, V v) {
+		typeref<K> key(k);
+		typeref<V> value(v);
+		change(key, value);
+	}
 };
 
 } // namespace
