@@ -16,10 +16,10 @@
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Arrays of thread-safe strongly typed heap objects.  This is used for
- * arrays of smart pointers to immutable heap instances of object types 
- * that are reference counted and automatically deleted when no longer used.
- * @file ucommon/arrayref.h
+ * Maps of thread-safe strongly typed heap objects.  This is used for
+ * maps of smart pointers to immutable heap instances of object types.
+ * Shared and exclusive locking is used based on lookup or modify operations. 
+ * @file ucommon/mapref.h
  */
 
 #ifndef _UCOMMON_MAPREF_H_
