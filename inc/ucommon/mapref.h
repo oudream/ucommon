@@ -153,23 +153,23 @@ public:
 		return *this;
 	}
 
-	void change(typeref<K>& key, typeref<V>& value) {
+	void value(typeref<K>& key, typeref<V>& val) {
 		size_t path = mapkeypath<K>(key);
 		linked_pointer<Index> ip = modify(path);
 		while(ip) {
 			typeref<K> kv(ip->key);
 			if(kv.is() && *kv == key) {
-				update(*ip, value);
+				update(*ip, val);
 				commit();
 				return;
 			}
 			ip.next();
 		}
-		add(path, key, value);
+		add(path, key, val);
 		commit();
 	}
 
-	typeref<V> find(typeref<K>& key) {
+	typeref<V> at(typeref<K>& key) {
 		linked_pointer<Index> ip = access(mapkeypath<K>(key));
 		while(ip) {
 			typeref<K> kv(ip->key);
@@ -185,22 +185,22 @@ public:
 	}	
 
 	inline typeref<V> operator()(typeref<K>& key) {
-		return find(key);
+		return at(key);
 	}
 
 	inline typeref<V> operator()(K k) {
 		typeref<K> key(k);
-		return find(key);
+		return at(key);
 	}
 
-	inline void operator()(typeref<K>& key, typeref<V>& value) {
-		change(key, value);
+	inline void operator()(typeref<K>& key, typeref<V>& val) {
+		value(key, val);
 	}	
 
 	inline void operator()(K k, V v) {
 		typeref<K> key(k);
-		typeref<V> value(v);
-		change(key, value);
+		typeref<V> val(v);
+		value(key, val);
 	}
 };
 
