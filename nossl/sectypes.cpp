@@ -69,6 +69,15 @@ secure_chars::strtype_t typeref<secure_chars>::type(void)
     return GENERIC_STRING;
 }
 
+size_t typeref<secure_chars>::len(void)
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(!v)
+        return 0;
+
+    return v->len();
+}
+
 size_t typeref<secure_chars>::size(void)
 {
     storage *v = polystatic_cast<storage *>(ref);

@@ -133,6 +133,8 @@ public:
     strtype_t type(void);
 
     size_t size(void);
+
+    size_t len(void);
 };
 
 template <>
@@ -186,6 +188,20 @@ public:
 
     size_t size(void);
 };
+
+template<>
+inline size_t mapkeypath<secure_chars>(typeref<secure_chars>& object)
+{
+	size_t path = 1;
+	return MapRef::index(path, (const uint8_t *)(*object), object.len());
+}
+
+template<>
+inline size_t mapkeypath<secure_keybytes>(typeref<secure_keybytes>& object)
+{
+	size_t path = object.size();
+	return MapRef::index(path, *object, object.size() / 8);
+}
 
 /**
  * Common secure socket support.  This offers common routines needed for

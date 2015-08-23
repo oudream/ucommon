@@ -101,7 +101,29 @@ public:
 
 	void purge(void);
 
+	static size_t index(size_t& key, const uint8_t *addr, size_t len);
 };
+
+template<typename T>
+inline size_t mapkeypath(typeref<T>& object)
+{
+	size_t path = sizeof(T);
+	return MapRef::index(path, (const uint8_t *)(object()), sizeof(T));
+}
+
+template<>
+inline size_t mapkeypath<const char *>(typeref<const char *>& object)
+{
+	size_t path = 1;
+	return MapRef::index(path, (const uint8_t *)(*object), object.len());
+}
+
+template<>
+inline size_t mapkeypath<const uint8_t *>(typeref<const uint8_t *>& object)
+{
+	size_t path = object.size();
+	return MapRef::index(path, *object, object.size());
+}
 
 template<typename T>
 class mapref : public MapRef

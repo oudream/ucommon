@@ -376,6 +376,8 @@ public:
 		return operator*();
 	}
 
+	size_t len() const;
+
 	bool operator==(const typeref& ptr) const;
 
 	bool operator==(const char *obj) const;

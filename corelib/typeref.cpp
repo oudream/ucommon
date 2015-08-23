@@ -171,6 +171,15 @@ const char *typeref<const char *>::operator*() const
     return &v->mem[0];
 }
 
+size_t typeref<const char *>::len() const
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return 0;
+
+    return v->len();
+}
+
 typeref<const char *> typeref<const char *>::operator+(const char *str2) const 
 {
     value *v1 = polystatic_cast<value *>(ref);
@@ -438,6 +447,5 @@ typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref<const
     result.assign(bytes);
     return result;
 }
-
 
 } // namespace
