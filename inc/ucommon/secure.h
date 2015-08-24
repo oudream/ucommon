@@ -222,9 +222,9 @@ public:
 
     typedef typeref<secure::chars> string;
 
-    typedef arrayref<secure::chars> chararray;
+    typedef arrayref<secure::chars> strarray;
 
-    typedef queueref<secure::chars> charqueue;
+    typedef queueref<secure::chars> strqueue;
 
     typedef typeref<secure::bytes> keybytes;
     
