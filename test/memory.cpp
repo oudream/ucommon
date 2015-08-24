@@ -169,7 +169,7 @@ extern "C" int main()
     assert(!sv.is());
     assert(sv.copies() == 0);
 
-    mapref<int, const char *> map;
+    mapref<int, const_chars> map;
     map(3, "hello");
     stringref_t sr = map(3);
     assert(eq(*sr, "hello"));
