@@ -332,6 +332,18 @@ TypeRef()
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
+typeref<const uint8_t *>::typeref(bool mode, size_t bits) :
+TypeRef()
+{
+    size_t size = (bits / 8);
+    if(bits % 8)
+        ++size;
+
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    TypeRef::set(new(mem(p)) value(p, size, NULL));
+    set(mode, 0, bits);
+}
+
 void typeref<const uint8_t *>::value::destroy(void) 
 {
 	count.clear();
@@ -446,6 +458,69 @@ typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref<const
         memcpy(out + s1, b2, s2);
     result.assign(bytes);
     return result;
+}
+
+bool typeref<const uint8_t *>::get(size_t offset)
+{
+    uint8_t mask = 1;
+    value *v = polystatic_cast<value *>(ref);
+    if(!v || v->size < offset / 8)
+        return false;
+
+    mask = mask << offset % 8;
+    return (v->get())[offset / 8] & mask;
+}
+
+size_t typeref<const uint8_t *>::count(size_t offset, size_t bits)
+{
+    uint8_t mask = 1;
+    size_t total = 0;
+
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return 0;
+
+    uint8_t *data = v->get();
+    while(bits--) {
+        size_t pos = offset / 8;
+        if(pos >= v->size)
+            break;
+        uint8_t bitmask = mask << (offset % 8);
+        ++offset;
+        if(data[pos] & bitmask)
+            ++total;
+    }
+    return total;
+}
+
+size_t typeref<const uint8_t *>::set(bool mode, size_t offset, size_t bits)
+{
+    uint8_t mask = 1;
+    size_t total = 0;
+
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return 0;
+
+    uint8_t *data = v->get();
+    while(bits--) {
+        size_t pos = offset / 8;
+        if(pos >= v->size)
+            break;
+        uint8_t bitmask = mask << (offset % 8);
+        ++offset;
+        bool current = (data[pos] & bitmask);
+        if(current != mode)
+            ++total;
+        else
+            continue;
+
+        if(mode)
+            data[pos] |= bitmask;
+        else
+            data[pos] &= ~bitmask;
+    }
+    return total;
 }
 
 } // namespace

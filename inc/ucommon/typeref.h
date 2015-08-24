@@ -467,6 +467,8 @@ public:
 
 	typeref(uint8_t *str, size_t size);
 
+	typeref(bool mode, size_t bits);
+
 	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	const uint8_t *operator*() const;
@@ -495,6 +497,12 @@ public:
 
 	void set(const uint8_t *str, size_t size);
 
+	size_t set(bool bit, size_t offset, size_t bits = 1);
+
+	bool get(size_t offset);
+
+	size_t count(size_t offset, size_t bits = 1);	
+
 	void assign(value *bytes);
 
 	static value *create(size_t size);
@@ -504,12 +512,14 @@ public:
 
 typedef	const char *chars;
 typedef	const uint8_t *bytes;
+typedef const uint8_t *bools;
 typedef typeref<chars>::value *charvalues_t;
-typedef	typeref<bytes>::value	*bytevalues_t;
+typedef	typeref<bytes>::value *bytevalues_t;
 typedef	typeref<chars> stringref_t;
 typedef typeref<chars> stringref;
 typedef typeref<bytes> byteref_t;
 typedef typeref<bytes> byteref;
+typedef typeref<bools> boolref_t;
 
 template<typename T>
 inline typeref<T> typeref_cast(T x) {
