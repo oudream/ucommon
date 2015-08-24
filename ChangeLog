@@ -1,3 +1,8 @@
+Changes from 6.5.4 to 6.5.5
+- more portable nullptr support
+- thread-safe mapref class 
+- some typeref convenience types
+
 Changes from 6.5.3 to 6.5.4
 - secure string and key management types
 - better cleanup of secure objects

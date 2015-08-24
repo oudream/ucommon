@@ -1,3 +1,9 @@
+ucommon (1:6.5.5-1) UNRELEASED; urgency=low
+
+  * Introduction of mapref
+
+ -- David Sugar <dyfet@gnutelephony.org>  Mon, 24 Aug 2015 05:38:13 -0400
+
 ucommon (1:6.5.4-1) UNRELEASED; urgency=low
 
   * Improved usecure management of secure types
