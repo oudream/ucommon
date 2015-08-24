@@ -135,7 +135,7 @@ extern "C" int main()
     assert(mapkeypath(k1) == (size_t)(70252474772234));
     assert(mapkeypath(k1) == mapkeypath(k2));
 
-    mapref<const_chars, const_chars> map;
+    mapref<chars,chars> map;
     map("hello", "goodbye");
     cvs = map("hello");
     assert(eq(*cvs, "goodbye"));

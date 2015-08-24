@@ -345,8 +345,8 @@ public:
 	}
 };
 
-typedef arrayref<const_bytes> bytearray_t;
-typedef arrayref<const_chars> stringarray_t;
+typedef arrayref<bytes> bytearray_t;
+typedef arrayref<chars> stringarray_t;
 
 } // namespace
 

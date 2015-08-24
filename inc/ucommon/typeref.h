@@ -502,14 +502,14 @@ public:
 	static void destroy(value *bytes);
 };
 
-typedef	const char *const_chars;
-typedef	const uint8_t *const_bytes;
-typedef typeref<const_chars>::value *charvalues_t;
-typedef	typeref<const_bytes>::value	*bytevalues_t;
-typedef	typeref<const_chars> stringref_t;
-typedef typeref<const_chars> stringref;
-typedef typeref<const_bytes> byteref_t;
-typedef typeref<const_bytes> byteref;
+typedef	const char *chars;
+typedef	const uint8_t *bytes;
+typedef typeref<chars>::value *charvalues_t;
+typedef	typeref<bytes>::value	*bytevalues_t;
+typedef	typeref<chars> stringref_t;
+typedef typeref<chars> stringref;
+typedef typeref<bytes> byteref_t;
+typedef typeref<bytes> byteref;
 
 template<typename T>
 inline typeref<T> typeref_cast(T x) {

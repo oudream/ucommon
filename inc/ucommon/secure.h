@@ -216,17 +216,21 @@ public:
      */
     typedef enum {OK=0, INVALID, MISSING_CERTIFICATE, MISSING_PRIVATEKEY, INVALID_CERTIFICATE, INVALID_AUTHORITY, INVALID_PEERNAME, INVALID_CIPHER} error_t;
 
-    typedef typeref<secure_chars> string;
+    typedef secure_chars chars;
 
-    typedef arrayref<secure_chars> strarray;
+    typedef secure_keybytes bytes;
 
-    typedef queueref<secure_chars> strqueue;
+    typedef typeref<secure::chars> string;
 
-    typedef typeref<secure_keybytes> keybytes;
+    typedef arrayref<secure::chars> chararray;
+
+    typedef queueref<secure::chars> charqueue;
+
+    typedef typeref<secure::bytes> keybytes;
     
-    typedef typeref<secure_keybytes> keyarray;
+    typedef typeref<secure::bytes> keyarray;
 
-    typedef typeref<secure_keybytes> keyqueue;
+    typedef typeref<secure::bytes> keyqueue;
 
 protected:
     /**
