@@ -345,8 +345,8 @@ public:
 	}
 };
 
-typedef arrayref<const uint8_t *> bytearray_t;
-typedef arrayref<const char *> stringarray_t;
+typedef arrayref<const_bytes> bytearray_t;
+typedef arrayref<const_chars> stringarray_t;
 
 } // namespace
 
