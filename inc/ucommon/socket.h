@@ -2065,6 +2065,10 @@ public:
             return &storage.ipv6;
         return NULL;
     }
+#else
+    inline struct sockaddr_in6 *in6() {
+        return NULL;
+    }
 #endif
 
     inline operator struct sockaddr *() {
@@ -2094,7 +2098,7 @@ public:
 
 };
 
-typedef typeref<inet_service>   inetref_t;
+typedef typeref<inet_service>   serviceref_t;
 
 } // namespace ucommon
 
