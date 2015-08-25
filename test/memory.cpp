@@ -183,6 +183,17 @@ extern "C" int main()
     map(7, "test");
     assert(map.count() == 2);
 
+    mapref<int,Type::Chars>::instance inst = map;
+    typeref<int> kv;
+    unsigned passes = 0;
+    while(is(inst)) {
+        kv = inst.key();
+        ++inst;
+        ++passes;
+    }
+    assert(*kv == 7);
+    assert(passes = 2);
+
     map.remove(7);
     map(9, "9");
     assert(map.used() == 2);

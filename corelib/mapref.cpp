@@ -114,6 +114,160 @@ void MapRef::Map::dealloc()
     Counted::dealloc();
 }
 
+MapRef::Instance::Instance(Map *vmap)
+{
+    if(!vmap)
+        return;
+
+    map = vmap;
+    map->retain();
+    map->lock.access();
+    rewind();
+}
+
+MapRef::Instance::Instance(MapRef& from)
+{
+    map = static_cast<Map*>(from.ref);
+    if(!map)
+        return;
+
+    map->retain();
+    map->lock.access();
+    rewind();
+}
+
+MapRef::Instance::Instance()
+{
+    map = NULL;
+    index = NULL;
+    path = 0;
+}
+
+MapRef::Instance::Instance(const Instance& copy)
+{
+    map = copy.map;
+    index = copy.index;
+    path = copy.path;
+    if(!map)
+        return;
+
+    map->retain();
+    map->lock.access();
+}
+
+MapRef::Instance::~Instance()
+{
+    drop();
+}
+
+void MapRef::Instance::drop()
+{
+    if(!map)
+        return;
+
+    map->lock.release();
+    map->release();
+    map = NULL;
+    index = NULL;
+    path = 0;
+}
+
+void MapRef::Instance::assign(const Instance& copy)
+{
+    drop();
+    map = copy.map;
+    index = copy.index;
+    path = copy.path;
+    if(!map)
+        return;
+
+    map->retain();
+    map->lock.access();
+}
+
+void MapRef::Instance::assign(MapRef& from)
+{
+    drop();
+    map = static_cast<Map*>(from.ref);
+    if(!map)
+        return;
+
+    map->retain();
+    map->lock.access();
+    rewind();
+}
+
+void MapRef::Instance::rewind()
+{
+    if(!map)
+        return;
+
+    path = 0;
+    index = (map->get())[0];
+    if(!index)
+        next();
+}
+
+bool MapRef::Instance::top()
+{
+    if(!map)
+        return false;
+
+    if(path > 0)
+        return false;
+
+    if(index != (map->get())[0])
+        return false;
+
+    return true;
+}
+
+TypeRef::Counted *MapRef::Instance::key()
+{
+    if(!index)
+        return NULL;
+
+    return (static_cast<Index*>(index))->key;
+}
+
+TypeRef::Counted *MapRef::Instance::value()
+{
+    if(!index)
+        return NULL;
+
+    return (static_cast<Index*>(index))->value;
+}
+
+bool MapRef::Instance::eol()
+{
+    if(!map)
+        return false;
+
+    if(path < map->size)
+        return false;
+
+    return true;
+}
+
+bool MapRef::Instance::next()
+{
+    if(!map)
+        return false;
+
+    if(index)
+        index = index->getNext();
+
+    if(index)
+        return true;
+
+    while(++path < map->size) {
+        index = (map->get())[path];
+        if(index)
+            return true;
+    }
+    return false;
+}
+
 MapRef::MapRef() :
 TypeRef()
 {

@@ -58,7 +58,7 @@ namespace ucommon {
 class __EXPORT MapRef : public TypeRef
 {
 protected:
-	class Index : public LinkedObject
+	class __EXPORT Index : public LinkedObject
 	{
 	public:
 		Index(LinkedObject **origin);
@@ -67,7 +67,7 @@ protected:
 		LinkedObject **root;
 	};
 
-	class Map : public Counted
+	class __EXPORT Map : public Counted
 	{
 	public:
 		friend class MapRef;
@@ -92,6 +92,51 @@ protected:
 		LinkedObject *modify(size_t key);
 
 		LinkedObject *access(size_t key);
+	};
+
+	class __EXPORT Instance
+	{
+	protected:
+		Map *map;
+		LinkedObject *index;
+		size_t path;
+
+		Instance();
+
+		Instance(MapRef& from);
+
+		Instance(Map *map);
+
+		Instance(const Instance& copy);
+
+		void assign(const Instance& copy);
+
+		void assign(MapRef& from);
+
+		void drop(void);
+
+		Counted *key();
+
+		Counted *value();
+
+	public:
+		~Instance();
+
+		void rewind();
+
+		bool next();
+
+		bool eol();
+
+		bool top();
+
+		inline operator bool() {
+			return index != NULL;
+		}
+
+		inline bool operator!() {
+			return index == NULL;
+		}
 	};
 
 	MapRef(size_t paths, size_t paging = 0);
@@ -167,6 +212,42 @@ protected:
 	}	
 
 public:
+	class instance : public MapRef::Instance
+	{
+	protected:
+		inline instance(MapRef *ref) : Instance(ref) {};
+
+	public:
+		inline instance(const instance& copy) : Instance(static_cast<const Instance&>(copy)) {};
+
+		inline instance(mapref& from) : Instance(static_cast<MapRef&>(from)) {};
+
+		inline instance() : Instance() {};
+
+		inline typeref<K> key() {
+			return typeref<K>(Instance::key());
+		}
+
+		inline typeref<V> value() {
+			return typeref<V>(Instance::value());
+		}
+
+		inline instance& operator++() {
+			next();
+			return *this;
+		}
+
+		inline instance& operator=(const instance& copy) {
+			assign(static_cast<const Instance&>(copy));
+			return *this;
+		}
+
+		inline instance& operator=(mapref& from) {
+			assign(static_cast<MapRef&>(from));
+			return *this;
+		}
+	};
+
 	inline mapref(const mapref& copy) : MapRef(copy) {};
 
 	inline mapref(size_t paths = 37, size_t paging = 0) : MapRef(paths, paging) {};
@@ -174,6 +255,10 @@ public:
 	inline mapref& operator=(const mapref& copy) {
 		TypeRef::set(copy);
 		return *this;
+	}
+
+	inline instance operator*() {
+		return instance(this);
 	}
 
 	void value(typeref<K>& key, typeref<V>& val) {
