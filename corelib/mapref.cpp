@@ -26,6 +26,13 @@
 
 namespace ucommon {
 
+MapRef::Index::Index() :
+LinkedObject()
+{
+    key = value = NULL;
+    root = NULL;
+}
+
 MapRef::Index::Index(LinkedObject **origin) :
 LinkedObject(origin)
 {
@@ -38,7 +45,7 @@ Counted(addr, indexes), pool(paging)
 {
     size_t index = 0;
     LinkedObject **list = get();
-    free = NULL;
+    free = last = NULL;
     count = alloc = 0;
     
     while(index < indexes) {
@@ -60,6 +67,30 @@ MapRef::Index *MapRef::Map::create(size_t key)
     return new(p) Index(&list[key % size]);
 }
 
+MapRef::Index *MapRef::Map::append()
+{
+    LinkedObject **list = get();
+    caddr_t p = (caddr_t)(free);
+    if(free)
+        free = free->getNext();
+    else {
+        ++alloc;
+        p = (caddr_t)pool.alloc(sizeof(Index));
+    }
+    ++count;
+    Index *ip = new(p) Index();
+    if(last) {
+        Index *lp = static_cast<Index *>(last);
+        lp->Next = ip;
+    }
+    else
+        list[0] = ip;
+    last = ip;
+    ip->Next = NULL;
+    ip->root = &list[0];
+    return ip;
+}       
+
 void MapRef::Map::remove(Index *index)
 {
     if(!index)
@@ -72,6 +103,16 @@ void MapRef::Map::remove(Index *index)
         index->value->release();
 
     --count;
+    if(last && index == last) {
+        last = *(index->root);
+        if(last == index)
+            last = NULL;
+        else {
+            while(last && last->getNext() != index) {
+                last = last->getNext();
+            }
+        }
+    }
     index->delist(index->root); 
     index->enlist(&free);
 }
@@ -109,7 +150,7 @@ void MapRef::Map::dealloc()
 		++index;
 	}	
     size = 0;
-	free = NULL;
+	free = last = NULL;
 	pool.purge();
     Counted::dealloc();
 }
@@ -330,6 +371,25 @@ void MapRef::update(Index *ind, TypeRef& value)
     ind->value = value.ref;
     if(ind->value)
         ind->value->retain();
+}
+
+void MapRef::append(TypeRef& value)
+{
+    Map *m = polydynamic_cast<Map *>(ref);
+	if(!m || !m->size)
+		return;
+
+    m->lock.modify();
+    Index *ind = m->append();
+    if(!ind) {
+        m->lock.commit();
+        return;
+    }
+    ind->key = NULL;
+    ind->value = value.ref;
+    if(ind->value)
+        ind->value->retain();
+    m->lock.commit();
 }
 
 void MapRef::add(size_t keypath, TypeRef& key, TypeRef& value)

@@ -58,10 +58,16 @@ namespace ucommon {
 class __EXPORT MapRef : public TypeRef
 {
 protected:
+	class Map;
+
 	class __EXPORT Index : public LinkedObject
 	{
 	public:
+		friend class Map;
+
 		Index(LinkedObject **origin);
+
+		Index();
 
 		Counted *key, *value;
 		LinkedObject **root;
@@ -74,7 +80,7 @@ protected:
 
 		memalloc pool;
 		condlock_t lock;
-		LinkedObject *free;
+		LinkedObject *free, *last;
 		size_t count, alloc;
 
 		explicit Map(void *addr, size_t indexes, size_t paging = 0);
@@ -87,11 +93,13 @@ protected:
 
 		Index *create(size_t path);
 
+		Index *append();
+
 		void remove(Index *index);
 
-		LinkedObject *modify(size_t key);
+		LinkedObject *modify(size_t key = 0);
 
-		LinkedObject *access(size_t key);
+		LinkedObject *access(size_t key = 0);
 	};
 
 	class __EXPORT Instance
@@ -147,9 +155,11 @@ protected:
 
 	static Map *create(size_t paths, size_t paging = 0);
 
-	linked_pointer<Index> access(size_t keyvalue);
+	linked_pointer<Index> access(size_t keyvalue = 0);
 
-	linked_pointer<Index> modify(size_t keyvalue);
+	linked_pointer<Index> modify(size_t keyvalue = 0);
+
+	void append(TypeRef& value);
 
 	void add(size_t path, TypeRef& key, TypeRef& value);
 
@@ -320,6 +330,111 @@ public:
 		value(key, val);
 	}
 };
+
+template<typename T>
+class listref : public MapRef
+{
+protected:
+	bool erase(typeref<T>& value) {
+		linked_pointer<Index> ip = modify();
+		while(ip) {
+			typeref<T> kv(ip->value);
+			if(kv.is() && kv == value) {
+				MapRef::remove(*ip);
+				MapRef::commit();
+				return true;
+			}
+			ip.next();
+		}
+		MapRef::commit();
+		return false;
+	}
+	
+public:
+	class instance : public MapRef::Instance
+	{
+	protected:
+		inline instance(MapRef *ref) : Instance(ref) {};
+
+	public:
+		inline instance(const instance& copy) : Instance(static_cast<const Instance&>(copy)) {};
+
+		inline instance(listref& from) : Instance(static_cast<MapRef&>(from)) {};
+
+		inline instance() : Instance() {};
+
+		inline const T& operator*() {
+			return *(Instance::value());
+		}
+
+		inline const T* operator->() {
+			return Instance::value();
+		}
+
+		inline instance& operator++() {
+			next();
+			return *this;
+		}
+
+		inline instance& operator=(const instance& copy) {
+			assign(static_cast<const Instance&>(copy));
+			return *this;
+		}
+
+		inline instance& operator=(listref& from) {
+			assign(static_cast<MapRef&>(from));
+			return *this;
+		}
+	};
+
+	inline listref(const listref& copy) : MapRef(copy) {};
+
+	inline listref(size_t paging = 0) : MapRef(1, paging) {};
+
+	inline listref& operator=(const listref& copy) {
+		TypeRef::set(copy);
+		return *this;
+	}
+
+	inline instance operator*() {
+		return instance(this);
+	}
+
+	inline listref& operator<<(typeref<T>& value) {
+		append(value);
+		return *this;
+	}
+
+	inline listref& operator<<(T t) {
+		typeref<T> v(t);
+		append(v);
+		return *this;
+	}
+
+	inline bool remove(typeref<T>& key) {
+		return erase(key);
+	}
+
+	inline bool remove(T t) {
+		typeref<T> key(t);
+		return erase(key);
+	}
+
+	inline typeref<T> at(size_t offset) {
+		linked_pointer<Index> ip = access();
+		while(offset--) {
+			ip.next();
+		}
+		typeref<T> v(ip->value);
+		release();
+		return v;
+	}
+
+	inline typeref<T> operator[](size_t offset) {
+		return at(offset);
+	}
+};
+
 
 } // namespace
 

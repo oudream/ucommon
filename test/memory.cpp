@@ -193,11 +193,17 @@ extern "C" int main()
     }
     assert(*kv == 7);
     assert(passes = 2);
+    assert(kv.copies() == 2);
 
     map.remove(7);
     map(9, "9");
     assert(map.used() == 2);
     sr = map(7);
     assert(*sr == nullptr);
+
+    listref<int> intlist;
+    intlist << 3 << 5 << 7 << 9;
+    assert(intlist.count() == 4);
+    assert(*(intlist[2]) == 7);
     return 0;
 }
