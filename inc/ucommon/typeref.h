@@ -511,7 +511,7 @@ public:
 };
 
 namespace Type {
-	typedef int Integer;
+	typedef int32_t Integer;
 	typedef double Real;
 	typedef const char *Chars;
 	typedef const uint8_t *Bytes;
