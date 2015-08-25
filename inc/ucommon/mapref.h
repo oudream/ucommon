@@ -208,7 +208,7 @@ class mapref : public MapRef
 protected:
 	bool erase(typeref<K>& key) {
 		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
-		while(ip) {
+		while(*ip != nullptr) {
 			typeref<K> kv(ip->key);
 			if(kv.is() && kv == key) {
 				MapRef::remove(*ip);
@@ -274,7 +274,7 @@ public:
 	void value(typeref<K>& key, typeref<V>& val) {
 		size_t path = mapkeypath<K>(key);
 		linked_pointer<Index> ip = modify(path);
-		while(ip) {
+		while(*ip != nullptr) {
 			typeref<K> kv(ip->key);
 			if(kv.is() && kv == key) {
 				update(*ip, val);
@@ -289,7 +289,7 @@ public:
 
 	typeref<V> at(typeref<K>& key) {
 		linked_pointer<Index> ip = access(mapkeypath<K>(key));
-		while(ip) {
+		while(*ip != nullptr) {
 			typeref<K> kv(ip->key);
 			if(kv.is() && kv == key) {
 				typeref<V> result(ip->value);
@@ -304,7 +304,7 @@ public:
 
 	typeref<V> take(typeref<K>& key) {
 		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
-		while(ip) {
+		while(*ip !=  nullptr) {
 			typeref<K> kv(ip->key);
 			if(kv.is() && kv == key) {
 				typeref<V> result(ip->value);
@@ -439,7 +439,7 @@ public:
 
 	inline typeref<T> take(size_t offset) {
 		linked_pointer<Index> ip = modify();
-		while(ip && offset--) {
+		while(*ip != nullptr && offset--) {
 			ip.next();
 		}
 		typeref<T> v(ip->value);

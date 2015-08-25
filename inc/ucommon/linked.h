@@ -1527,6 +1527,10 @@ public:
         return (ptr == NULL);
     }
 
+    inline bool is() const {
+        return (ptr != NULL);
+    }
+
     /**
      * Return pointer to our linked pointer to use as root node of a chain.
      * @return our object pointer as a root index.

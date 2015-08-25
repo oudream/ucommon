@@ -531,11 +531,6 @@ inline typeref<T> typeref_cast(T x) {
 	return typeref<T>(x);
 }
 
-template<>
-inline bool is<TypeRef>(TypeRef& obj) {
-	return obj.is();
-}
-
 } // namespace
 
 #endif
