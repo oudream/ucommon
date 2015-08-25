@@ -1,3 +1,10 @@
+Changes from 6.5.5 to 6.5.6
+- simplified arrayref
+- added listref
+- map iterators thru locked instances
+- type standardization
+- socket address type
+
 Changes from 6.5.4 to 6.5.5
 - more portable nullptr support
 - thread-safe mapref class 
