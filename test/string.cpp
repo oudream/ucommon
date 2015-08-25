@@ -128,5 +128,17 @@ extern "C" int main()
 
     stringref_t myref = cvs + " now" + "!";
     assert(eq(*myref, "here now!"));
+
+    stringref_t k1 = "testing phrase";
+    stringref_t k2 = "testing phrase";
+
+    assert(mapkeypath(k1) == (size_t)(70252474772234));
+    assert(mapkeypath(k1) == mapkeypath(k2));
+
+    mapref<Type::Chars,Type::Chars> map;
+    map("hello", "goodbye");
+    cvs = map("hello");
+    assert(eq(*cvs, "goodbye"));
+
     return 0;
 }

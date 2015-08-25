@@ -932,6 +932,27 @@ void cidr::set(const char *cp)
     }
 }
 
+Socket::inet::inet(int fam)
+{
+	const sockaddr_storage sa = Socket::address::loopback(fam);
+	store((struct sockaddr *)&sa);
+}
+
+void Socket::inet::store(struct sockaddr *addr)
+{
+	switch(addr->sa_family) {
+	case AF_INET:
+		memcpy(&storage.ipv4, (struct sockaddr_in*)(addr), sizeof(struct sockaddr_in));
+		break;
+#ifdef	AF_INET6
+	case AF_INET6:
+		memcpy(&storage.ipv6, (struct sockaddr_in6*)(addr), sizeof(struct sockaddr_in6));
+		break;
+
+#endif
+	}
+}
+
 Socket::address::address(int family, const char *a, int type, int protocol)
 {
     assert(a != NULL && *a != 0);

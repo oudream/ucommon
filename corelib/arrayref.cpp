@@ -277,7 +277,7 @@ void ArrayRef::push(const TypeRef& object)
 
 void ArrayRef::pull(TypeRef& object, timeout_t timeout)
 {
-    object.release();
+    object.clear();
     Array *array = polystatic_cast<Array *>(ref);
     if(!array || array->type == ARRAY) {
         return;
@@ -316,7 +316,7 @@ void ArrayRef::pull(TypeRef& object, timeout_t timeout)
         }
         if(!array->waitBroadcast(timeout)) {
             array->unlock();
-            object.release();
+            object.clear();
             return;
         }
     }
@@ -324,7 +324,7 @@ void ArrayRef::pull(TypeRef& object, timeout_t timeout)
 
 void ArrayRef::pull(TypeRef& object)
 {
-    object.release();
+    object.clear();
     Array *array = polystatic_cast<Array *>(ref);
     if(!array || array->type == ARRAY) {
         return;

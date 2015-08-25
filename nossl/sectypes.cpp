@@ -25,7 +25,7 @@ static size_t fix(size_t size)
 
 namespace ucommon {
 
-typeref<secure_chars>::storage::storage(caddr_t addr, size_t objsize, const char *str, strtype_t strtype) : 
+typeref<Type::SecChars>::storage::storage(caddr_t addr, size_t objsize, const char *str, strtype_t strtype) : 
 TypeRef::Counted(addr, objsize)
 {
     if(str)
@@ -36,19 +36,19 @@ TypeRef::Counted(addr, objsize)
     type = strtype;
 }
 
-void typeref<secure_chars>::storage::dealloc(void)
+void typeref<Type::SecChars>::storage::dealloc(void)
 {
 	memset(&mem[0], 0, size);
 	Counted::dealloc();
 }
 
-typeref<secure_chars>::typeref() :
+typeref<Type::SecChars>::typeref() :
 TypeRef() {}
 
-typeref<secure_chars>::typeref(const typeref<secure_chars>& copy) :
+typeref<Type::SecChars>::typeref(const typeref<Type::SecChars>& copy) :
 TypeRef(copy) {}
 
-typeref<secure_chars>::typeref(const char *str, strtype_t strtype) :
+typeref<Type::SecChars>::typeref(const char *str, strtype_t strtype) :
 TypeRef()
 {
     size_t size = 16;
@@ -60,7 +60,7 @@ TypeRef()
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
-secure_chars::strtype_t typeref<secure_chars>::type(void)
+Type::SecChars::strtype_t typeref<Type::SecChars>::type(void)
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(v)
@@ -69,23 +69,42 @@ secure_chars::strtype_t typeref<secure_chars>::type(void)
     return GENERIC_STRING;
 }
 
-size_t typeref<secure_chars>::size(void)
+size_t typeref<Type::SecChars>::len(void)
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
         return 0;
 
+    return v->len();
+}
+
+size_t typeref<Type::SecChars>::size(void)
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    size_t len = v->len();
+
+    if(!v)
+        return 0;
+
     switch(v->type) {
     case GENERIC_STRING:
-        return v->len() * 8;
+        return len * 8;
+    case B64_STRING:
+        len = (v->len() * 3) / 4;
+        if(v->mem[v->len() - 1] == '=') {
+            --len;
+            if(v->mem[v->len() - 2] == '=')
+                --len;
+        }
+        return len * 8;
     default:
-        return v->len() * 4;
+        return len * 4;
     }
 }
 
-void typeref<secure_chars>::set(const char *str, strtype_t strtype)
+void typeref<Type::SecChars>::set(const char *str, strtype_t strtype)
 {
-    release();
+    clear();
     size_t size = 16;
 
     if(str)
@@ -95,7 +114,7 @@ void typeref<secure_chars>::set(const char *str, strtype_t strtype)
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
-const char *typeref<secure_chars>::operator*() const 
+const char *typeref<Type::SecChars>::operator*() const 
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -104,7 +123,7 @@ const char *typeref<secure_chars>::operator*() const
     return &v->mem[0];
 }
 
-bool typeref<secure_chars>::operator==(const typeref<secure_chars>& ptr) const
+bool typeref<Type::SecChars>::operator==(const typeref<Type::SecChars>& ptr) const
 {
     storage *v1 = polystatic_cast<storage*>(ref);
     storage *v2 = polystatic_cast<storage*>(ptr.ref);
@@ -113,7 +132,7 @@ bool typeref<secure_chars>::operator==(const typeref<secure_chars>& ptr) const
     return eq(&(v1->mem[0]), &(v2->mem[0]));
 }
 
-bool typeref<secure_chars>::operator==(const char *obj) const
+bool typeref<Type::SecChars>::operator==(const char *obj) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -121,21 +140,21 @@ bool typeref<secure_chars>::operator==(const char *obj) const
     return eq(&(v->mem[0]), obj);
 }
 
-typeref<secure_chars>& typeref<secure_chars>::operator=(const typeref<secure_chars>& objref)
+typeref<Type::SecChars>& typeref<Type::SecChars>::operator=(const typeref<Type::SecChars>& objref)
 {
     TypeRef::set(objref);
     return *this;
 }
 
-typeref<secure_chars>& typeref<secure_chars>::operator=(const char *str)
+typeref<Type::SecChars>& typeref<Type::SecChars>::operator=(const char *str)
 {
     set(str);
     return *this;
 }
 
-void typeref<secure_chars>::b64(const uint8_t *bytes, size_t bsize)
+void typeref<Type::SecChars>::b64(const uint8_t *bytes, size_t bsize)
 {
-    release();
+    clear();
     size_t len = ((bsize * 4 / 3) + 1);
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + len);
@@ -144,9 +163,9 @@ void typeref<secure_chars>::b64(const uint8_t *bytes, size_t bsize)
     TypeRef::set(s);
 }
 
-void typeref<secure_chars>::hex(const uint8_t *bytes, size_t bsize)
+void typeref<Type::SecChars>::hex(const uint8_t *bytes, size_t bsize)
 {
-    release();
+    clear();
     size_t len = bsize * 2;
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + len);
@@ -159,7 +178,7 @@ void typeref<secure_chars>::hex(const uint8_t *bytes, size_t bsize)
     TypeRef::set(s);
 }
 
-typeref<secure_keybytes>::storage::storage(caddr_t addr, size_t objsize, const uint8_t *key, keytype_t keytype) : 
+typeref<Type::KeyBytes>::storage::storage(caddr_t addr, size_t objsize, const uint8_t *key, keytype_t keytype) : 
 TypeRef::Counted(addr, objsize)
 {
     if(key)
@@ -170,33 +189,33 @@ TypeRef::Counted(addr, objsize)
     type = keytype;
 }
 
-void typeref<secure_keybytes>::storage::dealloc(void)
+void typeref<Type::KeyBytes>::storage::dealloc(void)
 {
 	memset(&mem[0], 0, size);
 	Counted::dealloc();
 }
 
-typeref<secure_keybytes>::typeref() :
+typeref<Type::KeyBytes>::typeref() :
 TypeRef() {}
 
-typeref<secure_keybytes>::typeref(const typeref<secure_keybytes>& copy) :
+typeref<Type::KeyBytes>::typeref(const typeref<Type::KeyBytes>& copy) :
 TypeRef(copy) {}
 
-typeref<secure_keybytes>::typeref(const uint8_t *key, size_t keysize, keytype_t keytype) :
+typeref<Type::KeyBytes>::typeref(const uint8_t *key, size_t keysize, keytype_t keytype) :
 TypeRef()
 {
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
 
-typeref<secure_keybytes>::typeref(size_t keysize, keytype_t keytype) :
+typeref<Type::KeyBytes>::typeref(size_t keysize, keytype_t keytype) :
 TypeRef()
 {
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }
 
-secure_keybytes::keytype_t typeref<secure_keybytes>::type(void)
+Type::KeyBytes::keytype_t typeref<Type::KeyBytes>::type(void)
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(v)
@@ -205,7 +224,7 @@ secure_keybytes::keytype_t typeref<secure_keybytes>::type(void)
     return UNDEFINED_KEYTYPE;
 }
 
-size_t typeref<secure_keybytes>::size(void)
+size_t typeref<Type::KeyBytes>::size(void)
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -214,22 +233,22 @@ size_t typeref<secure_keybytes>::size(void)
     return v->size * 8;
 }
 
-void typeref<secure_keybytes>::set(const uint8_t *key, size_t keysize, keytype_t keytype)
+void typeref<Type::KeyBytes>::set(const uint8_t *key, size_t keysize, keytype_t keytype)
 {
-    release();
+    clear();
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
 
-void typeref<secure_keybytes>::generate(size_t keysize, keytype_t keytype)
+void typeref<Type::KeyBytes>::generate(size_t keysize, keytype_t keytype)
 {
-    release();
+    clear();
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }
 
 
-const uint8_t *typeref<secure_keybytes>::operator*() const 
+const uint8_t *typeref<Type::KeyBytes>::operator*() const 
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -238,7 +257,7 @@ const uint8_t *typeref<secure_keybytes>::operator*() const
     return &v->mem[0];
 }
 
-bool typeref<secure_keybytes>::operator==(const typeref<secure_keybytes>& ptr) const
+bool typeref<Type::KeyBytes>::operator==(const typeref<Type::KeyBytes>& ptr) const
 {
     storage *v1 = polystatic_cast<storage*>(ref);
     storage *v2 = polystatic_cast<storage*>(ptr.ref);
@@ -249,7 +268,7 @@ bool typeref<secure_keybytes>::operator==(const typeref<secure_keybytes>& ptr) c
     return !memcmp(&(v1->mem[0]), &(v2->mem[0]), v1->size);
 }
 
-typeref<secure_keybytes>& typeref<secure_keybytes>::operator=(const typeref<secure_keybytes>& objref)
+typeref<Type::KeyBytes>& typeref<Type::KeyBytes>::operator=(const typeref<Type::KeyBytes>& objref)
 {
     TypeRef::set(objref);
     return *this;

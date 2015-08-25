@@ -107,12 +107,27 @@
 #define __MALLOC      __attribute__ ((malloc))
 #endif
 
-#if __cplusplus <= 199711L && !defined(_MSC_VER)
+#if __cplusplus <= 199711L && !defined(_MSC_VER) && !defined(__clang__)
 #if defined(__GNUC_MINOR__)
 #define nullptr __null
 #else
-#define nullptr NULL
-#warning "Obsolete C++ compiler used, no nullptr support."
+const class nullptr_t 
+{
+public:
+    template<class T>
+    inline operator T*() const {
+        return 0; 
+    }
+
+    template<class C, class T>
+    inline operator T C::*() const {
+        return 0; 
+    }
+
+private:
+    void operator&() const;
+
+} nullptr = {};
 #endif
 #endif
 

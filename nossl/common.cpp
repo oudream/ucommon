@@ -284,6 +284,7 @@ HMAC::HMAC(const char *digest, const char *key, size_t len)
 HMAC::~HMAC()
 {
     release();
+    memset(buffer, 0, sizeof(buffer));
 }
 
 const char *HMAC::c_str(void)

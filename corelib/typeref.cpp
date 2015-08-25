@@ -73,10 +73,10 @@ TypeRef::TypeRef(const TypeRef& copy)
 
 TypeRef::~TypeRef()
 {
-    release();
+    clear();
 }
 
-void TypeRef::release(void)
+void TypeRef::clear(void)
 {
     if(ref)
     	ref->release();
@@ -87,7 +87,7 @@ void TypeRef::set(const TypeRef& ptr)
 {
     if(ptr.ref)
     	ptr.ref->retain();
-    release();
+    clear();
     ref = ptr.ref;
 }
 
@@ -95,7 +95,7 @@ void TypeRef::set(TypeRef::Counted *object)
 {
     if(object)
         object->retain();
-    release();
+    clear();
     ref = object;
 }
 
@@ -171,6 +171,15 @@ const char *typeref<const char *>::operator*() const
     return &v->mem[0];
 }
 
+size_t typeref<const char *>::len() const
+{
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return 0;
+
+    return v->len();
+}
+
 typeref<const char *> typeref<const char *>::operator+(const char *str2) const 
 {
     value *v1 = polystatic_cast<value *>(ref);
@@ -205,7 +214,7 @@ typeref<const char *>& typeref<const char *>::operator=(const char *str)
 
 void typeref<const char *>::set(const char *str)
 {
-    release();
+    clear();
     size_t size = 0;
 
     if(str)
@@ -217,7 +226,7 @@ void typeref<const char *>::set(const char *str)
 
 void typeref<const char *>::assign(value *chars)
 {
-    release();
+    clear();
     chars->size = strlen(chars->mem);
     TypeRef::set(chars);
 }
@@ -323,6 +332,18 @@ TypeRef()
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
+typeref<const uint8_t *>::typeref(bool mode, size_t bits) :
+TypeRef()
+{
+    size_t size = (bits / 8);
+    if(bits % 8)
+        ++size;
+
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    TypeRef::set(new(mem(p)) value(p, size, NULL));
+    set(mode, 0, bits);
+}
+
 void typeref<const uint8_t *>::value::destroy(void) 
 {
 	count.clear();
@@ -351,14 +372,14 @@ typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(value *bytes)
 
 void typeref<const uint8_t *>::set(const uint8_t *str, size_t size)
 {
-    release();
+    clear();
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
 void typeref<const uint8_t *>::assign(value *bytes)
 {
-    release();
+    clear();
     TypeRef::set(bytes);
 }
 
@@ -439,5 +460,67 @@ typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref<const
     return result;
 }
 
+bool typeref<const uint8_t *>::get(size_t offset)
+{
+    uint8_t mask = 1;
+    value *v = polystatic_cast<value *>(ref);
+    if(!v || v->size < offset / 8)
+        return false;
+
+    mask = mask << offset % 8;
+    return (v->get())[offset / 8] & mask;
+}
+
+size_t typeref<const uint8_t *>::count(size_t offset, size_t bits)
+{
+    uint8_t mask = 1;
+    size_t total = 0;
+
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return 0;
+
+    uint8_t *data = v->get();
+    while(bits--) {
+        size_t pos = offset / 8;
+        if(pos >= v->size)
+            break;
+        uint8_t bitmask = mask << (offset % 8);
+        ++offset;
+        if(data[pos] & bitmask)
+            ++total;
+    }
+    return total;
+}
+
+size_t typeref<const uint8_t *>::set(bool mode, size_t offset, size_t bits)
+{
+    uint8_t mask = 1;
+    size_t total = 0;
+
+    value *v = polystatic_cast<value *>(ref);
+    if(!v)
+        return 0;
+
+    uint8_t *data = v->get();
+    while(bits--) {
+        size_t pos = offset / 8;
+        if(pos >= v->size)
+            break;
+        uint8_t bitmask = mask << (offset % 8);
+        ++offset;
+        bool current = (data[pos] & bitmask);
+        if(current != mode)
+            ++total;
+        else
+            continue;
+
+        if(mode)
+            data[pos] |= bitmask;
+        else
+            data[pos] &= ~bitmask;
+    }
+    return total;
+}
 
 } // namespace

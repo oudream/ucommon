@@ -63,6 +63,7 @@ class __EXPORT TypeRef
 protected:
 	friend class ArrayRef;
 	friend class SharedRef;
+	friend class MapRef;
 
     /**
 	 * Heap base-class container for typeref objects.  This uses atomic
@@ -193,7 +194,7 @@ public:
 	/**
 	 * Manually release the current container.
 	 */
-	void release(void);
+	void clear(void);
 
 	/**
 	 * Get size of referenced heap object.
@@ -321,7 +322,7 @@ public:
 	}
 
 	inline void set(T& object) {
-		release();
+		clear();
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object));
 	}
@@ -375,6 +376,8 @@ public:
 	inline operator const char *() const {
 		return operator*();
 	}
+
+	size_t len() const;
 
 	bool operator==(const typeref& ptr) const;
 
@@ -464,6 +467,8 @@ public:
 
 	typeref(uint8_t *str, size_t size);
 
+	typeref(bool mode, size_t bits);
+
 	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	const uint8_t *operator*() const;
@@ -492,6 +497,12 @@ public:
 
 	void set(const uint8_t *str, size_t size);
 
+	size_t set(bool bit, size_t offset, size_t bits = 1);
+
+	bool get(size_t offset);
+
+	size_t count(size_t offset, size_t bits = 1);	
+
 	void assign(value *bytes);
 
 	static value *create(size_t size);
@@ -499,21 +510,25 @@ public:
 	static void destroy(value *bytes);
 };
 
-typedef typeref<const char*>::value *charvalues_t;
-typedef	typeref<const uint8_t *>::value	*bytevalues_t;
-typedef	typeref<const char*> stringref_t;
-typedef typeref<const char*> stringref;
-typedef typeref<const uint8_t *> byteref_t;
-typedef typeref<const uint8_t *> byteref;
+namespace Type {
+	typedef int32_t Integer;
+	typedef double Real;
+	typedef const char *Chars;
+	typedef const uint8_t *Bytes;
+	typedef const uint8_t *Bools;
+}
+
+typedef typeref<Type::Chars>::value *charvalues_t;
+typedef	typeref<Type::Bytes>::value *bytevalues_t;
+typedef	typeref<Type::Chars> stringref_t;
+typedef typeref<Type::Chars> stringref;
+typedef typeref<Type::Bytes> byteref_t;
+typedef typeref<Type::Bytes> byteref;
+typedef typeref<Type::Bools> boolref_t;
 
 template<typename T>
 inline typeref<T> typeref_cast(T x) {
 	return typeref<T>(x);
-}
-
-template<>
-inline bool is<TypeRef>(TypeRef& obj) {
-	return obj.is();
 }
 
 } // namespace

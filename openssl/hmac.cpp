@@ -44,16 +44,15 @@ void HMAC::set(const char *digest, const char *key, size_t len)
 
 void HMAC::release(void)
 {
-    if(context)
-        HMAC_cleanup((HMAC_CTX *)context);
-
     if(context) {
+        HMAC_cleanup((HMAC_CTX *)context);
+        memset(context, 0, sizeof(HMAC_CTX));
         delete (HMAC_CTX *)context;
         context = NULL;
     }
 
     bufsize = 0;
-    textbuf[0] = 0;
+    memset(textbuf, 0, sizeof(textbuf));
 }
 
 bool HMAC::put(const void *address, size_t size)
@@ -85,8 +84,7 @@ const uint8_t *HMAC::get(void)
     bufsize = size;
 
     while(count < bufsize) {
-        snprintf(textbuf + (count * 2), 3, "%2.2x",
-buffer[count]);
+        snprintf(textbuf + (count * 2), 3, "%2.2x", buffer[count]);
         ++count;
     }
     return buffer;

@@ -92,8 +92,8 @@ extern "C" int main()
     assert(xptr->x == 1);
     assert(cval == 1);
     assert(xptr.copies() == 2);
-    sptr.release();
-    xptr.release();
+    sptr.clear();
+    xptr.clear();
     assert(dval == 1);
 
     stringref sref = "this is a test";
@@ -115,9 +115,6 @@ extern "C" int main()
     ints.put(member, 30);
     assert(*member == 99);
     assert(member.copies() == 31);
-
-    assert(ints.find(30) == 6);
-    assert(ints.count(99) == 30);
 
     int memval = member;
     member = 95;
@@ -162,11 +159,48 @@ extern "C" int main()
     assert(sv == 44);
     queueofints >> sv;
     assert(sv == 55);
+    assert(mapkeypath(sv) == 8779);
 
     // flush without delay...
     sv = queueofints.pull(0);
     assert(!sv.is());
     assert(sv.copies() == 0);
 
+    mapref<int,Type::Chars> map;
+    map(3, "hello");
+    stringref_t sr = map(3);
+    assert(eq(*sr, "hello"));
+    sr = map(2);
+    assert(*sr == nullptr);
+    typeref<int> ki(3);
+    sr = "goodbye";
+    map(ki, sr);
+    sr = map(3);
+    assert(eq(*sr, "goodbye"));
+    map(7, "test");
+    assert(map.count() == 2);
+
+    mapref<int,Type::Chars>::instance inst = map;
+    typeref<int> kv;
+    unsigned passes = 0;
+    while(is(inst)) {
+        kv = inst.key();
+        ++inst;
+        ++passes;
+    }
+    assert(*kv == 7);
+    assert(passes = 2);
+    assert(kv.copies() == 2);
+
+    map.remove(7);
+    map(9, "9");
+    assert(map.used() == 2);
+    sr = map(7);
+    assert(*sr == nullptr);
+
+    listref<int> intlist;
+    intlist << 3 << 5 << 7 << 9;
+    assert(intlist.count() == 4);
+    assert(*(intlist[2]) == 7);
     return 0;
 }

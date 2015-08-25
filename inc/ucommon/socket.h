@@ -101,6 +101,7 @@ typedef struct hostaddr_internet
     };
 }   inethostaddr_t;
 
+
 #if defined(AF_INET6) || defined(__CYGWIN__)
 /**
  * An object that can hold a ipv4 or ipv6 socket address.  This would be
@@ -326,6 +327,10 @@ protected:
     timeout_t iowait;
 
 public:
+    // temporary splints...
+    typedef inethostaddr_t host_t;
+    typedef cidr cidr_t;
+
     /**
      * Get an address list directly.  This is used internally by some derived
      * socket types when generic address lists would be invalid.
@@ -342,6 +347,88 @@ public:
      * @param list of addresses.
      */
     static void release(struct addrinfo *list);
+
+    class __EXPORT inet
+    {
+    private:
+        union {
+    #ifdef  AF_INET6
+            struct sockaddr_in6 ipv6;
+    #endif
+            struct sockaddr_in ipv4;
+        } storage;
+
+        void store(struct sockaddr *addr);
+
+    public:
+        inet(int famly = AF_INET);
+
+        inline inet(struct sockaddr *addr) {
+            store(addr);
+        }
+
+        inline inet(const inet& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+        }
+
+        inline int family() {
+            return storage.ipv4.sin_family;
+        }
+
+        inline const struct sockaddr_in *in4() const {
+            if(storage.ipv4.sin_family == AF_INET)
+                return &storage.ipv4;
+            return NULL;
+        }
+
+        inline const struct sockaddr *in() const {
+            return (struct sockaddr *)&storage;
+        }
+
+    #ifdef  AF_INET6
+        inline const struct sockaddr_in6 *in6() const {
+            if(storage.ipv6.sin6_family == AF_INET6)
+                return &storage.ipv6;
+            return NULL;
+        }
+    #else
+        inline const struct sockaddr_in6 *in6() const {
+            return NULL;
+        }
+    #endif
+
+        inline operator const struct sockaddr *() const {
+            return (struct sockaddr *)&storage;
+        }
+
+        inline struct sockaddr *operator*() {
+            return (struct sockaddr *)&storage;
+        }
+
+        inline inet& operator=(struct sockaddr *addr) {
+            store(addr);
+            return *this;
+        }
+
+        inline bool operator==(struct sockaddr *addr) const {
+            return Socket::equal((const struct sockaddr *)&storage, addr);
+        }     
+
+        inline bool operator==(const inet& addr) const {
+            return Socket::equal((const struct sockaddr *)&storage, (const struct sockaddr *)(&addr.storage));
+        }     
+
+        inline bool operator!=(const struct sockaddr *addr) const {
+            return !Socket::equal((const struct sockaddr *)&storage, addr);
+        }     
+
+        inline bool operator!=(const inet& addr) const {
+            return !Socket::equal((const struct sockaddr *)&storage, (const struct sockaddr *)(&addr.storage));
+        }     
+
+    };
+
+    typedef class inet inet_t;
 
     /**
      * A generic socket address class.  This class uses the addrinfo list
@@ -2034,6 +2121,10 @@ inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
     {return Socket::eq_subnet(s1, s2);}
 
 String str(Socket& so, size_t size);
+
+namespace Type {
+    typedef Socket::inet InetAddress;
+}
 
 typedef TCPServer   tcpserv_t;
 
