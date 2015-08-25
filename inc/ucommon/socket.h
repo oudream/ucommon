@@ -327,6 +327,10 @@ protected:
     timeout_t iowait;
 
 public:
+    // temporary splints...
+    typedef inethostaddr_t host_t;
+    typedef cidr cidr_t;
+
     /**
      * Get an address list directly.  This is used internally by some derived
      * socket types when generic address lists would be invalid.
@@ -343,6 +347,86 @@ public:
      * @param list of addresses.
      */
     static void release(struct addrinfo *list);
+
+    class __EXPORT inet
+    {
+    private:
+        union {
+    #ifdef  AF_INET6
+            struct sockaddr_in6 ipv6;
+    #endif
+            struct sockaddr_in ipv4;
+        } storage;
+
+        void store(struct sockaddr *addr);
+
+    public:
+        inet(int famly = AF_INET);
+
+        inline inet(struct sockaddr *addr) {
+            store(addr);
+        }
+
+        inline inet(const inet& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+        }
+
+        inline int family() {
+            return storage.ipv4.sin_family;
+        }
+
+        inline const struct sockaddr_in *in4() const {
+            if(storage.ipv4.sin_family == AF_INET)
+                return &storage.ipv4;
+            return NULL;
+        }
+
+        inline const struct sockaddr *in() const {
+            return (struct sockaddr *)&storage;
+        }
+
+    #ifdef  AF_INET6
+        inline const struct sockaddr_in6 *in6() const {
+            if(storage.ipv6.sin6_family == AF_INET6)
+                return &storage.ipv6;
+            return NULL;
+        }
+    #else
+        inline const struct sockaddr_in6 *in6() const {
+            return NULL;
+        }
+    #endif
+
+        inline operator const struct sockaddr *() const {
+            return (struct sockaddr *)&storage;
+        }
+
+        inline struct sockaddr *operator*() {
+            return (struct sockaddr *)&storage;
+        }
+
+        inline inet& operator=(struct sockaddr *addr) {
+            store(addr);
+            return *this;
+        }
+
+        inline bool operator==(struct sockaddr *addr) const {
+            return Socket::equal((const struct sockaddr *)&storage, addr);
+        }     
+
+        inline bool operator==(const inet& addr) const {
+            return Socket::equal((const struct sockaddr *)&storage, (const struct sockaddr *)(&addr.storage));
+        }     
+
+        inline bool operator!=(const struct sockaddr *addr) const {
+            return !Socket::equal((const struct sockaddr *)&storage, addr);
+        }     
+
+        inline bool operator!=(const inet& addr) const {
+            return !Socket::equal((const struct sockaddr *)&storage, (const struct sockaddr *)(&addr.storage));
+        }     
+
+    };
 
     /**
      * A generic socket address class.  This class uses the addrinfo list
@@ -2031,74 +2115,7 @@ String str(Socket& so, strsize_t size);
 
 typedef TCPServer   tcpserv_t;
 
-class inet_service
-{
-private:
-    mutable struct sockaddr_internet storage;
-
-public:
-    inline inet_service(struct sockaddr *addr) {
-        Socket::store(&storage, addr);
-    }
-
-    inline inet_service(const inet_service& copy) {
-        memcpy(&storage, &copy.storage, sizeof(storage));
-    }
-
-    inline int family() {
-        return storage.address.sa_family;
-    }
-
-    inline struct sockaddr_in *in4() {
-        if(storage.address.sa_family == AF_INET)
-            return &storage.ipv4;
-        return NULL;
-    }
-
-    inline struct sockaddr *in() {
-        return (struct sockaddr *)&storage;
-    }
-
-#ifdef  AF_INET6
-    inline struct sockaddr_in6 *in6() {
-        if(storage.address.sa_family == AF_INET6)
-            return &storage.ipv6;
-        return NULL;
-    }
-#else
-    inline struct sockaddr_in6 *in6() {
-        return NULL;
-    }
-#endif
-
-    inline operator struct sockaddr *() {
-        return (struct sockaddr *)&storage;
-    }
-
-    inline inet_service& operator=(struct sockaddr *addr) {
-        Socket::store(&storage, addr);
-        return *this;
-    }
-
-    inline bool operator==(struct sockaddr *addr) {
-        return Socket::equal((struct sockaddr *)&storage, addr);
-    }     
-
-    inline bool operator==(const inet_service& addr) {
-        return Socket::equal((struct sockaddr *)&storage, (struct sockaddr *)(&addr.storage));
-    }     
-
-    inline bool operator!=(struct sockaddr *addr) {
-        return !Socket::equal((struct sockaddr *)&storage, addr);
-    }     
-
-    inline bool operator!=(const inet_service& addr) {
-        return !Socket::equal((struct sockaddr *)&storage, (struct sockaddr *)(&addr.storage));
-    }     
-
-};
-
-typedef typeref<inet_service>   serviceref_t;
+typedef typeref<Socket::inet>   inetref_t;
 
 } // namespace ucommon
 
