@@ -55,20 +55,24 @@
 
 namespace ucommon {
 
-class secure_chars 
-{
-public:
-    typedef enum {GENERIC_STRING, B64_STRING, HEX_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
-};
+namespace Type {
 
-class secure_keybytes
-{
-public:
-    typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
-};
+    class SecChars 
+    {
+    public:
+        typedef enum {GENERIC_STRING, B64_STRING, HEX_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
+    };
+
+    class KeyBytes
+    {
+    public:
+        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+    };
+
+}
 
 template <>
-class __SHARED typeref<secure_chars> : protected TypeRef, public secure_chars
+class __SHARED typeref<Type::SecChars> : protected TypeRef, public Type::SecChars
 {
 public:
     class storage : public Counted
@@ -76,7 +80,7 @@ public:
     private:
         friend class typeref;
 
-        secure_chars::strtype_t type;
+        strtype_t type;
         char mem[1];
 
         storage(caddr_t addr, size_t size, const char *str, strtype_t strtype = GENERIC_STRING);
@@ -138,7 +142,7 @@ public:
 };
 
 template <>
-class __SHARED typeref<secure_keybytes> : protected TypeRef, public secure_keybytes
+class __SHARED typeref<Type::KeyBytes> : protected TypeRef, public Type::KeyBytes
 {
 public:
     class storage : public Counted
@@ -146,7 +150,7 @@ public:
     private:
         friend class typeref;
 
-        secure_keybytes::keytype_t type;
+        keytype_t type;
         uint8_t mem[1];
 
         storage(caddr_t addr, size_t size, const uint8_t *key = NULL, keytype_t keytype = UNPAIRED_KEYTYPE);
@@ -190,14 +194,14 @@ public:
 };
 
 template<>
-inline size_t mapkeypath<secure_chars>(typeref<secure_chars>& object)
+inline size_t mapkeypath<Type::SecChars>(typeref<Type::SecChars>& object)
 {
 	size_t path = 1;
 	return MapRef::index(path, (const uint8_t *)(*object), object.len());
 }
 
 template<>
-inline size_t mapkeypath<secure_keybytes>(typeref<secure_keybytes>& object)
+inline size_t mapkeypath<Type::KeyBytes>(typeref<Type::KeyBytes>& object)
 {
 	size_t path = object.size();
 	return MapRef::index(path, *object, object.size() / 8);
@@ -208,7 +212,7 @@ inline size_t mapkeypath<secure_keybytes>(typeref<secure_keybytes>& object)
  * secure/ssl socket support code.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __SHARED secure : public secure_chars, public secure_keybytes
+class __SHARED secure : public Type::SecChars, public Type::KeyBytes
 {
 public:
     /**
@@ -216,21 +220,17 @@ public:
      */
     typedef enum {OK=0, INVALID, MISSING_CERTIFICATE, MISSING_PRIVATEKEY, INVALID_CERTIFICATE, INVALID_AUTHORITY, INVALID_PEERNAME, INVALID_CIPHER} error_t;
 
-    typedef secure_chars chars;
+    typedef typeref<Type::SecChars> string;
 
-    typedef secure_keybytes bytes;
+    typedef arrayref<Type::SecChars> strarray;
 
-    typedef typeref<secure::chars> string;
+    typedef queueref<Type::SecChars> strqueue;
 
-    typedef arrayref<secure::chars> strarray;
-
-    typedef queueref<secure::chars> strqueue;
-
-    typedef typeref<secure::bytes> keybytes;
+    typedef typeref<Type::KeyBytes> keybytes;
     
-    typedef typeref<secure::bytes> keyarray;
+    typedef typeref<Type::KeyBytes> keyarray;
 
-    typedef typeref<secure::bytes> keyqueue;
+    typedef typeref<Type::KeyBytes> keyqueue;
 
 protected:
     /**

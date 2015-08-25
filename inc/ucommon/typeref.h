@@ -510,16 +510,21 @@ public:
 	static void destroy(value *bytes);
 };
 
-typedef	const char *chars;
-typedef	const uint8_t *bytes;
-typedef const uint8_t *bools;
-typedef typeref<chars>::value *charvalues_t;
-typedef	typeref<bytes>::value *bytevalues_t;
-typedef	typeref<chars> stringref_t;
-typedef typeref<chars> stringref;
-typedef typeref<bytes> byteref_t;
-typedef typeref<bytes> byteref;
-typedef typeref<bools> boolref_t;
+namespace Type {
+	typedef int Integer;
+	typedef double Real;
+	typedef const char *Chars;
+	typedef const uint8_t *Bytes;
+	typedef const uint8_t *Bools;
+}
+
+typedef typeref<Type::Chars>::value *charvalues_t;
+typedef	typeref<Type::Bytes>::value *bytevalues_t;
+typedef	typeref<Type::Chars> stringref_t;
+typedef typeref<Type::Chars> stringref;
+typedef typeref<Type::Bytes> byteref_t;
+typedef typeref<Type::Bytes> byteref;
+typedef typeref<Type::Bools> boolref_t;
 
 template<typename T>
 inline typeref<T> typeref_cast(T x) {

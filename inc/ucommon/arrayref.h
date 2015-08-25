@@ -345,8 +345,8 @@ public:
 	}
 };
 
-typedef arrayref<bytes> bytearray_t;
-typedef arrayref<chars> stringarray_t;
+typedef arrayref<Type::Bytes> bytearray_t;
+typedef arrayref<Type::Chars> stringarray_t;
 
 } // namespace
 

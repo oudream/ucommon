@@ -2115,9 +2115,11 @@ inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
 
 String str(Socket& so, strsize_t size);
 
-typedef TCPServer   tcpserv_t;
+namespace Type {
+    typedef Socket::inet InetAddress;
+}
 
-typedef typeref<Socket::inet>   inetref_t;
+typedef TCPServer   tcpserv_t;
 
 } // namespace ucommon
 
