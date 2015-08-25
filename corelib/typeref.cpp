@@ -73,10 +73,10 @@ TypeRef::TypeRef(const TypeRef& copy)
 
 TypeRef::~TypeRef()
 {
-    release();
+    clear();
 }
 
-void TypeRef::release(void)
+void TypeRef::clear(void)
 {
     if(ref)
     	ref->release();
@@ -87,7 +87,7 @@ void TypeRef::set(const TypeRef& ptr)
 {
     if(ptr.ref)
     	ptr.ref->retain();
-    release();
+    clear();
     ref = ptr.ref;
 }
 
@@ -95,7 +95,7 @@ void TypeRef::set(TypeRef::Counted *object)
 {
     if(object)
         object->retain();
-    release();
+    clear();
     ref = object;
 }
 
@@ -214,7 +214,7 @@ typeref<const char *>& typeref<const char *>::operator=(const char *str)
 
 void typeref<const char *>::set(const char *str)
 {
-    release();
+    clear();
     size_t size = 0;
 
     if(str)
@@ -226,7 +226,7 @@ void typeref<const char *>::set(const char *str)
 
 void typeref<const char *>::assign(value *chars)
 {
-    release();
+    clear();
     chars->size = strlen(chars->mem);
     TypeRef::set(chars);
 }
@@ -372,14 +372,14 @@ typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(value *bytes)
 
 void typeref<const uint8_t *>::set(const uint8_t *str, size_t size)
 {
-    release();
+    clear();
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
 void typeref<const uint8_t *>::assign(value *bytes)
 {
-    release();
+    clear();
     TypeRef::set(bytes);
 }
 

@@ -104,7 +104,7 @@ size_t typeref<Type::SecChars>::size(void)
 
 void typeref<Type::SecChars>::set(const char *str, strtype_t strtype)
 {
-    release();
+    clear();
     size_t size = 16;
 
     if(str)
@@ -154,7 +154,7 @@ typeref<Type::SecChars>& typeref<Type::SecChars>::operator=(const char *str)
 
 void typeref<Type::SecChars>::b64(const uint8_t *bytes, size_t bsize)
 {
-    release();
+    clear();
     size_t len = ((bsize * 4 / 3) + 1);
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + len);
@@ -165,7 +165,7 @@ void typeref<Type::SecChars>::b64(const uint8_t *bytes, size_t bsize)
 
 void typeref<Type::SecChars>::hex(const uint8_t *bytes, size_t bsize)
 {
-    release();
+    clear();
     size_t len = bsize * 2;
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + len);
@@ -235,14 +235,14 @@ size_t typeref<Type::KeyBytes>::size(void)
 
 void typeref<Type::KeyBytes>::set(const uint8_t *key, size_t keysize, keytype_t keytype)
 {
-    release();
+    clear();
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
 
 void typeref<Type::KeyBytes>::generate(size_t keysize, keytype_t keytype)
 {
-    release();
+    clear();
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }

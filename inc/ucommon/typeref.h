@@ -194,7 +194,7 @@ public:
 	/**
 	 * Manually release the current container.
 	 */
-	void release(void);
+	void clear(void);
 
 	/**
 	 * Get size of referenced heap object.
@@ -322,7 +322,7 @@ public:
 	}
 
 	inline void set(T& object) {
-		release();
+		clear();
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object));
 	}

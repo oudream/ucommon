@@ -92,8 +92,8 @@ extern "C" int main()
     assert(xptr->x == 1);
     assert(cval == 1);
     assert(xptr.copies() == 2);
-    sptr.release();
-    xptr.release();
+    sptr.clear();
+    xptr.clear();
     assert(dval == 1);
 
     stringref sref = "this is a test";
