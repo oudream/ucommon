@@ -428,6 +428,8 @@ public:
 
     };
 
+    typedef class inet inet_t;
+
     /**
      * A generic socket address class.  This class uses the addrinfo list
      * to store socket multiple addresses in a protocol and family
