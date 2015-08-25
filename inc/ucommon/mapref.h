@@ -302,6 +302,23 @@ public:
 		return typeref<V>();
 	}	
 
+	typeref<V> take(typeref<K>& key) {
+		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
+		while(ip) {
+			typeref<K> kv(ip->key);
+			if(kv.is() && kv == key) {
+				typeref<V> result(ip->value);
+				if(result.is())
+					MapRef::remove(*ip);
+				commit();
+				return result;
+			}
+			ip.next();
+		}
+		commit();
+		return typeref<V>();
+	}	
+
 	inline bool remove(typeref<K>& key) {
 		return erase(key);
 	}
@@ -420,9 +437,21 @@ public:
 		return erase(key);
 	}
 
+	inline typeref<T> take(size_t offset) {
+		linked_pointer<Index> ip = modify();
+		while(ip && offset--) {
+			ip.next();
+		}
+		typeref<T> v(ip->value);
+		if(v.is())
+			MapRef::remove(*ip);
+		commit();
+		return v;
+	}
+
 	inline typeref<T> at(size_t offset) {
 		linked_pointer<Index> ip = access();
-		while(offset--) {
+		while(ip && offset--) {
 			ip.next();
 		}
 		typeref<T> v(ip->value);
