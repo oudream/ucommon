@@ -36,7 +36,7 @@ extern "C" int main()
     const char *tp;
     const char *array[5];
     stringref_t sref = "ABC";
-    string_t tref(sref);
+    string_t tref(*sref);
 
     assert(eq(tref, "ABC"));
     assert(eq(sref, "ABC"));

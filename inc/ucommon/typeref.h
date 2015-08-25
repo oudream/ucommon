@@ -212,7 +212,7 @@ public:
 	 * Check if pointer currently has a heap container.
 	 * @return true if we are referencing a container.
 	 */
-	inline bool is() const {
+	inline operator bool() const {
 		return ref != NULL;
 	}
 

@@ -163,7 +163,7 @@ extern "C" int main()
 
     // flush without delay...
     sv = queueofints.pull(0);
-    assert(!sv.is());
+    assert(!sv);
     assert(sv.copies() == 0);
 
     mapref<int,Type::Chars> map;
