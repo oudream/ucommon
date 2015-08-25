@@ -39,6 +39,10 @@
 #include <ucommon/string.h>
 #endif
 
+#ifndef _UCOMMON_TYPEREF_H_
+#include <ucommon/typeref.h>
+#endif
+
 extern "C" {
     struct addrinfo;
 }
@@ -96,6 +100,7 @@ typedef struct hostaddr_internet
 #endif
     };
 }   inethostaddr_t;
+
 
 #if defined(AF_INET6) || defined(__CYGWIN__)
 /**
@@ -2025,6 +2030,71 @@ inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
 String str(Socket& so, strsize_t size);
 
 typedef TCPServer   tcpserv_t;
+
+class inet_service
+{
+private:
+    mutable struct sockaddr_internet storage;
+
+public:
+    inline inet_service(struct sockaddr *addr) {
+        Socket::store(&storage, addr);
+    }
+
+    inline inet_service(const inet_service& copy) {
+        memcpy(&storage, &copy.storage, sizeof(storage));
+    }
+
+    inline int family() {
+        return storage.address.sa_family;
+    }
+
+    inline struct sockaddr_in *in4() {
+        if(storage.address.sa_family == AF_INET)
+            return &storage.ipv4;
+        return NULL;
+    }
+
+    inline struct sockaddr *in() {
+        return (struct sockaddr *)&storage;
+    }
+
+#ifdef  AF_INET6
+    inline struct sockaddr_in6 *in6() {
+        if(storage.address.sa_family == AF_INET6)
+            return &storage.ipv6;
+        return NULL;
+    }
+#endif
+
+    inline operator struct sockaddr *() {
+        return (struct sockaddr *)&storage;
+    }
+
+    inline inet_service& operator=(struct sockaddr *addr) {
+        Socket::store(&storage, addr);
+        return *this;
+    }
+
+    inline bool operator==(struct sockaddr *addr) {
+        return Socket::equal((struct sockaddr *)&storage, addr);
+    }     
+
+    inline bool operator==(const inet_service& addr) {
+        return Socket::equal((struct sockaddr *)&storage, (struct sockaddr *)(&addr.storage));
+    }     
+
+    inline bool operator!=(struct sockaddr *addr) {
+        return !Socket::equal((struct sockaddr *)&storage, addr);
+    }     
+
+    inline bool operator!=(const inet_service& addr) {
+        return !Socket::equal((struct sockaddr *)&storage, (struct sockaddr *)(&addr.storage));
+    }     
+
+};
+
+typedef typeref<inet_service>   inetref_t;
 
 } // namespace ucommon
 
