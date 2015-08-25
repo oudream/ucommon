@@ -65,7 +65,7 @@ protected:
 	public:
 		friend class Map;
 
-		Index(LinkedObject **origin);
+		explicit Index(LinkedObject **origin);
 
 		Index();
 
@@ -113,7 +113,7 @@ protected:
 
 		Instance(MapRef& from);
 
-		Instance(Map *map);
+		explicit Instance(Map *map);
 
 		Instance(const Instance& copy);
 
@@ -224,9 +224,6 @@ protected:
 public:
 	class instance : public MapRef::Instance
 	{
-	protected:
-		inline instance(MapRef *ref) : Instance(ref) {};
-
 	public:
 		inline instance(const instance& copy) : Instance(static_cast<const Instance&>(copy)) {};
 
@@ -370,9 +367,6 @@ protected:
 public:
 	class instance : public MapRef::Instance
 	{
-	protected:
-		inline instance(MapRef *ref) : Instance(ref) {};
-
 	public:
 		inline instance(const instance& copy) : Instance(static_cast<const Instance&>(copy)) {};
 
