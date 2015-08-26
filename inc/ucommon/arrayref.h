@@ -73,7 +73,7 @@ protected:
 
 		size_t count(void);
 
-		virtual void dealloc();
+		virtual void dealloc() __OVERRIDE;
 
 		inline Counted **get(void) {
 			return reinterpret_cast<Counted **>(((caddr_t)(this)) + sizeof(Array));

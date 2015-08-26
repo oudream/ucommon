@@ -95,7 +95,7 @@ protected:
 		 * This gets called with the atomic reference counter < 1, such
 		 * as when the last smart pointer de-references.
 		 */
-		virtual void dealloc();
+		virtual void dealloc(void);
 
 	public:
 		/**
@@ -339,6 +339,10 @@ class __EXPORT typeref<const char *> : public TypeRef
 public:
 	class value : public Counted
 	{
+	private:
+		inline value(const value&) __DELETED;
+		inline value& operator=(const value&) __DELETED;
+
 	protected:
 		friend class typeref;
 
@@ -349,7 +353,6 @@ public:
 		void destroy(void);
 
 	public:
-
 		inline char *get() {
 			return &mem[0];
 		}
@@ -440,6 +443,10 @@ class __EXPORT typeref<const uint8_t *> : public TypeRef
 public:
 	class value : public Counted
 	{
+	private:
+		inline value(const value&) __DELETED;
+		inline value& operator=(const value&) __DELETED;
+
 	protected:
 		friend class typeref;
 

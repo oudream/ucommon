@@ -74,6 +74,9 @@ protected:
 
 	class __EXPORT Map : public Counted
 	{
+	protected:
+		virtual void dealloc() __OVERRIDE;
+
 	public:
 		friend class MapRef;
 
@@ -84,8 +87,6 @@ protected:
 
 		explicit Map(void *addr, size_t indexes, size_t paging = 0);
 	
-		virtual void dealloc();
-
 		inline LinkedObject **get(void) {
 			return reinterpret_cast<LinkedObject **>(((caddr_t)(this)) + sizeof(Map));
 		}

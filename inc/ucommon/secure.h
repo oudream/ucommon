@@ -85,7 +85,7 @@ public:
 
         storage(caddr_t addr, size_t size, const char *str, strtype_t strtype = GENERIC_STRING);
 
-        virtual void dealloc();
+        virtual void dealloc() __FINAL;
 
         inline const char *get() {
             return &mem[0];
@@ -155,7 +155,7 @@ public:
 
         storage(caddr_t addr, size_t size, const uint8_t *key = NULL, keytype_t keytype = UNPAIRED_KEYTYPE);
 
-        virtual void dealloc();
+        virtual void dealloc() __FINAL;
 
         inline const uint8_t *get() {
             return &mem[0];
