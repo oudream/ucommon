@@ -107,6 +107,16 @@
 #define __MALLOC      __attribute__ ((malloc))
 #endif
 
+#if __cplusplus < 201103L
+#define __FINAL
+#define __OVERRIDE
+#define __DELETED     {}
+#else
+#define __FINAL       final
+#define __OVERRIDE    override
+#define __DELETED     =delete
+#endif
+
 #if __cplusplus <= 199711L && !defined(_MSC_VER) && !defined(__clang__)
 #if defined(__GNUC_MINOR__)
 #define nullptr __null
