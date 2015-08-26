@@ -110,7 +110,7 @@
 #if __cplusplus < 201103L
 #define __FINAL
 #define __OVERRIDE
-#define __DELETED     {}
+#define __DELETED
 #else
 #define __FINAL       final
 #define __OVERRIDE    override
