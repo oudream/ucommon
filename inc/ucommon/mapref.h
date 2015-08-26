@@ -59,6 +59,7 @@ class __EXPORT MapRef : public TypeRef
 {
 protected:
 	class Map;
+    class Instance;
 
 	class __EXPORT Index : public LinkedObject
 	{
@@ -75,6 +76,8 @@ protected:
 	class __EXPORT Map : public Counted
 	{
 	protected:
+        friend class Instance;
+
 		virtual void dealloc() __OVERRIDE;
 
 	public:

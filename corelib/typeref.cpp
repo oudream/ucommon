@@ -468,7 +468,7 @@ bool typeref<const uint8_t *>::get(size_t offset)
         return false;
 
     mask = mask << offset % 8;
-    return (v->get())[offset / 8] & mask;
+    return (((v->get())[offset / 8] & mask) != 0);
 }
 
 size_t typeref<const uint8_t *>::count(size_t offset, size_t bits)
@@ -509,7 +509,7 @@ size_t typeref<const uint8_t *>::set(bool mode, size_t offset, size_t bits)
             break;
         uint8_t bitmask = mask << (offset % 8);
         ++offset;
-        bool current = (data[pos] & bitmask);
+        bool current = ((data[pos] & bitmask) != 0);
         if(current != mode)
             ++total;
         else
