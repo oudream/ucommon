@@ -70,7 +70,6 @@ protected:
 		Index();
 
 		Counted *key, *value;
-		LinkedObject **root;
 	};
 
 	class __EXPORT Map : public Counted
@@ -95,7 +94,7 @@ protected:
 
 		Index *append();
 
-		void remove(Index *index);
+		void remove(Index *index, size_t path);
 
 		LinkedObject *modify(size_t key = 0);
 
@@ -165,7 +164,7 @@ protected:
 
 	void update(Index *ind, TypeRef& value);
 
-	void remove(Index *ind);
+	void remove(Index *ind, size_t path = 0);
 
 	void release();
 
@@ -207,11 +206,12 @@ class mapref : public MapRef
 {
 protected:
 	bool erase(typeref<K>& key) {
-		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
+		size_t path = mapkeypath<K>(key);
+		linked_pointer<Index> ip = modify(path);
 		while(is(ip)) {
 			typeref<K> kv(ip->key);
 			if(is(kv) && kv == key) {
-				MapRef::remove(*ip);
+				MapRef::remove(*ip, path);
 				MapRef::commit();
 				return true;
 			}
@@ -300,13 +300,14 @@ public:
 	}	
 
 	typeref<V> take(typeref<K>& key) {
-		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
+		size_t path = mapkeypath<K>(key);
+		linked_pointer<Index> ip = modify(path);
 		while(is(ip)) {
 			typeref<K> kv(ip->key);
 			if(is(kv) && kv == key) {
 				typeref<V> result(ip->value);
 				if(is(result.is))
-					MapRef::remove(*ip);
+					MapRef::remove(*ip, path);
 				commit();
 				return result;
 			}

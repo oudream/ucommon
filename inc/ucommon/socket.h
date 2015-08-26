@@ -1679,8 +1679,7 @@ public:
      * @param address to store.
      * @return number of bytes stored.
      */
-    inline static unsigned store(struct sockaddr_storage *storage, const struct sockaddr *address)
-        {return copy((struct sockaddr*)storage, address);}
+    static unsigned store(struct sockaddr_storage *storage, const struct sockaddr *address);
 
     /**
      * Store an address into an internet address object.

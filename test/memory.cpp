@@ -44,6 +44,11 @@ public:
     }
 };
 
+typedef struct {
+    char key[12];
+    int v;
+} maptest;
+
 extern "C" int main()
 {
     stringlist_t mylist;
@@ -202,5 +207,26 @@ extern "C" int main()
     intlist << 3 << 5 << 7 << 9;
     assert(intlist.count() == 4);
     assert(*(intlist[2]) == 7);
+
+    maptest mt[10];
+    String::set(mt[0].key, 12, "hi");
+    String::set(mt[1].key, 12, "bye");
+    mt[0].v = 10;
+    mt[1].v = 20;
+
+    mapped_pointer<char, maptest> pmap;
+    maptest *out = pmap.get("bye");
+    assert(out == nullptr);
+    pmap.release(out);
+    pmap.set(mt[0].key, &mt[0]);
+    pmap.set(mt[1].key, &mt[1]);
+    out = pmap.get("hi");
+    assert(eq(out->key, "hi"));
+    pmap.release(out);
+    pmap.remove("bye");
+    out = pmap.get("bye");
+    assert(out == nullptr);
+    pmap.release(out);
+
     return 0;
 }
