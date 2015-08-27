@@ -63,6 +63,8 @@ private:
     caddr_t map;
     fd_t fd;
 
+    __DELETE_COPY(MappedMemory);
+
 protected:
     size_t size, used;
     char idname[65];

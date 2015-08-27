@@ -74,6 +74,9 @@ protected:
 	 */
 	class __EXPORT Counted : public ObjectProtocol
 	{
+	private:
+		__DELETE_COPY(Counted);
+
 	protected:
 		friend class TypeRef;
 
@@ -95,7 +98,7 @@ protected:
 		 * This gets called with the atomic reference counter < 1, such
 		 * as when the last smart pointer de-references.
 		 */
-		virtual void dealloc();
+		virtual void dealloc(void);
 
 	public:
 		/**
@@ -212,7 +215,7 @@ public:
 	 * Check if pointer currently has a heap container.
 	 * @return true if we are referencing a container.
 	 */
-	inline bool is() const {
+	inline operator bool() const {
 		return ref != NULL;
 	}
 
@@ -244,6 +247,9 @@ class typeref : public TypeRef
 private:
 	class value : public Counted
 	{
+	private:
+		__DELETE_COPY(value);
+
 	public:
 		T data;
 
@@ -339,6 +345,9 @@ class __EXPORT typeref<const char *> : public TypeRef
 public:
 	class value : public Counted
 	{
+	private:
+		__DELETE_COPY(value);
+
 	protected:
 		friend class typeref;
 
@@ -349,7 +358,6 @@ public:
 		void destroy(void);
 
 	public:
-
 		inline char *get() {
 			return &mem[0];
 		}
@@ -440,6 +448,9 @@ class __EXPORT typeref<const uint8_t *> : public TypeRef
 public:
 	class value : public Counted
 	{
+	private:
+		__DELETE_COPY(value);
+
 	protected:
 		friend class typeref;
 

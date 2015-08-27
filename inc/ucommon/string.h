@@ -102,6 +102,8 @@ public:
         void *results;
         size_t count;
 
+        __DELETE_COPY(regex);
+
     public:
         regex(const char *pattern, size_t size = 1);
         regex(size_t size = 1);
@@ -128,8 +130,11 @@ public:
 
     class __EXPORT cstring : public CountedObject
     {
+    private:
+        __DELETE_COPY(cstring);
+
     protected:
-        void dealloc(void);
+        virtual void dealloc(void) __OVERRIDE;
 
     public:
 #pragma pack(1)
@@ -232,13 +237,13 @@ protected:
      * Increase retention of our reference counted cstring.  May be overridden
      * for memstring which has fixed cstring object.
      */
-    virtual void retain(void);
+    virtual void retain(void) __OVERRIDE;
 
     /**
      * Decrease retention of our reference counted cstring.  May be overridden
      * for memstring which has fixed cstring object.
      */
-    virtual void release(void);
+    virtual void release(void) __OVERRIDE;
 
     /**
      * Return cstring to use in copy constructors.  Is virtual for memstring.

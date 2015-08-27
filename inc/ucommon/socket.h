@@ -1682,8 +1682,7 @@ public:
      * @param address to store.
      * @return number of bytes stored.
      */
-    inline static unsigned store(struct sockaddr_storage *storage, const struct sockaddr *address)
-        {return copy((struct sockaddr*)storage, address);}
+    static unsigned store(struct sockaddr_storage *storage, const struct sockaddr *address);
 
     /**
      * Store an address into an internet address object.
@@ -1863,6 +1862,9 @@ public:
  */
 class __EXPORT ListenSocket : protected Socket
 {
+private:
+    __DELETE_COPY(ListenSocket);
+
 public:
     /**
      * Create and bind a listener socket.
@@ -1935,6 +1937,9 @@ public:
  */
 class __EXPORT TCPServer : public ListenSocket
 {
+private:
+    __DELETE_DEFAULTS(TCPServer);
+
 public:
     /**
      * Create and bind a tcp server.  This mostly is used to preserve the

@@ -48,6 +48,9 @@ namespace ucommon {
  */
 class __EXPORT Atomic
 {
+private:
+    __DELETE_DEFAULTS(atomic);
+
 public:
     /**
      * Set to true if atomics have to be simulated with mutexes.
@@ -63,6 +66,8 @@ public:
     {
     private:
         mutable volatile atomic_t value;
+
+        __DELETE_COPY(counter);
 
     public:
         counter(atomic_t initial = 0);
@@ -100,6 +105,7 @@ public:
 #else
         mutable volatile atomic_t value;
 #endif
+        __DELETE_COPY(spinlock);
 
     public:
         /**

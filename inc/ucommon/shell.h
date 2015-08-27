@@ -69,6 +69,8 @@ private:
     char *_exedir;
     LinkedObject *_syms;
 
+    __DELETE_COPY(shell);
+
     class __LOCAL args : public OrderedObject
     {
     public:

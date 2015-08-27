@@ -56,6 +56,8 @@ private:
     __LOCAL void putBuffer(char c);
     __LOCAL void clearBuffer(void);
 
+    __DELETE_COPY(XMLParser);
+
 protected:
     /**
      * Create xml parser.

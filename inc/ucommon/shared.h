@@ -48,10 +48,17 @@
 #include <ucommon/thread.h>
 #endif
 
+#ifndef _UCOMMON_SOCKET_H_
+#include <ucommon/socket.h>
+#endif
+
 namespace ucommon {
 
 class __EXPORT SharedRef : protected TypeRef
 {
+private:
+	__DELETE_COPY(SharedRef);
+
 protected:
 	Mutex lock;
 
@@ -68,7 +75,7 @@ template<typename T>
 class sharedref : private SharedRef
 {
 private:
-	inline sharedref(const sharedref& copy) {};
+	__DELETE_COPY(sharedref);
 
 public:
 	inline sharedref() : SharedRef() {};
@@ -100,6 +107,148 @@ public:
 		typeref<T> ptr(obj);
 		SharedRef::get(ptr);
 		return *this;
+	}
+};
+
+class __EXPORT MappedPointer
+{
+private:
+	__DELETE_COPY(MappedPointer);
+
+protected:
+	class __EXPORT Index : public LinkedObject
+	{
+	public:
+		explicit Index(LinkedObject **origin);
+
+		const void *key;
+		void *value;
+	};
+
+	condlock_t *lock;
+
+	LinkedObject *free, **list;
+
+	memalloc pager;
+
+	size_t paths;
+
+	MappedPointer(size_t indexes, condlock_t *locking = NULL, size_t paging = 0);
+	~MappedPointer();
+
+	LinkedObject *access(size_t path);
+
+	LinkedObject *modify(size_t path);
+
+	void release(void *obj);
+
+	void insert(const void *key, void *value, size_t path);
+
+	void replace(Index *ind, void *value);
+
+	void remove(Index *ind, size_t path);
+
+public:
+	static size_t keypath(const uint8_t *addr, size_t size);
+};
+
+template<typename T>
+inline size_t mapped_keypath(const T *addr)
+{
+	if(!addr)
+		return 0;
+
+	return MappedPointer::keypath((const uint8_t *)addr, sizeof(T)); 
+}
+
+template<typename T>
+inline bool mapped_keyequal(const T* key1, const T* key2)
+{
+	if(!key1 || !key2)
+		return false;
+	return !memcmp(key1, key2, sizeof(T));
+}
+
+template<>
+inline size_t mapped_keypath<char>(const char *addr)
+{
+	if(!addr)
+		return 0;
+
+	return MappedPointer::keypath((const uint8_t *)addr, strlen(addr));
+}
+
+template<>
+inline bool mapped_keyequal<char>(const char *k1, const char *k2)
+{
+	if(!k1 || !k2)
+		return false;
+
+	return eq(k1, k2);
+}
+
+template<>
+inline size_t mapped_keypath<struct sockaddr>(const struct sockaddr *addr)
+{
+	if(!addr)
+		return 0;
+
+	return MappedPointer::keypath((const uint8_t *)addr, Socket::len(addr));
+}
+
+template<>
+inline bool mapped_keyequal<struct sockaddr>(const struct sockaddr *s1, const struct sockaddr *s2)
+{
+	if(!s1 || !s2)
+		return false;
+	return Socket::equal(s1, s2);
+}
+
+template<typename K, typename V>
+class mapped_pointer : public MappedPointer
+{
+public:
+	inline mapped_pointer(size_t indexes = 37, condlock_t *locking = NULL, size_t paging = 0) : MappedPointer(indexes, locking, paging) {}
+
+	inline void release(V* object) {
+		MappedPointer::release(object);
+	}
+
+	void remove(const K* key) {
+		size_t path = mapped_keypath<K>(key);
+		linked_pointer<Index> ip = modify(path);
+		while(is(ip)) {
+			if(mapped_keyequal<K>((const K*)(ip->key), key)) {
+				MappedPointer::remove(*ip, path);
+				return;
+			}
+			ip.next();
+		}
+		lock->commit();
+	}
+
+	V* get(const K* key) {
+		linked_pointer<Index> ip = access(mapped_keypath<K>(key));
+		while(is(ip)) {
+			if(mapped_keyequal<K>((const K*)(ip->key), key)) {
+				return static_cast<V*>(ip->value);
+			}
+			ip.next();
+		}
+		lock->release();
+		return nullptr;
+	}
+
+	void set(const K* key, V* ptr) {
+		size_t path = mapped_keypath<K>(key);
+		linked_pointer<Index> ip = modify(path);
+		while(is(ip)) {
+			if(mapped_keyequal<K>((const K*)(ip->key), key)) {
+				replace(*ip, ptr);
+				return;
+			}
+		}
+		insert((const void *)key, (void *)ptr, path);
 	}
 };
 

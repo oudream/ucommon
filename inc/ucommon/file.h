@@ -68,6 +68,8 @@ private:
 #endif
     char *tmp;
 
+    __DELETE_COPY(file);
+
     int _putch(int code);
 
     int _getch(void);

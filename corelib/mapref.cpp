@@ -30,14 +30,12 @@ MapRef::Index::Index() :
 LinkedObject()
 {
     key = value = NULL;
-    root = NULL;
 }
 
 MapRef::Index::Index(LinkedObject **origin) :
 LinkedObject(origin)
 {
     key = value = NULL;
-    root = origin;
 }
 
 MapRef::Map::Map(void *addr, size_t indexes, size_t paging) :
@@ -87,11 +85,10 @@ MapRef::Index *MapRef::Map::append()
         list[0] = ip;
     last = ip;
     ip->Next = NULL;
-    ip->root = &list[0];
     return ip;
 }       
 
-void MapRef::Map::remove(Index *index)
+void MapRef::Map::remove(Index *index, size_t path)
 {
     if(!index)
         return;
@@ -102,9 +99,12 @@ void MapRef::Map::remove(Index *index)
     if(index->value)
         index->value->release();
 
+    LinkedObject **root = get();
+    root = &root[path % size];
+
     --count;
     if(last && index == last) {
-        last = *(index->root);
+        last = *(root);
         if(last == index)
             last = NULL;
         else {
@@ -113,7 +113,7 @@ void MapRef::Map::remove(Index *index)
             }
         }
     }
-    index->delist(index->root); 
+    index->delist(root); 
     index->enlist(&free);
 }
 
@@ -342,13 +342,13 @@ size_t MapRef::count()
     return m->count;
 }
 
-void MapRef::remove(Index *ind)
+void MapRef::remove(Index *ind, size_t path)
 {
     Map *m = polydynamic_cast<Map *>(ref);
 	if(!m)
         return;
 
-    m->remove(ind);
+    m->remove(ind, path);
 }
 
 MapRef::Map *MapRef::create(size_t indexes, size_t paging)

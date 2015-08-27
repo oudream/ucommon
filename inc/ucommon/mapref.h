@@ -59,9 +59,13 @@ class __EXPORT MapRef : public TypeRef
 {
 protected:
 	class Map;
+    class Instance;
 
 	class __EXPORT Index : public LinkedObject
 	{
+    private:
+        __DELETE_COPY(Index);
+
 	public:
 		friend class Map;
 
@@ -70,11 +74,18 @@ protected:
 		Index();
 
 		Counted *key, *value;
-		LinkedObject **root;
 	};
 
 	class __EXPORT Map : public Counted
 	{
+    private:
+        __DELETE_COPY(Map);
+
+	protected:
+        friend class Instance;
+
+		virtual void dealloc() __OVERRIDE;
+
 	public:
 		friend class MapRef;
 
@@ -85,8 +96,6 @@ protected:
 
 		explicit Map(void *addr, size_t indexes, size_t paging = 0);
 	
-		virtual void dealloc();
-
 		inline LinkedObject **get(void) {
 			return reinterpret_cast<LinkedObject **>(((caddr_t)(this)) + sizeof(Map));
 		}
@@ -95,7 +104,7 @@ protected:
 
 		Index *append();
 
-		void remove(Index *index);
+		void remove(Index *index, size_t path);
 
 		LinkedObject *modify(size_t key = 0);
 
@@ -165,7 +174,7 @@ protected:
 
 	void update(Index *ind, TypeRef& value);
 
-	void remove(Index *ind);
+	void remove(Index *ind, size_t path = 0);
 
 	void release();
 
@@ -207,11 +216,12 @@ class mapref : public MapRef
 {
 protected:
 	bool erase(typeref<K>& key) {
-		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
-		while(*ip != nullptr) {
+		size_t path = mapkeypath<K>(key);
+		linked_pointer<Index> ip = modify(path);
+		while(is(ip)) {
 			typeref<K> kv(ip->key);
-			if(kv.is() && kv == key) {
-				MapRef::remove(*ip);
+			if(is(kv) && kv == key) {
+				MapRef::remove(*ip, path);
 				MapRef::commit();
 				return true;
 			}
@@ -271,9 +281,9 @@ public:
 	void value(typeref<K>& key, typeref<V>& val) {
 		size_t path = mapkeypath<K>(key);
 		linked_pointer<Index> ip = modify(path);
-		while(*ip != nullptr) {
+		while(is(ip)) {
 			typeref<K> kv(ip->key);
-			if(kv.is() && kv == key) {
+			if(is(kv) && kv == key) {
 				update(*ip, val);
 				commit();
 				return;
@@ -286,9 +296,9 @@ public:
 
 	typeref<V> at(typeref<K>& key) {
 		linked_pointer<Index> ip = access(mapkeypath<K>(key));
-		while(*ip != nullptr) {
+		while(is(ip)) {
 			typeref<K> kv(ip->key);
-			if(kv.is() && kv == key) {
+			if(is(kv) && kv == key) {
 				typeref<V> result(ip->value);
 				release();
 				return result;
@@ -300,13 +310,14 @@ public:
 	}	
 
 	typeref<V> take(typeref<K>& key) {
-		linked_pointer<Index> ip = modify(mapkeypath<K>(key));
-		while(*ip !=  nullptr) {
+		size_t path = mapkeypath<K>(key);
+		linked_pointer<Index> ip = modify(path);
+		while(is(ip)) {
 			typeref<K> kv(ip->key);
-			if(kv.is() && kv == key) {
+			if(is(kv) && kv == key) {
 				typeref<V> result(ip->value);
-				if(result.is())
-					MapRef::remove(*ip);
+				if(is(result.is))
+					MapRef::remove(*ip, path);
 				commit();
 				return result;
 			}
@@ -353,7 +364,7 @@ protected:
 		linked_pointer<Index> ip = modify();
 		while(ip) {
 			typeref<T> kv(ip->value);
-			if(kv.is() && kv == value) {
+			if(is(kv) && kv == value) {
 				MapRef::remove(*ip);
 				MapRef::commit();
 				return true;
@@ -433,11 +444,11 @@ public:
 
 	inline typeref<T> take(size_t offset) {
 		linked_pointer<Index> ip = modify();
-		while(*ip != nullptr && offset--) {
+		while(is(ip) && offset--) {
 			ip.next();
 		}
 		typeref<T> v(ip->value);
-		if(v.is())
+		if(is(v))
 			MapRef::remove(*ip);
 		commit();
 		return v;

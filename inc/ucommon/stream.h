@@ -240,6 +240,8 @@ public:
 private:
     __LOCAL void allocate(size_t size, access_t mode);
 
+	__DELETE_COPY(pipestream);
+
 protected:
     fsys_t rd, wr;
     shell::pid_t pid;
@@ -442,7 +444,7 @@ public:
 class __EXPORT _stream_operators
 {
 private:
-    inline _stream_operators() {}
+	__DELETE_DEFAULTS(_stream_operators);
 
 public:
     static std::ostream& print(std::ostream& out, const PrintProtocol& format);

@@ -100,7 +100,6 @@ class __EXPORT SharedAccess : protected UnlockAccess
 protected:
     virtual ~SharedAccess();
 
-protected:
     /**
      * Access interface to share lock the object.
      */
@@ -144,6 +143,8 @@ class __EXPORT exclusive_access
 {
 private:
     ExclusiveAccess *lock;
+
+    __DELETE_COPY(exclusive_access);
 
 public:
     /**
@@ -201,6 +202,10 @@ public:
      * @param object containing Exclusive base class protocol to lock.
      */
     shared_access(SharedAccess *object);
+
+    shared_access(const shared_access& copy);
+
+    shared_access& operator=(const shared_access& copy);
 
     /**
      * Destroy reference to shared locked object, release lock.

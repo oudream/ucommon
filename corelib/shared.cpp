@@ -56,4 +56,87 @@ void SharedRef::put(TypeRef& ptr)
 	lock.release();
 }
 
+MappedPointer::Index::Index(LinkedObject **origin) :
+LinkedObject(origin)
+{
+	key = value = NULL;
+}
+
+MappedPointer::MappedPointer(size_t indexes, condlock_t *locking, size_t paging) : pager(paging)
+{
+	caddr_t p;
+	if(!locking) {
+		p = (caddr_t)pager.alloc(sizeof(condlock_t));
+		locking = new(p) condlock_t;
+	}
+	lock = locking;
+
+	list = (LinkedObject **)pager.alloc(sizeof(LinkedObject *) * indexes);
+	free = NULL;
+	paths = 0;
+	while(paths < indexes)
+		list[paths++] = NULL;
+}
+
+MappedPointer::~MappedPointer()
+{
+	pager.purge();
+}	
+
+LinkedObject *MappedPointer::access(size_t path)
+{
+	lock->access();
+	return list[path % paths];
+}
+
+LinkedObject *MappedPointer::modify(size_t path)
+{
+	lock->modify();
+	return list[path % paths];
+}
+
+void MappedPointer::release(void *object)
+{
+	if(object != nullptr)
+		lock->release();
+}
+
+void MappedPointer::replace(Index *ind, void *object)
+{
+	ind->value = object;
+	lock->commit();
+}
+
+void MappedPointer::remove(Index *ind, size_t path)
+{
+	LinkedObject **root = &list[path % paths];
+	ind->delist(root);
+	ind->enlist(&free);
+	ind->key = ind->value = NULL;
+	lock->commit();
+}
+
+void MappedPointer::insert(const void *key, void *value, size_t path)
+{
+	caddr_t p = (caddr_t)(free);
+	if(free)
+		free = free->getNext();
+	else 
+		p = (caddr_t)pager.alloc(sizeof(Index));
+
+	Index *ind = new(p) Index(&list[path % paths]);
+	ind->key = key;
+	ind->value = value;
+	lock->commit();
+}	
+
+size_t MappedPointer::keypath(const uint8_t *addr, size_t size)
+{
+	size_t value = size;
+	while(size--) {
+		value = (value << 3) ^ *(addr++);
+	}
+	return value;
+}
+
 } // namespace

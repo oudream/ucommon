@@ -940,6 +940,7 @@ Socket::inet::inet(int fam)
 
 void Socket::inet::store(struct sockaddr *addr)
 {
+	memset(&storage, 0, sizeof(storage));
 	switch(addr->sa_family) {
 	case AF_INET:
 		memcpy(&storage.ipv4, (struct sockaddr_in*)(addr), sizeof(struct sockaddr_in));
@@ -3361,11 +3362,21 @@ bool Socket::eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
     return true;
 }
 
+unsigned Socket::store(struct sockaddr_storage *storage, const struct sockaddr *address)
+{
+	if(storage == NULL || address == NULL)
+		return 0;
+
+	memset(storage, 0, sizeof(struct sockaddr_storage));
+	return copy((struct sockaddr *)storage, address);
+}
+
 unsigned Socket::store(struct sockaddr_internet *storage, const struct sockaddr *address)
 {
     if(storage == NULL || address == NULL)
         return 0;
 
+	memset(storage, 0, sizeof(struct sockaddr_internet));
     socklen_t slen = len(address);
     memcpy(storage, address, slen);
     return slen;

@@ -88,12 +88,12 @@ public:
     /**
      * Release list, mark as no longer linked.  Inherited from base Object.
      */
-    virtual void release(void);
+    virtual void release(void) __OVERRIDE;
 
     /**
      * Retain by marking as self referenced list. Inherited from base Object.
      */
-    virtual void retain(void);
+    virtual void retain(void) __OVERRIDE;
 
     /**
      * Add our object to an existing linked list through a pointer.  This
@@ -160,7 +160,7 @@ class __EXPORT ReusableObject : public LinkedObject
     friend class ReusableAllocator;
 
 protected:
-    virtual void release(void);
+    virtual void release(void) __OVERRIDE;
 
 public:
     /**

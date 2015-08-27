@@ -56,8 +56,11 @@ class __EXPORT ArrayRef : public TypeRef
 protected:
 	typedef enum {ARRAY, STACK, QUEUE, FALLBACK} arraytype_t;
 
-	class Array : public Counted, public ConditionalAccess
+	class __EXPORT Array : public Counted, public ConditionalAccess
 	{
+	private:
+		__DELETE_COPY(Array);
+
 	protected:
 		friend class ArrayRef;
 
@@ -73,7 +76,7 @@ protected:
 
 		size_t count(void);
 
-		virtual void dealloc();
+		virtual void dealloc() __OVERRIDE;
 
 		inline Counted **get(void) {
 			return reinterpret_cast<Counted **>(((caddr_t)(this)) + sizeof(Array));
@@ -255,7 +258,6 @@ public:
 		return *this;
 	}
 };
-
 
 template<typename T>
 class arrayref : public ArrayRef
