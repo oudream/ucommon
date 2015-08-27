@@ -18,11 +18,10 @@
 
 /**
  * Basic array and reusable object factory heap support.
- * This offers ucommon support for vector arrays, and for forming
- * reusable object pools.  Reusable object pools can be tied to local
- * heaps and offer a means to create type factories that do not require
- * global locking through malloc.
- * @file ucommon/vector.h
+ * This offers ucommon support for forming reusable object pools.  Reusable 
+ * object pools can be tied to local heaps and offer a means to create type 
+ * factories that do not require global locking through malloc.
+ * @file ucommon/reuse.h
  */
 
 #ifndef _UCOMMON_REUSE_H_
