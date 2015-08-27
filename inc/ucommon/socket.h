@@ -1855,6 +1855,9 @@ public:
  */
 class __EXPORT ListenSocket : protected Socket
 {
+private:
+    __DELETE_COPY(ListenSocket);
+
 public:
     /**
      * Create and bind a listener socket.
@@ -1927,6 +1930,9 @@ public:
  */
 class __EXPORT TCPServer : public ListenSocket
 {
+private:
+    __DELETE_DEFAULTS(TCPServer);
+
 public:
     /**
      * Create and bind a tcp server.  This mostly is used to preserve the

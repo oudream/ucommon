@@ -63,6 +63,9 @@ protected:
 
 	class __EXPORT Index : public LinkedObject
 	{
+    private:
+        __DELETE_COPY(Index);
+
 	public:
 		friend class Map;
 
@@ -75,6 +78,9 @@ protected:
 
 	class __EXPORT Map : public Counted
 	{
+    private:
+        __DELETE_COPY(Map);
+
 	protected:
         friend class Instance;
 

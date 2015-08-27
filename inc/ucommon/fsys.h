@@ -676,6 +676,8 @@ private:
 #endif
     int     error;
 
+    __DELETE_COPY(dso);
+
 public:
 #ifdef  _MSWINDOWS_
     typedef int (FAR WINAPI *addr_t)();

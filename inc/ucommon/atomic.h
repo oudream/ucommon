@@ -48,6 +48,9 @@ namespace ucommon {
  */
 class __EXPORT atomic
 {
+private:
+    __DELETE_DEFAULTS(atomic);
+
 public:
     /**
      * Set to true if atomics have to be simulated with mutexes.

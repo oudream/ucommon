@@ -59,11 +59,14 @@ class __EXPORT keydata : public OrderedObject
 {
 private:
     friend class keyfile;
+
     OrderedIndex index;
-    keydata(keyfile *file);
-    keydata(keyfile *file, const char *id);
     const char *name;
     keyfile *root;
+
+    keydata(keyfile *file);
+    keydata(keyfile *file, const char *id);
+    __DELETE_COPY(keydata);
 
 public:
     /**
@@ -77,6 +80,8 @@ public:
         friend class keydata;
         friend class keyfile;
         keyvalue(keyfile *allocator, keydata *section, const char *key, const char *data);
+        __DELETE_COPY(keyvalue);
+
     public:
         const char *id;
         const char *value;

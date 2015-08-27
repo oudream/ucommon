@@ -83,6 +83,8 @@ public:
         strtype_t type;
         char mem[1];
 
+        __DELETE_COPY(storage);
+
         storage(caddr_t addr, size_t size, const char *str, strtype_t strtype = GENERIC_STRING);
 
         virtual void dealloc() __FINAL;
@@ -149,6 +151,8 @@ public:
     {
     private:
         friend class typeref;
+
+        __DELETE_COPY(storage);
 
         keytype_t type;
         uint8_t mem[1];
@@ -380,6 +384,9 @@ public:
  */
 class __SHARED SSLBuffer : public TCPBuffer
 {
+private:
+    __DELETE_COPY(SSLBuffer);
+
 protected:
     secure::session_t ssl;
     secure::bufio_t bio;
@@ -829,6 +836,9 @@ public:
  */
 class __SHARED Random
 {
+private:
+    __DELETE_DEFAULTS(Random);
+
 public:
     /**
      * Push entropic seed.
@@ -975,15 +985,14 @@ inline void zerofill(void *addr, size_t size)
  */
 class __SHARED sstream : public tcpstream
 {
+private:
+    __DELETE_COPY(sstream);
+
 protected:
     secure::session_t ssl;
     secure::bufio_t bio;
     bool server;
     bool verify;
-
-private:
-    // kill copy constructor
-    sstream(const sstream&);
 
 public:
     sstream(secure::client_t context);
@@ -1024,10 +1033,7 @@ class keyrandom
 private:
     unsigned char buffer[S];
 
-    /**
-     * Disable copy constructor.
-     */
-    inline keyrandom(const keyrandom& copy) {}
+    __DELETE_COPY(keyrandom);
 
 public:
     /**

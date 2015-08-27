@@ -84,7 +84,7 @@ template <typename T>
 class temporary
 {
 private:
-    inline temporary(const temporary<T>&) {};
+    __DELETE_COPY(temporary);
 
 protected:
     T *array;
@@ -204,7 +204,7 @@ template<>
 class temporary<char *>
 {
 private:
-    inline temporary(const temporary<char *>&) {};
+    __DELETE_COPY(temporary);
 
 protected:
     char *object;

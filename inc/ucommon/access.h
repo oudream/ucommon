@@ -100,7 +100,6 @@ class __EXPORT SharedAccess : protected UnlockAccess
 protected:
     virtual ~SharedAccess();
 
-protected:
     /**
      * Access interface to share lock the object.
      */

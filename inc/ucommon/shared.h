@@ -56,6 +56,9 @@ namespace ucommon {
 
 class __EXPORT SharedRef : protected TypeRef
 {
+private:
+	__DELETE_COPY(SharedRef);
+
 protected:
 	Mutex lock;
 

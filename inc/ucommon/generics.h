@@ -264,6 +264,8 @@ private:
     T *original;
     T temp;
 
+    save_restore() __DELETED;
+
 public:
     /**
      * Save object into local copy and keep reference to the original object.
