@@ -75,8 +75,7 @@ protected:
 	class __EXPORT Counted : public ObjectProtocol
 	{
 	private:
-		inline Counted(const Counted&) __DELETED;
-		inline Counted& operator=(const Counted&) __DELETED;
+		__DELETE_COPY(Counted);
 
 	protected:
 		friend class TypeRef;
@@ -249,8 +248,7 @@ private:
 	class value : public Counted
 	{
 	private:
-		inline value(const value&) __DELETED;
-		inline value& operator=(const value&) __DELETED;
+		__DELETE_COPY(value);
 
 	public:
 		T data;
@@ -348,8 +346,7 @@ public:
 	class value : public Counted
 	{
 	private:
-		inline value(const value&) __DELETED;
-		inline value& operator=(const value&) __DELETED;
+		__DELETE_COPY(value);
 
 	protected:
 		friend class typeref;
@@ -452,8 +449,7 @@ public:
 	class value : public Counted
 	{
 	private:
-		inline value(const value&) __DELETED;
-		inline value& operator=(const value&) __DELETED;
+		__DELETE_COPY(value);
 
 	protected:
 		friend class typeref;

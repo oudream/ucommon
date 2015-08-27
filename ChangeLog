@@ -1,3 +1,9 @@
+Changes from 6.5.6 to 6.5.7
+- improved c++11 support
+- mapped pointer introduced
+- fixed is usage
+- improved mapref remove
+
 Changes from 6.5.5 to 6.5.6
 - simplified arrayref
 - added listref

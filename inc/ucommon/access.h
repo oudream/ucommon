@@ -145,6 +145,8 @@ class __EXPORT exclusive_access
 private:
     ExclusiveAccess *lock;
 
+    __DELETE_COPY(exclusive_access);
+
 public:
     /**
      * Create an instance of an exclusive object reference.
@@ -201,6 +203,10 @@ public:
      * @param object containing Exclusive base class protocol to lock.
      */
     shared_access(SharedAccess *object);
+
+    shared_access(const shared_access& copy);
+
+    shared_access& operator=(const shared_access& copy);
 
     /**
      * Destroy reference to shared locked object, release lock.

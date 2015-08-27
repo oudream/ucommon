@@ -111,10 +111,14 @@
 #define __FINAL
 #define __OVERRIDE
 #define __DELETED
+#define __DELETE_COPY(x)    inline x(const x&);\
+                            inline x& operator=(const x&)
 #else
-#define __FINAL       final
-#define __OVERRIDE    override
-#define __DELETED     =delete
+#define __FINAL             final
+#define __OVERRIDE          override
+#define __DELETED           =delete
+#define __DELETE_COPY(x)    inline x(const x&) =delete;\
+                            inline x& operator=(const x&) =delete
 #endif
 
 #if __cplusplus <= 199711L && !defined(_MSC_VER) && !defined(__clang__)

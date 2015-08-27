@@ -72,8 +72,7 @@ template<typename T>
 class sharedref : private SharedRef
 {
 private:
-	inline sharedref(const sharedref&) __DELETED;
-	inline sharedref& operator=(const sharedref&) __DELETED;
+	__DELETE_COPY(sharedref);
 
 public:
 	inline sharedref() : SharedRef() {};
@@ -111,8 +110,7 @@ public:
 class __EXPORT MappedPointer
 {
 private:
-	inline MappedPointer(const MappedPointer&) __DELETED;
-	inline MappedPointer& operator=(const MappedPointer&) __DELETED;
+	__DELETE_COPY(MappedPointer);
 
 protected:
 	class __EXPORT Index : public LinkedObject

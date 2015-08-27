@@ -51,6 +51,30 @@ shared_access::shared_access(SharedAccess *obj)
     lock->shared_lock();
 }
 
+shared_access::shared_access(const shared_access& copy)
+{
+    assert(copy.modify == false);
+
+    lock = copy.lock;
+    modify = false;
+    state = 0;
+    if(lock)           
+        lock->shared_lock();
+}
+
+shared_access& shared_access::operator=(const shared_access& copy)
+{
+    assert(copy.modify == false);
+
+    release();
+    lock = copy.lock;
+    state = 0;
+    if(lock)
+        lock->shared_lock();
+
+    return *this;
+}
+
 exclusive_access::exclusive_access(ExclusiveAccess *obj)
 {
     assert(obj != NULL);
