@@ -93,7 +93,7 @@
 #include <ucommon/string.h>
 #include <ucommon/counter.h>
 #include <ucommon/numbers.h>
-#include <ucommon/vector.h>
+#include <ucommon/reuse.h>
 #include <ucommon/linked.h>
 #include <ucommon/timers.h>
 #include <ucommon/access.h>
