@@ -49,7 +49,7 @@ namespace ucommon {
 class __EXPORT Atomic
 {
 private:
-    __DELETE_DEFAULTS(atomic);
+    __DELETE_DEFAULTS(Atomic);
 
 public:
     /**
