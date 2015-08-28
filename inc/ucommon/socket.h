@@ -2039,9 +2039,128 @@ inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
 String str(Socket& so, strsize_t size);
 
 namespace Type {
-    typedef struct sockaddr_storage SockStorage;
-    typedef struct sockaddr_internet InetStorage;
-    typedef const struct sockaddr *SockAddress;
+
+    class SockAddress
+    {
+    private:
+        struct sockaddr_storage storage;
+
+    public:
+        inline SockAddress() {
+            memset(&storage, 0, sizeof(storage));
+        }
+
+        inline SockAddress(const SockAddress& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+        }
+
+        inline SockAddress(const struct sockaddr *addr) {
+            Socket::store(&storage, addr);
+        }
+
+        inline SockAddress& operator=(const SockAddress& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+            return *this;
+        }
+
+        inline SockAddress& operator=(const struct sockaddr *addr) {
+            Socket::store(&storage, addr);
+            return *this;
+        }
+
+        inline operator const struct sockaddr *() const {
+            return (const struct sockaddr*)&storage;
+        }
+
+        inline struct sockaddr *operator*() {
+            return (struct sockaddr *)&storage;
+        }
+
+        inline const struct sockaddr *get() const {
+            return (const struct sockaddr *)&storage;
+        }
+
+        inline socklen_t size() {
+            return sizeof(storage);
+        }
+
+        inline bool operator==(const SockAddress& check) const {
+            return Socket::equal(get(), check.get());
+        }
+
+        inline bool operator!=(const SockAddress& check) const {
+            return !Socket::equal(get(), check.get());
+        }
+
+        inline bool operator==(const struct sockaddr *check) const {
+            return Socket::equal(get(), check);
+        }
+
+        inline bool operator!=(const struct sockaddr *check) const {
+            return !Socket::equal(get(), check);
+        }
+    };
+
+    class InetAddress
+    {
+    private:
+        struct sockaddr_internet storage;
+
+    public:
+        inline InetAddress() {
+            memset(&storage, 0, sizeof(storage));
+        }
+
+        inline InetAddress(const InetAddress& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+        }
+
+        inline InetAddress(const struct sockaddr *addr) {
+            Socket::store(&storage, addr);
+        }
+
+        inline InetAddress& operator=(const InetAddress& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+            return *this;
+        }
+
+        inline InetAddress& operator=(const struct sockaddr *addr) {
+            Socket::store(&storage, addr);
+            return *this;
+        }
+
+        inline operator const struct sockaddr *() const {
+            return (const struct sockaddr*)&storage;
+        }
+
+        inline struct sockaddr *operator*() {
+            return (struct sockaddr *)&storage;
+        }
+
+        inline const struct sockaddr *get() const {
+            return (const struct sockaddr *)&storage;
+        }
+
+        inline socklen_t size() {
+            return sizeof(storage);
+        }
+
+        inline bool operator==(const SockAddress& check) const {
+            return Socket::equal(get(), check.get());
+        }
+
+        inline bool operator!=(const SockAddress& check) const {
+            return !Socket::equal(get(), check.get());
+        }
+
+        inline bool operator==(const struct sockaddr *check) const {
+            return Socket::equal(get(), check);
+        }
+
+        inline bool operator!=(const struct sockaddr *check) const {
+            return !Socket::equal(get(), check);
+        }
+    };
 }
 
 typedef TCPServer   tcpserv_t;
