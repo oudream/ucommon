@@ -40,10 +40,6 @@
 #include <ucommon/thread.h>
 #endif
 
-#ifndef _UCOMMON_STRING_H_
-#include <ucommon/string.h>
-#endif
-
 #ifndef _UCOMMON_TYPEREF_H_
 #include <ucommon/typeref.h>
 #endif
@@ -263,20 +259,20 @@ public:
      * Assign file descriptor by duplicating another descriptor.
      * @param descriptor to dup from.
      */
-    void operator=(const fsys& descriptor);
+    fsys& operator=(const fsys& descriptor);
 
     /**
      * Replace current file descriptor with an external descriptor.  This
      * does not create a duplicate.  The external descriptor object is
      * marked as invalid.
      */
-    void operator*=(fd_t& descriptor);
+    fsys& operator*=(fd_t& descriptor);
 
     /**
      * Assing file descriptor from system descriptor.
      * @param descriptor to dup from.
      */
-    void operator=(fd_t descriptor);
+    fsys& operator=(fd_t descriptor);
 
     /**
      * Get the native system descriptor handle of the file descriptor.

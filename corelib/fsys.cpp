@@ -671,14 +671,14 @@ int fsys::inherit(fd_t& from, bool enable)
     return remapError();
 }
 
-void fsys::operator=(fd_t from)
+fsys& fsys::operator=(fd_t from)
 {
     HANDLE pHandle = GetCurrentProcess();
 
     if(fd != INVALID_HANDLE_VALUE) {
         if(!CloseHandle(fd)) {
             error = remapError();
-            return;
+            return *this;
         }
     }
     if(DuplicateHandle(pHandle, from, pHandle, &fd, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -687,16 +687,17 @@ void fsys::operator=(fd_t from)
         fd = INVALID_HANDLE_VALUE;
         error = remapError();
     }
+	return *this;
 }
 
-void fsys::operator=(const fsys& from)
+fsys& fsys::operator=(const fsys& from)
 {
     HANDLE pHandle = GetCurrentProcess();
 
     if(fd != INVALID_HANDLE_VALUE) {
         if(!CloseHandle(fd)) {
             error = remapError();
-            return;
+            return *this;
         }
     }
     if(DuplicateHandle(pHandle, from.fd, pHandle, &fd, 0, FALSE, DUPLICATE_SAME_ACCESS))
@@ -705,6 +706,7 @@ void fsys::operator=(const fsys& from)
         fd = INVALID_HANDLE_VALUE;
         error = remapError();
     }
+	return *this;
 }
 
 int fsys::drop(offset_t size)
@@ -1091,7 +1093,7 @@ int fsys::inherit(fd_t& fd, bool enable)
     return 0;
 }
 
-void fsys::operator=(fd_t from)
+fsys& fsys::operator=(fd_t from)
 {
     close();
     if(fd == INVALID_HANDLE_VALUE && from != INVALID_HANDLE_VALUE) {
@@ -1099,9 +1101,10 @@ void fsys::operator=(fd_t from)
         if(fd == INVALID_HANDLE_VALUE)
             error = remapError();
     }
+	return *this;
 }
 
-void fsys::operator=(const fsys& from)
+fsys& fsys::operator=(const fsys& from)
 {
     close();
     if(fd == INVALID_HANDLE_VALUE && from.fd != INVALID_HANDLE_VALUE) {
@@ -1109,6 +1112,7 @@ void fsys::operator=(const fsys& from)
         if(fd == INVALID_HANDLE_VALUE)
             error = remapError();
     }
+	return *this;
 }
 
 int fsys::drop(offset_t size)
@@ -1202,12 +1206,13 @@ fsys::~fsys()
     close();
 }
 
-void fsys::operator*=(fd_t& from)
+fsys& fsys::operator*=(fd_t& from)
 {
     if(fd != INVALID_HANDLE_VALUE)
         close();
     fd = from;
     from = INVALID_HANDLE_VALUE;
+	return *this;
 }
 
 int fsys::linkinfo(const char *path, char *buffer, size_t size)
