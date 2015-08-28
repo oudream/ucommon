@@ -1628,10 +1628,10 @@ public:
      * address.
      * @param address of interface found.
      * @param target address.
-     * @param size of interface.
+     * @param size of interface, 0 used for older code
      * @return 0 on success, -1 on error.
      */
-    static int via(struct sockaddr *address, const struct sockaddr *target, socklen_t size);
+    static int via(struct sockaddr *address, const struct sockaddr *target, socklen_t size = 0);
 
     /**
      * Get the hostname of a socket address.
