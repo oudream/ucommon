@@ -19,10 +19,6 @@ man_MANS = args.1 scrub-files.1 mdsum.1 zerofill.1 car.1 sockaddr.1 \
 	pdetach.1 keywait.1
 bin_PROGRAMS = args scrub-files mdsum zerofill car sockaddr pdetach keywait
 
-noinst_PROGRAMS = demoSSL
-demoSSL_SOURCES = ssl.cpp
-demoSSL_LDFLAGS = @SECURE_LOCAL@
-
 args_SOURCES = args.cpp
 
 sockaddr_SOURCES = sockaddr.cpp
