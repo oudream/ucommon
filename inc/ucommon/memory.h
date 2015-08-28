@@ -88,11 +88,6 @@ protected:
      */
     page_t *pager(void);
 
-    /**
-     * Report runtime memory exhaustion.
-     */
-    virtual void fault(void) const;
-
 public:
     /**
      * Construct a memory pager.

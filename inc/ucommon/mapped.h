@@ -86,11 +86,6 @@ protected:
      */
     virtual void *invalid(void) const;
 
-    /**
-     * Handler for failure to map (allocate) memory.
-     */
-    virtual void fault(void) const;
-
 public:
     /**
      * Construct a read/write access mapped shared segment of memory of a

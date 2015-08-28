@@ -35,10 +35,6 @@
 
 namespace ucommon {
 
-void MemoryProtocol::fault(void) const
-{
-}
-
 char *MemoryProtocol::dup(const char *str)
 {
     if(!str)
@@ -48,7 +44,7 @@ char *MemoryProtocol::dup(const char *str)
     if(mem)
         String::set(mem, len, str);
     else
-        fault();
+        THROW_ALLOC();
     return mem;
 }
 
@@ -61,7 +57,7 @@ void *MemoryProtocol::dup(void *obj, size_t size)
     if(mem)
         memcpy(mem, obj, size);
     else
-        fault();
+        THROW_ALLOC();
     return mem;
 }
 
@@ -72,7 +68,7 @@ void *MemoryProtocol::zalloc(size_t size)
     if(mem)
         memset(mem, 0, size);
     else
-        fault();
+        THROW_ALLOC();
 
     return mem;
 }

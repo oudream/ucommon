@@ -236,7 +236,7 @@ void MappedMemory::create(const char *fn, size_t len)
         assert(len > 0);    // cannot use dummy for r/o...
         map = (caddr_t)malloc(len);
         if(!map)
-            fault();
+            THROW_ALLOC();
         size = len;
         return;
     }
@@ -262,7 +262,7 @@ void MappedMemory::create(const char *fn, size_t len)
         VirtualLock(map, size);
     }
     else
-        fault();
+        THROW_ALLOC();
 }
 
 MappedMemory::~MappedMemory()
@@ -315,7 +315,7 @@ void MappedMemory::create(const char *fn, size_t len)
         if(len)
             map = (caddr_t)malloc(len);
         if(!map)
-            fault();
+            THROW_ALLOC();
         size = mapsize = len;
         return;
     }
@@ -350,7 +350,7 @@ void MappedMemory::create(const char *fn, size_t len)
 
     map = (caddr_t)mmap(NULL, len, prot, MAP_SHARED, fd, 0);
     if(!map)
-        fault();
+        THROW_ALLOC();
     ::close(fd);
     if(map != (caddr_t)MAP_FAILED) {
         size = mapsize = len;
@@ -440,7 +440,7 @@ void MappedMemory::create(const char *name, size_t len)
         assert(len > 0);
         map = (caddr_t)malloc(len);
         if(!map)
-            fault();
+            THROW_ALLOC();
         size = len;
         return;
     }
@@ -472,7 +472,7 @@ remake:
     }
     map = (caddr_t)shmat(fd, NULL, 0);
     if(!map)
-        fault();
+        THROW_ALLOC();
 #ifdef  SHM_LOCK
     if(fd > -1)
         shmctl(fd, SHM_LOCK, NULL);
@@ -512,17 +512,12 @@ void *MappedMemory::invalid(void) const
     return NULL;
 }
 
-void MappedMemory::fault(void) const
-{
-    abort();
-}
-
 void *MappedMemory::sbrk(size_t len)
 {
     assert(len > 0);
     void *mp = (void *)(map + used);
     if(used + len > size)
-        fault();
+        THROW_RANGE("Outside mapped memory");
     used += len;
     return mp;
 }
@@ -530,7 +525,7 @@ void *MappedMemory::sbrk(size_t len)
 bool MappedMemory::copy(size_t offset, void *buffer, size_t bufsize) const
 {
     if(!map || (offset + bufsize > size)) {
-        fault();
+        THROW_RANGE("Outside mapped memory");
         return false;
     }
 

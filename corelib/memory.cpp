@@ -149,11 +149,6 @@ void memalloc::purge(void)
     count = 0;
 }
 
-void memalloc::fault(void) const
-{
-    cpr_runtime_error("mempager exhausted");
-}
-
 memalloc::page_t *memalloc::pager(void)
 {
     page_t *npage = NULL;
@@ -161,8 +156,10 @@ memalloc::page_t *memalloc::pager(void)
     void *addr;
 #endif
 
-    if(limit && count >= limit)
-        fault();
+    if(limit && count >= limit) {
+        THROW_RUNTIME("pager exhausted");
+        return NULL;
+    }
 
 #if defined(HAVE_POSIX_MEMALIGN)
     if(align && !posix_memalign(&addr, align, pagesize))
@@ -178,10 +175,10 @@ memalloc::page_t *memalloc::pager(void)
     npage = (page_t *)malloc(pagesize);
 #endif
 
-	if (!npage) {
-		fault();
-		return NULL;
-	}
+    if(!npage) {
+    	THROW_ALLOC();
+        return NULL;
+    }
 
     ++count;
     npage->used = sizeof(page_t);
@@ -201,7 +198,7 @@ void *memalloc::_alloc(size_t size)
     page_t *p = page;
 
     if(size > (pagesize - sizeof(page_t))) {
-        fault();
+        THROW_SIZE("Larger than pagesize");
         return NULL;
     }
 

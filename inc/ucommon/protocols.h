@@ -54,11 +54,6 @@ protected:
      */
     virtual void *_alloc(size_t size) = 0;
 
-    /**
-     * Allocation failure handler.
-     */
-    virtual void fault(void) const;
-
 public:
     virtual ~MemoryProtocol();
 
