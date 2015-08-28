@@ -811,7 +811,7 @@ public:
  * wait with timeout.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT barrier : private Conditional
+class __EXPORT Barrier : private Conditional
 {
 private:
     unsigned count;
@@ -822,12 +822,12 @@ public:
      * Construct a barrier with an initial size.
      * @param count of threads required.
      */
-    barrier(unsigned count);
+    Barrier(unsigned count);
 
     /**
      * Destroy barrier and release pending threads.
      */
-    ~barrier();
+    ~Barrier();
 
     /**
      * Dynamically alter the number of threads required.  If the size is
@@ -1816,65 +1816,6 @@ public:
 };
 
 /**
- * Typed smart locked pointer class.  This is used to manage references to
- * objects which are protected by an auto-generated mutex.  The mutex is
- * released when the pointer falls out of scope.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template <class T>
-class mutex_pointer : public auto_protect
-{
-public:
-    /**
-     * Create a pointer with no reference.
-     */
-    inline mutex_pointer() : auto_protect() {}
-
-    /**
-     * Create a pointer with a reference to a heap object.
-     * @param object we are referencing.
-     */
-    inline mutex_pointer(T* object) : auto_protect(object) {}
-
-    /**
-     * Reference object we are pointing to through pointer indirection.
-     * @return object we are pointing to.
-     */
-    inline T& operator*() const
-        {return *(static_cast<T&>(auto_protect::object));}
-
-    /**
-     * Reference member of object we are pointing to.
-     * @return reference to member of pointed object.
-     */
-    inline T* operator->() const
-        {return static_cast<T*>(auto_protect::object);}
-
-    /**
-     * Get pointer to object.
-     * @return pointer or NULL if we are not referencing an object.
-     */
-    inline T* get(void) const
-        {return static_cast<T*>(auto_protect::object);}
-};
-
-/**
- * Convenience function to start a joinable thread.
- * @param thread to start.
- * @param priority of thread.
- */
-inline void start(JoinableThread *thread, int priority = 0)
-    {thread->start(priority);}
-
-/**
- * Convenience function to start a detached thread.
- * @param thread to start.
- * @param priority of thread.
- */
-inline void start(DetachedThread *thread, int priority = 0)
-    {thread->start(priority);}
-
-/**
  * Convenience type for using conditional locks.
  */
 typedef ConditionalLock condlock_t;
@@ -1912,152 +1853,7 @@ typedef Semaphore semaphore_t;
 /**
  * Convenience type for using thread barriers.
  */
-typedef barrier barrier_t;
-
-/**
- * Convenience function to wait on a barrier.
- * @param barrier to wait.
- */
-inline void wait(barrier_t &barrier)
-    {barrier.wait();}
-
-/**
- * Convenience function to wait on a semaphore.
- * @param semaphore to wait on.
- * @param timeout to wait for.
- */
-inline void wait(semaphore_t &semaphore, timeout_t timeout = Timer::inf)
-    {semaphore.wait(timeout);}
-
-/**
- * Convenience function to release a semaphore.
- * @param semaphore to release.
- */
-inline void release(semaphore_t &semaphore)
-    {semaphore.release();}
-
-/**
- * Convenience function to acquire a mutex.
- * @param mutex to acquire.
- */
-inline void acquire(mutex_t &mutex)
-    {mutex.lock();}
-
-/**
- * Convenience function to release a mutex.
- * @param mutex to release.
- */
-inline void release(mutex_t &mutex)
-    {mutex.release();}
-
-/**
- * Convenience function to exclusively schedule conditional access.
- * @param lock to make exclusive.
- */
-inline void modify(accesslock_t &lock)
-    {lock.modify();}
-
-/**
- * Convenience function to shared read schedule conditional access.
- * @param lock to access shared.
- */
-inline void access(accesslock_t &lock)
-    {lock.access();}
-
-/**
- * Convenience function to release an access lock.
- * @param lock to release.
- */
-inline void release(accesslock_t &lock)
-    {lock.release();}
-
-/**
- * Convenience function to commit an exclusive access lock.
- * lock.
- * @param lock to commit.
- */
-inline void commit(accesslock_t &lock)
-    {lock.commit();}
-
-/**
- * Convenience function to exclusively lock shared conditional lock.
- * @param lock to make exclusive.
- */
-inline void exclusive(condlock_t &lock)
-    {lock.exclusive();}
-
-/**
- * Convenience function to restore shared access on a conditional lock.
- * @param lock to make shared.
- */
-inline void share(condlock_t &lock)
-    {lock.share();}
-
-/**
- * Convenience function to exclusively aquire a conditional lock.
- * @param lock to acquire for modify.
- */
-inline void modify(condlock_t &lock)
-    {lock.modify();}
-
-/**
- * Convenience function to commit and release an exclusively locked conditional
- * lock.
- * @param lock to commit.
- */
-inline void commit(condlock_t &lock)
-    {lock.commit();}
-
-/**
- * Convenience function for shared access to a conditional lock.
- * @param lock to access.
- */
-inline void access(condlock_t &lock)
-    {lock.access();}
-
-/**
- * Convenience function to release shared access to a conditional lock.
- * @param lock to release.
- */
-inline void release(condlock_t &lock)
-    {lock.release();}
-
-/**
- * Convenience function for exclusive write access to a read/write lock.
- * @param lock to write lock.
- * @param timeout to wait for exclusive locking.
- */
-inline bool exclusive(rwlock_t &lock, timeout_t timeout = Timer::inf)
-    {return lock.modify(timeout);}
-
-/**
- * Convenience function for shared read access to a read/write lock.
- * @param lock to share read lock.
- * @param timeout to wait for shared access.
- */
-inline bool share(rwlock_t &lock, timeout_t timeout = Timer::inf)
-    {return lock.access(timeout);}
-
-/**
- * Convenience function to release a shared lock.
- * @param lock to release.
- */
-inline void release(rwlock_t &lock)
-    {lock.release();}
-
-/**
- * Convenience function to lock a shared recursive mutex lock.
- * @param lock to acquire.
- */
-inline void lock(rexlock_t &lock)
-    {lock.lock();}
-
-/**
- * Convenience function to release a shared recursive mutex lock.
- * @param lock to release.
- */
-inline void release(rexlock_t &lock)
-    {lock.release();}
+typedef Barrier barrier_t;
 
 #define __AUTOLOCK(x)    autolock __autolock__(x)
 

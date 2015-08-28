@@ -46,7 +46,7 @@ extern "C" int main()
 
     time(&now);
     thr = new testThread();
-    start(thr);
+    thr->start();
     Thread::sleep(10);
     delete thr;
     assert(count == 1);

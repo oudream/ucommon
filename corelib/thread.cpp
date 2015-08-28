@@ -1453,14 +1453,14 @@ void ConditionalLock::share(void)
     unlock();
 }
 
-barrier::barrier(unsigned limit) :
+Barrier::Barrier(unsigned limit) :
 Conditional()
 {
     count = limit;
     waits = 0;
 }
 
-barrier::~barrier()
+Barrier::~Barrier()
 {
     lock();
     if(waits)
@@ -1468,7 +1468,7 @@ barrier::~barrier()
     unlock();
 }
 
-void barrier::set(unsigned limit)
+void Barrier::set(unsigned limit)
 {
     assert(limit > 0);
 
@@ -1481,7 +1481,7 @@ void barrier::set(unsigned limit)
     unlock();
 }
 
-void barrier::dec(void)
+void Barrier::dec(void)
 {
     lock();
     if(count)
@@ -1489,7 +1489,7 @@ void barrier::dec(void)
     unlock();
 }
 
-unsigned barrier::operator--(void)
+unsigned Barrier::operator--(void)
 {
     unsigned result;
     lock();
@@ -1500,7 +1500,7 @@ unsigned barrier::operator--(void)
     return result;
 }
 
-void barrier::inc(void)
+void Barrier::inc(void)
 {
     lock();
     count++;
@@ -1511,7 +1511,7 @@ void barrier::inc(void)
     unlock();
 }
 
-unsigned barrier::operator++(void)
+unsigned Barrier::operator++(void)
 {
     unsigned result;
     lock();
@@ -1525,7 +1525,7 @@ unsigned barrier::operator++(void)
     return result;
 }
 
-bool barrier::wait(timeout_t timeout)
+bool Barrier::wait(timeout_t timeout)
 {
     bool result;
 
@@ -1545,7 +1545,7 @@ bool barrier::wait(timeout_t timeout)
     return result;
 }
 
-void barrier::wait(void)
+void Barrier::wait(void)
 {
     Conditional::lock();
     if(!count) {
