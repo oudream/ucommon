@@ -42,11 +42,14 @@
 #endif
 #define _UCOMMON_EXTENDED_
 #include <stdexcept>
-#define THROW_RANGE(x)  throw std::out_of_range(x)
-#define THROW_UNDEF(v)  if(v == nullptr) throw std::runtime_error("Dereference NULL")
+#define THROW_RANGE(x)      throw std::out_of_range(x)
+#define THROW_DEREF(v)      if(v == nullptr) \
+                                throw std::runtime_error("Dereference NULL")
+#define THROW_UNDEF(v,x)    if(v == nullptr) throw std::runtime_error(x)
 #else
-#define THROW_RANGE(x)  abort()
-#define THROW_UNDEF(v)  if(v == nullptr) abort()
+#define THROW_RANGE(x)      abort()
+#define THROW_DEREF(v)      if(v == nullptr) abort()
+#define THROW_UNDEF(v,x)    if(v == nullptr) abort()
 #endif
 
 /**
