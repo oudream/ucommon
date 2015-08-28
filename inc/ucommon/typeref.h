@@ -283,19 +283,21 @@ public:
 
 	inline const T& operator*() const {
 		value *v = polystatic_cast<value*>(ref);
+		THROW_UNDEF(v);
 		return *(&(v->data));
 	}
 
 	inline const T* operator()() const {
-		if(!ref)
+		value *v = polystatic_cast<value*>(ref);
+		if(!v)
 			return NULL;
 
-		value *v = polystatic_cast<value*>(ref);
 		return &(v->data);
 	}
 
 	inline operator const T&() const {
 		value *v = polystatic_cast<value*>(ref);
+		THROW_UNDEF(v);
 		return *(&(v->data));
 	}
 

@@ -41,6 +41,12 @@
 #define NEW_STDCPP
 #endif
 #define _UCOMMON_EXTENDED_
+#include <stdexcept>
+#define THROW_RANGE(x)  throw std::out_of_range(x)
+#define THROW_UNDEF(v)  if(v == nullptr) throw std::runtime_error("Dereference NULL")
+#else
+#define THROW_RANGE(x)  abort()
+#define THROW_UNDEF(v)  if(v == nullptr) abort()
 #endif
 
 /**

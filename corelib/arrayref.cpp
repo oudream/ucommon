@@ -428,8 +428,9 @@ TypeRef::Counted *ArrayRef::get(size_t index)
     if(!array)
         return NULL;
 
-    if(index >= array->size || array->head == array->tail)
+    if(index >= array->size || array->head == array->tail) {
         return NULL;
+	}
 
     array->lock();
     index += array->head;
