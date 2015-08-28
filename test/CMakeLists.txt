@@ -52,10 +52,6 @@ add_executable(test-ucommonUnicode unicode.cpp)
 target_link_libraries(test-ucommonUnicode ucommon)
 add_test(NAME ucommonUnicode COMMAND test-ucommonUnicode)
 
-add_executable(test-ucommonQueue queue.cpp)
-target_link_libraries(test-ucommonQueue ucommon)
-add_test(NAME ucommonQueue COMMAND test-ucommonQueue)
-
 add_executable(test-ucommonDatetime datetime.cpp)
 target_link_libraries(test-ucommonDatetime ucommon)
 add_test(NAME ucommonDatetime COMMAND test-ucommonDatetime)

@@ -16,7 +16,7 @@ EXTRA_DIST = *.cpp keydata.conf CMakeLists.txt
 
 TESTS = ucommonLinked ucommonSocket ucommonStrings ucommonThreads \
 	ucommonMemory ucommonKeydata ucommonStream ucommonUnicode \
-	ucommonQueue ucommonDatetime ucommonShell ucommonDigest ucommonCipher
+	ucommonDatetime ucommonShell ucommonDigest ucommonCipher
 
 check_PROGRAMS = $(TESTS)
 
@@ -31,7 +31,6 @@ ucommonStream_SOURCES = stream.cpp
 ucommonKeydata_SOURCES = keydata.cpp
 ucommonUnicode_SOURCES = unicode.cpp
 ucommonDatetime_SOURCES = datetime.cpp
-ucommonQueue_SOURCES = queue.cpp
 ucommonShell_SOURCES = shell.cpp
 ucommonDigest_SOURCES = digest.cpp
 ucommonDigest_LDFLAGS = @SECURE_LOCAL@

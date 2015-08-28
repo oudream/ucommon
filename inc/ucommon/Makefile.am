@@ -18,7 +18,7 @@ pkginclude_HEADERS = cpr.h object.h linked.h string.h counter.h reuse.h \
 	timers.h socket.h access.h export.h thread.h mapped.h \
 	keydata.h memory.h platform.h fsys.h xml.h ucommon.h stream.h \
 	persist.h shell.h protocols.h atomic.h buffer.h numbers.h file.h \
-	datetime.h unicode.h secure.h generics.h containers.h stl.h \
+	datetime.h unicode.h secure.h generics.h stl.h \
 	typeref.h arrayref.h mapref.h shared.h temporary.h
 
 
