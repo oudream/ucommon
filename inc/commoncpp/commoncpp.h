@@ -60,6 +60,7 @@
 
 #ifndef	UCOMMON_SYSRUNTIME
 #include <commoncpp/applog.h>
+#include <commoncpp/persist.h>
 #endif
 
 #endif

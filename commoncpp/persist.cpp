@@ -19,10 +19,13 @@
 #ifndef UCOMMON_SYSRUNTIME
 
 #include <ucommon-config.h>
-#include <ucommon/export.h>
-#include <ucommon/persist.h>
+#include <commoncpp/config.h>
 
-namespace ucommon {
+#include <commoncpp/export.h>
+// local includes
+#include <commoncpp/persist.h>
+
+namespace ost {
 
 const uint32_t NullObject = 0xffffffff;
 

@@ -115,7 +115,6 @@
 
 #ifndef  UCOMMON_SYSRUNTIME
 #include <ucommon/stream.h>
-#include <ucommon/persist.h>
 #include <ucommon/stl.h>
 #endif
 

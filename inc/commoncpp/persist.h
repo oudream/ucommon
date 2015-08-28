@@ -22,11 +22,11 @@
  */
 
 #ifndef UCOMMON_SYSRUNTIME
-#ifndef _UCOMMON_PERSIST_H_
-#define _UCOMMON_PERSIST_H_
+#ifndef COMMONCPP_PERSIST_H_
+#define COMMONCPP_PERSIST_H_
 
-#ifndef _UCOMMON_PLATFORM_H_
-#include <ucommon/platform.h>
+#ifndef COMMONCPP_CONFIG_H_
+#include <commoncpp/config.h>
 #endif
 
 #include <iostream>
@@ -35,7 +35,7 @@
 #include <deque>
 #include <map>
 
-namespace ucommon {
+namespace ost {
 
 // This typedef allows us to declare NewPersistObjectFunction now
 typedef class PersistObject* (*NewPersistObjectFunction) (void);
