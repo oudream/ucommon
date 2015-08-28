@@ -81,8 +81,6 @@ typedef uint16_t in_port_t;
 #define DEFAULT_FAMILY  AF_INET
 #endif
 
-struct sockaddr_internet;
-
 typedef struct sockaddr *sockaddr_t;
 
 typedef struct sockaddr sockaddr_struct;    // older gcc needs...?
@@ -110,7 +108,7 @@ typedef struct hostaddr_internet
  * size also includes the size of the path of a unix domain socket on
  * posix systems.
  */
-typedef struct sockaddr_internet
+struct sockaddr_internet
 {
     union {
 #ifdef  AF_INET6
@@ -119,15 +117,15 @@ typedef struct sockaddr_internet
         struct sockaddr_in ipv4;
         struct sockaddr address;
     };
-} inetsockaddr_t;
+};
 #else
-typedef struct sockaddr_internet
+struct sockaddr_internet
 {
     union {
         struct sockaddr_in ipv4;
         struct sockaddr address;
     };
-} inetsockaddr_t;
+};
 
 struct sockaddr_storage
 {
@@ -358,18 +356,18 @@ public:
             struct sockaddr_in ipv4;
         } storage;
 
-        void store(struct sockaddr *addr);
-
     public:
         inet(int famly = AF_INET);
 
-        inline inet(struct sockaddr *addr) {
+        inline inet(const struct sockaddr *addr) {
             store(addr);
         }
 
         inline inet(const inet& copy) {
             memcpy(&storage, &copy.storage, sizeof(storage));
         }
+
+        void store(const struct sockaddr *addr);
 
         inline int family() {
             return storage.ipv4.sin_family;
@@ -1523,29 +1521,6 @@ public:
         {return sendto(socket, buffer, size, flags, (const struct sockaddr *)address);}
 
     /**
-     * Send to internet socket.
-     * @param socket to send to.
-     * @param buffer to send.
-     * @param size of data buffer to send.
-     * @param flags for i/o operation (MSG_OOB, MSG_PEEK, etc).
-     * @param address to send to.
-     * @return number of bytes sent, -1 if error.
-     */
-    inline static ssize_t sendinet(socket_t socket, const void *buffer, size_t size, int flags, const struct sockaddr_internet *address)
-        {return sendto(socket, buffer, size, flags, (const struct sockaddr *)address);}
-
-    /**
-     * Get internet data waiting in receive queue.
-     * @param socket to get from.
-     * @param buffer to save.
-     * @param size of data buffer to request.
-     * @param flags for i/o operation (MSG_OOB, MSG_PEEK, etc).
-     * @param address of source.
-     * @return number of bytes received, -1 if error.
-     */
-    static ssize_t recvinet(socket_t socket, void *buffer, size_t size, int flags = 0, struct sockaddr_internet *address = NULL);
-
-    /**
      * Bind the socket descriptor to a known interface and service port.
      * @param socket descriptor to bind.
      * @param address to bind to or "*" for all.
@@ -1762,10 +1737,6 @@ public:
      */
     inline static in_port_t port(const struct sockaddr_internet *address)
         {return port((const struct sockaddr *)address);}
-
-    // depricated
-    inline static in_port_t service(const struct sockaddr *address)
-        {return port(address);}
 
     /**
      * Convert a socket address and service into a hash map index.

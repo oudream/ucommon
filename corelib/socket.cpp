@@ -938,7 +938,7 @@ Socket::inet::inet(int fam)
 	store((struct sockaddr *)&sa);
 }
 
-void Socket::inet::store(struct sockaddr *addr)
+void Socket::inet::store(const struct sockaddr *addr)
 {
 	memset(&storage, 0, sizeof(storage));
 	switch(addr->sa_family) {
@@ -1349,7 +1349,7 @@ bool Socket::address::insert(const struct sockaddr *addr)
 
     char buf[256], svc[16];
     query(addr, buf, sizeof(buf));
-    snprintf(svc, sizeof(svc), "%d", service(addr));
+    snprintf(svc, sizeof(svc), "%d", port(addr));
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = addr->sa_family;
     hints.ai_flags = AI_NUMERICHOST | AI_NUMERICSERV;
@@ -1968,15 +1968,6 @@ size_t Socket::peek(void *data, size_t len) const
     if(rtn < 1)
         return 0;
     return (size_t)rtn;
-}
-
-ssize_t Socket::recvinet(socket_t so, void *data, size_t len, int flags, struct sockaddr_internet *addr)
-{
-    assert(data != NULL);
-    assert(len > 0);
-
-    socklen_t slen = sizeof(struct sockaddr_internet);
-    return _recvfrom_(so, (caddr_t)data, (socksize_t)len, flags, (struct sockaddr *)addr, &slen);
 }
 
 ssize_t Socket::recvfrom(socket_t so, void *data, size_t len, int flags, struct sockaddr_storage *addr)
