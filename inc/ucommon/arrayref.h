@@ -59,7 +59,7 @@ protected:
 	class __EXPORT Array : public Counted, public ConditionalAccess
 	{
 	private:
-		__DELETE_COPY(Array);
+		__DELETE_DEFAULTS(Array);
 
 	protected:
 		friend class ArrayRef;
