@@ -573,7 +573,7 @@ bool MappedReuse::avail(void) const
 {
     bool rtn = false;
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     if(freelist || used < size)
         rtn = true;
@@ -584,7 +584,7 @@ ReusableObject *MappedReuse::request(void)
 {
     ReusableObject *obj = NULL;
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     if(freelist) {
         obj = freelist;
@@ -631,7 +631,7 @@ ReusableObject *MappedReuse::getTimed(timeout_t timeout)
     if(timeout && timeout != Timer::inf)
         set(&ts, timeout);
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     while(rtn && (!freelist || (freelist && reading)) && used >= size) {
         ++waiting;

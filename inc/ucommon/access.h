@@ -246,97 +246,13 @@ public:
     void share(void);
 };
 
-/**
- * Convenience function to exclusively lock an object through it's protocol.
- * @param object to lock.
- */
-inline void lock(ExclusiveAccess& object) 
-{
-    object.exclusive_lock();
-}
-
-/**
- * Convenience function to unlock an exclusive object through it's protocol.
- * @param object to unlock.
- */
-inline void unlock(ExclusiveAccess& object) 
-{
-    object.release_exclusive();
-}
-
-/**
- * Convenience function to access (lock) shared object through it's protocol.
- * @param object to share lock.
- */
-inline void access(SharedAccess& object)
-{
-    object.shared_lock();
-}
-
-/**
- * Convenience function to unlock shared object through it's protocol.
- * @param object to unlock.
- */
-inline void release(SharedAccess& object)
-{
-    object.release_share();
-}
-
-/**
- * Convenience function to exclusive lock shared object through it's protocol.
- * @param object to exclusive lock.
- */
-inline void exclusive(SharedAccess& object)
-{
-    object.exclusive();
-}
-
-/**
- * Convenience function to restore shared locking for object through it's protocol.
- * @param object to restore shared locking.
- */
-inline void share(SharedAccess& object)
-{
-    object.share();
-}
-
-/**
- * Convenience type to use for object referencing an exclusive object.
- */
-typedef exclusive_access exlock_t;
-
-/**
- * Convenience type to use for object referencing a shared object.
- */
-typedef shared_access shlock_t;
-
-/**
- * Convenience function to release a reference to an exclusive lock.
- * @param reference to object referencing exclusive locked object.
- */
-inline void release(exlock_t &reference)
-{
-    reference.release();
-}
-
-/**
- * Convenience function to release a reference to a shared lock.
- * @param reference to object referencing shared locked object.
- */
-inline void release(shlock_t &reference)
-{
-    reference.release();
-}
-
 // Special macros to allow member functions of an object with a protocol
 // to create self locking states while the member functions are called by
 // placing an exclusive_lock or shared_lock smart object on their stack
 // frame to reference their self.
 
-#define exclusive_object()  exlock_t __autolock__ = this
-#define protected_object()  shlock_t __autolock__ = this
-#define exclusive_locking(x) exlock_t __autolock__ = &x
-#define protected_locking(x) shlock_t __autolock__ = &x
+#define __EXCLUSIVE(x) exclusive_access __autolock__ = x
+#define __SHARE(x) shared_access __autolock__ = x
 
 } // namespace ucommon
 

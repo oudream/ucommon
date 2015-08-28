@@ -2059,13 +2059,9 @@ inline void lock(rexlock_t &lock)
 inline void release(rexlock_t &lock)
     {lock.release();}
 
-#define __AUTOLOCK__    autolock __autolock__(this);
+#define __AUTOLOCK(x)    autolock __autolock__(x)
 
-#define __SYNC__ for(bool _sync_flag_ = Mutex::protect(this); _sync_flag_; _sync_flag_ = !Mutex::release(this))
-
-#define __SHARED__ for(bool _sync_flag_ = ThreadLock::reader(this); _sync_flag_; _sync_flag_ = !ThreadLock::release(this))
-
-#define ___EXCLUSIVE__ for(bool _sync_flag_ = ThreadLock::writer(this); _sync_flag_; _sync_flag_ = !ThreadLock::release(this))
+#define __SYNC(x) for(bool _sync_flag_ = Mutex::protect(x); _sync_flag_; _sync_flag_ = !Mutex::release(x))
 
 } // namespace ucommon
 

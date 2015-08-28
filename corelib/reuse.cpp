@@ -64,7 +64,7 @@ bool ArrayReuse::avail(void) const
 {
     bool rtn = false;
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     if(count < limit)
         rtn = true;
@@ -80,7 +80,7 @@ ReusableObject *ArrayReuse::get(timeout_t timeout)
     if(timeout && timeout != Timer::inf)
         set(&ts, timeout);
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     while(!freelist && used >= limit && rtn) {
         ++waiting;
@@ -118,7 +118,7 @@ ReusableObject *ArrayReuse::request(void)
 {
     ReusableObject *obj = NULL;
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     if(freelist) {
         obj = freelist;
@@ -151,7 +151,7 @@ bool PagerReuse::avail(void) const
 {
     bool rtn = false;
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     if(!limit)
         return true;
@@ -165,7 +165,7 @@ ReusableObject *PagerReuse::request(void)
 {
     ReusableObject *obj = NULL;
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     if(!limit || count < limit) {
         if(freelist) {
@@ -195,7 +195,7 @@ ReusableObject *PagerReuse::get(timeout_t timeout)
     if(timeout && timeout != Timer::inf)
         set(&ts, timeout);
 
-    __AUTOLOCK__
+    __AUTOLOCK(this);
 
     while(rtn && limit && count >= limit) {
         ++waiting;
