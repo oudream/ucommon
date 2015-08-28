@@ -288,38 +288,6 @@ void Atomic::spinlock::release(void) volatile
 
 #endif
 
-#ifdef  HAVE_POSIX_MEMALIGN
-
-void *Atomic::alloc(size_t size)
-{
-    void *addr = NULL;
-    size = size + (size % 16);
-    if(!posix_memalign(&addr, 16, size))
-        return NULL;
-    return addr;
-}
-
-#elif  HAVE_ALIGNED_ALLOC
-
-void *Atomic::alloc(size_t size)
-{
-    return aligned_alloc(16, size);
-}
-
-#else
-
-void *Atomic::alloc(size_t size)
-{
-    caddr_t addr = (caddr_t)::malloc(size + 16);
-    if(!addr)
-        return NULL;
-    while(((uintptr_t)addr) & 0xf)
-        ++addr;
-    return addr;
-}
-
-#endif
-
 #ifdef SIMULATED
 const bool Atomic::simulated = true;
 #else
