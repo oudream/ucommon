@@ -3247,7 +3247,7 @@ char *Socket::query(const struct sockaddr *addr, char *name, socklen_t size)
     return NULL;
 }
 
-int Socket::via(struct sockaddr *iface, const struct sockaddr *dest)
+int Socket::via(struct sockaddr *iface, const struct sockaddr *dest, socklen_t size)
 {
     assert(iface != NULL);
     assert(dest != NULL);
@@ -3256,8 +3256,11 @@ int Socket::via(struct sockaddr *iface, const struct sockaddr *dest)
     socket_t so = INVALID_SOCKET;
     socklen_t slen = len(dest);
 
-    if(slen)
-        memset(iface, 0, slen);
+    if(size)
+        memset(iface, 0, size);
+
+	if(size && size < slen)
+		return ENOMEM;
 
     iface->sa_family = AF_UNSPEC;
     switch(dest->sa_family) {

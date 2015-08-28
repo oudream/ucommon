@@ -1627,10 +1627,11 @@ public:
      * Get the socket address of the interface needed to reach a destination
      * address.
      * @param address of interface found.
-     * @param destination address.
+     * @param target address.
+     * @param size of interface.
      * @return 0 on success, -1 on error.
      */
-    static int via(struct sockaddr *address, const struct sockaddr *destination);
+    static int via(struct sockaddr *address, const struct sockaddr *target, socklen_t size);
 
     /**
      * Get the hostname of a socket address.
