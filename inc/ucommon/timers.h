@@ -270,6 +270,9 @@ public:
  */
 class __EXPORT TimerQueue : public OrderedIndex
 {
+private:
+    __DELETE_COPY(TimerQueue);
+
 public:
     /**
      * A timer event object that lives on a timer queue.  Timer events are
@@ -281,6 +284,9 @@ public:
      */
     class __EXPORT event : protected Timer, public LinkedList
     {
+    private:
+        __DELETE_DEFAULTS(event);
+
     protected:
         friend class TimerQueue;
 
