@@ -102,7 +102,6 @@
 #include <ucommon/unicode.h>
 #include <ucommon/datetime.h>
 #include <ucommon/keydata.h>
-#include <ucommon/bitmap.h>
 #include <ucommon/socket.h>
 #include <ucommon/thread.h>
 #include <ucommon/arrayref.h>
