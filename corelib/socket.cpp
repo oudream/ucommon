@@ -3558,12 +3558,14 @@ bool Socket::is_numeric(const char *str)
 int Socket::local(socket_t sock, struct sockaddr_storage *addr)
 {
     socklen_t slen = sizeof(sockaddr_storage);
+	memset(addr, 0, slen);
     return _getsockname_(sock, (struct sockaddr *)addr, &slen);
 }
 
 int Socket::remote(socket_t sock, struct sockaddr_storage *addr)
 {
     socklen_t slen = sizeof(sockaddr_storage);
+	memset(addr, 0, slen);
     return _getpeername_(sock, (struct sockaddr *)addr, &slen);
 }
 
