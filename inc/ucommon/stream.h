@@ -62,6 +62,9 @@ namespace ucommon {
  */
 class __EXPORT StreamBuffer : protected std::streambuf, public std::iostream
 {
+private:
+	__DELETE_COPY(StreamBuffer);
+
 protected:
     size_t bufsize;
     char *gbuf, *pbuf;
@@ -76,7 +79,7 @@ protected:
      *
      * @return char from tcp socket connection, EOF if not connected.
      */
-    int uflow();
+    int uflow() __OVERRIDE;
 
     void release(void);
 
@@ -134,7 +137,7 @@ protected:
      *
      * @return char from get buffer, EOF if not connected.
      */
-    int underflow(void);
+    int underflow(void) __OVERRIDE;
 
     /**
      * This streambuf method is used to write the output
@@ -142,7 +145,7 @@ protected:
      * @param ch char to push through.
      * @return char pushed through.
      */
-    int overflow(int ch);
+    int overflow(int ch) __OVERRIDE;
 
     inline socket_t getsocket(void) const
         {return so;}
@@ -257,7 +260,7 @@ protected:
      *
      * @return char from get buffer, EOF if not connected.
      */
-    int underflow(void);
+    int underflow(void) __OVERRIDE;
 
     /**
      * This streambuf method is used to write the output
@@ -266,7 +269,7 @@ protected:
      * @param ch char to push through.
      * @return char pushed through.
      */
-    int overflow(int ch);
+    int overflow(int ch) __OVERRIDE;
 
 public:
     /**
@@ -358,7 +361,7 @@ protected:
      *
      * @return char from get buffer, EOF if not connected.
      */
-    int underflow(void);
+    int underflow(void) __OVERRIDE;
 
     /**
      * This streambuf method is used to write the output
@@ -367,7 +370,7 @@ protected:
      * @param ch char to push through.
      * @return char pushed through.
      */
-    int overflow(int ch);
+    int overflow(int ch) __OVERRIDE;
 
 public:
     /**
