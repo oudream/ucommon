@@ -34,10 +34,6 @@
 #include <ucommon/memory.h>
 #endif
 
-#ifndef _UCOMMON_BUFFER_H_
-#include <ucommon/buffer.h>
-#endif
-
 #ifndef _UCOMMON_SHELL_H_
 #define _UCOMMON_SHELL_H_
 

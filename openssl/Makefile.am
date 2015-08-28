@@ -18,6 +18,6 @@ noinst_HEADERS = local.h
 lib_LTLIBRARIES = libusecure.la
 
 libusecure_la_LDFLAGS = ../corelib/libucommon.la @UCOMMON_LIBS@ @OPENSSL_LIBS@ $(RELEASE)
-libusecure_la_SOURCES = secure.cpp ssl.cpp digest.cpp random.cpp cipher.cpp \
+libusecure_la_SOURCES = secure.cpp digest.cpp random.cpp cipher.cpp \
     hmac.cpp sstream.cpp ../nossl/common.cpp ../nossl/sectypes.cpp
 

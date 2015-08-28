@@ -376,54 +376,6 @@ public:
 };
 
 /**
- * Secure socket buffer.  This is used to create ssl socket connections
- * for both clients and servers.  The use depends in part on the type of
- * context created and passed at construction time.  If no context is
- * passed (NULL), then this reverts to TCPBuffer behavior.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __SHARED SSLBuffer : public TCPBuffer
-{
-private:
-    __DELETE_COPY(SSLBuffer);
-
-protected:
-    secure::session_t ssl;
-    secure::bufio_t bio;
-    bool server;
-    bool verify;
-
-public:
-    SSLBuffer(secure::client_t context);
-    SSLBuffer(const TCPServer *server, secure::server_t context, size_t size = 536);
-    ~SSLBuffer();
-
-    /**
-     * Connect a ssl client session to a specific host uri.  If the socket
-     * was already connected, it is automatically closed first.
-     * @param host we are connecting to.
-     * @param service to connect to.
-     * @param size of buffer and tcp fragments.
-     */
-    void open(const char *host, const char *service, size_t size = 536);
-
-    void close(void);
-
-    void release(void);
-
-    size_t _push(const char *address, size_t size);
-
-    size_t _pull(char *address, size_t size);
-
-    bool _flush(void);
-
-    bool _pending(void);
-
-    inline bool is_secure(void) const
-        {return bio != NULL;}
-};
-
-/**
  * A generic data ciphering class.  This is used to construct cryptographic
  * ciphers to encode and decode data as needed.  The cipher type is specified
  * by the key object.  This class can be used to send output streaming to
@@ -943,10 +895,6 @@ public:
     }    
 };
 
-/**
- * Convenience type for secure socket.
- */
-typedef SSLBuffer ssl_t;
 
 /**
  * Convenience type for generic digests.
@@ -976,11 +924,9 @@ inline void zerofill(void *addr, size_t size)
 #ifndef UCOMMON_SYSRUNTIME
 
 /**
- * Secure socket using std::iostream.  This class is similar to SSLBuffer
- * but uses the libstdc++ library to stream i/o.  Being based on tcpstream,
- * it also inherits the character protocol.  Like SSLBuffer, if no context
- * is given or the handshake fails, then the stream defaults to insecure TCP
- * connection behavior.
+ * Secure socket using std::iostream.  Being based on tcpstream, it also
+ * inherits the character protocol.  If no context is given or the handshake 
+ * fails, then the stream defaults to insecure TCP connection behavior.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 class __SHARED sstream : public tcpstream

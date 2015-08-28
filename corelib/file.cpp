@@ -32,6 +32,7 @@
 #include <ucommon/string.h>
 #include <ucommon/memory.h>
 #include <ucommon/shell.h>
+#include <ucommon/socket.h>
 
 #include <stdio.h>
 #include <fcntl.h>
