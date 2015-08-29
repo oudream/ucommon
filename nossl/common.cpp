@@ -382,6 +382,17 @@ Cipher::Key::~Key()
     clear();
 }
 
+bool Cipher::Key::operator==(const Key& other) const
+{
+    if(!keysize && !other.keysize)
+        return true;
+
+    if(keysize != other.keysize)
+        return false;
+
+    return !memcmp(keybuf, other.keybuf, keysize);
+}
+
 void Cipher::Key::b64(const char *key)
 {
     clear();

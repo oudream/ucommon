@@ -236,6 +236,9 @@ public:
 
     typedef typeref<Type::KeyBytes> keyqueue;
 
+private:
+    __DELETE_COPY(secure);
+
 protected:
     /**
      * Last error flagged for this context.
@@ -466,20 +469,32 @@ public:
 
         size_t get(uint8_t *key, uint8_t *ivout = NULL);
 
-        inline size_t size(void) const
-            {return keysize;}
+        inline size_t size(void) const {
+            return keysize;
+        }
 
-        inline size_t iosize(void) const
-            {return blksize;}
+        inline size_t iosize(void) const {
+            return blksize;
+        }
 
-        inline operator bool() const
-            {return keysize > 0;}
+        inline operator bool() const {
+            return keysize > 0;
+        }
 
-        inline bool operator!() const
-            {return keysize == 0;}
+        inline bool operator!() const {
+            return keysize == 0;
+        }
 
-        inline Key& operator=(const char *pass)
-            {assign(pass); return *this;}
+        inline Key& operator=(const char *pass) {
+            assign(pass); 
+            return *this;
+        }
+
+        bool operator==(const Key& other) const;
+
+        inline bool operator!=(const Key& other) const {
+            return !operator==(other);
+        }
 
         static void options(const uint8_t *salt = NULL, unsigned rounds = 1);
     };
@@ -492,6 +507,8 @@ private:
     mode_t bufmode;
     uint8_t *bufaddr;
     void *context;
+
+    __DELETE_COPY(Cipher);
 
 protected:
     virtual void push(uint8_t *address, size_t size);
