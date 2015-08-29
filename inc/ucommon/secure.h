@@ -601,8 +601,12 @@ private:
     uint8_t buffer[MAX_DIGEST_HASHSIZE / 8];
     char textbuf[MAX_DIGEST_HASHSIZE / 8 + 1];
 
+    __DELETE_COPY(Digest);
+
 protected:
     void release(void);
+
+    const uint8_t *get(void);
 
 public:
     Digest(const char *type);
@@ -611,55 +615,74 @@ public:
 
     ~Digest();
 
-    inline bool puts(const char *str)
-        {return put(str, strlen(str));}
+    inline bool puts(const char *str) {
+        return put(str, strlen(str));
+    }
 
-    inline Digest &operator<<(const char *str)
-        {puts(str); return *this;}
+    inline Digest &operator<<(const char *str) {
+        puts(str); 
+        return *this;
+    }
 
-    inline Digest &operator<<(int16_t value)
-        {int16_t v = htons(value); put(&v, 2); return *this;}
+    inline Digest &operator<<(int16_t value) {
+        int16_t v = htons(value); 
+        put(&v, 2); 
+        return *this;
+    }
 
-    inline Digest &operator<<(int32_t value)
-        {int32_t v = htonl(value); put(&v, 4); return *this;}
+    inline Digest &operator<<(int32_t value) {
+        int32_t v = htonl(value); 
+        put(&v, 4); 
+        return *this;
+    }
 
-    inline Digest &operator<<(const PrintProtocol& p)
-        {const char *cp = p._print(); if(cp) puts(cp); return *this;}
+    inline Digest &operator<<(const PrintProtocol& p) {
+        const char *cp = p._print(); 
+        if(cp) 
+            puts(cp); 
+        return *this;
+    }
 
     bool put(const void *memory, size_t size);
 
-    inline unsigned size() const
-        {return bufsize;}
+    inline unsigned size() const {
+        return bufsize;
+    }
 
-    const uint8_t *get(void);
+    secure::keybytes key(void);
 
-    const char *c_str(void);
+    secure::string str(void);
 
-    inline secure::string str(void)
-        {return secure::string(c_str());}
-
-    inline operator secure::string()
-        {return secure::string(c_str());}
+    inline operator secure::string() {
+        return str();
+    }
 
     void set(const char *id);
 
-    inline void operator=(const char *id)
-        {set(id);};
+    inline Digest& operator=(const char *id) {
+        set(id);
+        return *this;
+    };
 
-    inline bool operator *=(const char *text)
-        {return puts(text);}
+    inline bool operator *=(const char *text) {
+        return puts(text);
+    }
 
-    inline bool operator +=(const char *text)
-        {return puts(text);}
+    inline bool operator +=(const char *text) {
+        return puts(text);
+    }
 
-    inline const char *operator*()
-        {return c_str();}
+    inline secure::string operator*() {
+        return str();
+    }
 
-    inline bool operator!() const
-        {return !bufsize && context == NULL;}
+    inline bool operator!() const {
+        return !bufsize && context == NULL;
+    }
 
-    inline operator bool() const
-        {return bufsize > 0 || context != NULL;}
+    inline operator bool() const {
+        return bufsize > 0 || context != NULL;
+    }
 
     /**
      * Finalize and recycle current digest to start a new
@@ -679,8 +702,6 @@ public:
      * @return true if supported, false if not.
      */
     static bool has(const char *name);
-
-    static void uuid(char *string, const char *name, const uint8_t *ns = NULL);
 
     static secure::string uuid(const char *name, const uint8_t *ns = NULL);
 

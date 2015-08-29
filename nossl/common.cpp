@@ -46,15 +46,29 @@ Digest::~Digest()
     memset(buffer, 0, sizeof(buffer));
 }
 
-const char *Digest::c_str(void)
+secure::string Digest::str(void)
 {
     if(!bufsize)
         get();
 
-    return textbuf;
+    if(!bufsize)
+        return secure::string();
+
+    return secure::string(textbuf);
 }
 
-void Digest::uuid(char *str, const char *name, const uint8_t *ns)
+secure::keybytes Digest::key(void)
+{
+    if(!bufsize)
+        get();
+
+    if(!bufsize)
+        return secure::keybytes();
+
+    return secure::keybytes(buffer, bufsize);
+}
+
+secure::string Digest::uuid(const char *name, const uint8_t *ns)
 {
     unsigned mask = 0x50;
     const char *type = "sha1";
@@ -74,14 +88,9 @@ void Digest::uuid(char *str, const char *name, const uint8_t *ns)
     buf[8] &= 0x3f;
     buf[8] |= 0x80;
 
+    char str[40];
     String::hexdump(buf, str, "4-2-2-2-6");
-}
-
-secure::string Digest::uuid(const char *name, const uint8_t *ns)
-{
-    char buf[38];
-    uuid(buf, name, ns);
-    return secure::string(buf);
+    return secure::string(str);
 }
 
 secure::string Digest::md5(const char *text)
@@ -89,7 +98,7 @@ secure::string Digest::md5(const char *text)
     if(!has("md5"))
         return secure::string();
 
-    digest_t digest = "md5";
+    digest_t digest("md5");
     digest.puts(text);
     return secure::string(*digest, secure::MD5_DIGEST);
 }
@@ -99,7 +108,7 @@ secure::string Digest::sha1(const char *text)
     if(!has("sha1"))
         return secure::string();
 
-    digest_t digest = "sha1";
+    digest_t digest("sha1");
     digest.puts(text);
     return secure::string(*digest, secure::SHA_DIGEST);
 }
@@ -109,7 +118,7 @@ secure::string Digest::sha256(const char *text)
     if(!has("sha256"))
         return secure::string();
 
-    digest_t digest = "sha256";
+    digest_t digest("sha256");
     digest.puts(text);
     return secure::string(*digest, secure::SHA_DIGEST);
 }

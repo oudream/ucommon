@@ -81,7 +81,8 @@ static void result(const char *path, int code)
     if(!code) {
         if(!path)
             path="-";
-        shell::printf("%s %s\n", *md, path);
+        secure::string sum = *md;
+        shell::printf("%s %s\n", *sum, path);
         return;
     }
 

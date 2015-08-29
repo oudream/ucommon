@@ -29,7 +29,7 @@ using namespace ucommon;
 
 int main(int argc, char **argv)
 {
-    digest_t md5 = "md5";
+    digest_t md5("md5");
 
     md5.puts("this is some text");
     assert(eq("684d9d89b9de8178dcd80b7b4d018103", *md5));
