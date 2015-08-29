@@ -348,15 +348,17 @@ public:
      * Determine if the current security context is valid.
      * @return true if valid, -1 if not.
      */
-    inline bool is_valid(void) const
-        {return error == OK;};
+    inline bool is_valid(void) const {
+        return error == OK;
+    };
 
     /**
      * Get last error code associated with the security context.
      * @return last error code or 0/OK if none.
      */
-    inline error_t err(void) const
-        {return error;};
+    inline error_t err(void) const {
+        return error;
+    };
 
     /**
      * Create 36 character traditional version 1 uuid.
@@ -366,16 +368,13 @@ public:
 
     static secure::string uuid(void);
 
-    template <typename T>
-    inline static void erase(T *object)
-        {memset(object, 0, sizeof(T)); delete object;}
+    inline operator bool() const {
+        return is_valid();
+    }
 
-    inline operator bool() const
-        {return is_valid();}
-
-    inline bool operator!() const
-        {return !is_valid();}
-
+    inline bool operator!() const {
+        return !is_valid();
+    }
 };
 
 /**
@@ -581,14 +580,17 @@ public:
      */
     size_t process(uint8_t *address, size_t size, bool flag = false);
 
-    inline size_t size(void) const
-        {return bufsize;}
+    inline size_t size(void) const {
+        return bufsize;
+    }
 
-    inline size_t pos(void) const
-        {return bufpos;}
+    inline size_t pos(void) const {
+        return bufpos;
+    }
 
-    inline size_t align(void) const
-        {return keys.iosize();}
+    inline size_t align(void) const {
+        return keys.iosize();
+    }
 
     /**
      * Check if a specific cipher is supported.
@@ -1025,69 +1027,16 @@ public:
         {return bio != NULL;}
 };
 
-typedef secure::string keystring_t;
-
-/**
- * A template to create a random generated key of specified size.  The
- * key memory is cleared when the object is destroyed.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template<size_t S>
-class keyrandom
-{
-private:
-    uint8_t buffer[S];
-
-    __DELETE_COPY(keyrandom);
-
-public:
-    /**
-     * Create a new character buffer with an empty string.
-     */
-    inline keyrandom()
-        {Random::key(buffer, S);}
-
-    /**
-     * Clear memory when destroyed.
-     */
-    inline ~keyrandom()
-        {memset(buffer, 0, S);}
-
-    /**
-     * Update with new random key.
-     */
-    inline void update(void)
-        {Random::key(buffer, S);}
-
-    /**
-     * Clear current key memory.
-     */
-    inline void clear(void)
-        {memset(buffer, 0, S);}
-
-    /**
-     * Get text by casting reference.
-     * @return pointer to text in object.
-     */
-    inline operator uint8_t *()
-        {return buffer;}
-
-    /**
-     * Get text by object pointer reference.
-     * @return pointer to text in object.
-     */
-    inline uint8_t *operator*()
-        {return buffer;}
-
-    /**
-     * Get allocated size of the object.
-     * @return allocated size.
-     */
-    inline size_t size(void) const
-        {return S;}
-};
-
 #endif
+
+// can be specialized...
+template<typename T>
+void clearmem(T &var)
+{
+    memset(&var, 0, sizeof(var));
+}
+
+typedef secure::string keystring_t;
 
 } // namespace ucommon
 
