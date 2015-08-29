@@ -307,6 +307,16 @@ secure::string HMAC::str(void)
     return secure::string(textbuf);
 }
 
+secure::keybytes HMAC::key(void)
+{
+    if(!bufsize)
+        get();
+
+    if(!bufsize)
+        return secure::keybytes();
+
+    return secure::keybytes(buffer, bufsize);
+}
 
 Cipher::Key::Key(const char *cipher)
 {

@@ -787,6 +787,8 @@ public:
 
     secure::string str(void);
 
+    secure::keybytes key(void);
+
     inline operator secure::string() {
         return str();
     }
