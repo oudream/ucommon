@@ -296,12 +296,15 @@ HMAC::~HMAC()
     memset(buffer, 0, sizeof(buffer));
 }
 
-const char *HMAC::c_str(void)
+secure::string HMAC::str(void)
 {
     if(!bufsize)
         get();
 
-    return textbuf;
+    if(!bufsize)
+        return secure::string();
+
+    return secure::string(textbuf);
 }
 
 
