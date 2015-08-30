@@ -9,7 +9,7 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-AC_INIT([ucommon],[6.6.6])
+AC_INIT([ucommon],[6.6.0])
 AC_CONFIG_SRCDIR([inc/ucommon/ucommon.h])
 
 LT_VERSION="7:21:0"
