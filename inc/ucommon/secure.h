@@ -60,7 +60,7 @@ namespace Type {
     class SecChars 
     {
     public:
-        typedef enum {GENERIC_STRING, B64_STRING, HEX_STRING, MD5_DIGEST, SHA_DIGEST} strtype_t;  
+        typedef enum {GENERIC_STRING, B64_STRING, HEX_STRING, MD5_DIGEST, SHA_DIGEST, PEM_PUBLIC, PEM_PRIVATE} strtype_t;  
     };
 
     class KeyBytes
@@ -840,6 +840,20 @@ public:
      * @return true if supported, false if not.
      */
     static bool has(const char *name);
+};
+
+class __SHARED RSA
+{
+private:
+    void *keypair;
+
+    __DELETE_COPY(RSA);
+
+public:
+    RSA(size_t keysize);
+    ~RSA();
+
+    secure::string pem(secure::strtype_t type);
 };
 
 /**
