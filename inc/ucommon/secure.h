@@ -850,6 +850,7 @@ private:
     __DELETE_COPY(RSA);
 
 public:
+    RSA(secure::string privkey, secure::string pubkey); // pem
     RSA(size_t keysize);
     ~RSA();
 

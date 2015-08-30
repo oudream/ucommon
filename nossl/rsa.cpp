@@ -25,6 +25,11 @@ RSA::RSA(size_t keysize)
     keypair = NULL;
 }
 
+RSA::RSA(secure::string privpem, secure::string pubpem)
+{
+    keypair = NULL;
+}
+
 RSA::~RSA()
 {
 }

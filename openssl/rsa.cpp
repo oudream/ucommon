@@ -44,6 +44,26 @@ RSA::RSA(size_t keysize)
     BN_free(bn);
 }
 
+RSA::RSA(secure::string privkey, secure::string pubkey)
+{
+    keypair = RSA_new();
+    if(!keypair)
+        return;
+
+    if(privkey.size()) {
+        const char *key = *privkey;
+        BIO *io = BIO_new_mem_buf((void*)key, strlen(key));
+        PEM_read_bio_RSAPrivateKey(io, (::RSA **)&keypair, 0, NULL);
+        BIO_free(io);
+    }
+    if(pubkey.size()) {
+        const char *key = *pubkey;
+        BIO *io = BIO_new_mem_buf((void*)key, strlen(key));
+        PEM_read_bio_RSAPublicKey(io, (::RSA **)&keypair, 0, NULL);
+        BIO_free(io);
+    }
+}
+
 RSA::~RSA()
 {
     if(keypair) {
