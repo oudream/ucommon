@@ -98,6 +98,7 @@
 #cmakedefine HAVE_TERMIOS_H 1
 #cmakedefine HAVE_TERMIO_H 1
 #cmakedefine HAVE_OPENSSL_FIPS_H 1
+#cmakedefine HAVE_OPENSSL_RSA_H 1
 #cmakedefine HAVE_STDATOMIC_H 1
 #cmakedefine HAVE_STDALIGN_H 1
 
