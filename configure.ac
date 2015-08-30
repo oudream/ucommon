@@ -581,12 +581,14 @@ AC_ARG_WITH(pkg-config,
             OPENSSL_LIBS="-lssl -lcrypto -lz $OPENSSL_LINK"
         ])
         AC_CHECK_HEADERS(openssl/fips.h)
+        AC_CHECK_HEADERS(openssl/rsa.h)
     ])
     PKG_CHECK_MODULES(GNUTLS, [gnutls >= 3.0.0], [], [GNUTLS_LIBS=""])
 ],[
     AC_CHECK_HEADERS(openssl/ssl.h, [
         OPENSSL_LIBS="-lssl -lcrypto -lz $OPENSSL_LINK"
     ])
+    AC_CHECK_HEADERS(openssl/rsa.h)
     AC_CHECK_HEADERS(openssl/fips.h)
     AC_CHECK_LIB(gnutls, gnutls_init, [
         GNUTLS_LIBS="-lgnutls"

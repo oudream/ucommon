@@ -18,6 +18,9 @@
 
 #include "local.h"
 
+#ifdef  HAVE_OPENSSL_RSA_H
+#include <openssl/rsa.h>
+
 namespace ucommon {
 
 RSA::RSA(size_t keysize)
@@ -100,5 +103,30 @@ secure::string RSA::pem(secure::strtype_t type)
     (*tmp)[len] = 0;
     return secure::string(*tmp, type);        
 }
+
+#else
+
+namespace ucommon {
+
+RSA::RSA(size_t keysize)
+{
+    keypair = NULL;
+}
+
+RSA::RSA(secure::string privpem, secure::string pubpem)
+{
+    keypair = NULL;
+}
+
+RSA::~RSA()
+{
+}
+
+secure::string RSA::pem(secure::strtype_t type)
+{
+    return secure::string();
+}
+
+#endif
 
 } // namespace ucommon
