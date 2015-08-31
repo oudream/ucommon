@@ -66,7 +66,7 @@ namespace Type {
     class KeyBytes
     {
     public:
-        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE, KEY_DIGEST} keytype_t;
     };
 
 }
@@ -742,6 +742,17 @@ public:
     static secure::string sha1(const char *text);
 
     static secure::string sha256(const char *text);
+
+    static secure::string sha384(const char *text);
+
+    static secure::keybytes md5(const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha1(const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha256(const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha384(const uint8_t *mem, size_t size);
+
 };
 
 /**
@@ -805,6 +816,8 @@ public:
         {return secure::string(c_str());}
 
     void set(const char *digest, const char *key, size_t len);
+
+    void set(const char *digest, secure::keybytes key);
 
     inline bool operator *=(const char *text)
         {return puts(text);}

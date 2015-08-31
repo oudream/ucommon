@@ -30,6 +30,11 @@ void HMAC::set(const char *digest, const char *key, size_t len)
     release();
 }
 
+void HMAC::set(const char *digest, secure::keybytes key)
+{
+    release();
+}
+
 void HMAC::release(void)
 {
     bufsize = 0;

@@ -42,6 +42,11 @@ void HMAC::set(const char *digest, const char *key, size_t len)
     }
 }
 
+void HMAC::set(const char *digest, secure::keybytes key)
+{
+    set(digest, (const char *)*key, key.size());
+}
+
 void HMAC::release(void)
 {
     if(context) {
