@@ -84,76 +84,88 @@ secure::string Digest::uuid(const char *name, const unsigned char *ns)
     return secure::string(buf);
 }
 
-secure::string Digest::md5(const uint8_t *mem, size_t size)
+secure::keybytes Digest::md5(const uint8_t *mem, size_t size)
 {
-    if(!has("md5"))
-        return secure::string();
+    if(!mem || !size || !has("md5"))
+        return secure::keybytes();
 
     digest_t digest("md5");
     digest.put(mem, size);
-    return secure::string(*digest, secure::MD5_DIGEST);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
 }
 
-secure::string Digest::sha1(const uint8_t *mem, size_t size)
+secure::keybytes Digest::sha1(const uint8_t *mem, size_t size)
 {
-    if(!has("sha1"))
-        return secure::string();
+    if(!mem || !size || !has("sha1"))
+        return secure::keybytes();
 
     digest_t digest("sha1");
     digest.put(mem, size);
-    return secure::string(*digest, secure::SHA_DIGEST);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
 }
 
-secure::string Digest::sha256(const uint8_t *mem, size_t size)
+secure::keybytes Digest::sha256(const uint8_t *mem, size_t size)
 {
-    if(!has("sha256"))
-        return secure::string();
+    if(!has("sha256") || !mem || !size)
+        return secure::keybytes();
 
     digest_t digest("sha256");
     digest.put(mem, size);
-    return secure::string(*digest, secure::SHA_DIGEST);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
 }
 
-secure::string Digest::sha384(const uint8_t *mem, size_t size)
+secure::keybytes Digest::sha384(const uint8_t *mem, size_t size)
 {
-    if(!has("sha384"))
-        return secure::string();
+    if(!mem || !has("sha384") || !size)
+        return secure::keybytes();
 
     digest_t digest("sha384");
     digest.put(mem, size);
-    return secure::string(*digest, secure::SHA_DIGEST);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
 }
 
 secure::string Digest::md5(const char *text)
 {
-    if(!text)
+    if(!text || !has("md5"))
         return secure::string();
 
-    return Digest::md5((const uint8_t *)text, strlen(text));
+    digest_t digest("md5");
+    digest.puts(text);
+    return secure::string(*digest, secure::MD5_DIGEST);
 }
 
 secure::string Digest::sha1(const char *text)
 {
-    if(!text)
+    if(!text || !has("sha1"))
         return secure::string();
 
-    return Digest::sha1((const uint8_t *)text, strlen(text));
+    digest_t digest("sha1");
+    digest.puts(text);
+    return secure::string(*digest, secure::SHA_DIGEST);
 }
 
 secure::string Digest::sha256(const char *text)
 {
-    if(!text)
+    if(!text || !has("sha256"))
         return secure::string();
 
-    return Digest::sha256((const uint8_t *)text, strlen(text));
+    digest_t digest("sha256");
+    digest.puts(text);
+    return secure::string(*digest, secure::SHA_DIGEST);
 }
 
 secure::string Digest::sha384(const char *text)
 {
-    if(!text)
+    if(!text || !has("sha384"))
         return secure::string();
 
-    return Digest::sha384((const uint8_t *)text, strlen(text));
+    digest_t digest("sha384");
+    digest.puts(text);
+    return secure::string(*digest, secure::SHA_DIGEST);
 }
 
 #if defined(_MSWINDOWS_)

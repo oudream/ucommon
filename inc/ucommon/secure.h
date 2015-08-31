@@ -66,7 +66,7 @@ namespace Type {
     class KeyBytes
     {
     public:
-        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE, KEY_DIGEST} keytype_t;
     };
 
 }
@@ -745,13 +745,13 @@ public:
 
     static secure::string sha384(const char *text);
 
-    static secure::string md5(const uint8_t *mem, size_t size);
+    static secure::keybytes md5(const uint8_t *mem, size_t size);
 
-    static secure::string sha1(const uint8_t *mem, size_t size);
+    static secure::keybytes sha1(const uint8_t *mem, size_t size);
 
-    static secure::string sha256(const uint8_t *mem, size_t size);
+    static secure::keybytes sha256(const uint8_t *mem, size_t size);
 
-    static secure::string sha384(const uint8_t *mem, size_t size);
+    static secure::keybytes sha384(const uint8_t *mem, size_t size);
 
 };
 
