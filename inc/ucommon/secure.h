@@ -817,6 +817,8 @@ public:
 
     void set(const char *digest, const char *key, size_t len);
 
+    void set(const char *digest, secure::keybytes key);
+
     inline bool operator *=(const char *text)
         {return puts(text);}
 
