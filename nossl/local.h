@@ -23,6 +23,7 @@
 #include <errno.h>
 #include "md5.h"
 #include "sha1.h"
+#include "sha2.h"
 
 #ifdef  _MSWINDOWS_
 #include <wincrypt.h>

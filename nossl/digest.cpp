@@ -56,7 +56,7 @@ void Digest::release(void)
             memset(context, 0, sizeof(MD5_CTX));
             delete (MD5_CTX*)context;
             break;
-        case 's':
+        case '1':
             memset(context, 0, sizeof(SHA1_CTX));
             delete (SHA1_CTX *)context;
             break;
@@ -80,7 +80,7 @@ bool Digest::put(const void *address, size_t size)
     case 'm':
         MD5Update((MD5_CTX*)context, (const unsigned char *)address, size);
         return true;
-    case 's':
+    case '1':
         SHA1Update((SHA1_CTX*)context, (const unsigned char *)address, size);
         return true;
     default:
@@ -97,7 +97,7 @@ void Digest::reset(void)
                 context = new MD5_CTX;
             MD5Init((MD5_CTX*)context);
             break;
-        case 's':
+        case '1':
             if(!context)
                 context = new SHA1_CTX;
             SHA1Init((SHA1_CTX*)context);
@@ -135,7 +135,7 @@ void Digest::recycle(bool bin)
 char *)textbuf, size * 2);
         }
         break;
-    case 's':
+    case '1':
         if(!bufsize)
             SHA1Final(buffer, (SHA1_CTX*)context);
         size = 20;
@@ -175,7 +175,7 @@ const unsigned char *Digest::get(void)
         release();
         bufsize = 16;
         break;
-    case 's':
+    case '1':
         SHA1Final(buffer, (SHA1_CTX*)context);
         release();
         bufsize = 20;
