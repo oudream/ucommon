@@ -781,6 +781,8 @@ protected:
 public:
     HMAC(const char *digest, const char *key, size_t keylen = 0);
 
+    HMAC(const char *digest, secure::keybytes key);
+
     HMAC();
 
     ~HMAC();
@@ -840,6 +842,10 @@ public:
      * @return true if supported, false if not.
      */
     static bool has(const char *name);
+
+    static secure::keybytes sha256(secure::keybytes key, const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha384(secure::keybytes key, const uint8_t *mem, size_t soze);
 };
 
 class __SHARED RSA

@@ -168,6 +168,28 @@ secure::string Digest::sha384(const char *text)
     return secure::string(*digest, secure::SHA_DIGEST);
 }
 
+secure::keybytes HMAC::sha256(secure::keybytes key, const uint8_t *mem, size_t size)
+{
+    if(!mem || !has("sha256"))
+        return secure::keybytes();
+
+	hmac_t hmac("sha256", key);
+    hmac.put(mem, size);
+    mem = hmac.get();
+    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
+}
+
+secure::keybytes HMAC::sha384(secure::keybytes key, const uint8_t *mem, size_t size)
+{
+    if(!mem || !has("sha384"))
+        return secure::keybytes();
+
+	hmac_t hmac("sha384", key);
+    hmac.put(mem, size);
+    mem = hmac.get();
+    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
+}
+
 #if defined(_MSWINDOWS_)
 
 static void cexport(HCERTSTORE ca, FILE *fp)
@@ -333,6 +355,17 @@ HMAC::HMAC(const char *digest, const char *key, size_t len)
     textbuf[0] = 0;
 
     set(digest, key, len);
+}
+
+HMAC::HMAC(const char *digest, secure::keybytes key)
+{
+    context = NULL;
+    bufsize = 0;
+    hmactype = NULL;
+    hmacid = 0;
+    textbuf[0] = 0;
+
+    set(digest, (const char *)*key, key.size());
 }
 
 HMAC::~HMAC()
