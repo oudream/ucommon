@@ -66,7 +66,7 @@ namespace Type {
     class KeyBytes
     {
     public:
-        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE} keytype_t;
+        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE, KEY_DIGEST} keytype_t;
     };
 
 }
@@ -734,6 +734,17 @@ public:
     static secure::string sha1(const char *text);
 
     static secure::string sha256(const char *text);
+
+    static secure::string sha384(const char *text);
+
+    static secure::keybytes md5(const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha1(const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha256(const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha384(const uint8_t *mem, size_t size);
+
 };
 
 /**
@@ -764,7 +775,7 @@ protected:
     const uint8_t *get(void);
 
 public:
-    HMAC(const char *digest, const char *key, size_t keylen = 0);
+    HMAC(const char *digest, secure::keybytes key);
 
     HMAC();
 
@@ -812,11 +823,11 @@ public:
         return str();
     }
 
-    void set(const char *digest, const char *key, size_t len);
-
     inline bool operator *=(const char *text) {
         return puts(text);
     }
+
+    void set(const char *digest, secure::keybytes key);
 
     inline bool operator +=(const char *text) {
         return puts(text);
@@ -840,6 +851,10 @@ public:
      * @return true if supported, false if not.
      */
     static bool has(const char *name);
+
+    static secure::keybytes sha256(secure::keybytes key, const uint8_t *mem, size_t size);
+
+    static secure::keybytes sha384(secure::keybytes key, const uint8_t *mem, size_t soze);
 };
 
 class __SHARED RSA

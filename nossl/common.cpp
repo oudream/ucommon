@@ -93,9 +93,53 @@ secure::string Digest::uuid(const char *name, const uint8_t *ns)
     return secure::string(str);
 }
 
+secure::keybytes Digest::md5(const uint8_t *mem, size_t size)
+{
+    if(!mem || !size || !has("md5"))
+        return secure::keybytes();
+
+    digest_t digest("md5");
+    digest.put(mem, size);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+}
+
+secure::keybytes Digest::sha1(const uint8_t *mem, size_t size)
+{
+    if(!mem || !size || !has("sha1"))
+        return secure::keybytes();
+
+    digest_t digest("sha1");
+    digest.put(mem, size);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+}
+
+secure::keybytes Digest::sha256(const uint8_t *mem, size_t size)
+{
+    if(!has("sha256") || !mem || !size)
+        return secure::keybytes();
+
+    digest_t digest("sha256");
+    digest.put(mem, size);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+}
+
+secure::keybytes Digest::sha384(const uint8_t *mem, size_t size)
+{
+    if(!mem || !has("sha384") || !size)
+        return secure::keybytes();
+
+    digest_t digest("sha384");
+    digest.put(mem, size);
+    mem = digest.get();
+    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+}
+
 secure::string Digest::md5(const char *text)
 {
-    if(!has("md5"))
+    if(!text || !has("md5"))
         return secure::string();
 
     digest_t digest("md5");
@@ -105,7 +149,7 @@ secure::string Digest::md5(const char *text)
 
 secure::string Digest::sha1(const char *text)
 {
-    if(!has("sha1"))
+    if(!text || !has("sha1"))
         return secure::string();
 
     digest_t digest("sha1");
@@ -115,12 +159,44 @@ secure::string Digest::sha1(const char *text)
 
 secure::string Digest::sha256(const char *text)
 {
-    if(!has("sha256"))
+    if(!text || !has("sha256"))
         return secure::string();
 
     digest_t digest("sha256");
     digest.puts(text);
     return secure::string(*digest, secure::SHA_DIGEST);
+}
+
+secure::string Digest::sha384(const char *text)
+{
+    if(!text || !has("sha384"))
+        return secure::string();
+
+    digest_t digest("sha384");
+    digest.puts(text);
+    return secure::string(*digest, secure::SHA_DIGEST);
+}
+
+secure::keybytes HMAC::sha256(secure::keybytes key, const uint8_t *mem, size_t size)
+{
+    if(!mem || !has("sha256"))
+        return secure::keybytes();
+
+	hmac_t hmac("sha256", key);
+    hmac.put(mem, size);
+    mem = hmac.get();
+    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
+}
+
+secure::keybytes HMAC::sha384(secure::keybytes key, const uint8_t *mem, size_t size)
+{
+    if(!mem || !has("sha384"))
+        return secure::keybytes();
+
+	hmac_t hmac("sha384", key);
+    hmac.put(mem, size);
+    mem = hmac.get();
+    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
 }
 
 #if defined(_MSWINDOWS_)
@@ -279,7 +355,7 @@ HMAC::HMAC()
     textbuf[0] = 0;
 }
 
-HMAC::HMAC(const char *digest, const char *key, size_t len)
+HMAC::HMAC(const char *digest, secure::keybytes key)
 {
     context = NULL;
     bufsize = 0;
@@ -287,7 +363,7 @@ HMAC::HMAC(const char *digest, const char *key, size_t len)
     hmacid = 0;
     textbuf[0] = 0;
 
-    set(digest, key, len);
+    set(digest, key);
 }
 
 HMAC::~HMAC()

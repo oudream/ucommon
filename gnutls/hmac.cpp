@@ -68,14 +68,13 @@ int __context::map_hmac(const char *type)
         return 0;
 }
 
-void HMAC::set(const char *digest, const char *key, size_t len)
+void HMAC::set(const char *digest, secure::keybytes key)
 {
     secure::init();
 
     release();
 
-    if(!len)
-        len = strlen(key);
+    size_t len = key.size();
 
     if(!len)
         return;
@@ -86,7 +85,7 @@ void HMAC::set(const char *digest, const char *key, size_t len)
     id.code = hmacid;
 
     if(hmacid)
-        gnutls_hmac_init((HMAC_CTX *)&context, id, key, len);
+        gnutls_hmac_init((HMAC_CTX *)&context, id, *key, len);
 }
 
 bool HMAC::has(const char *type)

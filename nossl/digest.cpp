@@ -41,9 +41,19 @@ void Digest::set(const char *type)
         MD5Init((MD5_CTX*)context);
     }
     else if(eq_case(type, "sha") || eq_case(type, "sha1")) {
-        hashtype = "s";
+        hashtype = "1";
         context = new SHA1_CTX;
         SHA1Init((SHA1_CTX*)context);
+    }
+    else if(eq_case(type, "sha2") || eq_case(type, "sha256")) {
+        hashtype = "2";
+        context = new sha256_ctx;
+        sha256_begin((sha256_ctx *)context); 
+    }
+    else if(eq_case(type, "sha384")) {
+        hashtype = "3";
+        context = new sha384_ctx;
+        sha384_begin((sha384_ctx *)context);
     }
 }
 
@@ -56,9 +66,17 @@ void Digest::release(void)
             memset(context, 0, sizeof(MD5_CTX));
             delete (MD5_CTX*)context;
             break;
-        case 's':
+        case '1':
             memset(context, 0, sizeof(SHA1_CTX));
             delete (SHA1_CTX *)context;
+            break;
+        case '2':
+            memset(context, 0, sizeof(sha256_ctx));
+            delete (sha256_ctx*)context;
+            break;
+        case '3':
+            memset(context, 0, sizeof(sha384_ctx));
+            delete (sha384_ctx*)context;
             break;
         default:
             break;
@@ -80,8 +98,14 @@ bool Digest::put(const void *address, size_t size)
     case 'm':
         MD5Update((MD5_CTX*)context, (const uint8_t *)address, size);
         return true;
-    case 's':
+    case '1':
         SHA1Update((SHA1_CTX*)context, (const uint8_t *)address, size);
+        return true;
+    case '2':
+        sha256_hash((const unsigned char *)address, size, (sha256_ctx *)context);
+        return true;
+    case '3':
+        sha384_hash((const unsigned char *)address, size, (sha384_ctx *)context);
         return true;
     default:
         return false;
@@ -97,10 +121,20 @@ void Digest::reset(void)
                 context = new MD5_CTX;
             MD5Init((MD5_CTX*)context);
             break;
-        case 's':
+        case '1':
             if(!context)
                 context = new SHA1_CTX;
             SHA1Init((SHA1_CTX*)context);
+            break;
+        case '2':
+            if(!context)
+                context = new sha256_ctx;
+            sha256_begin((sha256_ctx *)context);
+            break;
+        case '3':
+            if(!context)
+                context = new sha384_ctx;
+            sha384_begin((sha384_ctx *)context);
             break;
         default:
             break;
@@ -126,7 +160,7 @@ void Digest::recycle(bool bin)
             MD5Update((MD5_CTX*)context, (const uint8_t *)buffer, size);
         else {
             unsigned count = 0;
-            while(count < bufsize) {
+            while(count < size) {
                 snprintf(textbuf + (count * 2), 3,
 "%2.2x", buffer[count]);
                 ++count;
@@ -134,7 +168,7 @@ void Digest::recycle(bool bin)
             MD5Update((MD5_CTX*)context, (const uint8_t *)textbuf, size * 2);
         }
         break;
-    case 's':
+    case '1':
         if(!bufsize)
             SHA1Final(buffer, (SHA1_CTX*)context);
         size = 20;
@@ -143,13 +177,45 @@ void Digest::recycle(bool bin)
             SHA1Update((SHA1_CTX*)context, (const uint8_t *)buffer, size);
         else {
             unsigned count = 0;
-            while(count < bufsize) {
+            while(count < size) {
                 snprintf(textbuf + (count * 2), 3,
 "%2.2x", buffer[count]);
                 ++count;
             }
             SHA1Update((SHA1_CTX*)context, (const unsigned
 char *)textbuf, size * 2);
+        }
+        break;
+    case '2':
+        if(!bufsize)
+            sha256_end(buffer, (sha256_ctx *)context);
+        size = 32;
+        sha256_begin((sha256_ctx *)context);
+        if(bin)
+            sha256_hash((const unsigned char *)buffer, size, (sha256_ctx *)context);
+        else {
+            unsigned count = 0;
+            while(count < size) {
+                snprintf(textbuf + (count * 2), 3, "%2.2x", buffer[count]);
+                ++count;
+            }
+            sha256_hash((const unsigned char *)textbuf, size * 2, (sha256_ctx *)context);
+        }
+        break;
+    case '3':
+        if(!bufsize)
+            sha384_end(buffer, (sha384_ctx *)context);
+        size = 48;
+        sha384_begin((sha384_ctx *)context);
+        if(bin)
+            sha384_hash((const unsigned char *)buffer, size, (sha384_ctx *)context);
+        else {
+            unsigned count = 0;
+            while(count < size) {
+                snprintf(textbuf + (count * 2), 3, "%2.2x", buffer[count]);
+                ++count;
+            }
+            sha384_hash((const unsigned char *)textbuf, size * 2, (sha384_ctx *)context);
         }
         break;
     default:
@@ -174,10 +240,19 @@ const uint8_t *Digest::get(void)
         release();
         bufsize = 16;
         break;
-    case 's':
+    case '1':
         SHA1Final(buffer, (SHA1_CTX*)context);
         release();
         bufsize = 20;
+        break;
+    case '2':
+        sha256_end(buffer, (sha256_ctx *)context);
+        release();
+        bufsize = 32;
+        break;
+    case '3':
+        sha384_end(buffer, (sha384_ctx *)context);
+        bufsize = 48;
         break;
     default:
         break;
