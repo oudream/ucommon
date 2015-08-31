@@ -125,8 +125,8 @@
                                 __DELETE_COPY(x)
 #endif
 
-#if __cplusplus <= 199711L && !defined(_MSC_VER) && !defined(__clang__)
-#if defined(__GNUC_MINOR__)
+#if __cplusplus <= 199711L && !defined(_MSC_VER)
+#if defined(__GNUC_MINOR__) && !defined(__clang__)
 #define nullptr __null
 #else
 const class nullptr_t 
