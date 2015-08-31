@@ -742,6 +742,17 @@ public:
     static secure::string sha1(const char *text);
 
     static secure::string sha256(const char *text);
+
+    static secure::string sha384(const char *text);
+
+    static secure::string md5(const uint8_t *mem, size_t size);
+
+    static secure::string sha1(const uint8_t *mem, size_t size);
+
+    static secure::string sha256(const uint8_t *mem, size_t size);
+
+    static secure::string sha384(const uint8_t *mem, size_t size);
+
 };
 
 /**
