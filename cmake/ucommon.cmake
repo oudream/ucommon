@@ -52,6 +52,13 @@ if (NOT UCOMMON_CONFIGURED)
         endif()
     endif()
 
+    # clang nullptr support requires this much...
+    if(NOT CMAKE_CXX_FLAGS MATCHES "-std=")
+        if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+            set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11")
+        endif()
+    endif()
+
     # check final for compiler flags
     foreach(flag ${CHECK_FLAGS})
         check_c_compiler_flag(${flag} CHECK_${flag})
