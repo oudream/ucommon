@@ -31,7 +31,7 @@ void HMAC::set(const char *digest, const secure::keybytes& key)
 
     release();
 
-    size_t len = key.size();
+    size_t len = key.size() / 8;
 
     hmactype = EVP_get_digestbyname(digest);
     if(hmactype && len) {

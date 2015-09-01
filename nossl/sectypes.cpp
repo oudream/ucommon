@@ -204,6 +204,7 @@ TypeRef(copy) {}
 typeref<Type::KeyBytes>::typeref(const uint8_t *key, size_t keysize, keytype_t keytype) :
 TypeRef()
 {
+    keysize /= 8;
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
@@ -211,6 +212,7 @@ TypeRef()
 typeref<Type::KeyBytes>::typeref(size_t keysize, keytype_t keytype) :
 TypeRef()
 {
+    keysize /= 8;
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }
@@ -236,6 +238,7 @@ size_t typeref<Type::KeyBytes>::size(void) const
 void typeref<Type::KeyBytes>::set(const uint8_t *key, size_t keysize, keytype_t keytype)
 {
     clear();
+    keysize /= 8;
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
@@ -243,6 +246,7 @@ void typeref<Type::KeyBytes>::set(const uint8_t *key, size_t keysize, keytype_t 
 void typeref<Type::KeyBytes>::generate(size_t keysize, keytype_t keytype)
 {
     clear();
+    keysize /= 8;
     caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }

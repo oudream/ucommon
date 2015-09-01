@@ -74,7 +74,7 @@ void HMAC::set(const char *digest, const secure::keybytes& key)
 
     release();
 
-    size_t len = key.size();
+    size_t len = key.size() / 8;
 
     if(!len)
         return;
@@ -86,6 +86,12 @@ void HMAC::set(const char *digest, const secure::keybytes& key)
 
     if(hmacid)
         gnutls_hmac_init((HMAC_CTX *)&context, id, *key, len);
+}
+
+void HMAC::set(const char *digest, const secure::keybytes& key)
+{
+    set(digest, (const char *)*key, key.size() / 8);
+>>>>>>> 6e22545057986ccc557c567f639fb002fbc6276a
 }
 
 bool HMAC::has(const char *type)
