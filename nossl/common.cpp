@@ -355,7 +355,7 @@ HMAC::HMAC()
     textbuf[0] = 0;
 }
 
-HMAC::HMAC(const char *digest, secure::keybytes key)
+HMAC::HMAC(const char *digest, const secure::keybytes& key)
 {
     context = NULL;
     bufsize = 0;
@@ -509,7 +509,7 @@ size_t Cipher::Key::get(uint8_t *keyout, uint8_t *ivout)
     return size;
 }
 
-bool Cipher::Key::set(const char *cipher, secure::keybytes& iv)
+bool Cipher::Key::set(const char *cipher, const secure::keybytes& iv)
 {
     const uint8_t *ivp = *iv;
     size_t size = iv.size() / 8;
@@ -527,7 +527,7 @@ bool Cipher::Key::set(const char *cipher, secure::keybytes& iv)
     return true;
 }
 
-bool Cipher::Key::set(secure::keybytes& key) 
+bool Cipher::Key::set(const secure::keybytes& key) 
 {
     const uint8_t *kvp = *key;
     size_t size = key.size() / 8;

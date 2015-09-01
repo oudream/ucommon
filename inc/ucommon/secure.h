@@ -136,11 +136,11 @@ public:
 
     void hex(const uint8_t *bytes, size_t bsize);
 
-    strtype_t type(void);
+    strtype_t type(void) const;
 
-    size_t size(void);
+    size_t size(void) const;
 
-    size_t len(void);
+    size_t len(void) const;
 };
 
 template <>
@@ -192,9 +192,9 @@ public:
 
     void generate(size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
 
-    keytype_t type(void);
+    keytype_t type(void) const;
 
-    size_t size(void);
+    size_t size(void) const;
 };
 
 template<>
@@ -448,7 +448,7 @@ public:
             return secure::keybytes(ivbuf, blksize, secure::IV_BUFFER);
         }
 
-        bool set(secure::keybytes& key);
+        bool set(const secure::keybytes& key);
 
         void set(const char *cipher, const char *digest);
 
@@ -456,7 +456,7 @@ public:
 
         void assign(const char *key, size_t size, const uint8_t *salt, unsigned rounds);
 
-        bool set(const char *cipher, secure::keybytes& iv);
+        bool set(const char *cipher, const secure::keybytes& iv);
 
         void assign(const char *key, size_t size = 0);
 
@@ -775,7 +775,7 @@ protected:
     const uint8_t *get(void);
 
 public:
-    HMAC(const char *digest, secure::keybytes key);
+    HMAC(const char *digest, const secure::keybytes& key);
 
     HMAC();
 
@@ -827,7 +827,7 @@ public:
         return puts(text);
     }
 
-    void set(const char *digest, secure::keybytes key);
+    void set(const char *digest, const secure::keybytes& key);
 
     inline bool operator +=(const char *text) {
         return puts(text);

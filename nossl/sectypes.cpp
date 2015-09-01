@@ -60,7 +60,7 @@ TypeRef()
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
-Type::SecChars::strtype_t typeref<Type::SecChars>::type(void)
+Type::SecChars::strtype_t typeref<Type::SecChars>::type(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(v)
@@ -69,7 +69,7 @@ Type::SecChars::strtype_t typeref<Type::SecChars>::type(void)
     return GENERIC_STRING;
 }
 
-size_t typeref<Type::SecChars>::len(void)
+size_t typeref<Type::SecChars>::len(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -78,7 +78,7 @@ size_t typeref<Type::SecChars>::len(void)
     return v->len();
 }
 
-size_t typeref<Type::SecChars>::size(void)
+size_t typeref<Type::SecChars>::size(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     size_t len = v->len();
@@ -215,7 +215,7 @@ TypeRef()
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }
 
-Type::KeyBytes::keytype_t typeref<Type::KeyBytes>::type(void)
+Type::KeyBytes::keytype_t typeref<Type::KeyBytes>::type(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(v)
@@ -224,7 +224,7 @@ Type::KeyBytes::keytype_t typeref<Type::KeyBytes>::type(void)
     return UNDEFINED_KEYTYPE;
 }
 
-size_t typeref<Type::KeyBytes>::size(void)
+size_t typeref<Type::KeyBytes>::size(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)

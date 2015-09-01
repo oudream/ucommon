@@ -33,7 +33,7 @@ bool HMAC::has(const char *id)
     return false;
 }
 
-void HMAC::set(const char *digest, secure::keybytes key)
+void HMAC::set(const char *digest, const secure::keybytes& key)
 {
     release();
 

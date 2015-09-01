@@ -25,7 +25,7 @@ bool HMAC::has(const char *id)
     return (EVP_get_digestbyname(id) != NULL);
 }
 
-void HMAC::set(const char *digest, secure::keybytes key)
+void HMAC::set(const char *digest, const secure::keybytes& key)
 {
     secure::init();
 

@@ -68,7 +68,7 @@ int __context::map_hmac(const char *type)
         return 0;
 }
 
-void HMAC::set(const char *digest, secure::keybytes key)
+void HMAC::set(const char *digest, const secure::keybytes& key)
 {
     secure::init();
 
