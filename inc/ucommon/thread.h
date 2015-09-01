@@ -217,7 +217,7 @@ public:
  * shared_lock referencing.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT ThreadLock : private ConditionalAccess, public ExclusiveAccess, public SharedAccess
+class __EXPORT RWLock : private ConditionalAccess, public ExclusiveAccess, public SharedAccess
 {
 protected:
     unsigned writers;
@@ -333,7 +333,7 @@ public:
     /**
      * Create an instance of a rwlock.
      */
-    ThreadLock();
+    RWLock();
 
     /**
      * Request modify (write) access through the lock.
@@ -982,7 +982,7 @@ typedef Mutex mutex_t;
 /**
  * Convenience type for using read/write locks.
  */
-typedef ThreadLock rwlock_t;
+typedef RWLock rwlock_t;
 
 /**
  * Convenience type for using recursive exclusive locks.

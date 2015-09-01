@@ -49,7 +49,7 @@ struct mutex_entry
     unsigned count;
 };
 
-class __LOCAL rwlock_entry : public ThreadLock
+class __LOCAL rwlock_entry : public RWLock
 {
 public:
     rwlock_entry();
@@ -101,7 +101,7 @@ rwlock_index::rwlock_index() : Mutex()
     list = NULL;
 }
 
-rwlock_entry::rwlock_entry() : ThreadLock()
+rwlock_entry::rwlock_entry() : RWLock()
 {
     count = 0;
 }
@@ -384,28 +384,28 @@ void RecursiveMutex::release(void)
     Conditional::unlock();
 }
 
-ThreadLock::ThreadLock() :
+RWLock::RWLock() :
 ConditionalAccess()
 {
     writers = 0;
 }
 
-void ThreadLock::_lock(void)
+void RWLock::_lock(void)
 {
     modify();
 }
 
-void ThreadLock::_share(void)
+void RWLock::_share(void)
 {
     access();
 }
 
-void ThreadLock::_unlock(void)
+void RWLock::_unlock(void)
 {
     release();
 }
 
-bool ThreadLock::modify(timeout_t timeout)
+bool RWLock::modify(timeout_t timeout)
 {
     bool rtn = true;
     struct timespec ts;
@@ -436,7 +436,7 @@ bool ThreadLock::modify(timeout_t timeout)
     return rtn;
 }
 
-bool ThreadLock::access(timeout_t timeout)
+bool RWLock::access(timeout_t timeout)
 {
     struct timespec ts;
     bool rtn = true;
@@ -462,7 +462,7 @@ bool ThreadLock::access(timeout_t timeout)
     return rtn;
 }
 
-void ThreadLock::release(void)
+void RWLock::release(void)
 {
     lock();
     assert(sharing || writers);
@@ -543,7 +543,7 @@ void Mutex::indexing(unsigned index)
     }
 }
 
-void ThreadLock::indexing(unsigned index)
+void RWLock::indexing(unsigned index)
 {
     if(index > 1) {
         rwlock_table = new rwlock_index[index];
@@ -551,77 +551,77 @@ void ThreadLock::indexing(unsigned index)
     }
 }
 
-ThreadLock::guard_reader::guard_reader()
+RWLock::guard_reader::guard_reader()
 {
     object = NULL;
 }
 
-ThreadLock::guard_reader::guard_reader(const void *obj)
+RWLock::guard_reader::guard_reader(const void *obj)
 {
     object = obj;
     if(obj)
-        if(!ThreadLock::reader(object))
+        if(!RWLock::reader(object))
             object = NULL;
 }
 
-ThreadLock::guard_reader::~guard_reader()
+RWLock::guard_reader::~guard_reader()
 {
     release();
 }
 
-void ThreadLock::guard_reader::set(const void *obj)
+void RWLock::guard_reader::set(const void *obj)
 {
     release();
     object = obj;
     if(obj)
-        if(!ThreadLock::reader(object))
+        if(!RWLock::reader(object))
             object = NULL;
 }
 
-void ThreadLock::guard_reader::release(void)
+void RWLock::guard_reader::release(void)
 {
     if(object) {
-        ThreadLock::release(object);
+        RWLock::release(object);
         object = NULL;
     }
 }
 
-ThreadLock::guard_writer::guard_writer()
+RWLock::guard_writer::guard_writer()
 {
     object = NULL;
 }
 
-ThreadLock::guard_writer::guard_writer(const void *obj)
+RWLock::guard_writer::guard_writer(const void *obj)
 {
     object = obj;
     if(obj)
-        if(!ThreadLock::writer(object))
+        if(!RWLock::writer(object))
             object = NULL;
 }
 
-ThreadLock::guard_writer::~guard_writer()
+RWLock::guard_writer::~guard_writer()
 {
     release();
 }
 
-void ThreadLock::guard_writer::set(const void *obj)
+void RWLock::guard_writer::set(const void *obj)
 {
     release();
     object = obj;
     if(obj)
-        if(!ThreadLock::writer(object))
+        if(!RWLock::writer(object))
             object = NULL;
 }
 
-void ThreadLock::guard_writer::release(void)
+void RWLock::guard_writer::release(void)
 {
     if(object) {
-        ThreadLock::release(object);
+        RWLock::release(object);
         object = NULL;
     }
 }
 
-bool ThreadLock::reader(const void *ptr, timeout_t timeout)
+bool RWLock::reader(const void *ptr, timeout_t timeout)
 {
     rwlock_index *index = &rwlock_table[hash_address(ptr, rwlock_indexing)];
     rwlock_entry *entry, *empty = NULL;
@@ -658,7 +658,7 @@ bool ThreadLock::reader(const void *ptr, timeout_t timeout)
     return false;
 }
 
-bool ThreadLock::writer(const void *ptr, timeout_t timeout)
+bool RWLock::writer(const void *ptr, timeout_t timeout)
 {
     rwlock_index *index = &rwlock_table[hash_address(ptr, rwlock_indexing)];
     rwlock_entry *entry, *empty = NULL;
@@ -731,7 +731,7 @@ bool Mutex::protect(const void *ptr)
 	return true;
 }
 
-bool ThreadLock::release(const void *ptr)
+bool RWLock::release(const void *ptr)
 {
     rwlock_index *index = &rwlock_table[hash_address(ptr, rwlock_indexing)];
     rwlock_entry *entry;

@@ -161,25 +161,25 @@ public:
         { mutex.leaveMutex(); }
 };
 
-class __EXPORT ThreadLock : protected ucommon::ThreadLock
+class __EXPORT ThreadLock : protected ucommon::RWLock
 {
 public:
-    inline ThreadLock() : ucommon::ThreadLock() {}
+    inline ThreadLock() : ucommon::RWLock() {}
 
     inline void readLock(void)
-        {ucommon::ThreadLock::access();}
+        {ucommon::RWLock::access();}
 
     inline void writeLock(void)
-        {ucommon::ThreadLock::modify();}
+        {ucommon::RWLock::modify();}
 
     inline void tryReadLock(void)
-        {ucommon::ThreadLock::access(0);}
+        {ucommon::RWLock::access(0);}
 
     inline void tryWriteLock(void)
-        {ucommon::ThreadLock::modify(0);}
+        {ucommon::RWLock::modify(0);}
 
     inline void unlock(void)
-        {ucommon::ThreadLock::release();}
+        {ucommon::RWLock::release();}
 };
 
 /**
