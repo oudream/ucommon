@@ -82,13 +82,95 @@ namespace ucommon {
  * behaviors on different pthread implimentations and platforms.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT Conditional
+class __EXPORT ConditionMutex
 {
-private:
+protected:
+#if defined(_MSTHREADS_)
+    mutable CRITICAL_SECTION mutex;
+#else
+    mutable pthread_mutex_t mutex;
+#endif
+
+#ifdef  _MSTHREADS_
+    inline void lock(void)
+        {EnterCriticalSection(&mutex);};
+
+    inline void unlock(void)
+        {LeaveCriticalSection(&mutex);};
+
+#else
+    /**
+     * Lock the conditional's supporting mutex.
+     */
+    inline void lock(void)
+        {pthread_mutex_lock(&mutex);}
+
+    /**
+     * Unlock the conditional's supporting mutex.
+     */
+    inline void unlock(void)
+        {pthread_mutex_unlock(&mutex);}
+#endif
+
+    /**
+     * Initialize and construct conditional.
+     */
+    ConditionMutex();
+
+    /**
+     * Destroy conditional, release any blocked threads.
+     */
+    ~ConditionMutex();
+
+    friend class autolock;
+
+public:
+    class __EXPORT autolock
+    {
+    private:
+#ifdef  _MSTHREADS_
+        CRITICAL_SECTION *mutex;
+#else
+        pthread_mutex_t *mutex;
+#endif
+
+    public:
+        inline autolock(const ConditionMutex* object) {
+            mutex = &object->mutex;
+#ifdef _MSTHREADS_
+            EnterCriticalSection(mutex);
+#else
+            pthread_mutex_lock(mutex);
+#endif
+        }
+
+        inline ~autolock() {
+#ifdef  _MSTHREADS_
+            LeaveCriticalSection(mutex);
+#else
+            pthread_mutex_unlock(mutex);
+#endif
+        }
+    };
+};
+
+
+/**
+ * The conditional is a common base for other thread synchronizing classes.
+ * Many of the complex sychronization objects, including barriers, semaphores,
+ * and various forms of read/write locks are all built from the conditional.
+ * This assures that the minimum functionality to build higher order thread
+ * synchronizing objects is a pure conditional, and removes dependencies on
+ * what may be optional features or functions that may have different
+ * behaviors on different pthread implimentations and platforms.
+ * @author David Sugar <dyfet@gnutelephony.org>
+ */
+class __EXPORT Conditional : public ConditionMutex
+{
+protected:
     friend class ConditionalAccess;
 
 #if defined(_MSTHREADS_)
-    mutable CRITICAL_SECTION mutex;
     mutable CONDITION_VARIABLE cond;
 #else
 #ifndef __PTH__
@@ -103,10 +185,8 @@ private:
 #endif
 
     mutable pthread_cond_t cond;
-    mutable pthread_mutex_t mutex;
 #endif
 
-protected:
     friend class TimedEvent;
 
     /**
@@ -124,29 +204,11 @@ protected:
     bool wait(struct timespec *timeout);
 
 #ifdef  _MSTHREADS_
-    inline void lock(void)
-        {EnterCriticalSection(&mutex);};
-
-    inline void unlock(void)
-        {LeaveCriticalSection(&mutex);};
-
     void wait(void);
     void signal(void);
     void broadcast(void);
 
 #else
-    /**
-     * Lock the conditional's supporting mutex.
-     */
-    inline void lock(void)
-        {pthread_mutex_lock(&mutex);}
-
-    /**
-     * Unlock the conditional's supporting mutex.
-     */
-    inline void unlock(void)
-        {pthread_mutex_unlock(&mutex);}
-
     /**
      * Wait (block) until signalled.
      */
@@ -179,34 +241,6 @@ protected:
     friend class autolock;
 
 public:
-    class __EXPORT autolock
-    {
-    private:
-#ifdef  _MSTHREADS_
-        CRITICAL_SECTION *mutex;
-#else
-        pthread_mutex_t *mutex;
-#endif
-
-    public:
-        inline autolock(const Conditional* object) {
-            mutex = &object->mutex;
-#ifdef _MSTHREADS_
-            EnterCriticalSection(mutex);
-#else
-            pthread_mutex_lock(mutex);
-#endif
-        }
-
-        inline ~autolock() {
-#ifdef  _MSTHREADS_
-            LeaveCriticalSection(mutex);
-#else
-            pthread_mutex_unlock(mutex);
-#endif
-        }
-    };
-
 #if !defined(_MSTHREADS_) && !defined(__PTH__)
     /**
      * Support function for getting conditional attributes for realtime

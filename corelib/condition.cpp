@@ -28,13 +28,6 @@
 #include <stdarg.h>
 #include <limits.h>
 
-#if _POSIX_PRIORITY_SCHEDULING > 0
-#include <sched.h>
-static int realtime_policy = SCHED_FIFO;
-#endif
-
-#undef  _POSIX_SPIN_LOCKS
-
 static unsigned max_sharing = 0;
 
 namespace ucommon {
@@ -84,15 +77,19 @@ void Conditional::set(struct timespec *ts, timeout_t msec)
 
 #ifdef  _MSTHREADS_
 
-Conditional::Conditional()
+ConditionMutex::ConditionMutex()
 {
-    InitializeCriticalSection(&mutex);
-    InitializeConditionVariable(&cond);
+	InitializeCriticalSection(&mutex);
 }
 
-Conditional::~Conditional()
+ConditionMutex::~ConditionMutex()
 {
     DeleteCriticalSection(&mutex);
+}
+
+Conditional::Conditional()
+{
+    InitializeConditionVariable(&cond);
 }
 
 void Conditional::wait(void)
@@ -145,15 +142,29 @@ Conditional::attribute::attribute()
 }
 #endif
 
+ConditionMutex::ConditionMutex()
+{
+#ifdef	__PTH__
+	pth_mutex_init(&mutex);
+#else
+	crit(pthread_mutex_init(&mutex, NULL) == 0, "mutex init failed");
+#endif
+}
+
+ConditionMutex::~ConditionMutex()
+{
+#ifndef	__PTH__
+	pthread_mutex_destroy(&mutex);
+#endif
+}
+
 Conditional::Conditional()
 {
 #ifdef  __PTH__
     Thread::init();
     pth_cond_init(&cond);
-    pth_mutex_init(&mutex);
 #else
     crit(pthread_cond_init(&cond, &attr.attr) == 0, "conditional init failed");
-    crit(pthread_mutex_init(&mutex, NULL) == 0, "mutex init failed");
 #endif
 }
 
@@ -161,7 +172,6 @@ Conditional::~Conditional()
 {
 #ifndef __PTH__
     pthread_cond_destroy(&cond);
-    pthread_mutex_destroy(&mutex);
 #endif
 }
 
@@ -183,7 +193,6 @@ bool Conditional::wait(struct timespec *ts)
 }
 
 #endif
-
 
 #if defined(_MSTHREADS_)
 
