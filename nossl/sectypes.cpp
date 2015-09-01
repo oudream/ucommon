@@ -235,6 +235,15 @@ size_t typeref<Type::KeyBytes>::size(void) const
     return v->size * 8;
 }
 
+size_t typeref<Type::KeyBytes>::bytes(void) const
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(!v)
+        return 0;
+
+    return v->size;
+}
+
 void typeref<Type::KeyBytes>::set(const uint8_t *key, size_t keysize, keytype_t keytype)
 {
     clear();

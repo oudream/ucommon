@@ -24,8 +24,6 @@
 #include "md5.h"
 #include "sha1.h"
 #include "sha2.h"
-#include "hmac256.h"
-#include "hmac384.h"
 
 #ifdef  _MSWINDOWS_
 #include <wincrypt.h>
