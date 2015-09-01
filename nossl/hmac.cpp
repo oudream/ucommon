@@ -51,7 +51,7 @@ void HMAC::set(const char *digest, const char *key, size_t len)
 
 void HMAC::set(const char *digest, const secure::keybytes& key)
 {
-    set(digest, (const char *)*key, key.size());
+    set(digest, (const char *)*key, key.size() / 8);
 }
 
 void HMAC::release(void)

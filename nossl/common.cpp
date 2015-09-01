@@ -92,7 +92,7 @@ secure::keybytes Digest::md5(const uint8_t *mem, size_t size)
     digest_t digest("md5");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size() * 8, secure::KEY_DIGEST);
 }
 
 secure::keybytes Digest::sha1(const uint8_t *mem, size_t size)
@@ -103,7 +103,7 @@ secure::keybytes Digest::sha1(const uint8_t *mem, size_t size)
     digest_t digest("sha1");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size() * 8, secure::KEY_DIGEST);
 }
 
 secure::keybytes Digest::sha256(const uint8_t *mem, size_t size)
@@ -114,7 +114,7 @@ secure::keybytes Digest::sha256(const uint8_t *mem, size_t size)
     digest_t digest("sha256");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size() * 8, secure::KEY_DIGEST);
 }
 
 secure::keybytes Digest::sha384(const uint8_t *mem, size_t size)
@@ -125,7 +125,7 @@ secure::keybytes Digest::sha384(const uint8_t *mem, size_t size)
     digest_t digest("sha384");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size() * 8, secure::KEY_DIGEST);
 }
 
 secure::string Digest::md5(const char *text)
@@ -176,7 +176,7 @@ secure::keybytes HMAC::sha256(secure::keybytes key, const uint8_t *mem, size_t s
 	hmac_t hmac("sha256", key);
     hmac.put(mem, size);
     mem = hmac.get();
-    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, hmac.size() * 8, secure::KEY_DIGEST);
 }
 
 secure::keybytes HMAC::sha384(secure::keybytes key, const uint8_t *mem, size_t size)
@@ -187,7 +187,7 @@ secure::keybytes HMAC::sha384(secure::keybytes key, const uint8_t *mem, size_t s
 	hmac_t hmac("sha384", key);
     hmac.put(mem, size);
     mem = hmac.get();
-    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, hmac.size() * 8, secure::KEY_DIGEST);
 }
 
 #if defined(_MSWINDOWS_)
@@ -365,7 +365,7 @@ HMAC::HMAC(const char *digest, const secure::keybytes& key)
     hmacid = 0;
     textbuf[0] = 0;
 
-    set(digest, (const char *)*key, key.size());
+    set(digest, (const char *)*key, key.size() / 8);
 }
 
 HMAC::~HMAC()
