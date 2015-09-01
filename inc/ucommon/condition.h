@@ -84,6 +84,9 @@ namespace ucommon {
  */
 class __EXPORT ConditionMutex
 {
+private:
+    __DELETE_COPY(ConditionMutex);
+
 protected:
 #if defined(_MSTHREADS_)
     mutable CRITICAL_SECTION mutex;
@@ -133,6 +136,7 @@ public:
 #else
         pthread_mutex_t *mutex;
 #endif
+        __DELETE_COPY(autolock);
 
     public:
         inline autolock(const ConditionMutex* object) {
@@ -167,6 +171,9 @@ public:
  */
 class __EXPORT Conditional : public ConditionMutex
 {
+private:
+    __DELETE_COPY(Conditional);
+
 protected:
     friend class ConditionalAccess;
 
@@ -269,6 +276,9 @@ public:
  */
 class __EXPORT ConditionalAccess : private Conditional
 {
+private:
+    __DELETE_COPY(ConditionalAccess);
+
 protected:
 #if defined _MSTHREADS_
     CONDITION_VARIABLE bcast;
@@ -424,9 +434,15 @@ public:
  */
 class __EXPORT ConditionalLock : protected ConditionalAccess, public SharedAccess
 {
+private:
+    __DELETE_COPY(ConditionalLock);
+
 protected:
     class Context : public LinkedObject
     {
+    private:
+        __DELETE_COPY(Context);
+
     public:
         inline Context(LinkedObject **root) : LinkedObject(root) {}
 
@@ -436,8 +452,8 @@ protected:
 
     LinkedObject *contexts;
 
-    virtual void _share(void);
-    virtual void _unlock(void);
+    virtual void _share(void) __OVERRIDE;
+    virtual void _unlock(void) __OVERRIDE;
 
     Context *getContext(void);
 
