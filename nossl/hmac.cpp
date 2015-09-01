@@ -33,25 +33,24 @@ bool HMAC::has(const char *id)
     return false;
 }
 
-void HMAC::set(const char *digest, const char *key, size_t len)
+void HMAC::set(const char *digest, secure::keybytes key)
 {
     release();
+
+    size_t len = key.size();
+    if(!len)
+        return;
 
     if(eq_case(digest, "sha256")) {
         hmactype = "2";
         context = new hmacSha256Context;
-        hmacSha256Init((hmacSha256Context*)context, (const uint8_t *)key, len);
+        hmacSha256Init((hmacSha256Context*)context, (const uint8_t *)*key, len);
     }
     else if(eq_case(digest, "sha384")) {
         hmactype = "3";
         context = new hmacSha384Context;
-        hmacSha384Init((hmacSha384Context*)context, (const uint8_t *)key, len);
+        hmacSha384Init((hmacSha384Context*)context, (const uint8_t *)*key, len);
     }
-}
-
-void HMAC::set(const char *digest, secure::keybytes key)
-{
-    set(digest, (const char *)*key, key.size());
 }
 
 void HMAC::release(void)
