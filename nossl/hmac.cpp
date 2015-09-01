@@ -17,35 +17,81 @@
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "local.h"
+#include "hmac256.cpp"
+#include "hmac384.cpp"
 
 namespace ucommon {
 
 bool HMAC::has(const char *id)
 {
+    if(eq_case(id, "sha256"))
+        return true;
+
+    if(eq_case(id, "sha384"))
+        return true;
+
     return false;
 }
 
 void HMAC::set(const char *digest, const char *key, size_t len)
 {
     release();
+
+    if(eq_case(digest, "sha256")) {
+        hmactype = "2";
+        context = new hmacSha256Context;
+        hmacSha256Init((hmacSha256Context*)context, (const uint8_t *)key, len);
+    }
+    else if(eq_case(digest, "sha384")) {
+        hmactype = "3";
+        context = new hmacSha384Context;
+        hmacSha384Init((hmacSha384Context*)context, (const uint8_t *)key, len);
+    }
 }
 
 void HMAC::set(const char *digest, secure::keybytes key)
 {
-    release();
+    set(digest, (const char *)*key, key.size());
 }
 
 void HMAC::release(void)
 {
+    if(context && hmactype) {
+        switch(*((char *)hmactype)) {
+        case '2':
+            memset(context, 0, sizeof(hmacSha256Context));
+            delete (hmacSha256Context *)context;
+            break;
+        case '3':
+            memset(context, 0, sizeof(hmacSha384Context));
+            delete (hmacSha384Context *)context;
+            break;
+        default:
+            break;
+        }
+    }
+
     bufsize = 0;
     textbuf[0] = 0;
-
-    hmactype = " ";
+    hmactype = NULL;
+    context = NULL;
 }
 
 bool HMAC::put(const void *address, size_t size)
 {
-    return false;
+    if(!context || !hmactype)
+        return false;
+
+    switch(*((char *)hmactype)) {
+    case '2':
+        hmacSha256Update((hmacSha256Context*)context, (const uint8_t *)address, size);
+        return true;
+    case '3':
+        hmacSha384Update((hmacSha384Context*)context, (const uint8_t *)address, size);
+        return true;
+    default:
+        return false;
+    }
 }
 
 const uint8_t *HMAC::get(void)
@@ -53,7 +99,28 @@ const uint8_t *HMAC::get(void)
     if(bufsize)
         return buffer;
 
-    return NULL;
+    if(!context || !hmactype)
+        return NULL;
+
+    switch(*((char *)hmactype)) {
+    case '2':
+        hmacSha256Final((hmacSha256Context *)context, buffer);
+        bufsize = SHA256_BLOCK_SIZE;
+        break;
+    case '3':
+        hmacSha384Final((hmacSha384Context *)context, buffer);
+        bufsize = SHA384_BLOCK_SIZE;
+        break;
+    default:
+        return NULL;
+    }
+
+    size_t count = 0;
+    while(count < bufsize) {
+        snprintf(textbuf + (count * 2), 3, "%2.2x", buffer[count]);
+        ++count;
+    }
+    return buffer;
 }
 
 } // namespace ucommon

@@ -28,6 +28,9 @@ bool Digest::has(const char *id)
     if(eq_case(id, "sha1") || eq_case(id, "sha") || eq_case(id, "sha160"))
         return true;
 
+    if(eq_case(id, "sha2") || eq_case(id, "sha256") || eq_case(id, "sha384"))
+        return true;
+
     return false;
 }
 
@@ -81,12 +84,12 @@ void Digest::release(void)
         default:
             break;
         }
-        context = NULL;
     }
 
     bufsize = 0;
     memset(textbuf, 0, sizeof(textbuf));
     hashtype = NULL;
+    context = NULL;
 }
 
 bool Digest::put(const void *address, size_t size)
