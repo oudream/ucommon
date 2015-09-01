@@ -195,6 +195,8 @@ public:
     keytype_t type(void) const;
 
     size_t size(void) const;
+
+    size_t bytes(void) const;
 };
 
 template<>
