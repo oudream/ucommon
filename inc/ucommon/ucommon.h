@@ -103,6 +103,7 @@
 #include <ucommon/datetime.h>
 #include <ucommon/keydata.h>
 #include <ucommon/socket.h>
+#include <ucommon/condition.h>
 #include <ucommon/thread.h>
 #include <ucommon/arrayref.h>
 #include <ucommon/mapref.h>
