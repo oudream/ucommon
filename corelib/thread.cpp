@@ -766,42 +766,6 @@ void ThreadLock::release(void)
     unlock();
 }
 
-auto_protect::auto_protect()
-{
-    object = NULL;
-}
-
-auto_protect::auto_protect(const void *obj)
-{
-    object = obj;
-    if(object)
-        Mutex::protect(obj);
-}
-
-auto_protect::~auto_protect()
-{
-    release();
-}
-
-void auto_protect::release()
-{
-    if(object) {
-        Mutex::release(object);
-        object = NULL;
-    }
-}
-
-void auto_protect::operator=(const void *obj)
-{
-    if(obj == object)
-        return;
-
-    release();
-    object = obj;
-    if(object)
-        Mutex::protect(object);
-}
-
 Mutex::guard::guard()
 {
     object = NULL;

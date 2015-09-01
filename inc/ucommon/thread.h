@@ -1098,66 +1098,6 @@ public:
 };
 
 /**
- * A mutex locked object smart pointer helper class.  This is particularly
- * useful in referencing objects which will be protected by the mutex
- * protect function.  When the pointer falls out of scope, the protecting
- * mutex is also released.  This is meant to be used by the typed
- * mutex_pointer template.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT auto_protect
-{
-private:
-    // cannot copy...
-    inline auto_protect(const auto_object &pointer) {}
-
-protected:
-    const void *object;
-
-    auto_protect();
-
-public:
-    /**
-     * Construct a protected pointer referencing an existing object.
-     * @param object we point to.
-     */
-    auto_protect(const void *object);
-
-    /**
-     * Delete protected pointer.  When it falls out of scope the associated
-     * mutex is released.
-     */
-    ~auto_protect();
-
-    /**
-     * Manually release the pointer.  This releases the mutex.
-     */
-    void release(void);
-
-    /**
-     * Test if the pointer is not set.
-     * @return true if the pointer is not referencing anything.
-     */
-    inline bool operator!() const
-        {return object == NULL;}
-
-    /**
-     * Test if the pointer is referencing an object.
-     * @return true if the pointer is currently referencing an object.
-     */
-    inline operator bool() const
-        {return object != NULL;}
-
-    /**
-     * Set our pointer to a specific object.  If the pointer currently
-     * references another object, the associated mutex is released.  The
-     * pointer references our new object and that new object is locked.
-     * @param object to assign to.
-     */
-    void operator=(const void *object);
-};
-
-/**
  * An abstract class for defining classes that operate as a thread.  A derived
  * thread class has a run method that is invoked with the newly created
  * thread context, and can use the derived object to store all member data
