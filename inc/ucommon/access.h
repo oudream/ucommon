@@ -311,7 +311,7 @@ public:
 };
 
 template<class T>
-class autoexclusive : public ExclusiveAccess::Locking
+class autoexclusive : private ExclusiveAccess::Locking
 {
 private:
     __DELETE_DEFAULTS(autoexclusive);
@@ -322,7 +322,7 @@ public:
 };
 
 template<class T>
-class autoshared : public SharedAccess::Locking
+class autoshared : private SharedAccess::Locking
 {
 private:
     __DELETE_DEFAULTS(autoshared);
