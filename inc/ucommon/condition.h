@@ -639,6 +639,8 @@ protected:
     __DELETE_COPY(Semaphore);
 
 public:
+    typedef shared<Semaphore> autosync;
+        
     /**
      * Construct a semaphore with an initial count of threads to permit.
      * @param count of threads to permit, or special case 0 group release.

@@ -76,10 +76,11 @@ namespace ucommon {
  * and shared protocols are implemented to support exclusive_lock and
  * shared_lock referencing.  Because of the thread locking semantics this
  * is part of thread rather than condition, and was originally called
- * ThreadLock in older ucommon/commoncpp releases. 
+ * ThreadLock in older ucommon/commoncpp releases.  Our autolock semantics
+ * are also different as we protect a target object, not a rwlock instance.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT RWLock : private ConditionalAccess, public ExclusiveAccess, public SharedAccess
+class __EXPORT RWLock : private ConditionalAccess
 {
 private:
     __DELETE_COPY(RWLock);
@@ -88,42 +89,38 @@ protected:
     unsigned writers;
     pthread_t writeid;
 
-    virtual void _lock(void) __OVERRIDE;
-    virtual void _share(void) __OVERRIDE;
-    virtual void _unlock(void) __OVERRIDE;
-
 public:
     /**
-     * Guard class to apply scope based access locking to objects.  The rwlock
+     * Apply automatic scope based access locking to objects.  The rwlock
      * is located from the rwlock pool rather than contained in the target
      * object, and the read lock is released when the guard object falls out of
      * scope.  This is essentially an automation mechanism for mutex::reader.
      * @author David Sugar <dyfet@gnutelephony.org>
      */
-    class __EXPORT guard_reader
+    class __EXPORT reader
     {
     private:
         const void *object;
 
-        __DELETE_COPY(guard_reader);
+        __DELETE_COPY(reader);
 
     public:
         /**
           * Create an unitialized instance of guard.  Usually used with a
           * guard = operator.
           */
-        guard_reader();
+        reader();
 
         /**
          * Construct a guard for a specific object.
          * @param object to guard.
          */
-        guard_reader(const void *object);
+        reader(const void *object);
 
         /**
          * Release mutex when guard falls out of scope.
          */
-        ~guard_reader();
+        ~reader();
 
         /**
          * Set guard to mutex lock a new object.  If a lock is currently
@@ -144,39 +141,48 @@ public:
          */
         inline void operator=(const void *pointer)
             {set(pointer);}
+
+       /**
+        * Shared access to an arbitrary object.  This is based on the protect
+        * function of mutex.
+        * @param object to share.
+        * @param timeout in milliseconds to wait for lock.
+        * @return true if shared, false if timeout.
+        */
+        static bool lock(const void *object, timeout_t timeout = Timer::inf);
     };
 
     /**
-     * Guard class to apply scope based exclusive locking to objects.  The rwlock
+     * Apply automatic scope based exclusive locking to objects.  The rwlock
      * is located from the rwlock pool rather than contained in the target
      * object, and the write lock is released when the guard object falls out of
      * scope.  This is essentially an automation mechanism for mutex::writer.
      * @author David Sugar <dyfet@gnutelephony.org>
      */
-    class __EXPORT guard_writer
+    class __EXPORT writer
     {
     private:
         const void *object;
 
-        __DELETE_COPY(guard_writer);
+        __DELETE_COPY(writer);
 
     public:
         /**
           * Create an unitialized instance of guard.  Usually used with a
           * guard = operator.
           */
-        guard_writer();
+        writer();
 
         /**
          * Construct a guard for a specific object.
          * @param object to guard.
          */
-        guard_writer(const void *object);
+        writer(const void *object);
 
         /**
          * Release mutex when guard falls out of scope.
          */
-        ~guard_writer();
+        ~writer();
 
         /**
          * Set guard to mutex lock a new object.  If a lock is currently
@@ -197,6 +203,15 @@ public:
          */
         inline void operator=(const void *pointer)
             {set(pointer);}
+
+        /**
+        * Write protect access to an arbitrary object.  This is like the
+        * protect function of mutex.
+        * @param object to protect.
+        * @param timeout in milliseconds to wait for lock.
+        * @return true if locked, false if timeout.
+        */
+        static bool lock(const void *object, timeout_t timeout = Timer::inf);
     };
 
     /**
@@ -225,24 +240,6 @@ public:
      * @param size of hash table used for guarding.
      */
     static void indexing(unsigned size);
-
-    /**
-      * Write protect access to an arbitrary object.  This is like the
-      * protect function of mutex.
-      * @param object to protect.
-      * @param timeout in milliseconds to wait for lock.
-      * @return true if locked, false if timeout.
-      */
-    static bool writer(const void *object, timeout_t timeout = Timer::inf);
-
-    /**
-     * Shared access to an arbitrary object.  This is based on the protect
-     * function of mutex.
-     * @param object to share.
-     * @param timeout in milliseconds to wait for lock.
-     * @return true if shared, false if timeout.
-     */
-    static bool reader(const void *object, timeout_t timeout = Timer::inf);
 
     /**
      * Release an arbitrary object that has been protected by a rwlock.
@@ -369,6 +366,8 @@ protected:
     virtual void _unlock(void) __OVERRIDE;
 
 public:
+    typedef exclusive<RecursiveMutex> autolock;
+
     /**
      * Create rexlock.
      */
@@ -454,77 +453,7 @@ protected:
     virtual void _unlock(void) __OVERRIDE;
 
 public:
-    friend class autolock;
-
-    class __EXPORT autolock
-    {
-    private:
-        pthread_mutex_t *mutex;
-
-    public:
-        inline autolock(const Mutex *object) {
-            mutex = &object->mlock;
-            pthread_mutex_lock(this->mutex);
-        }
-
-        inline ~autolock() {
-            pthread_mutex_unlock(this->mutex);
-        }
-    };
-
-    /**
-     * Guard class to apply scope based mutex locking to objects.  The mutex
-     * is located from the mutex pool rather than contained in the target
-     * object, and the lock is released when the guard object falls out of
-     * scope.  This is essentially an automation mechanism for mutex::protect.
-     * @author David Sugar <dyfet@gnutelephony.org>
-     */
-    class __EXPORT guard
-    {
-    private:
-        const void *object;
-
-        __DELETE_COPY(guard);
-
-    public:
-        /**
-          * Create an unitialized instance of guard.  Usually used with a
-          * guard = operator.
-          */
-        guard();
-
-        /**
-         * Construct a guard for a specific object.
-         * @param object to guard.
-         */
-        guard(const void *object);
-
-        /**
-         * Release mutex when guard falls out of scope.
-         */
-        ~guard();
-
-        /**
-         * Set guard to mutex lock a new object.  If a lock is currently
-         * held, it is released.
-         * @param object to guard.
-         */
-        void set(const void *object);
-
-        /**
-         * Prematurely release a guard.
-         */
-        void release(void);
-
-        /**
-         * Set guard to mutex lock a new object.  If a lock is currently
-         * held, it is released.
-         * @param pointer to object to guard.
-         */
-        inline void operator=(void *pointer)
-            {set(pointer);}
-    };
-
+    typedef exclusive<Mutex> autolock;
 
     /**
      * Create a mutex lock.
@@ -594,6 +523,74 @@ public:
      * @param pointer to release.
      */
     static bool release(const void *pointer);
+};
+
+/**
+ * Guard class to apply scope based mutex locking to objects.  The mutex
+ * is located from the mutex pool rather than contained in the target
+ * object, and the lock is released when the guard object falls out of
+ * scope.  This is essentially an automation mechanism for mutex::protect.
+ * @author David Sugar <dyfet@gnutelephony.org>
+ */
+class __EXPORT AutoProtect
+{
+private:
+    const void *object;
+
+    __DELETE_COPY(AutoProtect);
+
+protected:
+    /**
+     * Create an unitialized instance of guard.  Usually used with a
+     * guard = operator.
+     */
+    AutoProtect();
+
+    /**
+     * Set guard to mutex lock a new object.  If a lock is currently
+     * held, it is released.
+     * @param object to guard.
+     */
+    void set(const void *object);
+
+    /**
+     * Prematurely release a guard.
+     */
+    void release(void);
+
+public:
+    /**
+     * Construct a guard for a specific object.
+     * @param object to guard.
+     */
+    AutoProtect(const void *object);
+
+    /**
+     * Release mutex when guard falls out of scope.
+     */
+    ~AutoProtect();
+};
+
+template<typename T>
+class autoprotect : public AutoProtect
+{
+public:
+    inline autoprotect() : AutoProtect() {};
+
+    inline autoprotect(const T *object) : AutoProtect(object) {};
+
+    inline void set(const T *object) {
+        AutoProtect::set(object);
+    }
+
+    inline void release() {
+        AutoProtect::release();
+    }
+
+    inline autoprotect& operator=(const T* object) {
+        AutoProtect::set(object);
+        return *this;
+    }
 };
 
 /**
@@ -871,7 +868,8 @@ typedef RWLock rwlock_t;
  */
 typedef RecursiveMutex rexlock_t;
 
-#define __AUTOLOCK(x)    autolock __autolock__(x)
+#define __AUTOLOCK(x)       autolock __autolock__(x)
+#define __AUTOPROTECT(x)    AutoProtect __autolock__(x)
 
 #define __SYNC(x) for(bool _sync_flag_ = Mutex::protect(x); _sync_flag_; _sync_flag_ = !Mutex::release(x))
 

@@ -291,21 +291,6 @@ ConditionalAccess()
     writers = 0;
 }
 
-void RWLock::_lock(void)
-{
-    modify();
-}
-
-void RWLock::_share(void)
-{
-    access();
-}
-
-void RWLock::_unlock(void)
-{
-    release();
-}
-
 bool RWLock::modify(timeout_t timeout)
 {
     bool rtn = true;
@@ -389,24 +374,24 @@ void RWLock::release(void)
     unlock();
 }
 
-Mutex::guard::guard()
+AutoProtect::AutoProtect()
 {
     object = NULL;
 }
 
-Mutex::guard::guard(const void *obj)
+AutoProtect::AutoProtect(const void *obj)
 {
     object = obj;
     if(obj)
         Mutex::protect(object);
 }
 
-Mutex::guard::~guard()
+AutoProtect::~AutoProtect()
 {
     release();
 }
 
-void Mutex::guard::set(const void *obj)
+void AutoProtect::set(const void *obj)
 {
     release();
     object = obj;
@@ -414,7 +399,7 @@ void Mutex::guard::set(const void *obj)
         Mutex::protect(object);
 }
 
-void Mutex::guard::release(void)
+void AutoProtect::release(void)
 {
     if(object) {
         Mutex::release(object);
@@ -452,34 +437,34 @@ void RWLock::indexing(unsigned index)
     }
 }
 
-RWLock::guard_reader::guard_reader()
+RWLock::reader::reader()
 {
     object = NULL;
 }
 
-RWLock::guard_reader::guard_reader(const void *obj)
+RWLock::reader::reader(const void *obj)
 {
     object = obj;
     if(obj)
-        if(!RWLock::reader(object))
+        if(!lock(object))
             object = NULL;
 }
 
-RWLock::guard_reader::~guard_reader()
+RWLock::reader::~reader()
 {
     release();
 }
 
-void RWLock::guard_reader::set(const void *obj)
+void RWLock::reader::set(const void *obj)
 {
     release();
     object = obj;
     if(obj)
-        if(!RWLock::reader(object))
+        if(!lock(object))
             object = NULL;
 }
 
-void RWLock::guard_reader::release(void)
+void RWLock::reader::release(void)
 {
     if(object) {
         RWLock::release(object);
@@ -487,34 +472,34 @@ void RWLock::guard_reader::release(void)
     }
 }
 
-RWLock::guard_writer::guard_writer()
+RWLock::writer::writer()
 {
     object = NULL;
 }
 
-RWLock::guard_writer::guard_writer(const void *obj)
+RWLock::writer::writer(const void *obj)
 {
     object = obj;
     if(obj)
-        if(!RWLock::writer(object))
+        if(!lock(object))
             object = NULL;
 }
 
-RWLock::guard_writer::~guard_writer()
+RWLock::writer::~writer()
 {
     release();
 }
 
-void RWLock::guard_writer::set(const void *obj)
+void RWLock::writer::set(const void *obj)
 {
     release();
     object = obj;
     if(obj)
-        if(!RWLock::writer(object))
+        if(!lock(object))
             object = NULL;
 }
 
-void RWLock::guard_writer::release(void)
+void RWLock::writer::release(void)
 {
     if(object) {
         RWLock::release(object);
@@ -522,7 +507,7 @@ void RWLock::guard_writer::release(void)
     }
 }
 
-bool RWLock::reader(const void *ptr, timeout_t timeout)
+bool RWLock::reader::lock(const void *ptr, timeout_t timeout)
 {
     rwlock_index *index = &rwlock_table[hash_address(ptr, rwlock_indexing)];
     rwlock_entry *entry, *empty = NULL;
@@ -559,7 +544,7 @@ bool RWLock::reader(const void *ptr, timeout_t timeout)
     return false;
 }
 
-bool RWLock::writer(const void *ptr, timeout_t timeout)
+bool RWLock::writer::lock(const void *ptr, timeout_t timeout)
 {
     rwlock_index *index = &rwlock_table[hash_address(ptr, rwlock_indexing)];
     rwlock_entry *entry, *empty = NULL;

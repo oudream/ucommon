@@ -246,6 +246,28 @@ public:
     void share(void);
 };
 
+template<class T>
+class exclusive : public exclusive_access
+{
+private:
+    __DELETE_DEFAULTS(exclusive);
+
+public:
+    inline exclusive(T *lock) :
+    exclusive_access(polystatic_cast<ExclusiveAccess *>(lock)) {};
+};
+
+template<class T>
+class shared : public shared_access
+{
+private:
+    __DELETE_DEFAULTS(shared);
+
+public:
+    inline shared(T *lock) :
+    shared_access(polystatic_cast<SharedAccess *>(lock)) {};
+};
+
 // Special macros to allow member functions of an object with a protocol
 // to create self locking states while the member functions are called by
 // placing an exclusive_lock or shared_lock smart object on their stack
