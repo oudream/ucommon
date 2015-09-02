@@ -880,7 +880,6 @@ typedef RecursiveMutex rexlock_t;
 
 #define __AUTOLOCK(x)       autolock __autolock__(x)
 #define __AUTOPROTECT(x)    AutoProtect __autolock__(x)
-
 #define __SYNC(x) for(bool _sync_flag_ = Mutex::protect(x); _sync_flag_; _sync_flag_ = !Mutex::release(x))
 
 } // namespace ucommon
