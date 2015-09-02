@@ -144,7 +144,7 @@ public:
 class __EXPORT ConditionVar
 {
 private:
-    __DELETE_COPY(ConditionVar);
+    __DELETE_DEFAULTS(ConditionVar);
 
 protected:
     friend class ConditionList;
@@ -550,6 +550,148 @@ public:
 };
 
 /**
+ * A portable implementation of "barrier" thread sychronization.  A barrier
+ * waits until a specified number of threads have all reached the barrier,
+ * and then releases all the threads together.  This implementation works
+ * regardless of whether the thread library supports barriers since it is
+ * built from conditional.  It also differs in that the number of threads
+ * required can be changed dynamically at runtime, unlike pthread barriers
+ * which, when supported, have a fixed limit defined at creation time.  Since
+ * we use conditionals, another feature we can add is optional support for a
+ * wait with timeout.
+ * @author David Sugar <dyfet@gnutelephony.org>
+ */
+class __EXPORT Barrier : private Conditional
+{
+private:
+    unsigned count;
+    unsigned waits;
+
+    __DELETE_DEFAULTS(Barrier);
+
+public:
+    /**
+     * Construct a barrier with an initial size.
+     * @param count of threads required.
+     */
+    Barrier(unsigned count);
+
+    /**
+     * Destroy barrier and release pending threads.
+     */
+    ~Barrier();
+
+    /**
+     * Dynamically alter the number of threads required.  If the size is
+     * set below the currently waiting threads, then the barrier releases.
+     * @param count of threads required.
+     */
+    void set(unsigned count);
+
+    /**
+     * Dynamically increment the number of threads required.
+     */
+    void inc(void);
+
+    /**
+     * Reduce the number of threads required.
+     */
+    void dec(void);
+
+    /**
+     * Alternative prefix form of the same increment operation.
+     * @return the current amount of threads.
+     */
+    unsigned operator++(void);
+
+    unsigned operator--(void);
+
+    /**
+     * Wait at the barrier until the count of threads waiting is reached.
+     */
+    void wait(void);
+
+    /**
+     * Wait at the barrier until either the count of threads waiting is
+     * reached or a timeout has occurred.
+     * @param timeout to wait in milliseconds.
+     * @return true if barrier reached, false if timer expired.
+     */
+    bool wait(timeout_t timeout);
+};
+
+/**
+ * A portable counting semaphore class.  A semaphore will allow threads
+ * to pass through it until the count is reached, and blocks further threads.
+ * Unlike pthread semaphore, our semaphore class supports it's count limit
+ * to be altered during runtime and the use of timed waits.  This class also
+ * implements the shared_lock protocol.
+ * @author David Sugar <dyfet@gnutelephony.org>
+ */
+class __EXPORT Semaphore : public SharedAccess, protected Conditional
+{
+protected:
+    unsigned count, waits, used;
+
+    virtual void _share(void) __OVERRIDE;
+    virtual void _unlock(void) __OVERRIDE;
+
+    __DELETE_COPY(Semaphore);
+
+public:
+    /**
+     * Construct a semaphore with an initial count of threads to permit.
+     * @param count of threads to permit, or special case 0 group release.
+     */
+    Semaphore(unsigned count = 0);
+
+    /**
+     * Alternate onstructor with ability to preset available slots.
+     * @param count of threads to permit.
+     * @param avail instances not pre-locked.
+     */
+    Semaphore(unsigned count, unsigned avail);
+
+    /**
+     * Wait until the semphore usage count is less than the thread limit.
+     * Increase used count for our thread when unblocked.
+     */
+    void wait(void);
+
+    /**
+     * Wait until the semphore usage count is less than the thread limit.
+     * Increase used count for our thread when unblocked, or return without
+     * changing if timed out.
+     * @param timeout to wait in millseconds.
+     * @return true if success, false if timeout.
+     */
+    bool wait(timeout_t timeout);
+
+    /**
+     * Alter semaphore limit at runtime
+     * @param count of threads to allow.
+     */
+    void set(unsigned count);
+
+    /**
+     * Release the semaphore after waiting for it.
+     */
+    void release(void);
+
+    /**
+     * Convenience operator to wait on a counting semaphore.
+     */
+    inline void operator++(void)
+        {wait();}
+
+    /**
+     * Convenience operator to release a counting semaphore.
+     */
+    inline void operator--(void)
+        {release();}
+};
+
+/**
  * Convenience type for using conditional locks.
  */
 typedef ConditionalLock condlock_t;
@@ -558,6 +700,16 @@ typedef ConditionalLock condlock_t;
  * Convenience type for scheduling access.
  */
 typedef ConditionalAccess accesslock_t;
+
+/**
+ * Convenience type for using counting semaphores.
+ */
+typedef Semaphore semaphore_t;
+
+/**
+ * Convenience type for using thread barriers.
+ */
+typedef Barrier barrier_t;
 
 } // namespace ucommon
 

@@ -25,17 +25,6 @@
  * both detached threads and joinable threads.  Objects based on detached
  * threads should be created with new, and will automatically delete when
  * the thread context exits.  Joinable threads will be joined with deleted.
- *
- * The theory behind ucommon sychronization objects is that all upper level
- * sychronization objects can be formed directly from a mutex and conditional.
- * This includes semaphores, barriers, rwlock, our own specialized conditional
- * lock, resource-bound locking, and recurive exclusive locks.  Using only
- * conditionals means we are not dependent on platform specific pthread
- * implimentations that may not impliment some of these, and hence improves
- * portability and consistency.  Given that our rwlocks are recursive access
- * locks, one can safely create read/write threading pairs where the read
- * threads need not worry about deadlocks and the writers need not either if
- * they only write-lock one instance at a time to change state.
  * @file ucommon/thread.h
  */
 
@@ -77,155 +66,31 @@
 namespace ucommon {
 
 /**
- * Event notification to manage scheduled realtime threads.  The timer
- * is advanced to sleep threads which then wakeup either when the timer
- * has expired or they are notified through the signal handler.  This can
- * be used to schedule and signal one-time completion handlers or for time
- * synchronized events signaled by an asychrononous I/O or event source.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT TimedEvent : public Timer
-{
-private:
-#ifdef _MSTHREADS_
-    HANDLE event;
-#else
-    mutable pthread_cond_t cond;
-    bool signalled;
-#endif
-    mutable pthread_mutex_t mutex;
-
-protected:
-    /**
-     * Lock the object for wait or to manipulate derived data.  This is
-     * relevant to manipulations in a derived class.
-     */
-    void lock(void);
-
-    /**
-     * Release the object lock after waiting.  This is relevent to
-     * manipulations in a derived class.
-     */
-    void release(void);
-
-    /**
-     * Wait while locked.  This can be used in more complex derived
-     * objects where we are concerned with synchronized access between
-     * the signaling and event thread.  This can be used in place of
-     * wait, but lock and release methods must be used around it.
-     * @return true if time expired.
-     */
-    bool sync(void);
-
-public:
-    /**
-     * Create event handler and timer for timing of events.
-     */
-    TimedEvent(void);
-
-    /**
-     * Create event handler and timer set to trigger a timeout.
-     * @param timeout in milliseconds.
-     */
-    TimedEvent(timeout_t timeout);
-
-    /**
-     * Create event handler and timer set to trigger a timeout.
-     * @param timeout in seconds.
-     */
-    TimedEvent(time_t timeout);
-
-    /**
-     * Destroy timer and release pending events.
-     */
-    ~TimedEvent();
-
-    /**
-     * Signal pending event.  Object may be locked or unlocked.  The
-     * signalling thread may choose to lock and check a condition in
-     * a derived class before signalling.
-     */
-    void signal(void);
-
-    /**
-     * Wait to be signalled or until timer expires.  This is a wrapper for
-     * expire for simple completion events.
-     * @param timeout to wait from last reset.
-     * @return true if signaled, false if timeout.
-     */
-    bool wait(timeout_t timeout);
-
-    /**
-     * A simple wait until triggered.
-     */
-    void wait(void);
-
-    /**
-     * Reset triggered conditional.
-     */
-    void reset(void);
-};
-
-/**
- * Portable recursive exclusive lock.  This class is built from the
- * conditional and hence does not require support for non-standard and
- * platform specific extensions to pthread mutex to support recrusive
- * style mutex locking.  The exclusive protocol is implimented to support
- * exclusive_lock referencing.
- */
-class __EXPORT RecursiveMutex : private Conditional, public ExclusiveAccess
-{
-protected:
-    unsigned waiting;
-    unsigned lockers;
-    pthread_t locker;
-
-    virtual void _lock(void);
-    virtual void _unlock(void);
-
-public:
-    /**
-     * Create rexlock.
-     */
-    RecursiveMutex();
-
-    /**
-     * Acquire or increase locking.
-     */
-    void lock(void);
-
-    /**
-     * Timed lock request.
-     */
-    bool lock(timeout_t timeout);
-
-    /**
-     * Release or decrease locking.
-     */
-    void release(void);
-};
-
-/**
- * A generic and portable implimentation of Read/Write locking.  This
- * class impliments classical read/write locking, including "timed" locks.
+ * A generic and portable implementation of Read/Write locking.  This
+ * class implements classical read/write locking, including "timed" locks.
  * Support for scheduling threads to avoid writer starvation is also provided
  * for.  By building read/write locks from a conditional, we make them
- * available on pthread implimetations and other platforms which do not
+ * available on pthread implemetations and other platforms which do not
  * normally include optional pthread rwlock's.  We also do not restrict
  * the number of threads that may use the lock.  Finally, both the exclusive
- * and shared protocols are implimented to support exclusive_lock and
- * shared_lock referencing.
+ * and shared protocols are implemented to support exclusive_lock and
+ * shared_lock referencing.  Because of the thread locking semantics this
+ * is part of thread rather than condition, and was originally called
+ * ThreadLock in older ucommon/commoncpp releases. 
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 class __EXPORT RWLock : private ConditionalAccess, public ExclusiveAccess, public SharedAccess
 {
+private:
+    __DELETE_COPY(RWLock);
+
 protected:
     unsigned writers;
     pthread_t writeid;
 
-    virtual void _lock(void);
-    virtual void _share(void);
-    virtual void _unlock(void);
+    virtual void _lock(void) __OVERRIDE;
+    virtual void _share(void) __OVERRIDE;
+    virtual void _unlock(void) __OVERRIDE;
 
 public:
     /**
@@ -239,6 +104,8 @@ public:
     {
     private:
         const void *object;
+
+        __DELETE_COPY(guard_reader);
 
     public:
         /**
@@ -290,6 +157,8 @@ public:
     {
     private:
         const void *object;
+
+        __DELETE_COPY(guard_writer);
 
     public:
         /**
@@ -388,6 +257,140 @@ public:
 };
 
 /**
+ * Event notification to manage scheduled realtime threads.  The timer
+ * is advanced to sleep threads which then wakeup either when the timer
+ * has expired or they are notified through the signal handler.  This can
+ * be used to schedule and signal one-time completion handlers or for time
+ * synchronized events signaled by an asychrononous I/O or event source.
+ * @author David Sugar <dyfet@gnutelephony.org>
+ */
+class __EXPORT TimedEvent : public Timer
+{
+private:
+#ifdef _MSTHREADS_
+    HANDLE event;
+#else
+    mutable pthread_cond_t cond;
+    bool signalled;
+#endif
+    mutable pthread_mutex_t mutex;
+
+    __DELETE_COPY(TimedEvent);
+
+protected:
+    /**
+     * Lock the object for wait or to manipulate derived data.  This is
+     * relevant to manipulations in a derived class.
+     */
+    void lock(void);
+
+    /**
+     * Release the object lock after waiting.  This is relevent to
+     * manipulations in a derived class.
+     */
+    void release(void);
+
+    /**
+     * Wait while locked.  This can be used in more complex derived
+     * objects where we are concerned with synchronized access between
+     * the signaling and event thread.  This can be used in place of
+     * wait, but lock and release methods must be used around it.
+     * @return true if time expired.
+     */
+    bool sync(void);
+
+public:
+    /**
+     * Create event handler and timer for timing of events.
+     */
+    TimedEvent(void);
+
+    /**
+     * Create event handler and timer set to trigger a timeout.
+     * @param timeout in milliseconds.
+     */
+    TimedEvent(timeout_t timeout);
+
+    /**
+     * Create event handler and timer set to trigger a timeout.
+     * @param timeout in seconds.
+     */
+    TimedEvent(time_t timeout);
+
+    /**
+     * Destroy timer and release pending events.
+     */
+    ~TimedEvent();
+
+    /**
+     * Signal pending event.  Object may be locked or unlocked.  The
+     * signalling thread may choose to lock and check a condition in
+     * a derived class before signalling.
+     */
+    void signal(void);
+
+    /**
+     * Wait to be signalled or until timer expires.  This is a wrapper for
+     * expire for simple completion events.
+     * @param timeout to wait from last reset.
+     * @return true if signaled, false if timeout.
+     */
+    bool wait(timeout_t timeout);
+
+    /**
+     * A simple wait until triggered.
+     */
+    void wait(void);
+
+    /**
+     * Reset triggered conditional.
+     */
+    void reset(void);
+};
+
+/**
+ * Portable recursive exclusive lock.  This class is built from the
+ * conditional and hence does not require support for non-standard and
+ * platform specific extensions to pthread mutex to support recrusive
+ * style mutex locking.  The exclusive protocol is implimented to support
+ * exclusive_lock referencing.
+ */
+class __EXPORT RecursiveMutex : private Conditional, public ExclusiveAccess
+{
+private:
+    __DELETE_COPY(RecursiveMutex);
+
+protected:
+    unsigned waiting;
+    unsigned lockers;
+    pthread_t locker;
+
+    virtual void _lock(void) __OVERRIDE;
+    virtual void _unlock(void) __OVERRIDE;
+
+public:
+    /**
+     * Create rexlock.
+     */
+    RecursiveMutex();
+
+    /**
+     * Acquire or increase locking.
+     */
+    void lock(void);
+
+    /**
+     * Timed lock request.
+     */
+    bool lock(timeout_t timeout);
+
+    /**
+     * Release or decrease locking.
+     */
+    void release(void);
+};
+
+/**
  * Class for resource bound memory pools between threads.  This is used to
  * support a memory pool allocation scheme where a pool of reusable objects
  * may be allocated, and the pool renewed by releasing objects or back.
@@ -399,6 +402,9 @@ public:
  */
 class __EXPORT ReusableAllocator : protected Conditional
 {
+private:
+    __DELETE_COPY(ReusableAllocator);
+
 protected:
     ReusableObject *freelist;
     unsigned waiting;
@@ -424,144 +430,6 @@ protected:
 };
 
 /**
- * A portable implimentation of "barrier" thread sychronization.  A barrier
- * waits until a specified number of threads have all reached the barrier,
- * and then releases all the threads together.  This implimentation works
- * regardless of whether the thread library supports barriers since it is
- * built from conditional.  It also differs in that the number of threads
- * required can be changed dynamically at runtime, unlike pthread barriers
- * which, when supported, have a fixed limit defined at creation time.  Since
- * we use conditionals, another feature we can add is optional support for a
- * wait with timeout.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT Barrier : private Conditional
-{
-private:
-    unsigned count;
-    unsigned waits;
-
-public:
-    /**
-     * Construct a barrier with an initial size.
-     * @param count of threads required.
-     */
-    Barrier(unsigned count);
-
-    /**
-     * Destroy barrier and release pending threads.
-     */
-    ~Barrier();
-
-    /**
-     * Dynamically alter the number of threads required.  If the size is
-     * set below the currently waiting threads, then the barrier releases.
-     * @param count of threads required.
-     */
-    void set(unsigned count);
-
-    /**
-     * Dynamically increment the number of threads required.
-     */
-    void inc(void);
-
-    /**
-     * Reduce the number of threads required.
-     */
-    void dec(void);
-
-    /**
-     * Alternative prefix form of the same increment operation.
-     * @return the current amount of threads.
-     */
-    unsigned operator++(void);
-
-    unsigned operator--(void);
-
-    /**
-     * Wait at the barrier until the count of threads waiting is reached.
-     */
-    void wait(void);
-
-    /**
-     * Wait at the barrier until either the count of threads waiting is
-     * reached or a timeout has occurred.
-     * @param timeout to wait in milliseconds.
-     * @return true if barrier reached, false if timer expired.
-     */
-    bool wait(timeout_t timeout);
-};
-
-/**
- * A portable counting semaphore class.  A semaphore will allow threads
- * to pass through it until the count is reached, and blocks further threads.
- * Unlike pthread semaphore, our semaphore class supports it's count limit
- * to be altered during runtime and the use of timed waits.  This class also
- * implements the shared_lock protocol.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT Semaphore : public SharedAccess, protected Conditional
-{
-protected:
-    unsigned count, waits, used;
-
-    virtual void _share(void);
-    virtual void _unlock(void);
-
-public:
-    /**
-     * Construct a semaphore with an initial count of threads to permit.
-     * @param count of threads to permit, or special case 0 group release.
-     */
-    Semaphore(unsigned count = 0);
-
-    /**
-     * Alternate onstructor with ability to preset available slots.
-     * @param count of threads to permit.
-     * @param avail instances not pre-locked.
-     */
-    Semaphore(unsigned count, unsigned avail);
-
-    /**
-     * Wait until the semphore usage count is less than the thread limit.
-     * Increase used count for our thread when unblocked.
-     */
-    void wait(void);
-
-    /**
-     * Wait until the semphore usage count is less than the thread limit.
-     * Increase used count for our thread when unblocked, or return without
-     * changing if timed out.
-     * @param timeout to wait in millseconds.
-     * @return true if success, false if timeout.
-     */
-    bool wait(timeout_t timeout);
-
-    /**
-     * Alter semaphore limit at runtime
-     * @param count of threads to allow.
-     */
-    void set(unsigned count);
-
-    /**
-     * Release the semaphore after waiting for it.
-     */
-    void release(void);
-
-    /**
-     * Convenience operator to wait on a counting semaphore.
-     */
-    inline void operator++(void)
-        {wait();}
-
-    /**
-     * Convenience operator to release a counting semaphore.
-     */
-    inline void operator--(void)
-        {release();}
-};
-
-/**
  * Generic non-recursive exclusive lock class.  This class also impliments
  * the exclusive_lock protocol.  In addition, an interface is offered to
  * support dynamically managed mutexes which are internally pooled.  These
@@ -576,11 +444,14 @@ public:
  */
 class __EXPORT Mutex : public ExclusiveAccess
 {
+private:
+    __DELETE_COPY(Mutex);
+
 protected:
     mutable pthread_mutex_t mlock;
 
-    virtual void _lock(void);
-    virtual void _unlock(void);
+    virtual void _lock(void) __OVERRIDE;
+    virtual void _unlock(void) __OVERRIDE;
 
 public:
     friend class autolock;
@@ -612,6 +483,8 @@ public:
     {
     private:
         const void *object;
+
+        __DELETE_COPY(guard);
 
     public:
         /**
@@ -735,6 +608,9 @@ public:
  */
 class __EXPORT Thread
 {
+private:
+    __DELETE_COPY(Thread);
+
 protected:
 // may be used in future if we need cancelable threads...
 #ifdef  _MSTHREADS_
@@ -869,6 +745,9 @@ public:
  */
 class __EXPORT JoinableThread : public Thread
 {
+private:
+    __DELETE_COPY(JoinableThread);
+
 protected:
 #ifdef  _MSTHREADS_
     HANDLE running;
@@ -929,6 +808,9 @@ public:
  */
 class __EXPORT DetachedThread : public Thread
 {
+private:
+    __DELETE_COPY(DetachedThread);
+
 protected:
     bool active;
 
@@ -988,16 +870,6 @@ typedef RWLock rwlock_t;
  * Convenience type for using recursive exclusive locks.
  */
 typedef RecursiveMutex rexlock_t;
-
-/**
- * Convenience type for using counting semaphores.
- */
-typedef Semaphore semaphore_t;
-
-/**
- * Convenience type for using thread barriers.
- */
-typedef Barrier barrier_t;
 
 #define __AUTOLOCK(x)    autolock __autolock__(x)
 

@@ -555,4 +555,213 @@ void ConditionalLock::share(void)
     unlock();
 }
 
+
+Barrier::Barrier(unsigned limit) :
+Conditional()
+{
+    count = limit;
+    waits = 0;
+}
+
+Barrier::~Barrier()
+{
+    lock();
+    if(waits)
+        broadcast();
+    unlock();
+}
+
+void Barrier::set(unsigned limit)
+{
+    assert(limit > 0);
+
+    lock();
+    count = limit;
+    if(count <= waits) {
+        waits = 0;
+        broadcast();
+    }
+    unlock();
+}
+
+void Barrier::dec(void)
+{
+    lock();
+    if(count)
+        --count;
+    unlock();
+}
+
+unsigned Barrier::operator--(void)
+{
+    unsigned result;
+    lock();
+    if(count)
+        --count;
+    result = count;
+    unlock();
+    return result;
+}
+
+void Barrier::inc(void)
+{
+    lock();
+    count++;
+    if(count <= waits) {
+        waits = 0;
+        broadcast();
+    }
+    unlock();
+}
+
+unsigned Barrier::operator++(void)
+{
+    unsigned result;
+    lock();
+    count++;
+    if(count <= waits) {
+        waits = 0;
+        broadcast();
+    }
+    result = count;
+    unlock();
+    return result;
+}
+
+bool Barrier::wait(timeout_t timeout)
+{
+    bool result;
+
+    Conditional::lock();
+    if(!count) {
+        Conditional::unlock();
+        return true;
+    }
+    if(++waits >= count) {
+        waits = 0;
+        Conditional::broadcast();
+        Conditional::unlock();
+        return true;
+    }
+    result = Conditional::wait(timeout);
+    Conditional::unlock();
+    return result;
+}
+
+void Barrier::wait(void)
+{
+    Conditional::lock();
+    if(!count) {
+        Conditional::unlock();
+        return;
+    }
+    if(++waits >= count) {
+        waits = 0;
+        Conditional::broadcast();
+        Conditional::unlock();
+        return;
+    }
+    Conditional::wait();
+    Conditional::unlock();
+}
+
+Semaphore::Semaphore(unsigned limit) :
+Conditional()
+{
+	waits = 0;
+	count = limit;
+	used = 0;
+}
+
+Semaphore::Semaphore(unsigned limit, unsigned avail) :
+Conditional()
+{
+	assert(limit > 0);
+	assert(avail <= limit);
+
+	waits = 0;
+	count = limit;
+	used = limit - avail;
+}
+
+void Semaphore::_share(void)
+{
+    wait();
+}
+
+void Semaphore::_unlock(void)
+{
+    release();
+}
+
+bool Semaphore::wait(timeout_t timeout)
+{
+    bool result = true;
+    struct timespec ts;
+    Conditional::set(&ts, timeout);
+
+    lock();
+    while(used >= count && result) {
+        ++waits;
+        result = Conditional::wait(&ts);
+        --waits;
+		if(!count)
+			break;
+    }
+    if(result && count)
+        ++used;
+    unlock();
+    return result;
+}
+
+void Semaphore::wait(void)
+{
+    lock();
+    if(used >= count) {
+        ++waits;
+        Conditional::wait();
+        --waits;
+    }
+	if(count)
+	    ++used;
+    unlock();
+}
+
+void Semaphore::release(void)
+{
+    lock();
+    if(used)
+        --used;
+    if(waits) {
+		if(count)
+	        signal();
+		else
+			broadcast();
+	}
+    unlock();
+}
+
+void Semaphore::set(unsigned value)
+{
+    assert(value > 0);
+
+    unsigned diff;
+
+    lock();
+    count = value;
+    if(used >= count || !waits) {
+        unlock();
+        return;
+    }
+    diff = count - used;
+    if(diff > waits)
+        diff = waits;
+    unlock();
+    while(diff--) {
+        lock();
+        signal();
+        unlock();
+    }
+}
+
 } // namespace ucommon
