@@ -75,6 +75,56 @@ protected:
 
 public:
     /**
+    * A kind of smart pointer object to support exclusive locking protocol.
+    * This object initiates an exclusive lock for the object being referenced when
+    * it is instantiated, and releases the exclusive lock when it is destroyed.
+    * You would pass the pointer an object that has the Exclusive as a base class.
+    * @author David Sugar <dyfet@gnutelephony.org>
+    */
+    class __EXPORT Locking
+    {
+    private:
+        ExclusiveAccess *lock;
+
+        __DELETE_COPY(Locking);
+
+    public:
+        /**
+        * Create an instance of an exclusive object reference.
+        * @param object containing Exclusive base class protocol to lock.
+        */
+        Locking(ExclusiveAccess *object);
+
+        /**
+        * Destroy reference to exclusively locked object, release lock.
+        */
+        ~Locking();
+
+        /**
+        * Test if the reference holds an active lock.
+        * @return true if is not locking an object.
+        */
+        inline bool operator!() const {
+            return lock == NULL;
+        }
+
+        /**
+        * Test if the reference holds an active lock.
+        * @return true if locking an object.
+        */
+        inline operator bool() const {
+            return lock != NULL;
+        }
+
+        /**
+        * Release a held lock programmatically.  This can be used to de-reference
+        * the object being exclusively locked without having to wait for the
+        * destructor to be called when the exclusive_lock falls out of scope.
+        */
+        void release(void);
+    };
+
+    /**
      * Access interface to exclusive lock the object.
      */
     inline void exclusive_lock(void) {
@@ -107,6 +157,70 @@ protected:
 
 public:
     /**
+    * A kind of smart pointer object to support shared locking protocol.
+    * This object initiates a shared lock for the object being referenced when
+    * it is instantiated, and releases the shared lock when it is destroyed.
+    * You would pass the pointer an object that has the Shared as a base class.
+    * @author David Sugar <dyfet@gnutelephony.org>
+    */
+    class __EXPORT Locking
+    {
+    private:
+        SharedAccess *lock;
+        int state;
+        bool modify;
+
+    public:
+        /**
+        * Create an instance of an exclusive object reference.
+        * @param object containing Exclusive base class protocol to lock.
+        */
+        Locking(SharedAccess *object);
+
+        Locking(const Locking& copy);
+
+        Locking& operator=(const Locking& copy);
+
+        /**
+        * Destroy reference to shared locked object, release lock.
+        */
+        ~Locking();
+
+        /**
+        * Test if the reference holds an active lock.
+        * @return true if is not locking an object.
+        */
+        inline bool operator!() const {
+            return lock == NULL;
+        }
+
+        /**
+        * Test if the reference holds an active lock.
+        * @return true if locking an object.
+        */
+        inline operator bool() const {
+            return lock != NULL;
+        }
+
+        /**
+        * Release a held lock programmatically.  This can be used to de-reference
+        * the object being share locked without having to wait for the
+        * destructor to be called when the shared_lock falls out of scope.
+        */
+        void release(void);
+
+        /**
+        * Call exclusive access on referenced objects protocol.
+        */
+        void exclusive(void);
+
+        /**
+        * Restore shared access on referenced objects protocol.
+        */
+        void share(void);
+    };
+
+    /**
      * Share the lock with other referencers.  Many of our shared locking
      * objects support the ability to switch between shared and exclusive
      * mode.  This derived protocol member allows one to restore the lock
@@ -130,56 +244,6 @@ public:
     inline void release_share(void) {
         return _unlock();
     }
-};
-
-/**
- * A kind of smart pointer object to support exclusive locking protocol.
- * This object initiates an exclusive lock for the object being referenced when
- * it is instantiated, and releases the exclusive lock when it is destroyed.
- * You would pass the pointer an object that has the Exclusive as a base class.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT exclusive_access
-{
-private:
-    ExclusiveAccess *lock;
-
-    __DELETE_COPY(exclusive_access);
-
-public:
-    /**
-     * Create an instance of an exclusive object reference.
-     * @param object containing Exclusive base class protocol to lock.
-     */
-    exclusive_access(ExclusiveAccess *object);
-
-    /**
-     * Destroy reference to exclusively locked object, release lock.
-     */
-    ~exclusive_access();
-
-    /**
-     * Test if the reference holds an active lock.
-     * @return true if is not locking an object.
-     */
-    inline bool operator!() const {
-        return lock == NULL;
-    }
-
-    /**
-     * Test if the reference holds an active lock.
-     * @return true if locking an object.
-     */
-    inline operator bool() const {
-        return lock != NULL;
-    }
-
-    /**
-     * Release a held lock programmatically.  This can be used to de-reference
-     * the object being exclusively locked without having to wait for the
-     * destructor to be called when the exclusive_lock falls out of scope.
-     */
-    void release(void);
 };
 
 /**
@@ -247,25 +311,25 @@ public:
 };
 
 template<class T>
-class exclusive : public exclusive_access
+class autoexclusive : public ExclusiveAccess::Locking
 {
 private:
-    __DELETE_DEFAULTS(exclusive);
+    __DELETE_DEFAULTS(autoexclusive);
 
 public:
-    inline exclusive(T *lock) :
-    exclusive_access(polystatic_cast<ExclusiveAccess *>(lock)) {};
+    inline autoexclusive(T *lock) :
+    Locking(polystatic_cast<ExclusiveAccess *>(lock)) {};
 };
 
 template<class T>
-class shared : public shared_access
+class autoshared : public SharedAccess::Locking
 {
 private:
-    __DELETE_DEFAULTS(shared);
+    __DELETE_DEFAULTS(autoshared);
 
 public:
-    inline shared(T *lock) :
-    shared_access(polystatic_cast<SharedAccess *>(lock)) {};
+    inline autoshared(T *lock) :
+    Locking(polystatic_cast<SharedAccess *>(lock)) {};
 };
 
 // Special macros to allow member functions of an object with a protocol

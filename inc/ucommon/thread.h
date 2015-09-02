@@ -80,7 +80,7 @@ namespace ucommon {
  * are also different as we protect a target object, not a rwlock instance.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT RWLock : private ConditionalAccess
+class __EXPORT RWLock : private ConditionalAccess, public ExclusiveAccess, public SharedAccess
 {
 private:
     __DELETE_COPY(RWLock);
@@ -89,7 +89,17 @@ protected:
     unsigned writers;
     pthread_t writeid;
 
+    virtual void _share(void) __OVERRIDE;
+    
+    virtual void _lock(void) __OVERRIDE;
+
+    virtual void _unlock(void) __OVERRIDE;
+
 public:
+    typedef autoshared<RWLock> autoreader;
+
+    typedef autoexclusive<RWLock> autowriter;
+
     /**
      * Apply automatic scope based access locking to objects.  The rwlock
      * is located from the rwlock pool rather than contained in the target
@@ -366,7 +376,7 @@ protected:
     virtual void _unlock(void) __OVERRIDE;
 
 public:
-    typedef exclusive<RecursiveMutex> autolock;
+    typedef autoexclusive<RecursiveMutex> autolock;
 
     /**
      * Create rexlock.
@@ -453,7 +463,7 @@ protected:
     virtual void _unlock(void) __OVERRIDE;
 
 public:
-    typedef exclusive<Mutex> autolock;
+    typedef autoexclusive<Mutex> autolock;
 
     /**
      * Create a mutex lock.

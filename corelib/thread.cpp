@@ -581,6 +581,21 @@ bool RWLock::writer::lock(const void *ptr, timeout_t timeout)
     return false;
 }
 
+void RWLock::_lock(void)
+{
+    modify();
+}
+
+void RWLock::_share(void)
+{
+    access();
+}
+
+void RWLock::_unlock(void)
+{
+    release();
+}
+
 bool Mutex::protect(const void *ptr)
 {
     mutex_index *index = &mutex_table[hash_address(ptr, mutex_indexing)];

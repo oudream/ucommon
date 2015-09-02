@@ -42,7 +42,7 @@ void SharedAccess::share(void)
 {
 }
 
-shared_access::shared_access(SharedAccess *obj)
+SharedAccess::Locking::Locking(SharedAccess *obj)
 {
     assert(obj != NULL);
     lock = obj;
@@ -51,7 +51,7 @@ shared_access::shared_access(SharedAccess *obj)
     lock->shared_lock();
 }
 
-shared_access::shared_access(const shared_access& copy)
+SharedAccess::Locking::Locking(const Locking& copy)
 {
     assert(copy.modify == false);
 
@@ -62,7 +62,7 @@ shared_access::shared_access(const shared_access& copy)
         lock->shared_lock();
 }
 
-shared_access& shared_access::operator=(const shared_access& copy)
+SharedAccess::Locking& SharedAccess::Locking::operator=(const Locking& copy)
 {
     assert(copy.modify == false);
 
@@ -75,14 +75,14 @@ shared_access& shared_access::operator=(const shared_access& copy)
     return *this;
 }
 
-exclusive_access::exclusive_access(ExclusiveAccess *obj)
+ExclusiveAccess::Locking::Locking(ExclusiveAccess *obj)
 {
     assert(obj != NULL);
     lock = obj;
     lock->exclusive_lock();
 }
 
-shared_access::~shared_access()
+SharedAccess::Locking::~Locking()
 {
     if(lock) {
         if(modify)
@@ -93,7 +93,7 @@ shared_access::~shared_access()
     }
 }
 
-exclusive_access::~exclusive_access()
+ExclusiveAccess::Locking::~Locking()
 {
     if(lock) {
         lock->release_exclusive();
@@ -101,7 +101,7 @@ exclusive_access::~exclusive_access()
     }
 }
 
-void shared_access::release()
+void SharedAccess::Locking::release()
 {
     if(lock) {
         if(modify)
@@ -112,7 +112,7 @@ void shared_access::release()
     }
 }
 
-void exclusive_access::release()
+void ExclusiveAccess::Locking::release()
 {
     if(lock) {
         lock->release_exclusive();
@@ -120,7 +120,7 @@ void exclusive_access::release()
     }
 }
 
-void shared_access::exclusive(void)
+void SharedAccess::Locking::exclusive(void)
 {
     if(lock && !modify) {
         lock->exclusive();
@@ -128,7 +128,7 @@ void shared_access::exclusive(void)
     }
 }
 
-void shared_access::share(void)
+void SharedAccess::Locking::share(void)
 {
     if(lock && modify) {
         lock->share();

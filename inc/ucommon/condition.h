@@ -639,7 +639,7 @@ protected:
     __DELETE_COPY(Semaphore);
 
 public:
-    typedef shared<Semaphore> autosync;
+    typedef autoshared<Semaphore> autosync;
         
     /**
      * Construct a semaphore with an initial count of threads to permit.
