@@ -122,6 +122,42 @@ bool Conditional::wait(struct timespec *ts)
     return wait((timeout_t)(ts->tv_sec * 1000 + (ts->tv_nsec / 1000000l)));
 }
 
+ConditionVar::ConditionVar(ConditionMutex *m)
+{
+	shared = m;
+    InitializeConditionVariable(&cond);
+}
+
+void ConditionVar::wait(void)
+{
+    SleepConditionVariableCS(&cond, &shared->mutex, INFINITE);
+}
+
+bool ConditionVar::wait(timeout_t timeout)
+{
+    if(SleepConditionVariableCS(&cond, &shared->mutex, timeout))
+        return true;
+
+    return false;
+}
+
+void ConditionVar::signal(void)
+{
+    WakeConditionVariable(&cond);
+}
+
+void ConditionVar::broadcast(void)
+{
+    WakeAllConditionVariable(&cond);
+}
+
+bool ConditionVar::wait(struct timespec *ts)
+{
+    assert(ts != NULL);
+
+    return wait((timeout_t)(ts->tv_sec * 1000 + (ts->tv_nsec / 1000000l)));
+}
+
 #else
 
 #include <stdio.h>
@@ -164,7 +200,7 @@ Conditional::Conditional()
     Thread::init();
     pth_cond_init(&cond);
 #else
-    crit(pthread_cond_init(&cond, &attr.attr) == 0, "conditional init failed");
+    crit(pthread_cond_init(&cond, &Conditional::attr.attr) == 0, "conditional init failed");
 #endif
 }
 
@@ -187,6 +223,41 @@ bool Conditional::wait(struct timespec *ts)
     assert(ts != NULL);
 
     if(pthread_cond_timedwait(&cond, &mutex, ts) == ETIMEDOUT)
+        return false;
+
+    return true;
+}
+
+ConditionVar::ConditionVar(ConditionMutex *m)
+{
+	shared = m;
+#ifdef  __PTH__
+    Thread::init();
+    pth_cond_init(&cond);
+#else
+    crit(pthread_cond_init(&cond, &Conditional::attr.attr) == 0, "conditional init failed");
+#endif
+}
+
+ConditionVar::~ConditionVar()
+{
+#ifndef __PTH__
+    pthread_cond_destroy(&cond);
+#endif
+}
+
+bool ConditionVar::wait(timeout_t timeout)
+{
+    struct timespec ts;
+    Conditional::set(&ts, timeout);
+    return wait(&ts);
+}
+
+bool ConditionVar::wait(struct timespec *ts)
+{
+    assert(ts != NULL);
+
+    if(pthread_cond_timedwait(&cond, &shared->mutex, ts) == ETIMEDOUT)
         return false;
 
     return true;

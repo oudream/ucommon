@@ -17,38 +17,18 @@
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Thread classes and sychronization objects.
- * The theory behind ucommon thread classes is that they would be used
- * to create derived classes where thread-specific data can be stored as
- * member data of the derived class.  The run method is called when the
- * context is executed.  Since we use a pthread foundation, we support
- * both detached threads and joinable threads.  Objects based on detached
- * threads should be created with new, and will automatically delete when
- * the thread context exits.  Joinable threads will be joined with deleted.
- *
+ * Condition classes for thread sychronization and timing.
  * The theory behind ucommon sychronization objects is that all upper level
  * sychronization objects can be formed directly from a mutex and conditional.
  * This includes semaphores, barriers, rwlock, our own specialized conditional
- * lock, resource-bound locking, and recurive exclusive locks.  Using only
+ * lock, resource-bound locking, and recursive exclusive locks.  Using only
  * conditionals means we are not dependent on platform specific pthread
- * implimentations that may not impliment some of these, and hence improves
+ * implementations that may not implement some of these, and hence improves
  * portability and consistency.  Given that our rwlocks are recursive access
  * locks, one can safely create read/write threading pairs where the read
  * threads need not worry about deadlocks and the writers need not either if
  * they only write-lock one instance at a time to change state.
- * @file ucommon/thread.h
- */
-
-/**
- * An example of the thread queue class.  This may be relevant to producer-
- * consumer scenarios and realtime applications where queued messages are
- * stored on a re-usable object pool.
- * @example queue.cpp
- */
-
-/**
- * A simple example of threading and join operation.
- * @example thread.cpp
+ * @file ucommon/condition.h
  */
 
 #ifndef _UCOMMON_CONDITION_H_
@@ -73,18 +53,17 @@
 namespace ucommon {
 
 /**
- * The conditional is a common base for other thread synchronizing classes.
- * Many of the complex sychronization objects, including barriers, semaphores,
- * and various forms of read/write locks are all built from the conditional.
- * This assures that the minimum functionality to build higher order thread
- * synchronizing objects is a pure conditional, and removes dependencies on
- * what may be optional features or functions that may have different
- * behaviors on different pthread implimentations and platforms.
+ * Condition Mutex to pair with conditionals.  Separating the mutex means
+ * we can apply it either paired with a condition variable, or shared
+ * among multiple condition variables.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 class __EXPORT ConditionMutex
 {
 private:
+    friend class ConditionVar;
+    friend class autolock;
+
     __DELETE_COPY(ConditionMutex);
 
 protected:
@@ -93,6 +72,17 @@ protected:
 #else
     mutable pthread_mutex_t mutex;
 #endif
+
+public:
+    /**
+     * Initialize and construct conditional.
+     */
+    ConditionMutex();
+
+    /**
+     * Destroy conditional, release any blocked threads.
+     */
+    ~ConditionMutex();
 
 #ifdef  _MSTHREADS_
     inline void lock(void)
@@ -115,19 +105,6 @@ protected:
         {pthread_mutex_unlock(&mutex);}
 #endif
 
-    /**
-     * Initialize and construct conditional.
-     */
-    ConditionMutex();
-
-    /**
-     * Destroy conditional, release any blocked threads.
-     */
-    ~ConditionMutex();
-
-    friend class autolock;
-
-public:
     class __EXPORT autolock
     {
     private:
@@ -158,6 +135,77 @@ public:
     };
 };
 
+/**
+ * The condition Var allows multiple conditions to share a mutex.  This
+ * can be used to form specialized thread synchronizing classes such as
+ * ordered sempahores, or to create thread completion lists.
+ * @author David Sugar <dyfet@gnutelephony.org>
+ */
+class __EXPORT ConditionVar
+{
+private:
+    __DELETE_COPY(ConditionVar);
+
+protected:
+    friend class ConditionList;
+
+#if defined(_MSTHREADS_)
+    mutable CONDITION_VARIABLE cond;
+#else
+    mutable pthread_cond_t cond;
+#endif
+    ConditionMutex *shared;
+
+public:
+    /**
+     * Initialize and construct conditional.
+     */
+    ConditionVar(ConditionMutex *mutex);
+
+    /**
+     * Destroy conditional, release any blocked threads.
+     */
+    ~ConditionVar();
+
+    /**
+     * Conditional wait for signal on millisecond timeout.
+     * @param timeout in milliseconds.
+     * @return true if signalled, false if timer expired.
+     */
+    bool wait(timeout_t timeout);
+
+    /**
+     * Conditional wait for signal on timespec timeout.
+     * @param timeout as a high resolution timespec.
+     * @return true if signalled, false if timer expired.
+     */
+    bool wait(struct timespec *timeout);
+
+#ifdef  _MSTHREADS_
+    void wait(void);
+    void signal(void);
+    void broadcast(void);
+
+#else
+    /**
+     * Wait (block) until signalled.
+     */
+    inline void wait(void)
+        {pthread_cond_wait(&cond, &shared->mutex);}
+
+    /**
+     * Signal the conditional to release one waiting thread.
+     */
+    inline void signal(void)
+        {pthread_cond_signal(&cond);}
+
+    /**
+     * Signal the conditional to release all waiting threads.
+     */
+    inline void broadcast(void)
+        {pthread_cond_broadcast(&cond);}
+#endif
+};
 
 /**
  * The conditional is a common base for other thread synchronizing classes.
@@ -169,13 +217,14 @@ public:
  * behaviors on different pthread implimentations and platforms.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT Conditional : public ConditionMutex
+class __EXPORT Conditional : protected ConditionMutex
 {
 private:
     __DELETE_COPY(Conditional);
 
 protected:
     friend class ConditionalAccess;
+    friend class ConditionVar;
 
 #if defined(_MSTHREADS_)
     mutable CONDITION_VARIABLE cond;
