@@ -204,22 +204,6 @@ public:
         return fp == NULL ? NULL : fgets(data, (socksize_t)size, fp);
     }
 
-    template<typename T> inline size_t read(T* data, size_t count) {
-        return fp == NULL ? 0 : fread(data, sizeof(T), count, fp);
-    }
-
-    template<typename T> inline size_t write(const T* data, size_t count) {
-        return fp == NULL ? 0 : fwrite(data, sizeof(T), count, fp);
-    }
-
-    template<typename T> inline size_t read(T& data) {
-        return fp == NULL ? 0 : fread(data, sizeof(T), 1, fp);
-    }
-
-    template<typename T> inline size_t write(const T& data) {
-        return fp == NULL ? 0 : fwrite(data, sizeof(T), 1, fp);
-    }
-
     inline void get(bookmark_t& pos) {
         if(fp) 
             fsetpos(fp, &pos);
@@ -233,11 +217,6 @@ public:
     int err(void) const;
 
     bool eof(void) const;
-
-    template<typename T> inline void offset(long pos) {
-        if(fp) 
-            fseek(fp, sizeof(const T) * pos, SEEK_CUR);
-    }
 
     inline void seek(long offset) {
         if(fp) 
@@ -274,6 +253,27 @@ public:
         return fp;
     }
 };
+
+template<typename T> inline size_t read(const file& fp, T* data, size_t count) {
+    return *fp == NULL ? 0 : fread(data, sizeof(T), count, *fp);
+}
+
+template<typename T> inline size_t write(const file& fp, const T* data, size_t count) {
+    return *fp == NULL ? 0 : fwrite(data, sizeof(T), count, *fp);
+}
+
+template<typename T> inline size_t read(const file& fp, T& data) {
+    return *fp == NULL ? 0 : fread(data, sizeof(T), 1, *fp);
+}
+
+template<typename T> inline size_t write(const file& fp, const T& data) {
+    return *fp == NULL ? 0 : fwrite(data, sizeof(T), 1, *fp);
+}
+
+template<typename T> inline void seek(const file& fp, long pos) {
+    if(*fp) 
+        fseek(*fp, sizeof(const T) * pos, SEEK_CUR);
+}
 
 /**
  * Convience type for file.
