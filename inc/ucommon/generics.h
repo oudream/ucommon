@@ -301,7 +301,7 @@ inline bool is(T& object) {
  */
 template<typename T>
 inline bool isnull(T& object) {
-    return (bool)(object.operator*() == NULL);
+    return (bool)(object.operator*() == nullptr);
 }
 
 /**
@@ -312,7 +312,7 @@ inline bool isnull(T& object) {
  */
 template<typename T>
 inline bool isnullp(T *object) {
-    return (bool)(object->operator*() == NULL);
+    return (bool)(object->operator*() == nullptr);
 }
 
 /**
@@ -446,6 +446,7 @@ inline T& (limit)(T& value, T& low, T& high) {
  */
 template<typename T>
 inline T& deref_pointer(T *pointer) {
+    __THROW_DEREF(pointer);
     return *pointer;
 }
 
