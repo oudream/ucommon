@@ -296,14 +296,12 @@ unsigned Date::dow(void) const
     return (unsigned)((julian + 1l) % 7l);
 }
 
-String Date::operator()() const
+stringref_t Date::operator()() const
 {
     char buf[11];
 
     put(buf);
-    String date(buf);
-
-    return date;
+    return stringref(buf);
 }
 
 long Date::get(void) const
@@ -543,14 +541,12 @@ void Time::set(const char *str, size_t size)
     set(nhour(), nminute(), sec);
 }
 
-String Time::operator()() const
+stringref_t Time::operator()() const
 {
     char buf[9];
 
     put(buf);
-    String strTime(buf);
-
-    return strTime;
+    return stringref(buf);
 }
 
 long Time::get(void) const
@@ -872,13 +868,12 @@ bool DateTime::operator!() const
 }
 
 
-String DateTime::format(const char *text) const
+stringref_t DateTime::format(const char *text) const
 {
     char buffer[64];
     size_t last;
     time_t t;
     tm_t *tbp;
-    String retval;
 
     t = get();
     tbp = local(&t);
@@ -886,8 +881,7 @@ String DateTime::format(const char *text) const
     release(tbp);
 
     buffer[last] = '\0';
-    retval = buffer;
-    return retval;
+    return stringref(buffer);
 }
 
 long DateTime::operator-(const DateTime &dt)

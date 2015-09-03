@@ -38,8 +38,8 @@
 #include <ucommon/numbers.h>
 #endif
 
-#ifndef _UCOMMON_STRING_H_
-#include <ucommon/string.h>
+#ifndef _UCOMMON_TYPEREF_H_
+#include <ucommon/typeref.h>
 #endif
 
 #ifndef _MSWINDOWS_
@@ -220,7 +220,7 @@ public:
      * julian date.
      * @return ISO date string.
      */
-    String operator()() const;
+    stringref_t operator()() const;
 
     /**
      * Increment date by one day.
@@ -528,7 +528,7 @@ public:
      * Convert to standard 24 hour time string.
      * @return time string.
      */
-    String operator()() const;
+    stringref_t operator()() const;
 
     /**
      * Incrememnt time by 1 second, wrap on 24 hour period.
@@ -618,7 +618,7 @@ public:
 class __EXPORT DateTime : public Date, public Time
 {
 protected:
-    void update(void);
+    virtual void update(void) __OVERRIDE;
 
 public:
     /**
@@ -830,7 +830,7 @@ public:
      * @param strftime format to use.
      * @return String object with formatted time.
      */
-    String format(const char *strftime) const;
+    stringref_t format(const char *strftime) const;
 
     /**
      * Fetch an instance of time converted to local time.  If the localtime
@@ -882,7 +882,7 @@ private:
     mode_t mode;
 
 protected:
-    void update(void);
+    virtual void update(void) __OVERRIDE;
 
 public:
     /**
@@ -971,7 +971,7 @@ public:
 class __EXPORT DateNumber : public Number, public Date
 {
 protected:
-    void update(void);
+    virtual void update(void) __OVERRIDE;
 
 public:
     /**
