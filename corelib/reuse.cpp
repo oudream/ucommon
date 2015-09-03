@@ -50,7 +50,7 @@ ReusableAllocator()
     used = 0;
     mem = (caddr_t)malloc(size * c);
     if(!mem)
-        THROW_ALLOC();
+        __THROW_ALLOC();
 }
 
 ArrayReuse::~ArrayReuse()

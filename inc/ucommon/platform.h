@@ -42,20 +42,20 @@
 #endif
 #define _UCOMMON_EXTENDED_
 #include <stdexcept>
-#define THROW_SIZE(x)       throw std::length_error(x)
-#define THROW_RANGE(x)      throw std::out_of_range(x)
-#define THROW_RUNTIME(x)    throw std::runtime_error(x)
-#define THROW_ALLOC()       throw std::bad_alloc()
-#define THROW_DEREF(v)      if(v == nullptr) \
+#define __THROW_SIZE(x)       throw std::length_error(x)
+#define __THROW_RANGE(x)      throw std::out_of_range(x)
+#define __THROW_RUNTIME(x)    throw std::runtime_error(x)
+#define __THROW_ALLOC()       throw std::bad_alloc()
+#define __THROW_DEREF(v)      if(v == nullptr) \
                                 throw std::runtime_error("Dereference NULL")
-#define THROW_UNDEF(v,x)    if(v == nullptr) throw std::runtime_error(x)
+#define __THROW_UNDEF(v,x)    if(v == nullptr) throw std::runtime_error(x)
 #else
-#define THROW_RANGE(x)      abort()
-#define THROW_SIZE(x)       abort()
-#define THROW_RUNTIME(x)    abort()
-#define THROW_ALLOC()       abort()
-#define THROW_DEREF(v)      if(v == nullptr) abort()
-#define THROW_UNDEF(v,x)    if(v == nullptr) abort()
+#define __THROW_RANGE(x)      abort()
+#define __THROW_SIZE(x)       abort()
+#define __THROW_RUNTIME(x)    abort()
+#define __THROW_ALLOC()       abort()
+#define __THROW_DEREF(v)      if(v == nullptr) abort()
+#define __THROW_UNDEF(v,x)    if(v == nullptr) abort()
 #endif
 
 /**
@@ -571,14 +571,13 @@ inline T polydynamic_cast(S *s)
 template<class T, class S>
 inline T& polyreference_cast(S *s)
 {
-    T* ptr = static_cast<T*>(s);
-    THROW_DEREF(ptr);
-    return *ptr;
+    __THROW_DEREF(s);
+    return *(static_cast<T*>(s));
 }    
 
 template<typename T>
 inline T& reference_cast(T *pointer) {
-    THROW_DEREF(pointer);
+    __THROW_DEREF(pointer);
     return *pointer;
 }
 

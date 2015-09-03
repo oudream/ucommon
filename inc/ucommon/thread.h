@@ -617,7 +617,7 @@ public:
     }
 
     inline T& operator*() const {
-        THROW_DEREF(object);
+        __THROW_DEREF(object);
         return *object;
     }
 };

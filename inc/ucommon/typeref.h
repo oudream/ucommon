@@ -283,7 +283,7 @@ public:
 
 	inline const T& operator*() const {
 		value *v = polystatic_cast<value*>(ref);
-		THROW_DEREF(v);
+		__THROW_DEREF(v);
 		return *(&(v->data));
 	}
 
@@ -297,7 +297,7 @@ public:
 
 	inline operator const T&() const {
 		value *v = polystatic_cast<value*>(ref);
-		THROW_DEREF(v);
+		__THROW_DEREF(v);
 		return *(&(v->data));
 	}
 

@@ -157,7 +157,7 @@ memalloc::page_t *memalloc::pager(void)
 #endif
 
     if(limit && count >= limit) {
-        THROW_RUNTIME("pager exhausted");
+        __THROW_RUNTIME("pager exhausted");
         return NULL;
     }
 
@@ -176,7 +176,7 @@ memalloc::page_t *memalloc::pager(void)
 #endif
 
     if(!npage) {
-    	THROW_ALLOC();
+    	__THROW_ALLOC();
         return NULL;
     }
 
@@ -198,7 +198,7 @@ void *memalloc::_alloc(size_t size)
     page_t *p = page;
 
     if(size > (pagesize - sizeof(page_t))) {
-        THROW_SIZE("Larger than pagesize");
+        __THROW_SIZE("Larger than pagesize");
         return NULL;
     }
 

@@ -1422,7 +1422,7 @@ char *String::dup(const char *cp)
     size_t len = strlen(cp) + 1;
     mem = (char *)malloc(len);
     if(!mem)
-        THROW_ALLOC();
+        __THROW_ALLOC();
     String::set(mem, len, cp);
     return mem;
 }
@@ -1439,7 +1439,7 @@ char *String::left(const char *cp, size_t size)
 
     mem = (char *)malloc(++size);
     if(!mem)
-        THROW_ALLOC();
+        __THROW_ALLOC();
     String::set(mem, size, cp);
     return mem;
 }

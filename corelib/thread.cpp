@@ -413,7 +413,7 @@ Mutex::Mutex()
     pth_mutex_init(&mlock);
 #else
     if(pthread_mutex_init(&mlock, NULL))
-         THROW_RUNTIME("mutex init failed");
+         __THROW_RUNTIME("mutex init failed");
 #endif
 }
 
@@ -797,9 +797,9 @@ Timer()
     pth_mutex_init(&mutex);
 #else
     if(pthread_cond_init(&cond, Conditional::initializer()))
-        THROW_RUNTIME("conditional init failed");
+        __THROW_RUNTIME("conditional init failed");
     if(pthread_mutex_init(&mutex, NULL))
-        THROW_RUNTIME("mutex init failed");
+        __THROW_RUNTIME("mutex init failed");
 #endif
     set();
 }
@@ -814,9 +814,9 @@ Timer(timeout)
     pth_mutex_init(&mutex);
 #else
     if(pthread_cond_init(&cond, Conditional::initializer()))
-        THROW_RUNTIME("conditional init failed");
+        __THROW_RUNTIME("conditional init failed");
     if(pthread_mutex_init(&mutex, NULL))
-        THROW_RUNTIME("mutex init failed");
+        __THROW_RUNTIME("mutex init failed");
 #endif
 }
 
@@ -830,9 +830,9 @@ Timer(timer)
     pth_mutex_init(&mutex);
 #else
     if(pthread_cond_init(&cond, Conditional::initializer()))
-        THROW_RUNTIME("conditional init failed");
+        __THROW_RUNTIME("conditional init failed");
     if(pthread_mutex_init(&mutex, NULL))
-        THROW_RUNTIME("mutex init failed");
+        __THROW_RUNTIME("mutex init failed");
 #endif
 }
 

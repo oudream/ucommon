@@ -44,7 +44,7 @@ char *MemoryProtocol::dup(const char *str)
     if(mem)
         String::set(mem, len, str);
     else
-        THROW_ALLOC();
+        __THROW_ALLOC();
     return mem;
 }
 
@@ -57,7 +57,7 @@ void *MemoryProtocol::dup(void *obj, size_t size)
     if(mem)
         memcpy(mem, obj, size);
     else
-        THROW_ALLOC();
+        __THROW_ALLOC();
     return mem;
 }
 
@@ -68,7 +68,7 @@ void *MemoryProtocol::zalloc(size_t size)
     if(mem)
         memset(mem, 0, size);
     else
-        THROW_ALLOC();
+        __THROW_ALLOC();
 
     return mem;
 }
