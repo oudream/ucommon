@@ -167,14 +167,14 @@ extern "C" void *cpr_memalloc(size_t size)
         ++size;
 
     mem = malloc(size);
-    crit(mem != NULL, "memory alloc failed");
+    assert(mem != NULL);
     return mem;
 }
 
 extern "C" void *cpr_memassign(size_t size, caddr_t addr, size_t max)
 {
     assert(addr);
-    crit((size <= max), "memory assign failed");
+    assert(size <= max);
     return addr;
 }
 

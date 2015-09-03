@@ -1421,7 +1421,8 @@ char *String::dup(const char *cp)
 
     size_t len = strlen(cp) + 1;
     mem = (char *)malloc(len);
-    crit(mem != NULL, "string dup allocation error");
+    if(!mem)
+        THROW_ALLOC();
     String::set(mem, len, cp);
     return mem;
 }
@@ -1437,7 +1438,8 @@ char *String::left(const char *cp, size_t size)
         size = strlen(cp);
 
     mem = (char *)malloc(++size);
-    crit(mem != NULL, "string dup allocation error");
+    if(!mem)
+        THROW_ALLOC();
     String::set(mem, size, cp);
     return mem;
 }

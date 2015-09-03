@@ -49,7 +49,8 @@ ReusableAllocator()
     limit = c;
     used = 0;
     mem = (caddr_t)malloc(size * c);
-    crit(mem != NULL, "vector reuse alloc failed");
+    if(!mem)
+        THROW_ALLOC();
 }
 
 ArrayReuse::~ArrayReuse()

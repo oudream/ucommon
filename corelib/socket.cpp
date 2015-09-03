@@ -573,8 +573,8 @@ void Socket::init(void)
     initialized = true;
     version = MAKEWORD(2,2);
     status.wVersion = 0;
-    WSAStartup(version, &status);
-    crit(status.wVersion == version, "socket init failure");
+    if(WSAStartup(version, &status))
+		THROW_RUNTIME("socket init failure");
     atexit(_socketcleanup);
     _started = true;
 }
