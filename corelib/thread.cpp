@@ -597,6 +597,11 @@ void RWLock::_unlock(void)
     release();
 }
 
+void RWLock::_unshare(void)
+{
+    release();
+}
+
 bool Mutex::protect(const void *ptr)
 {
     mutex_index *index = &mutex_table[hash_address(ptr, mutex_indexing)];

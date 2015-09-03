@@ -47,31 +47,19 @@
 namespace ucommon {
 
 /**
- * Common unlock protocol for locking protocol interface classes.
- * This is to assure _unlock is a common base virtual method.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT UnlockAccess
-{
-public:
-    virtual ~UnlockAccess();
-
-protected:
-    virtual void _unlock(void) = 0;
-};
-
-/**
  * An exclusive locking protocol interface base.
  * This is an abstract class to form objects that will operate under an
  * exclusive lock while being actively referenced by a smart pointer.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT ExclusiveAccess : public UnlockAccess
+class __EXPORT ExclusiveAccess
 {
 protected:
     virtual ~ExclusiveAccess();
 
     virtual void _lock(void) = 0;
+
+    virtual void _unlock(void) = 0;
 
 public:
     /**
@@ -123,20 +111,6 @@ public:
         */
         void release(void);
     };
-
-    /**
-     * Access interface to exclusive lock the object.
-     */
-    inline void exclusive_lock(void) {
-        return _lock();
-    }
-
-    /**
-     * Access interface to release a lock.
-     */
-    inline void release_exclusive(void) {
-        return _unlock();
-    }
 };
 
 /**
@@ -145,7 +119,7 @@ public:
  * exclusive lock while being actively referenced by a smart pointer.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT SharedAccess : protected UnlockAccess
+class __EXPORT SharedAccess
 {
 protected:
     virtual ~SharedAccess();
@@ -154,6 +128,8 @@ protected:
      * Access interface to share lock the object.
      */
     virtual void _share(void) = 0;
+
+    virtual void _unshare(void) = 0;
 
 public:
     /**
@@ -236,14 +212,6 @@ public:
      * to such methods.
      */
     virtual void exclusive(void);
-
-    inline void shared_lock(void) {
-        return _share();
-    }
-
-    inline void release_share(void) {
-        return _unlock();
-    }
 };
 
 /**

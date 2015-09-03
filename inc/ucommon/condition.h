@@ -502,7 +502,7 @@ protected:
     LinkedObject *contexts;
 
     virtual void _share(void) __OVERRIDE;
-    virtual void _unlock(void) __OVERRIDE;
+    virtual void _unshare(void) __OVERRIDE;
 
     Context *getContext(void);
 
@@ -634,7 +634,7 @@ protected:
     unsigned count, waits, used;
 
     virtual void _share(void) __OVERRIDE;
-    virtual void _unlock(void) __OVERRIDE;
+    virtual void _unshare(void) __OVERRIDE;
 
     __DELETE_COPY(Semaphore);
 

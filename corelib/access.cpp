@@ -22,10 +22,6 @@
 
 namespace ucommon {
 
-UnlockAccess::~UnlockAccess()
-{
-}
-
 SharedAccess::~SharedAccess()
 {
 }
@@ -48,7 +44,7 @@ SharedAccess::Locking::Locking(SharedAccess *obj)
     lock = obj;
     modify = false;
     state = 0;
-    lock->shared_lock();
+    lock->_share();
 }
 
 SharedAccess::Locking::Locking(const Locking& copy)
@@ -59,7 +55,7 @@ SharedAccess::Locking::Locking(const Locking& copy)
     modify = false;
     state = 0;
     if(lock)           
-        lock->shared_lock();
+        lock->_share();
 }
 
 SharedAccess::Locking& SharedAccess::Locking::operator=(const Locking& copy)
@@ -70,7 +66,7 @@ SharedAccess::Locking& SharedAccess::Locking::operator=(const Locking& copy)
     lock = copy.lock;
     state = 0;
     if(lock)
-        lock->shared_lock();
+        lock->_share();
 
     return *this;
 }
@@ -79,7 +75,7 @@ ExclusiveAccess::Locking::Locking(ExclusiveAccess *obj)
 {
     assert(obj != NULL);
     lock = obj;
-    lock->exclusive_lock();
+    lock->_lock();
 }
 
 SharedAccess::Locking::~Locking()
@@ -87,7 +83,7 @@ SharedAccess::Locking::~Locking()
     if(lock) {
         if(modify)
             lock->share();
-        lock->release_share();
+        lock->_unshare();
         lock = NULL;
         modify = false;
     }
@@ -96,7 +92,7 @@ SharedAccess::Locking::~Locking()
 ExclusiveAccess::Locking::~Locking()
 {
     if(lock) {
-        lock->release_exclusive();
+        lock->_unlock();
         lock = NULL;
     }
 }
@@ -106,7 +102,7 @@ void SharedAccess::Locking::release()
     if(lock) {
         if(modify)
             lock->share();
-        lock->release_share();
+        lock->_unshare();
         lock = NULL;
         modify = false;
     }
@@ -115,7 +111,7 @@ void SharedAccess::Locking::release()
 void ExclusiveAccess::Locking::release()
 {
     if(lock) {
-        lock->release_exclusive();
+        lock->_unlock();
         lock = NULL;
     }
 }

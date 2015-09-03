@@ -463,7 +463,7 @@ void ConditionalLock::_share(void)
     access();
 }
 
-void ConditionalLock::_unlock(void)
+void ConditionalLock::_unshare(void)
 {
     release();
 }
@@ -693,7 +693,7 @@ void Semaphore::_share(void)
     wait();
 }
 
-void Semaphore::_unlock(void)
+void Semaphore::_unshare(void)
 {
     release();
 }

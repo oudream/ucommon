@@ -95,6 +95,8 @@ protected:
 
     virtual void _unlock(void) __OVERRIDE;
 
+    virtual void _unshare(void) __OVERRIDE;
+
 public:
     typedef autoshared<RWLock> autoreader;
 
