@@ -579,6 +579,14 @@ public:
      * Release mutex when guard falls out of scope.
      */
     ~AutoProtect();
+
+    inline operator bool() const {
+        return object != NULL;
+    }
+
+    inline bool operator!() const {
+        return object == NULL;
+    }    
 };
 
 template<typename T>
@@ -600,6 +608,15 @@ public:
     inline autoprotect& operator=(const T* object) {
         AutoProtect::set(object);
         return *this;
+    }
+
+    inline T* operator->() const {
+        return object;
+    }
+
+    inline T& operator*() const {
+        THROW_DEREF(object);
+        return *object;
     }
 };
 
