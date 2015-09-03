@@ -183,7 +183,8 @@ ConditionMutex::ConditionMutex()
 #ifdef	__PTH__
 	pth_mutex_init(&mutex);
 #else
-	crit(pthread_mutex_init(&mutex, NULL) == 0, "mutex init failed");
+	if(pthread_mutex_init(&mutex, NULL))
+		THROW_RUNTIME("mutex init failed");
 #endif
 }
 
@@ -200,7 +201,8 @@ Conditional::Conditional()
     Thread::init();
     pth_cond_init(&cond);
 #else
-    crit(pthread_cond_init(&cond, &Conditional::attr.attr) == 0, "conditional init failed");
+	if(pthread_cond_init(&cond, &Conditional::attr.attr))
+		THROW_RUNTIME("conditional init failed");
 #endif
 }
 
@@ -235,7 +237,8 @@ ConditionVar::ConditionVar(ConditionMutex *m)
     Thread::init();
     pth_cond_init(&cond);
 #else
-    crit(pthread_cond_init(&cond, &Conditional::attr.attr) == 0, "conditional init failed");
+    if(pthread_cond_init(&cond, &Conditional::attr.attr))
+		THROW_RUNTIME("conditional init failed");
 #endif
 }
 
@@ -325,7 +328,8 @@ ConditionalAccess::ConditionalAccess()
 #ifdef  __PTH__
     pth_cond_init(&bcast);
 #else
-    crit(pthread_cond_init(&bcast, &attr.attr) == 0, "conditional init failed");
+    if(pthread_cond_init(&bcast, &attr.attr))
+		THROW_RUNTIME("conditional init failed");
 #endif
 }
 
