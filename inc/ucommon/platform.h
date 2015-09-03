@@ -571,17 +571,14 @@ inline T polydynamic_cast(S *s)
 template<class T, class S>
 inline T& polyreference_cast(S *s)
 {
-#if defined(DEBUG) && defined(UCOMMON_RTTI)
-    assert(dynamic_cast<T*>(s) != NULL);   // rtti for debug only...
-#endif
-    return *(static_cast<T*>(s));
+    T* ptr = static_cast<T*>(s);
+    THROW_DEREF(ptr);
+    return *ptr;
 }    
 
 template<typename T>
 inline T& reference_cast(T *pointer) {
-#ifdef  DEBUG
-    assert(pointer != NULL);
-#endif
+    THROW_DEREF(pointer);
     return *pointer;
 }
 
