@@ -64,8 +64,9 @@ private:
 
 protected:
     /**
-     * Check if timer has been updated since last check.
-     * @return true if updated.
+     * Check if timer has been updated since last check.  This also sets
+     * updated false.
+     * @return true if was updated.
      */
     bool update(void);
 
@@ -145,8 +146,9 @@ public:
      * Get remaining time until timer expires by reference.
      * @return 0 if expired or milliseconds still waiting.
      */
-    inline timeout_t operator*() const
-        {return get();}
+    inline timeout_t operator*() const {
+        return get();
+    }
 
     /**
      * Check if timer has expired.
@@ -348,8 +350,13 @@ public:
          * Time remaining until expired.
          * @return milliseconds until timer expires.
          */
-        inline timeout_t get(void) const
-            {return Timer::get();}
+        inline timeout_t get(void) const {
+            return Timer::get();
+        }
+
+        inline timeout_t operator*() const {
+            return Timer::get();
+        }
 
         /**
          * Notify timer queue that the timer has been updated.
@@ -360,8 +367,9 @@ public:
          * Get the timer queue we are attached to.
          * @return timer queue or NULL if not attached.
          */
-        inline TimerQueue *list(void) const
-            {return static_cast<TimerQueue*>(Root);}
+        inline TimerQueue *list(void) const {
+            return static_cast<TimerQueue*>(Root);
+        }
     };
 
 protected:

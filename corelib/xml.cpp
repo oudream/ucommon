@@ -547,11 +547,11 @@ void XMLParser::endDocument()
 {
 }
 
-void XMLParser::comment(caddr_t text, size_t len)
+void XMLParser::comment(const caddr_t text, size_t len)
 {
 }
 
-void XMLParser::characters(caddr_t text, size_t len)
+void XMLParser::characters(const caddr_t text, size_t len)
 {
 }
 

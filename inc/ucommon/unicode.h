@@ -285,8 +285,9 @@ protected:
      * @param size of data buffer.
      * @return codepoints copied.
      */
-    inline size_t operator()(unicode_t unicode, size_t size) const
-        {return get(unicode, size);}
+    inline size_t operator()(unicode_t unicode, size_t size) const {
+        return get(unicode, size);
+    }
 
     /**
      * Get a new substring through object expression.
@@ -301,16 +302,18 @@ protected:
      * @param size of substring to gather in codepoints.
      * @return string object holding substring.
      */
-    inline UString left(size_t size) const
-        {return operator()(0, size);}
+    inline UString left(size_t size) const {
+        return operator()(0, size);
+    }
 
     /**
      * Convenience method for right of string.
      * @param offset of substring from right in codepoints.
      * @return string object holding substring.
      */
-    inline UString right(size_t offset) const
-        {return operator()(-((int)offset), 0);}
+    inline UString right(size_t offset) const {
+        return operator()(-((int)offset), 0);
+    }
 
     /**
      * Convenience method for substring extraction.
@@ -318,8 +321,9 @@ protected:
      * @param size of string to return.
      * @return string object holding substring.
      */
-    inline UString copy(size_t offset, size_t size) const
-        {return operator()((int)offset, size);}
+    inline UString copy(size_t offset, size_t size) const {
+        return operator()((int)offset, size);
+    }
 
     /**
      * Cut (remove) text from string using codepoint offsets.
@@ -350,15 +354,17 @@ protected:
      * @param position of codepoint offset to character.
      * @return character value at offset.
      */
-    inline ucs4_t operator[](int position) const
-        {return UString::at(position);}
+    inline ucs4_t operator[](int position) const {
+        return UString::at(position);
+    }
 
     /**
      * Count codepoints in current string.
      * @return count of codepoints.
      */
-    inline size_t count(void) const
-        {return (size_t)utf8::count(str->text);}
+    inline size_t count(void) const {
+        return (size_t)utf8::count(str->text);
+    }
 
     /**
      * Count occurrences of a unicode character in string.
@@ -456,15 +462,17 @@ public:
      * Check if text is valid pointer.
      * @return true if not NULL.
      */
-    inline operator bool() const
-        {return text != NULL;}
+    inline operator bool() const {
+        return text != NULL;
+    }
 
     /**
      * Check if text is an invalid pointer.
      * @return false if not NULL.
      */
-    inline bool operator!() const
-        {return text == NULL;}
+    inline bool operator!() const {
+        return text == NULL;
+    }
 
     /**
      * Extract a unicode character from a specified codepoint.
@@ -495,65 +503,76 @@ public:
      * @param string to check.
      * @return true if same memory address.
      */
-    inline bool operator==(const char *string) const
-        {return (const char *)text == string;}
+    inline bool operator==(const char *string) const {
+        return (const char *)text == string;
+    }
 
     /**
      * check if pointer does not equal another string.
      * @param string to check.
      * @return false if same memory address.
      */
-    inline bool operator!=(const char *string) const
-        {return (const char *)text != string;}
+    inline bool operator!=(const char *string) const {
+        return (const char *)text != string;
+    }
 
     /**
      * Get unicode character pointed to by pointer.
      * @return unicode character we are pointing to.
      */
-    inline  ucs4_t operator*() const
-        {return utf8::codepoint((const char *)text);}
+    inline  ucs4_t operator*() const {
+        return utf8::codepoint((const char *)text);
+    }
 
     /**
      * Get c string we point to.
      * @return string we point to.
      */
-    inline char *c_str(void) const
-        {return (char *)text;}
+    inline char *c_str(void) const {
+        return (char *)text;
+    }
 
     /**
      * Convert utf8 pointer to a generic string pointer.
      * @return generic string pointer.
      */
-    inline operator char*() const
-        {return (char *)text;}
+    inline operator char*() const {
+        return (char *)text;
+    }
 
     /**
      * Get length of null terminated utf8 string in codepoints.
      * @return codepoint length of string.
      */
-    inline size_t len(void) const
-        {return utf8::count((const char *)text);}
+    inline size_t len(void) const {
+        return utf8::count((const char *)text);
+    }
 };
 
-inline ucs4_t *strudup(const char *string)
-    {return utf8::udup(string);}
+inline ucs4_t *strudup(const char *string) {
+    return utf8::udup(string);
+}
 
-inline ucs2_t *strwdup(const char *string)
-    {return utf8::wdup(string);}
+inline ucs2_t *strwdup(const char *string) {
+    return utf8::wdup(string);
+}
 
 __EXPORT unicode_t unidup(const char *string);
 
 template<>
-inline void dupfree<ucs2_t*>(ucs2_t *string)
-    {::free(string);}
+inline void dupfree<ucs2_t*>(ucs2_t *string) {
+    ::free(string);
+}
 
 template<>
-inline void dupfree<ucs4_t*>(ucs4_t *string)
-    {::free(string);}
+inline void dupfree<ucs4_t*>(ucs4_t *string) {
+    ::free(string);
+}
 
 template<>
-inline void dupfree<unicode_t>(unicode_t string)
-    {::free(string);}
+inline void dupfree<unicode_t>(unicode_t string) {
+    ::free(string);
+}
 
 /**
  * Convenience type for utf8 encoded strings.

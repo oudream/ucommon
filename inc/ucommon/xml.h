@@ -75,14 +75,14 @@ protected:
      * @param text received.
      * @param size of text received.
      */
-    virtual void comment(caddr_t text, size_t size);
+    virtual void comment(const caddr_t text, size_t size);
 
     /**
      * Virtual to receive character text extracted from the document.
      * @param text received.
      * @param size of text received.
      */
-    virtual void characters(caddr_t text, size_t size);
+    virtual void characters(const caddr_t text, size_t size);
 
     /**
      * Notify start of document event.
@@ -99,13 +99,13 @@ protected:
      * @param name of element found.
      * @param attr list of attributes extracted.
      */
-    virtual void startElement(caddr_t name, caddr_t *attr) = 0;
+    virtual void startElement(const caddr_t name, caddr_t *attr) = 0;
 
     /**
      * Notify end of an element in the document.
      * @param name of element ending.
      */
-    virtual void endElement(caddr_t name) = 0;
+    virtual void endElement(const caddr_t name) = 0;
 
     /**
      * Parse a chunk of data and return parser completion flag.  This is
