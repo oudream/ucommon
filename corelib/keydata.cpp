@@ -62,7 +62,7 @@ const char *keydata::get(const char *key) const
 {
     assert(key != NULL);
 
-    iterator keys = begin();
+    keydata::pointer keys = begin();
 
     while(is(keys)) {
         if(eq_case(key, keys->id))
@@ -76,7 +76,7 @@ void keydata::clear(const char *key)
 {
     assert(key != NULL);
 
-    iterator keys = begin();
+    keydata::pointer keys = begin();
 
     while(is(keys)) {
         if(eq_case(key, keys->id)) {
@@ -92,7 +92,7 @@ void keydata::set(const char *key, const char *value)
     assert(key != NULL);
 
     void *mem = root->alloc(sizeof(keydata::keyvalue));
-    keydata::iterator keys = begin();
+    keydata::pointer keys = begin();
 
     while(is(keys)) {
         if(eq_case(key, keys->id)) {
@@ -151,7 +151,7 @@ keydata *keyfile::get(const char *key) const
 {
     assert(key != NULL);
 
-    iterator keys = begin();
+    keyfile::pointer keys = begin();
 
     while(is(keys)) {
         if(eq_case(key, keys->name))

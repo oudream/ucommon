@@ -144,7 +144,7 @@ public:
     /**
      * Convenience typedef for iterative pointer.
      */
-    typedef linked_pointer<keyvalue> iterator;
+    typedef linked_pointer<keyvalue> pointer;
 };
 
 /**
@@ -254,7 +254,7 @@ public:
     /**
      * Convenience typedef for iterative pointer.
      */
-    typedef linked_pointer<keydata> iterator;
+    typedef linked_pointer<keydata> pointer;
 
     inline int err(void) const
         {return errcode;}
