@@ -134,33 +134,33 @@ public:
  * This is actually a helper class for the typed pointer template.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT auto_object
+class __EXPORT AutoObject
 {
 protected:
     ObjectProtocol *object;
 
-    auto_object();
+    AutoObject();
 
 public:
     /**
      * Construct an auto-pointer referencing an existing object.
      * @param object we point to.
      */
-    auto_object(ObjectProtocol *object);
+    AutoObject(ObjectProtocol *object);
 
     /**
      * Construct an auto-pointer as a copy of another pointer.  The
      * retention of the object being pointed to will be increased.
      * @param pointer we are a copy of.
      */
-    auto_object(const auto_object &pointer);
+    AutoObject(const AutoObject &pointer);
 
     /**
      * Delete auto pointer.  When it falls out of scope, the retention
      * of the object it references is reduced.  If it falls to zero in
      * a reference counted object, then the object is auto-deleted.
      */
-    ~auto_object();
+    ~AutoObject();
 
     /**
      * Manually release the pointer.  This reduces the retention level
@@ -220,6 +220,8 @@ private:
     ObjectProtocol **vector;
     unsigned max;
 
+    __DELETE_DEFAULTS(SparseObjects);
+
 protected:
     /**
      * Object factory for creating members of the spare array when they
@@ -274,6 +276,9 @@ public:
 template <class T>
 class sarray : public SparseObjects
 {
+private:
+    __DELETE_DEFAULTS(sarray);
+
 public:
     /**
      * Generate a sparse typed array of specified size.
@@ -301,87 +306,22 @@ public:
         return reference_cast<T>(get(offset));
     }
 
-    inline const T* at(unsigned offset) const {
-        return immutable_cast<T*>(SparseObjects::get(offset));
+    inline T& at(unsigned offset) {
+        return reference_cast<T>(SparseObjects::get(offset));
+    }
+
+    inline const T* operator()(unsigned offset) const {
+        return get(offset);
+    }
+
+    inline void operator()(unsigned offset, T value) {
+        T& ref = at(offset);
+        ref = value;
     }
 
 private:
     __LOCAL ObjectProtocol *create(void) {
         return new T;
-    }
-};
-
-/**
- * Template for embedding a data structure into a reference counted object.
- * This is a convenient means to create reference counted heap managed data
- * structure.  This template can be used for embedding data into other kinds
- * of managed object classes in addition to reference counting.  For example,
- * it can be used to embed a data structure into a linked list, as shown in
- * the linked_value template.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template <typename T, class O = CountedObject>
-class object_value : public O
-{
-protected:
-    /**
-     * Assign our value from a typed data object.  This is a helper method.
-     * @param object to assign our value from.
-     */
-    inline void set(const T& object) {
-        value = object;
-    }
-
-public:
-    T value;    /**< Embedded data value */
-
-    /**
-     * Construct composite value object.
-     */
-    inline object_value() : O(), value() {}
-
-    /**
-     * Construct composite value object and assign from existing data value.
-     * @param existing typed value to assign.
-     */
-    inline object_value(T& existing) : O() {
-        value = existing;
-    }
-
-    /**
-     * Pointer reference to embedded data value.
-     * @return embedded value.
-     */
-    inline T& operator*() {
-        return value;
-    }
-
-    /**
-     * Assign embedded data value.
-     * @param data value to assign.
-     */
-    inline void operator=(const T& data) {
-        value = data;
-    }
-
-    /**
-     * Retrieve data value by casting reference.
-     * @return embedded value.
-     */
-    inline operator T&() {
-        return value;
-    }
-
-    inline T& operator()() {
-        return value;
-    }
-
-    /**
-     * Set data value by expression reference.
-     * @param data value to assign.
-     */
-    inline void operator()(T& data) {
-        value = data;
     }
 };
 
@@ -397,27 +337,27 @@ public:
  * they are contained in remains in scope as well.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-template <class T, class P = auto_object>
-class object_pointer : public P
+template <class T>
+class object_pointer : public AutoObject
 {
 public:
     /**
      * Create a pointer with no reference.
      */
-    inline object_pointer() : P() {}
+    inline object_pointer() : AutoObject() {}
 
     /**
      * Create a pointer with a reference to a heap object.
      * @param object we are referencing.
      */
-    inline object_pointer(T* object) : P(object) {}
+    inline object_pointer(T* object) : AutoObject(object) {}
 
     /**
      * Reference object we are pointing to through pointer indirection.
      * @return pointer to object we are pointing to.
      */
     inline T* operator*() const {
-        return static_cast<T*>(P::object);
+        return static_cast<T*>(object);
     }
 
     /**
@@ -425,7 +365,7 @@ public:
      * @return object we are pointing to.
      */
     inline T& operator()() const {
-        return reference_cast<T>(P::object);
+        return reference_cast<T>(object);
     }
 
     /**
@@ -433,7 +373,7 @@ public:
      * @return reference to member of pointed object.
      */
     inline T* operator->() const {
-        return static_cast<T*>(P::object);
+        return static_cast<T*>(object);
     }
 
     /**
@@ -441,25 +381,7 @@ public:
      * @return pointer or NULL if we are not referencing an object.
      */
     inline T* get(void) const {
-        return static_cast<T*>(P::object);
-    }
-
-    /**
-     * Iterate our pointer if we reference an array on the heap.
-     * @return next object in array.
-     */
-    inline T* operator++() {
-        P::operator++(); 
-        return get();
-    }
-
-    /**
-     * Iterate our pointer if we reference an array on the heap.
-     * @return previous object in array.
-     */
-    inline void operator--() {
-        P::operator--(); 
-        return get();
+        return static_cast<T*>(object);
     }
 
     /**
@@ -467,49 +389,23 @@ public:
      * @param typed object to assign.
      */
     inline void operator=(T *typed) {
-        P::operator=(polypointer_cast<ObjectProtocol*>(typed));
+        AutoObject::operator=(polypointer_cast<ObjectProtocol*>(typed));
     }
 
     /**
      * See if pointer is set.
      */
     inline operator bool() const {
-        return P::object != NULL;
+        return object != NULL;
     }
 
     /**
      * See if pointer is not set.
      */
     inline bool operator!() const {
-        return P::object == NULL;
+        return object == NULL;
     }
 };
-
-/**
- * Convenience function to access object retention.
- * @param object we are retaining.
- */
-inline void retain(ObjectProtocol *object) 
-{
-    object->retain();
-}
-
-/**
- * Convenience function to access object release.
- * @param object we are releasing.
- */
-inline void release(ObjectProtocol *object) 
-{
-    object->release();
-}
-
-/**
- * Convenience function to access object copy.
- * @param object we are copying.
- */
-inline ObjectProtocol *copy(ObjectProtocol *object) {
-    return object->copy();
-}
 
 } // namespace ucommon
 

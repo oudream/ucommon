@@ -62,7 +62,6 @@ protected:
     friend class OrderedIndex;
     friend class LinkedRing;
     friend class NamedObject;
-    friend class ObjectStack;
 
     LinkedObject *Next;
 
@@ -923,83 +922,6 @@ public:
 };
 
 /**
- * A queue of double linked object.  This uses the linkedlist class to
- * form a basic queue of objects.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT ObjectQueue : public OrderedIndex
-{
-public:
-    /**
-     * Create an empty object queue.
-     */
-    ObjectQueue();
-
-    /**
-     * Add an object to the end of the queue.
-     * @param object to add.
-     */
-    void add(DLinkedObject *object);
-
-    /**
-     * Push an object to the front of the queue.
-     * @param object to push.
-     */
-    void push(DLinkedObject *object);
-
-    /**
-     * Pull an object from the front of the queue.
-     * @return object pulled or NULL if empty.
-     */
-    DLinkedObject *pull(void);
-
-    /**
-     * Pop an object from the end of the queue.
-     * @return object popped or NULL if empty.
-     */
-    DLinkedObject *pop(void);
-};
-
-class __EXPORT ObjectStack
-{
-protected:
-    LinkedObject *root;
-
-public:
-    /**
-     * Create an empty stack.
-     */
-    ObjectStack();
-
-    /**
-     * Create a stack from an existing list of objects.
-     * @param list of already linked objects.
-     */
-    ObjectStack(LinkedObject *list);
-
-    /**
-     * Push an object onto the stack.
-     * @param object to push.
-     */
-    void push(LinkedObject *object);
-
-    /**
-     * Pull an object from the stack.
-     * @return object popped from stack or NULL if empty.
-     */
-    LinkedObject *pull(void);
-
-    /**
-     * Pop an object from the stack.
-     * @return object popped from stack or NULL if empty.
-     */
-    inline LinkedObject *pop(void) {
-        return ObjectStack::pull();
-    }
-};
-
-
-/**
  * A multipath linked list where membership is managed in multiple
  * lists.
  * @author David Sugar <dyfet@gnutelephony.org>
@@ -1090,46 +1012,6 @@ public:
 };
 
 /**
- * Template value class to embed data structure into a named list.
- * This is used to form a class which can be searched by name and that
- * contains a member value object.  Most of the core logic for this
- * template is found in and derived from the object_value template.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template <typename T, class O=NamedObject>
-class named_value : public object_value<T, O>
-{
-public:
-    /**
-     * Construct embedded named object on a linked list.
-     * @param root node or pointer for list.
-     * @param name of our object.
-     */
-    inline named_value(LinkedObject **root, char *name) {
-        LinkedObject::enlist(root); 
-        O::id = name;
-    }
-
-    /**
-     * Assign embedded value from related type.
-     * @param typed_value to assign.
-     */
-    inline void operator=(const T& typed_value) {
-        this->set(typed_value);
-    }
-
-    /**
-     * Find embedded object in chain by name.
-     * @param first object in list to search from.
-     * @param name to search for.
-     * @return composite object found by name or NULL if not found.
-     */
-    inline static named_value find(named_value *first, const char *name) {
-        return static_cast<named_value *>(NamedObject::find(first, name));
-    }
-};
-
-/**
  * Template value class to embed data structure into a linked list.
  * This is used to form a class which can be linked together using
  * either an ordered index or simple linked pointer chain and that
@@ -1137,10 +1019,15 @@ public:
  * template is found in and derived from the object_value template.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-template <typename T, class O=OrderedObject>
-class linked_value : public object_value<T, O>
+template <typename T, class O = LinkedObject>
+class linked_value : public O
 {
+protected:
+    __DELETE_COPY(linked_value);
+
 public:
+    T value;
+
     /**
      * Create embedded value object unlinked.
      */
@@ -1169,7 +1056,7 @@ public:
      */
     inline linked_value(LinkedObject **root, const T& typed_value) {
         LinkedObject::enlist(root); 
-        this->set(typed_value);
+        value = typed_value;
     }
 
     /**
@@ -1178,163 +1065,33 @@ public:
      * @param typed_value to assign.
      */
     inline linked_value(OrderedIndex *index, const T& typed_value) {
-        O::enlist(index); 
-        this->set(typed_value);
+        O::enlist(index);
+        value = typed_value; 
+    }
+
+    inline void set(const T& typed_value) {
+        value = typed_value;
     }
 
     /**
      * Assign embedded value from related type.
      * @param typed_value to assign.
      */
-    inline void operator=(const T& typed_value) {
-        this->set(typed_value);
-    }
-};
-
-/**
- * Template for typesafe basic object stack container.  The object type, T,
- * that is contained in the stack must be derived from LinkedObject.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template <class T>
-class objstack : public ObjectStack
-{
-public:
-    /**
-     * Create a new object stack.
-     */
-    inline objstack() : ObjectStack() {}
-
-    /**
-     * Create an object stack from a list of objects.
-     */
-    inline objstack(T *list) : ObjectStack(list) {}
-
-    /**
-     * Push an object onto the object stack.
-     * @param object of specified type to push.
-     */
-    inline void push(T *object) {
-        ObjectStack::push(polypointer_cast<LinkedObject*>(object));
+    inline linked_value& operator=(const T& typed_value) {
+        value = typed_value;
+        return *this;
     }
 
-    /**
-     * Add an object onto the object stack.
-     * @param object of specified type to push.
-     */
-    inline void add(T *object) {
-        ObjectStack::push(polypointer_cast<LinkedObject*>(object));
+    inline T& operator*() {
+        return value;
     }
 
-    /**
-     * Pull an object from the object stack.
-     * @return object of specified type or NULL if empty.
-     */
-    inline T *pull(void) {
-        return static_cast<T *>(ObjectStack::pull());
+    inline operator T&() {
+        return value;
     }
 
-    /**
-     * Pull (pop) an object from the object stack.
-     * @return object of specified type or NULL if empty.
-     */
-    inline T *pop(void) {
-        return static_cast<T *>(ObjectStack::pull());
-    }
-};
-
-/**
- * Template for typesafe basic object fifo container.  The object type, T,
- * that is contained in the fifo must be derived from OrderedObject or
- * LinkedObject.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template <class T>
-class objfifo : public OrderedIndex
-{
-public:
-    /**
-     * Create a new object stack.
-     */
-    inline objfifo() : OrderedIndex() {}
-
-    /**
-     * Push an object onto the object fifo.
-     * @param object of specified type to push.
-     */
-    inline void push(T *object) {
-        OrderedIndex::add(polypointer_cast<OrderedObject *>(object));
-    }
-
-    /**
-     * Add an object onto the object fifo.
-     * @param object of specified type to push.
-     */
-    inline void add(T *object) {
-        OrderedIndex::add(polypointer_cast<OrderedObject *>(object));
-    }
-
-    /**
-     * Pull an object from the object stack.
-     * @return object of specified type or NULL if empty.
-     */
-    inline T *pull(void) {
-        return static_cast<T *>(OrderedIndex::get());
-    }
-
-    /**
-     * Pull (pop) an object from the object stack.
-     * @return object of specified type or NULL if empty.
-     */
-    inline T *pop(void) {
-        return static_cast<T *>(OrderedIndex::get());
-    }
-};
-
-/**
- * Template for typesafe basic object queue container.  The object type, T,
- * that is contained in the fifo must be derived from DLinkedObject.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-template <class T>
-class objqueue : public ObjectQueue
-{
-public:
-    /**
-     * Create a new object stack.
-     */
-    inline objqueue() : ObjectQueue() {}
-
-    /**
-     * Push an object to start of queue.
-     * @param object of specified type to push.
-     */
-    inline void push(T *object) {
-        ObjectQueue::push(polypointer_cast<DLinkedObject *>(object));
-    }
-
-    /**
-     * Add an object to the end of the object queue.
-     * @param object of specified type to add.
-     */
-    inline void add(T *object) {
-        ObjectQueue::add(polypointer_cast<DLinkedObject *>(object));
-    }
-
-    /**
-     * Pull an object from the start of the object queue.
-     * @return object of specified type or NULL if empty.
-     */
-    inline T *pull(void) {
-        return static_cast<T *>(ObjectQueue::pull());
-    }
-
-    /**
-     * Pop an object from the end of the object queue.
-     * @return object of specified type or NULL if empty.
-     */
-    inline T *pop(void) {
-        return static_cast<T *>(ObjectQueue::pop());
+    inline void operator()(const T data) {
+        value = data;
     }
 };
 
@@ -2088,21 +1845,6 @@ public:
  * Convenience typedef for root pointers of single linked lists.
  */
 typedef LinkedObject *LinkedIndex;
-
-/**
- * Convenience type for a stack of linked objects.
- */
-typedef ObjectStack objstack_t;
-
-/**
- * Convenience type for a fifo of linked objects.
- */
-typedef OrderedIndex objfifo_t;
-
-/**
- * Convenience type for a queue of linked objects.
- */
-typedef ObjectQueue objqueue_t;
 
 } // namespace ucommon
 

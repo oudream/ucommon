@@ -54,7 +54,7 @@ void CountedObject::release(void)
     dealloc();
 }
 
-auto_object::auto_object(ObjectProtocol *o)
+AutoObject::AutoObject(ObjectProtocol *o)
 {
     if(o)
         o->retain();
@@ -62,53 +62,53 @@ auto_object::auto_object(ObjectProtocol *o)
     object = o;
 }
 
-auto_object::auto_object()
+AutoObject::AutoObject()
 {
     object = 0;
 }
 
-void auto_object::release(void)
+void AutoObject::release(void)
 {
     if(object)
         object->release();
     object = 0;
 }
 
-auto_object::~auto_object()
+AutoObject::~AutoObject()
 {
     release();
 }
 
-auto_object::auto_object(const auto_object &from)
+AutoObject::AutoObject(const AutoObject &from)
 {
     object = from.object;
     if(object)
         object->retain();
 }
 
-bool auto_object::operator!() const
+bool AutoObject::operator!() const
 {
     return (object == 0);
 }
 
-auto_object::operator bool() const
+AutoObject::operator bool() const
 {
     return (object != 0);
 }
 
-bool auto_object::operator==(ObjectProtocol *o) const
+bool AutoObject::operator==(ObjectProtocol *o) const
 {
     assert(o != NULL);
     return object == o;
 }
 
-bool auto_object::operator!=(ObjectProtocol *o) const
+bool AutoObject::operator!=(ObjectProtocol *o) const
 {
     assert(o != NULL);
     return object != o;
 }
 
-void auto_object::operator=(ObjectProtocol *o)
+void AutoObject::operator=(ObjectProtocol *o)
 {
     if(object == o)
         return;

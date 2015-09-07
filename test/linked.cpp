@@ -26,7 +26,7 @@
 
 using namespace ucommon;
 
-typedef linked_value<int> ints;
+typedef linked_value<int,OrderedObject> ints;
 
 static OrderedIndex list;
 
@@ -68,27 +68,6 @@ extern "C" int main()
     member ov1 = 1, ov2 = 2, ov3 = 3;
 
     assert(ov2.value == 2);
-
-    objstack_t st;
-    st.push(&ov1);
-    st.push(&ov2);
-    st.push(&ov3);
-
-    member *mv = (member *)st.pop();
-    assert(mv->value == 3);
-    st.pop();
-    st.pop();
-    assert(NULL == st.pop());
-
-    objqueue<member> que;
-    que.add(&ov1);
-    que.add(&ov2);
-    que.add(&ov3);
-    mv = que.pop();
-    assert(mv->value == 3);
-    mv = que.pull();
-    assert(mv != NULL);
-//  assert(mv->value == 1);
 
     return 0;
 }

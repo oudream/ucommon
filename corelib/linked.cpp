@@ -1064,66 +1064,6 @@ void DLinkedObject::delist(void)
     Next = Prev = NULL;
 }
 
-ObjectQueue::ObjectQueue() :
-OrderedIndex() {}
-
-void ObjectQueue::add(DLinkedObject *object)
-{
-    assert(object);
-
-    if(tail) {
-        ((DLinkedObject *)tail)->Next = object;
-        object->Prev = (DLinkedObject *)tail;
-    }
-
-    object->Next = NULL;
-    tail = object;
-    if(!head)
-        head = tail;
-}
-
-void ObjectQueue::push(DLinkedObject *object)
-{
-    assert(object);
-
-    if(head) {
-        ((DLinkedObject *)head)->Prev = object;
-        object->Next = (DLinkedObject *)head;
-    }
-    object->Prev = NULL;
-    head = object;
-    if(!tail)
-        tail = head;
-}
-
-DLinkedObject *ObjectQueue::pull(void)
-{
-    DLinkedObject *obj = (DLinkedObject *)head;
-
-    if(!obj)
-        return NULL;
-
-    head = (OrderedObject *)(obj->Next);
-    if(!head)
-        tail = NULL;
-    obj->delist();
-    return obj;
-}
-
-DLinkedObject *ObjectQueue::pop(void)
-{
-    DLinkedObject *obj = (DLinkedObject *)tail;
-
-    if(!obj)
-        return NULL;
-
-    tail = (OrderedObject *)(obj->Prev);
-    if(!tail)
-        head = NULL;
-    obj->delist();
-    return obj;
-}
-
 LinkedObject **OrderedIndex::index(void) const
 {
     LinkedObject **op = new LinkedObject *[count() + 1];
@@ -1164,38 +1104,6 @@ unsigned OrderedIndex::count(void) const
         ++count;
     }
     return count;
-}
-
-ObjectStack::ObjectStack()
-{
-    root = NULL;
-}
-
-ObjectStack::ObjectStack(LinkedObject *list)
-{
-    root = list;
-}
-
-void ObjectStack::push(LinkedObject *list)
-{
-    assert(list != NULL);
-
-    list->Next = root;
-    root = list;
-}
-
-LinkedObject *ObjectStack::pull(void)
-{
-    LinkedObject *obj;
-
-    obj = root;
-
-    if(obj) {
-        root = obj->Next;
-        obj->Next = NULL;
-    }
-
-    return obj;
 }
 
 } // namespace ucommon
