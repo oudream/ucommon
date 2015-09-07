@@ -2059,6 +2059,8 @@ inline void lock(rexlock_t &lock)
 inline void release(rexlock_t &lock)
     {lock.release();}
 
+#define __AUTOPROTECT(x)   Mutex::guard __autolock__(x)
+
 #define __AUTOLOCK__    autolock __autolock__(this);
 
 #define __SYNC__ for(bool _sync_flag_ = Mutex::protect(this); _sync_flag_; _sync_flag_ = !Mutex::release(this))
