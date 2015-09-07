@@ -1,3 +1,16 @@
+Changes from 6.5.7 to 6.6.0
+- introduced rsa key support
+- expanded hmac support
+- expanded digests for sha256 and 384
+- reword of common digest code
+- improved nullptr clang support
+- remove clang forced c++11 from build
+- check for openssl rsa support
+- port types for 7.0 migration
+- socket addresses for typeref
+- further c++11 header fixes
+- removed old ssl demo app
+
 Changes from 6.5.6 to 6.5.7
 - improved c++11 support
 - mapped pointer introduced
