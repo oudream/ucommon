@@ -706,14 +706,21 @@ void OrderedObject::enlistHead(OrderedIndex *root)
     root->head = this;
 }
 
-LinkedList::LinkedList()
+DLinkedObject::DLinkedObject()
 {
     Root = nullptr;
     Prev = nullptr;
     Next = nullptr;
 }
 
-LinkedList::LinkedList(OrderedIndex *r)
+DLinkedObject::DLinkedObject(const DLinkedObject& from)
+{
+    Root = nullptr;
+    Prev = nullptr;
+    Next = nullptr;
+}
+
+DLinkedObject::DLinkedObject(OrderedIndex *r)
 {
     Root = nullptr;
     Next = Prev = nullptr;
@@ -721,21 +728,21 @@ LinkedList::LinkedList(OrderedIndex *r)
         enlist(r);
 }
 
-void LinkedList::enlist(OrderedIndex *r)
+void DLinkedObject::enlist(OrderedIndex *r)
 {
     assert(r != nullptr);
 
     enlistTail(r);
 }
 
-void LinkedList::insert(LinkedList *o)
+void DLinkedObject::insert(DLinkedObject *o)
 {
     assert(o != nullptr);
 
     insertTail(o);
 }
 
-void LinkedList::insertHead(LinkedList *o)
+void DLinkedObject::insertHead(DLinkedObject *o)
 {
     assert(o != nullptr);
 
@@ -755,7 +762,7 @@ void LinkedList::insertHead(LinkedList *o)
     Prev = o;
 }
 
-void LinkedList::insertTail(LinkedList *o)
+void DLinkedObject::insertTail(DLinkedObject *o)
 {
     assert(o != nullptr);
 
@@ -775,7 +782,7 @@ void LinkedList::insertTail(LinkedList *o)
     Next = o;
 }
 
-void LinkedList::enlistHead(OrderedIndex *r)
+void DLinkedObject::enlistHead(OrderedIndex *r)
 {
     assert(r != nullptr);
 
@@ -791,13 +798,13 @@ void LinkedList::enlistHead(OrderedIndex *r)
         return;
     }
 
-    Next = static_cast<LinkedList *>(Root->head);
-    ((LinkedList*)Next)->Prev = this;
+    Next = static_cast<DLinkedObject *>(Root->head);
+    ((DLinkedObject*)Next)->Prev = this;
     Root->head = static_cast<OrderedObject *>(this);
 }
 
 
-void LinkedList::enlistTail(OrderedIndex *r)
+void DLinkedObject::enlistTail(OrderedIndex *r)
 {
     assert(r != nullptr);
 
@@ -812,12 +819,12 @@ void LinkedList::enlistTail(OrderedIndex *r)
         return;
     }
 
-    Prev = static_cast<LinkedList *>(Root->tail);
+    Prev = static_cast<DLinkedObject *>(Root->tail);
     Prev->Next = this;
     Root->tail = static_cast<OrderedObject *>(this);
 }
 
-void LinkedList::delist(void)
+void DLinkedObject::delist(void)
 {
     if(!Root)
         return;
@@ -828,7 +835,7 @@ void LinkedList::delist(void)
         Root->head = static_cast<OrderedObject *>(Next);
 
     if(Next)
-        (static_cast<LinkedList *>(Next))->Prev = Prev;
+        (static_cast<DLinkedObject *>(Next))->Prev = Prev;
     else if(Root->tail == static_cast<OrderedObject *>(this))
         Root->tail = static_cast<OrderedObject *>(Prev);
 
@@ -836,7 +843,7 @@ void LinkedList::delist(void)
     Next = Prev = nullptr;
 }
 
-LinkedList::~LinkedList()
+DLinkedObject::~DLinkedObject()
 {
     delist();
 }
@@ -905,27 +912,6 @@ void OrderedIndex::lock_index(void)
 
 void OrderedIndex::unlock_index(void)
 {
-}
-
-DLinkedObject::DLinkedObject() : OrderedObject()
-{
-    Prev = nullptr;
-}
-
-DLinkedObject::DLinkedObject(const DLinkedObject& from) : OrderedObject()
-{
-    Prev = nullptr;
-}
-
-void DLinkedObject::delist(void)
-{
-    if(Prev)
-        Prev->Next = Next;
-
-    if(Next)
-        ((DLinkedObject *)Next)->Prev = Prev;
-
-    Next = Prev = nullptr;
 }
 
 LinkedObject **OrderedIndex::index(void) const

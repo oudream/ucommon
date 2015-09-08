@@ -105,13 +105,13 @@ namespace ucommon {
 #endif
 
 TimerQueue::event::event(timeout_t timeout) :
-Timer(), LinkedList()
+Timer(), DLinkedObject()
 {
     set(timeout);
 }
 
 TimerQueue::event::event(TimerQueue *tq, timeout_t timeout) :
-Timer(), LinkedList()
+Timer(), DLinkedObject()
 {
     set(timeout);
     Timer::update();

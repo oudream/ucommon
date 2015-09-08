@@ -279,7 +279,7 @@ public:
      * itself but rather as a base class for a timer event object.
      * @author David Sugar <dyfet@gnutelephony.org>
      */
-    class __EXPORT event : protected Timer, public LinkedList
+    class __EXPORT event : protected Timer, public DLinkedObject
     {
     private:
         __DELETE_DEFAULTS(event);

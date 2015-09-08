@@ -178,7 +178,6 @@ class __EXPORT OrderedIndex
 protected:
     friend class OrderedObject;
     friend class DLinkedObject;
-    friend class LinkedList;
     friend class NamedObject;
 
     OrderedObject *head, *tail;
@@ -313,9 +312,8 @@ public:
 class __EXPORT OrderedObject : public LinkedObject
 {
 private:
-    friend class LinkedList;
-    friend class OrderedIndex;
     friend class DLinkedObject;
+    friend class OrderedIndex;
 
 protected:
     /**
@@ -364,29 +362,6 @@ public:
     inline OrderedObject *getNext(void) const {
         return static_cast<OrderedObject *>(LinkedObject::getNext());
     }
-};
-
-/**
- * A double-linked Object, used for certain kinds of lists.
- * @author David Sugar <dyfet@gnutelephony.org>
- */
-class __EXPORT DLinkedObject : public OrderedObject
-{
-protected:
-    /**
-     * Construct an empty object.
-     */
-    DLinkedObject();
-
-    DLinkedObject(const DLinkedObject& from);
-
-    /**
-     * Remove a cross-linked list from itself.
-     */
-    void delist(void);
-
-private:
-    DLinkedObject *Prev;
 };
 
 /**
@@ -790,30 +765,32 @@ public:
  * convenient insertion and deletion of list members anywhere in the list.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT LinkedList : public OrderedObject
+class __EXPORT DLinkedObject : public OrderedObject
 {
 protected:
     friend class ObjectQueue;
 
-    LinkedList *Prev;
+    DLinkedObject *Prev;
     OrderedIndex *Root;
 
     /**
      * Construct and add our object to an existing double linked list at end.
      * @param index of linked list we are listed in.
      */
-    LinkedList(OrderedIndex *index);
+    DLinkedObject(OrderedIndex *index);
 
     /**
      * Construct an unlinked object.
      */
-    LinkedList();
+    DLinkedObject();
+
+    DLinkedObject(const DLinkedObject& from);
 
     /**
      * Delete linked list object.  If it is a member of a list of objects,
      * then the list is reformed around us.
      */
-    virtual ~LinkedList();
+    virtual ~DLinkedObject();
 
 public:
     /**
@@ -847,7 +824,7 @@ public:
      * @return true if we are the first node in a list.
      */
     inline bool is_head(void) const {
-        return polypointer_cast<LinkedList *>(Root->head) == this;
+        return polypointer_cast<DLinkedObject *>(Root->head) == this;
     }
 
     /**
@@ -855,65 +832,68 @@ public:
      * @return true if we are the last node in a list.
      */
     inline bool is_tail(void) const {
-        return polypointer_cast<LinkedList *>(Root->tail) == this;
+        return polypointer_cast<DLinkedObject *>(Root->tail) == this;
     }
 
     /**
      * Get previous node in the list for reverse iteration.
      * @return previous node in list.
      */
-    inline LinkedList *getPrev(void) const {
-        return static_cast<LinkedList*>(Prev);
+    inline DLinkedObject *getPrev(void) const {
+        return static_cast<DLinkedObject*>(Prev);
     }
 
     /**
      * Get next node in the list when iterating.
      * @return next node in list.
      */
-    inline LinkedList *getNext(void) const {
-        return static_cast<LinkedList*>(LinkedObject::getNext());
+    inline DLinkedObject *getNext(void) const {
+        return static_cast<DLinkedObject*>(LinkedObject::getNext());
     }
 
     /**
      * Insert object behind our object.
      * @param object to add to list.
      */
-    void insertTail(LinkedList *object);
+    void insertTail(DLinkedObject *object);
 
     /**
      * Insert object in front of our object.
      * @param object to add to list.
      */
-    void insertHead(LinkedList *object);
+    void insertHead(DLinkedObject *object);
 
     /**
      * Insert object, method in derived object.
      * @param object to add to list.
      */
-    virtual void insert(LinkedList *object);
+    virtual void insert(DLinkedObject *object);
 
     /**
      * Insert object behind our object.
      * @param object to add to list.
      */
-    inline void operator+=(LinkedList *object) {
+    inline DLinkedObject& operator+=(DLinkedObject *object) {
         insertTail(object);
+        return *this;
     }
 
     /**
      * Insert object in front of our object.
      * @param object to add to list.
      */
-    inline void operator-=(LinkedList *object) {
+    inline DLinkedObject& operator-=(DLinkedObject *object) {
         insertHead(object);
+        return *this;
     }
 
     /**
      * Insert object in list with our object.
      * @param object to add to list.
      */
-    inline void operator*=(LinkedList *object) {
+    inline DLinkedObject& operator*=(DLinkedObject *object) {
         insert(object);
+        return *this;
     }
 };
 
@@ -1424,6 +1404,8 @@ public:
  * Convenience typedef for root pointers of single linked lists.
  */
 typedef LinkedObject *LinkedIndex;
+
+typedef DLinkedObject LinkedList;   // compatibility for older code
 
 } // namespace ucommon
 
