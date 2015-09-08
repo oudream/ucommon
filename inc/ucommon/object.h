@@ -141,7 +141,6 @@ protected:
 
     AutoObject();
 
-public:
     /**
      * Construct an auto-pointer referencing an existing object.
      * @param object we point to.
@@ -163,6 +162,15 @@ public:
     ~AutoObject();
 
     /**
+     * Set our pointer to a specific object.  If the pointer currently
+     * references another object, that object is released.  The pointer
+     * references our new object and that new object is retained.
+     * @param object to assign to.
+     */
+    void set(ObjectProtocol *object);
+
+public:
+    /**
      * Manually release the pointer.  This reduces the retention level
      * of the object and resets the pointer to point to nobody.
      */
@@ -180,27 +188,6 @@ public:
      */
     operator bool() const;
 
-    /**
-     * test if the object being referenced is the same as the object we specify.
-     * @param object we compare to.
-     * @return true if this is the object our pointer references.
-     */
-    bool operator==(ObjectProtocol *object) const;
-
-    /**
-     * test if the object being referenced is not the same as the object we specify.
-     * @param object we compare to.
-     * @return true if this is not the object our pointer references.
-     */
-    bool operator!=(ObjectProtocol *object) const;
-
-    /**
-     * Set our pointer to a specific object.  If the pointer currently
-     * references another object, that object is released.  The pointer
-     * references our new object and that new object is retained.
-     * @param object to assign to.
-     */
-    void operator=(ObjectProtocol *object);
 };
 
 /**
@@ -352,6 +339,8 @@ public:
      */
     inline object_pointer(T* object) : AutoObject(object) {}
 
+    inline object_pointer(const object_pointer& copy) : AutoObject(copy) {}
+
     /**
      * Reference object we are pointing to through pointer indirection.
      * @return pointer to object we are pointing to.
@@ -388,8 +377,14 @@ public:
      * Perform assignment operator to existing object.
      * @param typed object to assign.
      */
-    inline void operator=(T *typed) {
-        AutoObject::operator=(polypointer_cast<ObjectProtocol*>(typed));
+    inline object_pointer& operator=(T *typed) {
+        AutoObject::set(polypointer_cast<ObjectProtocol*>(typed));
+        return *this;
+    }
+
+    inline object_pointer& operator=(const object_pointer& from) {
+        AutoObject::set(polypointer_cast<ObjectProtocol*>(from.object));
+        return *this;
     }
 
     /**

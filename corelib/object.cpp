@@ -96,19 +96,7 @@ AutoObject::operator bool() const
     return (object != 0);
 }
 
-bool AutoObject::operator==(ObjectProtocol *o) const
-{
-    assert(o != NULL);
-    return object == o;
-}
-
-bool AutoObject::operator!=(ObjectProtocol *o) const
-{
-    assert(o != NULL);
-    return object != o;
-}
-
-void AutoObject::operator=(ObjectProtocol *o)
+void AutoObject::set(ObjectProtocol *o)
 {
     if(object == o)
         return;
