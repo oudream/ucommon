@@ -41,10 +41,6 @@
 #include <ucommon/object.h>
 #endif
 
-#ifdef nil
-#undef nil
-#endif
-
 namespace ucommon {
 
 class OrderedObject;
@@ -58,11 +54,11 @@ class OrderedObject;
  */
 class __EXPORT LinkedObject : public ObjectProtocol
 {
-protected:
+private:
     friend class OrderedIndex;
-    friend class LinkedRing;
     friend class NamedObject;
 
+protected:
     LinkedObject *Next;
 
     /**
@@ -78,10 +74,9 @@ protected:
      */
     LinkedObject();
 
-public:
-    static const LinkedObject *nil; /**< Marker for end of linked list. */
-    static const LinkedObject *inv; /**< Marker for invalid list pointer */
+    LinkedObject(const LinkedObject& from);
 
+public:
     virtual ~LinkedObject();
 
     /**
@@ -317,12 +312,12 @@ public:
  */
 class __EXPORT OrderedObject : public LinkedObject
 {
-protected:
+private:
     friend class LinkedList;
     friend class OrderedIndex;
     friend class DLinkedObject;
-    friend class ObjectQueue;
 
+protected:
     /**
      * Construct an ordered object aot end of a an index.
      * @param index we are listed on.
@@ -333,6 +328,8 @@ protected:
      * Construct an ordered object unattached.
      */
     OrderedObject();
+
+    OrderedObject(const OrderedObject& from);
 
 public:
     /**
@@ -375,15 +372,14 @@ public:
  */
 class __EXPORT DLinkedObject : public OrderedObject
 {
-public:
-    friend class ObjectQueue;
-
+protected:
     /**
      * Construct an empty object.
      */
     DLinkedObject();
 
-protected:
+    DLinkedObject(const DLinkedObject& from);
+
     /**
      * Remove a cross-linked list from itself.
      */
