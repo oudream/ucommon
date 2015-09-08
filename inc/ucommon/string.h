@@ -262,14 +262,8 @@ protected:
     size_t getStringSize(void) const;
 
 public:
-#if _MSC_VER > 1400        // windows broken dll linkage issue...
     const static size_t npos = ((size_t)-1);
     const static char eos = '\0';
-#else
-    static const size_t npos;
-    static const char eos;
-#endif
-
 
     /**
      * Create a new empty string object.
@@ -1399,11 +1393,7 @@ public:
 class __EXPORT memstring : public String
 {
 public:
-#if _MSC_VER > 1400        // windows broken dll linkage issue...
     const static size_t header = sizeof(String::cstring);
-#else
-    static const size_t header;
-#endif
 
 private:
     bool resize(size_t size);

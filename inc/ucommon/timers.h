@@ -77,13 +77,8 @@ protected:
     bool is_active(void) const;
 
 public:
-#if _MSC_VER > 1400        // windows broken dll linkage issue...
     static const timeout_t inf = ((timeout_t)(-1));
     static const time_t reset = ((time_t)(0));
-#else
-    static const timeout_t inf; /**< A value to use for infinite time */
-    static const time_t reset;  /**< A value to use when resetting */
-#endif
 
 #ifdef  _MSWINDOWS_
     typedef unsigned __int64 tick_t;

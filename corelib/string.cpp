@@ -29,13 +29,6 @@
 
 namespace ucommon {
 
-#if _MSC_VER > 1400        // windows broken dll linkage issue...
-#else
-const size_t String::npos = (size_t)(-1);
-const size_t memstring::header = sizeof(cstring);
-const char String::eos = '\0';
-#endif
-
 String::cstring::cstring(size_t size) :
 CountedObject()
 {
