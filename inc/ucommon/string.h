@@ -271,18 +271,6 @@ public:
     String();
 
     /**
-     * Create a string from a long integer.
-     * @param value to convert to string.
-     */
-    String(long value);
-
-    /**
-     * Create a string from a floating point.
-     * @param value to convert to string.
-     */
-    String(double value);
-
-    /**
      * Create an empty string with a buffer pre-allocated to a specified size.
      * @param size of buffer to allocate.
      */

@@ -207,24 +207,6 @@ String::String(const char *s, size_t size)
     str->set(s);
 }
 
-String::String(long value)
-{
-    str = create(20);
-    str->retain();
-    snprintf(&str->text[0], 20, "%ld", value);
-    str->len = strlen(str->text);
-    str->fix();
-}
-
-String::String(double value)
-{
-    str = create(32);
-    str->retain();
-    snprintf(&str->text[0], 32, "%f", value);
-    str->len = strlen(str->text);
-    str->fix();
-}
-
 String::String(size_t size)
 {
     str = create(size);
