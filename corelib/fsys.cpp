@@ -1797,7 +1797,7 @@ int fsys::exec(const char *path, char **argv, char **envp)
 
 #ifdef _MSWINDOWS_
 
-stringref_t fsy::sprefix(void)
+stringref_t fsys::prefix(void)
 {
     char *cp = _getcwd(NULL, 0);
     stringref result(cp);

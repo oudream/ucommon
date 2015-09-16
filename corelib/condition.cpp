@@ -92,6 +92,10 @@ Conditional::Conditional()
     InitializeConditionVariable(&cond);
 }
 
+Conditional::~Conditional()
+{
+}
+
 void Conditional::wait(void)
 {
     SleepConditionVariableCS(&cond, &mutex, INFINITE);
@@ -126,6 +130,10 @@ ConditionVar::ConditionVar(ConditionMutex *m)
 {
 	shared = m;
     InitializeConditionVariable(&cond);
+}
+
+ConditionVar::~ConditionVar()
+{
 }
 
 void ConditionVar::wait(void)
