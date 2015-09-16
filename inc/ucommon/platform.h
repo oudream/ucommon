@@ -122,6 +122,8 @@
 #define __MALLOC      __attribute__ ((malloc))
 #endif
 
+#define __UNUSED(x)         (void)x
+
 #if __cplusplus < 201103L
 #define __FINAL
 #define __OVERRIDE
