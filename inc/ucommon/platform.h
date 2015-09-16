@@ -28,6 +28,10 @@
 
 #include <cstdlib>
 #include <cstddef>
+#if __cplusplus >= 201103L
+#include <memory>
+#endif
+
 #if defined(sun) && defined(unix)
 #include <malloc.h>
 #endif
@@ -123,6 +127,16 @@
 #endif
 
 #define __UNUSED(x)         (void)x
+
+#if __cplusplus >= 201103L
+#define     __ALIGNED(x)    alignas(x)
+#else
+#ifdef      _MSC_VER
+#define     __ALIGNED(x)    __declspec(align(x))
+#else
+#define     __ALIGNED(x)    __attribute__(align(x))
+#endif
+#endif
 
 #if __cplusplus < 201103L
 #define __FINAL
