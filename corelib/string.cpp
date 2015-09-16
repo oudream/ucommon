@@ -2132,7 +2132,7 @@ static const uint8_t alphabet[65] =
 String String::b64(const uint8_t *bin, size_t size)
 {
     size_t dsize = (size * 4 / 3) + 1;
-    String out(dsize, String::eos);
+    String out(dsize);
 
     b64encode(out.c_mem(), bin, size);
     return out;

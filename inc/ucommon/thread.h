@@ -547,11 +547,12 @@ public:
 class __EXPORT AutoProtect
 {
 private:
-    const void *object;
 
     __DELETE_COPY(AutoProtect);
 
 protected:
+    const void *object;
+
     /**
      * Create an unitialized instance of guard.  Usually used with a
      * guard = operator.
