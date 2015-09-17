@@ -16,14 +16,14 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%define libname	libucommon7
+%define libname	libucommon8
 %if %{_target_cpu} == "x86_64"
 %define	build_docs	1
 %else
 %define	build_docs	0
 %endif
 Name:           ucommon
-Version:        6.6.0
+Version:        7.0.0
 Release:        1
 Summary:        Portable C++ runtime for threads and sockets
 License:        LGPL-3.0+

@@ -16,7 +16,7 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%define libname	libucommon7
+%define libname	libucommon8
 %if %{_target_cpu} == "x86_64"
 %define	build_docs	1
 %else

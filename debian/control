@@ -21,7 +21,7 @@ Description: Class documentation for GNU uCommon C++ framework
 Package: libucommon-dev
 Section: libdevel
 Architecture: any
-Depends: libucommon7 (= ${binary:Version}),
+Depends: libucommon8 (= ${binary:Version}),
          ucommon-utils (= ${binary:Version}),
          libssl-dev,
          ${misc:Depends}
@@ -30,26 +30,26 @@ Description: Headers and static link library for ucommon
  This offers header files for developing applications which use the GNU
  uCommon C++ framework..
 
-Package: libucommon7-dbg
+Package: libucommon8-dbg
 Architecture: any
 Section: debug
 Priority: extra
 Recommends: libucommon-dev
-Depends: libucommon7 (= ${binary:Version}),
+Depends: libucommon8 (= ${binary:Version}),
          ${misc:Depends}
-Description: debugging symbols for libucommon7
- This package contains the debugging symbols for libucommon7.
+Description: debugging symbols for libucommon8
+ This package contains the debugging symbols for libucommon8.
 
 Package: ucommon-utils
 Architecture: any
-Depends: libucommon7 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: libucommon8 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Conflicts: ucommon-bin
 Replaces: ucommon-bin
 Description: ucommon system and support shell applications.
  This is a collection of command line tools that use various aspects of the
  ucommon library.
 
-Package: libucommon7
+Package: libucommon8
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, ${misc:Pre-Depends}
 Multi-Arch: same
