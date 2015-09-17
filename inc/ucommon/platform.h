@@ -384,13 +384,13 @@ inline void pthread_mutex_destroy(pthread_mutex_t *mutex)
     {};
 
 inline void pthread_mutex_lock(pthread_mutex_t *mutex)
-    {pth_mutex_acquire(mutex, 0, NULL);};
+    {pth_mutex_acquire(mutex, 0, nullptr);};
 
 inline void pthread_mutex_unlock(pthread_mutex_t *mutex)
     {pth_mutex_release(mutex);};
 
 inline void pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mutex)
-    {pth_cond_await(cond, mutex, NULL);};
+    {pth_cond_await(cond, mutex, nullptr);};
 
 inline void pthread_cond_signal(pthread_cond_t *cond)
     {pth_cond_notify(cond, FALSE);};
@@ -539,7 +539,7 @@ typedef void (*cpr_service_t)(int argc, char **argv);
  */
 template<class T>
 inline T *init(T *memory)
-    {return ((memory) ? new(((void *)memory)) T : NULL);}
+    {return ((memory) ? new(((void *)memory)) T : nullptr);}
 
 typedef long Integer;
 typedef unsigned long Unsigned;
@@ -557,7 +557,7 @@ template<class T, class S>
 inline T polypointer_cast(S *s)
 {
 #if defined(DEBUG) && defined(UCOMMON_RTTI)
-    assert(dynamic_cast<T>(s) != NULL);   // rtti for debug only...
+    assert(dynamic_cast<T>(s) != nullptr);   // rtti for debug only...
 #endif
     return static_cast<T>(s);
 }   
