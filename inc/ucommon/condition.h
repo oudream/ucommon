@@ -335,6 +335,8 @@ protected:
     mutable pthread_cond_t bcast;
 #endif
 
+    static unsigned max_sharing;
+
     unsigned pending, waiting, sharing;
 
     /**

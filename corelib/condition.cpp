@@ -28,13 +28,13 @@
 #include <stdarg.h>
 #include <limits.h>
 
-static unsigned max_sharing = 0;
-
 namespace ucommon {
 
 #if !defined(_MSTHREADS_) && !defined(__PTH__)
 Conditional::attribute Conditional::attr;
 #endif
+
+unsigned ConditionalAccess::max_sharing = 0;
 
 #ifdef  __PTH__
 static int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime)
