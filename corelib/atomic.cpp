@@ -21,6 +21,10 @@
 #include <ucommon/atomic.h>
 #include <ucommon/thread.h>
 
+#if __cplusplus >= 201103l
+#include <atomic>
+#endif
+
 // blacklist some architectures...like sparc odd 24 bit atomics
 #if defined(sparc)
 #undef  HAVE_ATOMICS
@@ -94,6 +98,48 @@ void Atomic::spinlock::wait() volatile
 void Atomic::spinlock::release() volatile
 {
     InterlockedBitTestAndReset(&value, 1);
+}
+
+#elif __cplusplus >= 201103L && defined(HAVE_ATOMICS)
+typedef std::atomic<atomic_t> *atomic_val;
+
+atomic_t Atomic::counter::get() volatile
+{
+    return std::atomic_load((atomic_val)(&value));
+}
+
+void Atomic::counter::clear() volatile
+{
+    std::atomic_fetch_and((atomic_val)(&value), (atomic_t)0);
+}
+
+atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
+{
+    return std::atomic_fetch_add((atomic_val)(&value), (atomic_t)change);
+}
+
+atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
+{
+    return std::atomic_fetch_sub((atomic_val)(&value), (atomic_t)change);
+}
+
+bool Atomic::spinlock::acquire(void) volatile
+{
+    // if not locked by another already, then we acquired it...
+    return (!std::atomic_exchange((atomic_val)(&value), (atomic_t)1));
+}
+
+void Atomic::spinlock::wait(void) volatile
+{
+    while (std::atomic_exchange((atomic_val)(&value), (atomic_t)1)) {
+        while (value)
+            ;
+    }
+}
+
+void Atomic::spinlock::release(void) volatile
+{
+    std::atomic_store((atomic_val)(&value), (atomic_t)0);
 }
 
 #elif defined(__CLANG_ATOMICS) && defined(HAVE_ATOMICS)

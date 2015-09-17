@@ -30,7 +30,7 @@
 #include <ucommon/platform.h>
 #endif
 
-#ifdef  _MSWINDOWS_
+#if defined(_MSWINDOWS_)
 typedef LONG atomic_t;
 #else
 typedef int atomic_t;
