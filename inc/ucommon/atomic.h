@@ -53,11 +53,6 @@ private:
 
 public:
     /**
-     * Set to true if atomics have to be simulated with mutexes.
-     */
-    static const bool simulated;
-
-    /**
      * Atomic counter class.  Can be used to manipulate value of an
      * atomic counter without requiring explicit thread locking.
      * @author David Sugar <dyfet@gnutelephony.org>
@@ -130,6 +125,8 @@ public:
          */
         void release(void) volatile;
     };
+
+    static bool is_lockfree(void);
 };
 
 } // namespace ucommon

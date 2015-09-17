@@ -50,18 +50,11 @@ else()
 endif()
 
 option(BUILD_EXTRAS  "Set to OFF to disable" ON)
-option(BUILD_ATOMICS "Set to OFF to disable" ON)
 option(BUILD_TESTING "Set to ON to build test programs" OFF)
 option(CRYPTO_STATIC "Set to ON to build static crypto" OFF)
 option(CRYPTO_OPENSSL "Set to OFF to disable openssl" ON)
 
-MARK_AS_ADVANCED(POSIX_TIMERS BUILD_ATOMICS BUILD_EXTRAS)
-
-if(BUILD_ATOMICS)
-    set(HAVE_ATOMICS true)
-else()
-    set(HAVE_ATOMICS false)
-endif()
+MARK_AS_ADVANCED(POSIX_TIMERS BUILD_EXTRAS)
 
 MESSAGE( STATUS "Configuring GNU ${PROJECT_NAME} ${VERSION}...")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")

@@ -26,6 +26,8 @@
 #endif
 
 // blacklist some architectures...like sparc odd 24 bit atomics
+#define HAVE_ATOMICS    1
+
 #if defined(sparc)
 #undef  HAVE_ATOMICS
 #endif
@@ -61,6 +63,11 @@ Atomic::spinlock::spinlock()
 #endif
 
 #if defined(_MSWINDOWS_)
+
+bool Atomic::is_lockfree(void)
+{
+    return true;
+}
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
@@ -102,6 +109,11 @@ void Atomic::spinlock::release() volatile
 
 #elif __cplusplus >= 201103L && defined(HAVE_ATOMICS)
 typedef std::atomic<atomic_t> *atomic_val;
+
+bool Atomic::is_lockfree(void)
+{
+    return std::atomic_is_lock_free(const atomic_val);
+}
 
 atomic_t Atomic::counter::get() volatile
 {
@@ -145,6 +157,11 @@ void Atomic::spinlock::release(void) volatile
 #elif defined(__CLANG_ATOMICS) && defined(HAVE_ATOMICS)
 typedef _Atomic(atomic_t)   *atomic_val;
 
+bool Atomic::is_lockfree(void)
+{
+    return true;
+}
+
 atomic_t Atomic::counter::get() volatile
 {
     return __c11_atomic_load((atomic_val)(&value), __ATOMIC_SEQ_CST);
@@ -185,6 +202,11 @@ void Atomic::spinlock::release(void) volatile
 }
 
 #elif __GNUC_PREREQ__(4, 7) && defined(HAVE_ATOMICS)
+
+bool Atomic::is_lockfree(void)
+{
+    return true;
+}
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
@@ -227,6 +249,11 @@ void Atomic::spinlock::release(void) volatile
 
 #elif __GNUC_PREREQ__(4, 1) && defined(HAVE_ATOMICS)
 
+bool Atomic::is_lockfree(void)
+{
+    return true;
+}
+
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
     return __sync_fetch_and_add(&value, change);
@@ -268,7 +295,10 @@ void Atomic::spinlock::release(void) volatile
 
 #else
 
-#define SIMULATED true
+bool Atomic::is_lockfree(void)
+{
+    return false;
+}
 
 atomic_t Atomic::counter::get() volatile
 {
@@ -332,12 +362,6 @@ void Atomic::spinlock::release(void) volatile
     Mutex::release((void *)&value);
 }
 
-#endif
-
-#ifdef SIMULATED
-const bool Atomic::simulated = true;
-#else
-const bool Atomic::simulated = false;
 #endif
 
 atomic_t Atomic::counter::operator++() volatile
