@@ -556,6 +556,8 @@ inline void strfree(char *str)
 template<class T, class S>
 inline T polypointer_cast(S *s)
 {
+    if(s == nullptr)
+        return nullptr;
 #if defined(DEBUG) && defined(UCOMMON_RTTI)
     assert(dynamic_cast<T>(s) != nullptr);   // rtti for debug only...
 #endif
