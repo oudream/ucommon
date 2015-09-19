@@ -540,7 +540,7 @@ UString UString::get(size_t pos, size_t size) const
     if(!size)
         return UString(substr, 0);
 
-    const char *end = utf8::offset(substr, size);
+    const char *end = utf8::offset(substr, (ssize_t)size);
     if(!end)
         return UString(substr);
 

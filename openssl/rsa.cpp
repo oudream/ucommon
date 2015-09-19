@@ -38,7 +38,7 @@ RSA::RSA(size_t keysize)
     if(!keypair)
         return;
 
-    if(RSA_generate_key_ex((::RSA*)keypair, keysize, bn, NULL) != 1) {
+    if(RSA_generate_key_ex((::RSA*)keypair, (int)keysize, bn, NULL) != 1) {
         BN_free(bn);
         RSA_free((::RSA *)keypair);
         keypair = NULL;
@@ -55,13 +55,13 @@ RSA::RSA(secure::string privkey, secure::string pubkey)
 
     if(privkey.size()) {
         const char *key = *privkey;
-        BIO *io = BIO_new_mem_buf((void*)key, strlen(key));
+        BIO *io = BIO_new_mem_buf((void*)key, (int)strlen(key));
         PEM_read_bio_RSAPrivateKey(io, (::RSA **)&keypair, 0, NULL);
         BIO_free(io);
     }
     if(pubkey.size()) {
         const char *key = *pubkey;
-        BIO *io = BIO_new_mem_buf((void*)key, strlen(key));
+        BIO *io = BIO_new_mem_buf((void*)key, (int)strlen(key));
         PEM_read_bio_RSAPublicKey(io, (::RSA **)&keypair, 0, NULL);
         BIO_free(io);
     }
@@ -99,7 +99,7 @@ secure::string RSA::pem(secure::strtype_t type)
         return secure::string();
 
     temporary<char *>tmp(len + 1);
-    BIO_read(bio, *tmp, len);
+    BIO_read(bio, *tmp, (int)len);
     (*tmp)[len] = 0;
     return secure::string(*tmp, type);        
 }
