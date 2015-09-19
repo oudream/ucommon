@@ -241,8 +241,8 @@ void keyfile::load(HKEY keys, keydata *section, const char *path)
     }
     index = 0;
     vsize = sizeof(keyvalue);
-    if(vsize > size() - 64)
-        vsize = size() - 64;
+    if(vsize > (DWORD)(size() - 64))
+        vsize = (DWORD)(size() - 64);
     while((RegEnumValue(keys, index++, keyname, &ksize, NULL, &vtype, (BYTE *)keyvalue, &vsize) == ERROR_SUCCESS) && (vtype == REG_SZ) && (keyname[0] != 0)) {
         if(section)
             section->set(keyname, keyvalue);
@@ -250,8 +250,8 @@ void keyfile::load(HKEY keys, keydata *section, const char *path)
             defaults->set(keyname, keyvalue);
         ksize = sizeof(keyname);
         vsize = sizeof(keyvalue);
-        if(vsize > size() - 64)
-            vsize = size() - 64;
+        if(vsize > (DWORD)(size() - 64))
+            vsize = (DWORD)(size() - 64);
     }
 }
 

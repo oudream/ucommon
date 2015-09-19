@@ -2083,7 +2083,7 @@ String &String::operator%(const char *get)
     if(!str || !str->text[0] || !get)
         return *this;
 
-    unsigned len = strlen(get);
+    size_t len = strlen(get);
     const char *cp = str->text;
 
     while(isspace(*cp))
