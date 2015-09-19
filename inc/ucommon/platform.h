@@ -556,12 +556,15 @@ inline void strfree(char *str)
 template<class T, class S>
 inline T polypointer_cast(S *s)
 {
+#if defined(DEBUG) && defined(UCOMMON_RTTI)
     if(s == nullptr)
         return nullptr;
-#if defined(DEBUG) && defined(UCOMMON_RTTI)
-    assert(dynamic_cast<T>(s) != nullptr);   // rtti for debug only...
-#endif
+    <T> ptr = dynamic_cast<T>(s);
+    __THROW_DEREF(ptr);
+    return ptr;
+#else
     return static_cast<T>(s);
+#endif
 }   
 
 template<class T, class S>
