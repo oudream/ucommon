@@ -559,7 +559,7 @@ inline T polypointer_cast(S *s)
 #if defined(DEBUG) && defined(UCOMMON_RTTI)
     if(s == nullptr)
         return nullptr;
-    <T> ptr = dynamic_cast<T>(s);
+    T ptr = dynamic_cast<T>(s);
     __THROW_DEREF(ptr);
     return ptr;
 #else
