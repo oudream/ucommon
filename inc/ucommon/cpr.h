@@ -33,12 +33,9 @@
 #ifdef  _MSWINDOWS_
 
 extern "C" {
-    __EXPORT int cpr_setenv(const char *s, const char *v, int p);
+    __EXPORT int setenv(const char *s, const char *v, int p);
 
-    inline int setenv(const char *s, const char *v, int overwrite)
-    {
-        return cpr_setenv(s, v, overwrite);
-    }
+    __EXPORT int gettimeofday(struct timeval *tv, void *tz);
 }
 
 #endif

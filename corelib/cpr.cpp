@@ -38,7 +38,32 @@
 #include <limits.h>
 
 #ifdef  _MSWINDOWS_
-int cpr_setenv(const char *sym, const char *val, int flag)
+#ifdef  HAVE_SYS_TIMEB_H
+#include <sys/timeb.h>
+#endif
+
+int gettimeofday(struct timeval *tv_, void *tz_)
+{
+    assert(tv_ != NULL);
+
+#if defined(_MSC_VER) && _MSC_VER >= 1300
+    struct __timeb64 tb;
+    _ftime64(&tb);
+#else
+# ifndef __BORLANDC__
+    struct _timeb tb;
+    _ftime(&tb);
+# else
+    struct timeb tb;
+    ftime(&tb);
+# endif
+#endif
+    tv_->tv_sec = (long)tb.time;
+    tv_->tv_usec = tb.millitm * 1000;
+    return 0;
+}
+
+int setenv(const char *sym, const char *val, int flag)
 {
     char buf[128];
 

@@ -20,6 +20,7 @@
 #include <ucommon/export.h>
 #include <ucommon/timers.h>
 #include <ucommon/thread.h>
+#include <ucommon/cpr.h>
 
 namespace ucommon {
 
@@ -57,51 +58,6 @@ static void adj(struct timeval *ts)
     if(ts->tv_usec < 0)
         ts->tv_usec = -ts->tv_usec;
 }
-#endif
-
-#ifdef  WIN32
-#ifdef  _WIN32_WCE
-} // namespace ucommon
-extern "C" int gettimeofday(struct timeval *tv_,  void *tz_)
-{
-    assert(tv_ != NULL);
-
-    // We could use _ftime(), but it is not available on WinCE.
-    // (WinCE also lacks time.h)
-    // Note also that the average error of _ftime is around 20 ms :)
-    DWORD ms = GetTickCount();
-    tv_->tv_sec = ms / 1000;
-    tv_->tv_usec = ms * 1000;
-    return 0;
-}
-namespace ucommon {
-#else
-} // namespace ucommon
-#ifdef  HAVE_SYS_TIMEB_H
-#include <sys/timeb.h>
-#endif
-extern "C" int gettimeofday(struct timeval *tv_, void *tz_)
-{
-    assert(tv_ != NULL);
-
-#if defined(_MSC_VER) && _MSC_VER >= 1300
-    struct __timeb64 tb;
-    _ftime64(&tb);
-#else
-# ifndef __BORLANDC__
-    struct _timeb tb;
-    _ftime(&tb);
-# else
-    struct timeb tb;
-    ftime(&tb);
-# endif
-#endif
-    tv_->tv_sec = (long)tb.time;
-    tv_->tv_usec = tb.millitm * 1000;
-    return 0;
-}
-namespace ucommon {
-#endif
 #endif
 
 TimerQueue::event::event(timeout_t timeout) :
