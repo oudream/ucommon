@@ -514,12 +514,14 @@ typedef unsigned long timeout_t;
 #endif
 #endif
 
-#ifndef PROGRAM_MAIN
+#ifndef __PROGRAM
+#define __PROGRAM(c,v)              extern "C" int main(int c, char **v)
 #define PROGRAM_MAIN(argc, argv)    extern "C" int main(int argc, char **argv)
 #define PROGRAM_EXIT(code)          return code
 #endif
 
-#ifndef SERVICE_MAIN
+#ifndef __SERVICE
+#define __SERVICE(id, c, v)         void service_##id(int c, char **v)
 #define SERVICE_MAIN(id, argc, argv)    void service_##id(int argc, char **argv)
 typedef void (*cpr_service_t)(int argc, char **argv);
 #endif
