@@ -38,6 +38,8 @@ extern "C" {
     __EXPORT int gettimeofday(struct timeval *tv, void *tz);
 }
 
+#else
+#include <unistd.h>
 #endif
 
 

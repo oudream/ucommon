@@ -915,8 +915,11 @@ typedef shell shell_t;
  * Abusive compilers...
  */
 #undef  _TEXT
+#undef  __TEXT
 #undef  _STR
-#define _STR(x) (const char *)(x)
+#undef  __STR
+#define _STR(x)     ((const char *)(x))
+#define __STR(x)    (static_cast<const char *>(x))
 
 /**
  * Invoke translation lookup if available.  This can also be used to
@@ -925,7 +928,10 @@ typedef shell shell_t;
  * directly.  The primary purpose is to allow extraction of text to
  * be internationalized with xgettext "--keyword=_TEXT:1".
  */
-inline  const char *_TEXT(const char *s)
+inline  const char *__TEXT(const char *s)
+    {return shell::text(s);}
+
+inline const char *_TEXT(const char *s)
     {return shell::text(s);}
 
 } // namespace ucommon
