@@ -112,7 +112,8 @@ typedef std::atomic<atomic_t> *atomic_val;
 
 bool Atomic::is_lockfree(void)
 {
-    return std::atomic_is_lock_free(const atomic_val);
+    atomic_val ptr;
+    return std::atomic_is_lock_free(ptr);
 }
 
 atomic_t Atomic::counter::get() volatile

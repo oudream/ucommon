@@ -115,13 +115,13 @@ public:
     /**
      * Increase reference count when retained.
      */
-    void retain(void);
+    void retain(void) __OVERRIDE;
 
     /**
      * Decrease reference count when released.  If no longer retained, then
      * the object is dealloc'd.
      */
-    void release(void);
+    void release(void) __OVERRIDE;
 };
 
 /**
@@ -307,7 +307,7 @@ public:
     }
 
 private:
-    __LOCAL ObjectProtocol *create(void) {
+    __LOCAL ObjectProtocol *create(void) __FINAL {
         return new T;
     }
 };
