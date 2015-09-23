@@ -428,10 +428,4 @@ typedef Timer timer_t;
 
 } // namespace ucommon
 
-extern "C" {
-#if defined(WIN32)
-    __EXPORT int gettimeofday(struct timeval *tv, void *tz);
-#endif
-}
-
 #endif
