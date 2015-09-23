@@ -318,6 +318,7 @@ inline void sleep(int seconds)
 
 extern "C" {
 
+    #define __SERVICE(id, argc, argv) void WINAPI service_##id(DWORD argc, LPSTR *argv)
     #define SERVICE_MAIN(id, argc, argv) void WINAPI service_##id(DWORD argc, LPSTR *argv)
 
     typedef LPSERVICE_MAIN_FUNCTION cpr_service_t;
