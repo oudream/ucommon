@@ -185,6 +185,9 @@ public:
      */
     class __EXPORT Option : public LinkedObject
     {
+    private:
+        __DELETE_DEFAULTS(Option);
+
     public:
         char short_option;
         const char *long_option;
@@ -236,23 +239,35 @@ public:
 
         virtual const char *assign(const char *value);
 
+        __DELETE_DEFAULTS(flagopt);
+
     public:
         flagopt(char short_option, const char *long_option = NULL, const char *help = NULL, bool single_use = true);
 
-        inline operator bool() const
-            {return counter > 0;}
+        inline operator bool() const {
+            return counter > 0;
+        }
 
-        inline bool operator!() const
-            {return counter == 0;}
+        inline bool operator!() const {
+            return counter == 0;
+        }
 
-        inline operator unsigned() const
-            {return counter;}
+        inline operator unsigned() const {
+            return counter;
+        }
 
-        inline unsigned operator*() const
-            {return counter;}
+        inline unsigned operator*() const {
+            return counter;
+        }
 
-        inline void set(unsigned value = 1)
-            {counter = value;}
+        inline void set(unsigned value = 1) {
+            counter = value;
+        }
+
+        inline flagopt& operator=(unsigned value) {
+            counter = value;
+            return *this;
+        }
     };
 
     /**
@@ -264,6 +279,8 @@ public:
     {
     private:
         virtual const char *assign(const char *value);
+
+        __DELETE_DEFAULTS(groupopt);
 
     public:
         groupopt(const char *help);
@@ -280,6 +297,8 @@ public:
     private:
         bool used;
 
+        __DELETE_DEFAULTS(stringopt);
+
     protected:
         const char *text;
 
@@ -288,20 +307,30 @@ public:
     public:
         stringopt(char short_option, const char *long_option = NULL, const char *help = NULL, const char *type = "text", const char *def_text = NULL);
 
-        inline void set(const char *string)
-            {text = string;}
+        inline void set(const char *string) {
+            text = string;
+        }
 
-        inline operator bool() const
-            {return used;}
+        inline stringopt& operator=(const char *string) {
+            text = string;
+            return *this;
+        }
 
-        inline bool operator!() const
-            {return !used;}
+        inline operator bool() const {
+            return used;
+        }
 
-        inline operator const char *() const
-            {return text;}
+        inline bool operator!() const {
+            return !used;
+        }
 
-        inline const char *operator*() const
-            {return text;}
+        inline operator const char *() const {
+            return text;
+        }
+
+        inline const char *operator*() const {
+            return text;
+        }
     };
 
     /**
@@ -315,6 +344,8 @@ public:
     private:
         bool used;
 
+        __DELETE_DEFAULTS(charopt);
+
     protected:
         char code;
 
@@ -323,20 +354,30 @@ public:
     public:
         charopt(char short_option, const char *long_option = NULL, const char *help = NULL, const char *type = "char", char default_code = ' ');
 
-        inline void set(char value)
-            {code = value;}
+        inline void set(char value) {
+            code = value;
+        }
 
-        inline operator bool() const
-            {return used;}
+        inline charopt& operator=(char value) {
+            code = value;
+            return *this;
+        }
 
-        inline bool operator!() const
-            {return !used;}
+        inline operator bool() const {
+            return used;
+        }
 
-        inline operator char() const
-            {return code;}
+        inline bool operator!() const {
+            return !used;
+        }
 
-        inline char operator*() const
-            {return code;}
+        inline operator char() const {
+            return code;
+        }
+
+        inline char operator*() const {
+            return code;
+        }
     };
 
     /**
@@ -350,6 +391,8 @@ public:
     private:
         bool used;
 
+        __DELETE_DEFAULTS(numericopt);
+
     protected:
         long number;
 
@@ -358,20 +401,30 @@ public:
     public:
         numericopt(char short_option, const char *long_option = NULL, const char *help = NULL, const char *type = "numeric", long def_value = 0);
 
-        inline void set(long value)
-            {number = value;}
+        inline void set(long value) {
+            number = value;
+        }
 
-        inline operator bool() const
-            {return used;}
+        inline numericopt& operator=(long value) {
+            number = value;
+            return *this;
+        }
 
-        inline bool operator!() const
-            {return !used;}
+        inline operator bool() const {
+            return used;
+        }
 
-        inline operator long() const
-            {return number;}
+        inline bool operator!() const {
+            return !used;
+        }
 
-        inline long operator*() const
-            {return number;}
+        inline operator long() const {
+            return number;
+        }
+
+        inline long operator*() const {
+            return number;
+        }
     };
 
     /**
@@ -387,6 +440,8 @@ public:
     private:
         bool used;
 
+        __DELETE_DEFAULTS(counteropt);
+
     protected:
         long number;
 
@@ -395,20 +450,30 @@ public:
     public:
         counteropt(char short_option, const char *long_option = NULL, const char *help = NULL, const char *type = "numeric", long def_value = 0);
 
-        inline void set(long value)
-            {number = value;}
+        inline void set(long value) {
+            number = value;
+        }
 
-        inline operator bool() const
-            {return used;}
+        inline counteropt& operator=(long value) {
+            number = value;
+            return *this;
+        }
 
-        inline bool operator!() const
-            {return !used;}
+        inline operator bool() const {
+            return used;
+        }
 
-        inline operator long() const
-            {return number;}
+        inline bool operator!() const {
+            return !used;
+        }
 
-        inline long operator*() const
-            {return number;}
+        inline operator long() const {
+            return number;
+        }
+
+        inline long operator*() const {
+            return number;
+        }
     };
 
     /**
