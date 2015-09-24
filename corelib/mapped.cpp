@@ -506,12 +506,6 @@ void MappedMemory::release(void)
 
 #endif
 
-void *MappedMemory::invalid(void) const
-{
-    abort();
-    return NULL;
-}
-
 void *MappedMemory::sbrk(size_t len)
 {
     assert(len > 0);
@@ -541,7 +535,7 @@ bool MappedMemory::copy(size_t offset, void *buffer, size_t bufsize) const
 void *MappedMemory::offset(size_t offset) const
 {
     if(offset >= size)
-        return invalid();
+        __THROW_RANGE("outside mapped memory"); 
     return (void *)(map + offset);
 }
 

@@ -80,12 +80,6 @@ protected:
      */
     void create(const char *name, size_t size = (size_t)0);
 
-    /**
-     * Handler to invoke in derived class when accessing outside the
-     * shared memory segment boundary.
-     */
-    virtual void *invalid(void) const;
-
 public:
     /**
      * Construct a read/write access mapped shared segment of memory of a
@@ -201,6 +195,8 @@ private:
     unsigned reading;
     mutex_t mutex;
 
+    __DELETE_DEFAULTS(MappedReuse);
+
 protected:
     MappedReuse(size_t osize);
 
@@ -274,6 +270,9 @@ public:
 template <class T>
 class mapped_array : public MappedMemory
 {
+private:
+    __DELETE_COPY(mapped_array);
+
 protected:
     inline mapped_array() : MappedMemory() {}
 
@@ -347,6 +346,9 @@ public:
 template <class T>
 class mapped_reuse : public MappedReuse
 {
+private:
+    __DELETE_COPY(mapped_reuse);
+
 protected:
     inline mapped_reuse() :
         MappedReuse(sizeof(T)) {}
@@ -466,6 +468,9 @@ public:
 template <class T>
 class mapped_view : protected MappedMemory
 {
+private:
+    __DELETE_DEFAULTS(mapped_view);
+
 public:
     /**
      * Map existing named memory segment.  The size of the map is derived
