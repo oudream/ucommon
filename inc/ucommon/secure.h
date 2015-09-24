@@ -89,6 +89,9 @@ public:
 template<typename T>
 class autoclear : public AutoClear
 {
+private:
+    __DELETE_COPY(autoclear);
+
 public:
     autoclear() : AutoClear(sizeof(T)) {};
 
@@ -99,11 +102,18 @@ public:
     inline T& operator*() {
         return *(static_cast<T*>(pointer));
     }
+
+    inline T* operator->() {
+        return static_cast<T*>(pointer);
+    }
 };
 
 template <>
 class autoclear<char *> : public AutoClear
 {
+private:
+    __DELETE_COPY(autoclear);
+
 public:
     autoclear(size_t len) : AutoClear(len) {};
 
@@ -115,6 +125,9 @@ public:
 template <>
 class autoclear<uint8_t *> : public AutoClear
 {
+private:
+    __DELETE_COPY(autoclear);
+
 public:
     autoclear(size_t len) : AutoClear(len) {};
 
