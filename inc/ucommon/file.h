@@ -72,6 +72,8 @@ private:
 
     int _getch(void);
 
+    __DELETE_COPY(file);
+
 public:
     typedef ::fpos_t bookmark_t;
 
@@ -103,24 +105,10 @@ public:
      */
     file();
 
-    file(const file& copy);
-
     /**
      * Destroy object and close associated file.
      */
     ~file();
-
-    inline static file input(void) {
-        return file(stdin);
-    }
-
-    inline static file output(void) {
-        return file(stdout);
-    }
-
-    inline static file error(void) {
-        return file(stderr);
-    }
 
     /**
      * Test if file is opened.

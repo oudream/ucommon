@@ -76,13 +76,6 @@ CharacterProtocol()
     pid = INVALID_PID_VALUE;
 }
 
-file::file(const file& copy)
-{
-    fp = copy.fp;
-    tmp = NULL;
-    pid = INVALID_PID_VALUE;
-}
-
 file::~file()
 {
     close();

@@ -100,6 +100,10 @@ public:
         inline size_t max() {
             return size;
         }
+
+        inline operator const char *() {
+            return &mem[0];
+        }
     };
 
     typeref();
@@ -162,6 +166,10 @@ public:
         virtual void dealloc() __FINAL;
 
         inline const uint8_t *get() {
+            return &mem[0];
+        }
+
+        inline operator const uint8_t *() {
             return &mem[0];
         }
     };

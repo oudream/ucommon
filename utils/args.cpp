@@ -33,7 +33,7 @@ static shell::flagopt rflag('r',    "--reverse", _TEXT("reverse order of argumen
 static char prefix[80] = {0, 0};
 static char suffix[80] = {0, 0};
 
-static file cout = file::output();
+static file cout(stdout);
 
 static void output(bool middle, const char *arg)
 {
