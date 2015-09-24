@@ -1043,7 +1043,7 @@ String shell::path(path_t id)
     return result;
 }
 
-const char *shell::env(const char *id, const char *value)
+const char *shell::getenv(const char *id, const char *value)
 {
     char buf[512];
     char path[255];
@@ -2475,7 +2475,7 @@ bool shell::is_sym(const char *name) const
     return false;
 }
 
-const char *shell::get(const char *name, const char *value)
+const char *shell::getsym(const char *name, const char *value)
 {
     symlock.acquire();
     linked_pointer<syms> sp = _syms;
@@ -2490,10 +2490,10 @@ const char *shell::get(const char *name, const char *value)
     }
 
     symlock.release();
-    return env(name, value);
+    return shell::getenv(name, value);
 }
 
-void shell::set(const char *name, const char *value)
+void shell::setsym(const char *name, const char *value)
 {
     symlock.acquire();
     linked_pointer<syms> sp;

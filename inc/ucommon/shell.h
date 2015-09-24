@@ -610,10 +610,7 @@ public:
      * @param value of symbol if not found.
      * @return value of symbol.
      */
-    const char *env(const char *name, const char *value = NULL);
-
-    inline const char *getenv(const char *name, const char *value = NULL)
-        {return env(name, value);}
+    const char *getenv(const char *name, const char *value = NULL);
 
     /**
      * Get a local symbol.  This uses getenv if no local symbol is found.
@@ -621,20 +618,14 @@ public:
      * @param value of symbol if not found.
      * @return value of symbol.
      */
-    const char *get(const char *name, const char *value = NULL);
-
-    inline const char *getsym(const char *name, const char *value = NULL)
-        {return get(name, value);}
+    const char *getsym(const char *name, const char *value = NULL);
 
     /**
      * Set a local symbol.
      * @param name of symbol to set.
      * @param value of symbol to set.
      */
-    void set(const char *name, const char *value);
-
-    inline void setsym(const char *name, const char *value)
-        {return set(name, value);}
+    void setsym(const char *name, const char *value);
 
     /**
      * Test if symbol exists.
