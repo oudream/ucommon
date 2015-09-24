@@ -71,6 +71,58 @@ namespace Type {
 
 }
 
+class __SHARED AutoClear
+{
+private:
+    __DELETE_DEFAULTS(AutoClear);
+
+protected:
+    size_t size;
+    void *pointer;
+
+    AutoClear(size_t alloc);
+
+public:
+    virtual ~AutoClear();
+};    
+
+template<typename T>
+class autoclear : public AutoClear
+{
+public:
+    autoclear() : AutoClear(sizeof(T)) {};
+
+    inline operator T() {
+        return *(static_cast<T*>(pointer));
+    }
+
+    inline T& operator*() {
+        return *(static_cast<T*>(pointer));
+    }
+};
+
+template <>
+class autoclear<char *> : public AutoClear
+{
+public:
+    autoclear(size_t len) : AutoClear(len) {};
+
+    inline char *operator*() {
+        return (char *)pointer;
+    }
+};
+
+template <>
+class autoclear<uint8_t *> : public AutoClear
+{
+public:
+    autoclear(size_t len) : AutoClear(len) {};
+
+    inline char *operator*() {
+        return (char *)pointer;
+    }
+};
+
 template <>
 class __SHARED typeref<Type::SecChars> : protected TypeRef, public Type::SecChars
 {
@@ -375,6 +427,8 @@ public:
      * @param string to write uuid into, must be 37 bytes or more.
      */
     static void uuid(char *string);
+
+    static secure::string pass(const char *prompt, size_t size);
 
     static secure::string uuid(void);
 

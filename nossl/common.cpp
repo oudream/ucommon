@@ -20,6 +20,21 @@
 
 namespace ucommon {
 
+AutoClear::AutoClear(size_t max)
+{
+    pointer = ::malloc(max);
+    size = max;
+}
+
+AutoClear::~AutoClear()
+{
+    if(pointer) {
+        memset(pointer, 0, size);
+        ::free(pointer);
+        pointer = NULL;
+    }
+}
+
 Digest::Digest()
 {
     hashtype = NULL;
@@ -221,6 +236,17 @@ static void cexport(HCERTSTORE ca, FILE *fp)
         }
         fprintf(fp, "-----END CERTIFICATE-----\n");
     }
+}
+
+secure::string secure::pass(const char *prompt, size_t size)
+{
+    autoclear<char *> buffer(size);
+    secure::string out;
+
+    if(shell::getpass(prompt, *buffer, size))
+        out = *buffer;
+
+    return out;
 }
 
 const char *secure::oscerts(void)
