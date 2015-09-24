@@ -371,6 +371,10 @@ public:
 		inline size_t max() {
 			return size;
 		}
+
+		inline operator char *() {
+			return &mem[0];
+		}
 	};
 
 	typeref();
@@ -470,6 +474,10 @@ public:
 		}
 
 		inline uint8_t *get() {
+			return &mem[0];
+		}
+
+		inline operator uint8_t*() {
 			return &mem[0];
 		}
 	};

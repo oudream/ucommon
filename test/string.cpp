@@ -108,11 +108,11 @@ extern "C" int main()
     charvalues_t cv1 = stringref::create(64);
     charvalues_t cv2 = cv1;
 
-    snprintf(cv1->get(), cv1->max(), "test %d\n", 1);
+    snprintf(*cv1, cv1->max(), "test %d\n", 1);
     stringref::expand(&cv1, 64);
     assert(cv1->max() == 128);
     assert(cv2 != cv1);
-    assert(eq(cv1->get(), "test 1\n"));
+    assert(eq(*cv1, "test 1\n"));
     cvs.assign(cv1);
     assert(cvs.copies() == 1);
     assert(eq(cvs, "test 1\n"));
