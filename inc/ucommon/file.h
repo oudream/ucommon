@@ -48,7 +48,7 @@
 #include <ucommon/fsys.h>
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 
 namespace ucommon {
 
@@ -68,18 +68,12 @@ private:
 #endif
     char *tmp;
 
-    __DELETE_COPY(file);
-
     int _putch(int code);
 
     int _getch(void);
 
 public:
     typedef ::fpos_t bookmark_t;
-
-    static file cin;
-    static file cout;
-    static file cerr;
 
     /**
      * Construct a file from an existing FILE pointer.
@@ -109,10 +103,24 @@ public:
      */
     file();
 
+    file(const file& copy);
+
     /**
      * Destroy object and close associated file.
      */
     ~file();
+
+    inline static file input(void) {
+        return file(stdin);
+    }
+
+    inline static file output(void) {
+        return file(stdout);
+    }
+
+    inline static file error(void) {
+        return file(stderr);
+    }
 
     /**
      * Test if file is opened.
@@ -252,6 +260,14 @@ public:
     inline FILE *operator*() const {
         return fp;
     }
+
+    void set(FILE *f);
+
+    inline file& operator=(FILE *f) {
+        set(f);
+        return *this;
+    }
+        
 };
 
 template<typename T> inline size_t read(const file& fp, T* data, size_t count) {

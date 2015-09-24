@@ -42,10 +42,6 @@
 
 namespace ucommon {
 
-file file::cin(stdin);
-file file::cout(stdout);
-file file::cerr(stderr);
-
 file::file(const char *file, const char *mode, size_t size) :
 CharacterProtocol()
 {
@@ -72,10 +68,17 @@ CharacterProtocol()
     pid = INVALID_PID_VALUE;
 }
 
-file::file(FILE *file) :
+file::file(FILE *f) :
 CharacterProtocol()
 {
-    fp = file;
+    fp = f;
+    tmp = NULL;
+    pid = INVALID_PID_VALUE;
+}
+
+file::file(const file& copy)
+{
+    fp = copy.fp;
     tmp = NULL;
     pid = INVALID_PID_VALUE;
 }
@@ -84,6 +87,14 @@ file::~file()
 {
     close();
 }
+
+void file::set(FILE *f)
+{
+    close();
+    fp = f;
+    tmp = NULL;
+    pid = INVALID_PID_VALUE;
+}    
 
 bool file::is_tty(void) const
 {

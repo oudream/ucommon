@@ -33,14 +33,16 @@ static shell::flagopt rflag('r',    "--reverse", _TEXT("reverse order of argumen
 static char prefix[80] = {0, 0};
 static char suffix[80] = {0, 0};
 
+static file cout = file::output();
+
 static void output(bool middle, const char *arg)
 {
     if(is(lines))
-        file::cout << prefix << arg << suffix << "\n";
+        cout << prefix << arg << suffix << "\n";
     else if(middle)
-        file::cout << *delim << prefix << arg << suffix;
+        cout << *delim << prefix << arg << suffix;
     else
-        file::cout << prefix << arg << suffix;
+        cout << prefix << arg << suffix;
 }
 
 static void dirpath(bool middle, String path, bool top = true)
@@ -136,7 +138,7 @@ int main(int argc, char **argv)
     }
 
     if(!lines)
-        file::cout << "\n";
+        cout << "\n";
 
     return 0;
 }
