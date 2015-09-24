@@ -1690,7 +1690,7 @@ String shell::path(path_t id)
     return result;
 }
 
-const char *shell::env(const char *id, const char *value)
+const char *shell::getenv(const char *id, const char *value)
 {
     const char *v = ::getenv(id);
     if(v)
