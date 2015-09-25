@@ -66,6 +66,11 @@ typedef void *unicode_t;
  */
 class __EXPORT utf8
 {
+protected:
+    inline utf8() {};
+
+    inline utf8(const utf8& copy) {};
+
 public:
     /**
      * Size of "unicode_t" character codes, may not be ucs4_t size.
