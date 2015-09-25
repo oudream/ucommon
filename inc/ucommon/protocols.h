@@ -169,6 +169,9 @@ public:
  */
 class __EXPORT CharacterProtocol
 {
+private:
+    __DELETE_COPY(CharacterProtocol);
+
 protected:
     const char *eol;
     int back;
@@ -353,7 +356,7 @@ protected:
 class __EXPORT _character_operators
 {
 private:
-    inline _character_operators() {}
+    __DELETE_DEFAULTS(_character_operators);
 
 public:
     static CharacterProtocol& print(CharacterProtocol& p, const char *s);
