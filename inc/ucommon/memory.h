@@ -63,9 +63,6 @@ class __EXPORT memalloc : public MemoryProtocol
 private:
     friend class bufpager;
 
-    // disabled...
-    inline memalloc(const memalloc& copy) {};
-
     size_t pagesize, align;
     unsigned count;
 
@@ -78,6 +75,8 @@ private:
     }   page_t;
 
     page_t *page;
+
+    __DELETE_COPY(memalloc);
 
 protected:
     unsigned limit;
@@ -189,7 +188,7 @@ class __EXPORT mempager : public memalloc, public LockingProtocol
 private:
     mutable pthread_mutex_t mutex;
 
-    inline mempager(const mempager& copy) {};
+    __DELETE_COPY(mempager);
 
 protected:
     /**
@@ -299,7 +298,7 @@ private:
     member *last;
     void **index;
 
-    inline ObjectPager(const ObjectPager& ref) {};
+    __DELETE_COPY(ObjectPager);
 
 protected:
     ObjectPager(size_t objsize, size_t pagesize = 256);
@@ -408,10 +407,7 @@ private:
     unsigned members;
     LinkedObject *root;
 
-    inline StringPager(const StringPager& copy) {};
-
-protected:
-    virtual const char *invalid(void) const;
+    __DELETE_COPY(StringPager);
 
 public:
     /**
@@ -648,7 +644,7 @@ public:
 class __EXPORT DirPager : protected StringPager
 {
 private:
-    DirPager(const DirPager& copy) {};    
+    __DELETE_COPY(DirPager);
 
 protected:
     const char *dir;
@@ -740,8 +736,10 @@ private:
     unsigned ccount;
     bool eom;       /* null written or out of memory */
 
-    virtual int _getch(void);
-    virtual int _putch(int code);
+    virtual int _getch(void) __FINAL;
+    virtual int _putch(int code) __FINAL;
+
+    __DELETE_COPY(bufpager);
 
 protected:
     virtual void *_alloc(size_t size);
@@ -872,6 +870,8 @@ class __EXPORT autorelease
 private:
     LinkedObject *pool;
 
+    __DELETE_COPY(autorelease);
+
 public:
     /**
      * Create an initially empty autorelease pool.
@@ -909,6 +909,9 @@ public:
  */
 class __EXPORT PagerObject : public LinkedObject, public CountedObject
 {
+private:
+    __DELETE_COPY(PagerObject);
+
 protected:
     friend class PagerPool;
 
@@ -927,12 +930,12 @@ protected:
     /**
      * Release a pager object reference.
      */
-    void release(void);
+    void release(void) __OVERRIDE;
 
     /**
      * Return the pager object back to it's originating pool.
      */
-    void dealloc(void);
+    void dealloc(void) __OVERRIDE;
 };
 
 /**
@@ -948,6 +951,8 @@ class __EXPORT PagerPool : public MemoryProtocol
 private:
     LinkedObject *freelist;
     mutable pthread_mutex_t mutex;
+
+    __DELETE_COPY(PagerPool);
 
 protected:
     PagerPool();
@@ -965,13 +970,16 @@ public:
 
 class __EXPORT charmem : public CharacterProtocol
 {
+private:
+    __DELETE_COPY(charmem);
+
 protected:
     char *buffer;
     size_t inp, out, size;
     bool dynamic;
 
-    int _getch(void);
-    int _putch(int code);
+    int _getch(void) __OVERRIDE;
+    int _putch(int code) __OVERRIDE;
 
 public:
     charmem(char *mem, size_t size);
@@ -998,8 +1006,10 @@ private:
     char *pos;
     size_t max;
 
-    int _putch(int code);
-    int _getch(void);
+    int _putch(int code) __FINAL;
+    int _getch(void) __FINAL;
+
+    __DELETE_COPY(chartext);
 
 public:
     chartext();
@@ -1017,6 +1027,9 @@ public:
 template <typename T>
 class pager : private MemoryRedirect, private PagerPool
 {
+private:
+    __DELETE_COPY(pager);
+
 public:
     /**
      * Construct a pager and optionally assign a private pager heap.

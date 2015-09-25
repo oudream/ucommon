@@ -602,17 +602,14 @@ void StringPager::set(unsigned ind, const char *text)
     list->text = str;
 }
 
-const char *StringPager::invalid(void) const
-{
-    return NULL;
-}
-
 const char *StringPager::get(unsigned ind) const
 {
     linked_pointer<member> list = root;
 
-    if(ind >= members)
-        return invalid();
+    if(ind >= members) {
+        __THROW_RANGE("stringpager outside range");
+        return NULL;
+    }
 
     while(ind--)
         list.next();
@@ -631,9 +628,10 @@ void StringPager::clear(void)
 
 const char *StringPager::pull(void)
 {
-    if(!members)
-        return invalid();
-
+    if(!members) {
+        __THROW_RUNTIME("no members");
+        return NULL;
+    }
 
     member *mem = (member *)root;
     const char *result = mem->text;
@@ -675,8 +673,10 @@ const char *StringPager::pop(void)
 {
     const char *out = NULL;
 
-    if(!root)
-        return invalid();
+    if(root == nullptr) {
+        __THROW_RUNTIME("no root");
+        return NULL;
+    }
 
     index = NULL;
 
