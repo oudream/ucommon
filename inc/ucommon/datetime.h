@@ -1007,7 +1007,7 @@ private:
 protected:
     const char *_print(void) const;
 
-    int _input(int code);
+    int _input(int code) __OVERRIDE;
 
 public:
     isotime(Date& date, Time& time);

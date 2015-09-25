@@ -197,12 +197,12 @@ protected:
      * separately locks and unlocks for each request when a large number of
      * allocation requests are being batched together.
      */
-    virtual void _lock(void);
+    virtual void _lock(void) __OVERRIDE;
 
     /**
      * Unlock the memory pager mutex.
      */
-    virtual void _unlock(void);
+    virtual void _unlock(void) __OVERRIDE;
 
 public:
     /**

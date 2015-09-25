@@ -1121,11 +1121,11 @@ public:
 
     void release(void);
 
-    ssize_t _write(const char *address, size_t size);
+    ssize_t _write(const char *address, size_t size) __OVERRIDE;
 
-    ssize_t _read(char *address, size_t size);
+    ssize_t _read(char *address, size_t size) __OVERRIDE;
 
-    bool _wait(void);
+    bool _wait(void) __OVERRIDE;
 
     inline void flush(void)
         {sync();}

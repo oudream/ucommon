@@ -68,9 +68,9 @@ private:
 #endif
     char *tmp;
 
-    int _putch(int code);
+    int _putch(int code) __FINAL;
 
-    int _getch(void);
+    int _getch(void) __FINAL;
 
     __DELETE_COPY(file);
 
