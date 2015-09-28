@@ -878,39 +878,6 @@ size_t shell::printf(const char *format, ...)
     return result;
 }
 
-size_t shell::readln(char *address, size_t size)
-{
-    address[0] = 0;
-
-    if(!fgets(address, (socksize_t)size, stdin))
-        return 0;
-
-    if(address[size - 1] == '\n') {
-        --size;
-        if(address[size - 1] == '\r')
-            --size;
-    }
-    address[size] = 0;
-    return size;
-}
-
-size_t shell::read(String& string)
-{
-    char *cp = string.c_mem();
-    size_t size = string.size();
-    size = readln(cp, size);
-    String::fix(string);
-    return size;
-}
-
-size_t shell::writes(const char *string)
-{
-    size_t result = fputs(string, stdout);
-    if(result == ((size_t)(EOF)))
-        return 0;
-    return result;
-}
-
 #ifdef _MSWINDOWS_
 
 static void pathfinder(const char *name, char *buf, size_t size)

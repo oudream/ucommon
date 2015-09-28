@@ -689,8 +689,9 @@ public:
      * @param test condition.
      * @param exitcode to use if true.
      */
-    static inline int condition(bool test, int exitcode)
-        { return (test) ? exitcode : 0;}
+    static inline int condition(bool test, int exitcode) {
+        return (test) ? exitcode : 0;
+    }
 
     /**
      * Print a debug message by debug level.
@@ -722,20 +723,7 @@ public:
      */
     static void log(const char *name, loglevel_t level = ERR, logmode_t mode = USER_LOG, logproc_t handler = (logproc_t)NULL);
 
-    /**
-     * Print to standard output.
-     * @param format string to use.
-     */
     static size_t printf(const char *format, ...) __PRINTF(1, 2);
-
-    static size_t readln(char *address, size_t size);
-
-    static size_t writes(const char *string);
-
-    static size_t read(String& string);
-
-    inline static size_t write(String& string)
-        {return writes(string.c_str());}
 
     /**
      * Get saved internal argc count for items.  This may be items that
