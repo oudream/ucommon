@@ -124,6 +124,7 @@
 #define __PRINTF(x,y)   __attribute__ ((format (printf, x, y)))
 #define __SCANF(x, y) __attribute__ ((format (scanf, x, y)))
 #define __MALLOC      __attribute__ ((malloc))
+#define __NORETURN    __attribute__ ((__noreturn__))
 #endif
 
 #define __UNUSED(x)         (void)x
