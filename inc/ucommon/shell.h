@@ -624,6 +624,8 @@ public:
      */
     static void error(const char *format, ...) __PRINTF(1, 2);
 
+    static void errlog(const char *format, ...) __PRINTF(1, 2);
+
     /**
      * Print error message and exit.  Ignored if exitcode == 0.
      * @param exitcode to return to parent process.

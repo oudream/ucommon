@@ -1,3 +1,9 @@
+ucommon (1:6.6.1-1) UNRELEASED; urgency=low
+
+  * Updated for errlog in transition to 7.0
+
+ -- David Sugar <dsugar@cherokeesofidaho.org>  Sun, 04 Oct 2015 09:24:00 -0400
+
 ucommon (1:6.6.0-1) UNRELEASED; urgency=medium
 
   * Expanded usecure for rsa keys

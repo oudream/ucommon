@@ -820,6 +820,49 @@ void shell::error(const char *format, ...)
     va_end(args);
 }
 
+void shell::errlog(const char *format, ...)
+{
+    va_list args;
+    char buf[256];
+
+    String::set(buf, sizeof(buf) - 1, format);
+    size_t len = strlen(buf);
+
+    if(buf[len - 1] != '\n') {
+        buf[len] = '\n';
+        buf[len + 1] = 0;
+    }
+    else
+        --len;
+
+    format = buf;
+
+    va_start(args, format);
+    if(!eq("*** ", format, 4))
+        fputs("*** ", stderr);
+    vfprintf(stderr, format, args);
+    fflush(stderr);
+
+    buf[len] = 0;
+
+#ifdef  HAVE_SYSLOG_H
+    if(errname && errmode != NONE && (ERR <= errlevel)) {
+        if(eq("*** ", format, 4)) {
+            format += 4;
+            const char *cp = format;
+            while(isalnum(*cp) || *cp == '-' || *cp == '.')
+                ++cp;
+            if(*cp == ':' && cp[1] == ' ')
+                format = cp + 2;
+        }
+        vsyslog(LOG_ERR, format, args);
+    }
+#endif
+    va_end(args);
+}
+
+
+
 void shell::errexit(int exitcode, const char *format, ...)
 {
     if(!exitcode)
