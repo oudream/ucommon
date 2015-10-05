@@ -417,7 +417,7 @@ public:
          * Construct a socket address from a sockaddr object.
          */
         address(const sockaddr& address) : list(NULL)
-            {insert(address);}
+            {insert(&address);}
 
         /**
          * Construct a socket address from an addrinfo structure.
@@ -681,8 +681,6 @@ public:
          * @return true if inserted, false if duplicate.
          */
         bool insert(const struct sockaddr *address);
-        inline bool insert(const struct sockaddr& address)
-            {return insert(&address);}
 
         /**
          * Copy an existing addrinfo into our object.  This is also used
