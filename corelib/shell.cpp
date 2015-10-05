@@ -779,7 +779,7 @@ skip:
     return _argv;
 }
 
-void shell::error(const char *format, ...)
+void shell::errlog(const char *format, ...)
 {
     va_list args;
     char buf[256];

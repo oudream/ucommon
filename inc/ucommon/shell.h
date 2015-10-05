@@ -674,7 +674,7 @@ public:
      * Print error message and continue.
      * @param format string to use.
      */
-    static void error(const char *format, ...) __PRINTF(1, 2);
+    static void errlog(const char *format, ...) __PRINTF(1, 2);
 
     /**
      * Print error message and exit.  Ignored if exitcode == 0.
