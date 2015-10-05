@@ -741,7 +741,7 @@ bool cidr::is_member(const struct sockaddr *s) const
 {
     assert(s != NULL);
 
-    inethostaddr_t host;
+    struct hostaddr_internet host;
     struct sockaddr_internet *addr = (struct sockaddr_internet *)s;
 
     if(addr->address.sa_family != Family)
@@ -767,9 +767,9 @@ bool cidr::is_member(const struct sockaddr *s) const
     }
 }
 
-inethostaddr_t cidr::broadcast(void) const
+struct hostaddr_internet cidr::broadcast(void) const
 {
-    inethostaddr_t bcast;
+    struct hostaddr_internet bcast;
 
     switch(Family) {
     case AF_INET:
