@@ -57,6 +57,7 @@
 #include <commoncpp/tokenizer.h>
 #include <commoncpp/object.h>
 #include <commoncpp/misc.h>
+#include <commoncpp/xml.h>
 
 #ifndef	UCOMMON_SYSRUNTIME
 #include <commoncpp/applog.h>

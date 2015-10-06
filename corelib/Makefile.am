@@ -18,7 +18,7 @@ lib_LTLIBRARIES = libucommon.la
 libucommon_la_LDFLAGS = @UCOMMON_LIBS@ $(RELEASE) 
 libucommon_la_SOURCES = object.cpp linked.cpp string.cpp mapped.cpp \
 	counter.cpp timer.cpp memory.cpp socket.cpp access.cpp \
-	thread.cpp fsys.cpp cpr.cpp reuse.cpp xml.cpp stream.cpp \
+	thread.cpp fsys.cpp cpr.cpp reuse.cpp stream.cpp \
 	keydata.cpp numbers.cpp datetime.cpp unicode.cpp atomic.cpp \
 	condition.cpp file.cpp regex.cpp protocols.cpp shell.cpp \
 	typeref.cpp arrayref.cpp mapref.cpp shared.cpp

@@ -16,19 +16,21 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with GNU uCommon C++.  If not, see <http://www.gnu.org/licenses/>.
 
+
 #include <ucommon-config.h>
-#include <ucommon/export.h>
-#include <ucommon/protocols.h>
-#include <ucommon/string.h>
-#include <ucommon/xml.h>
-#include <ctype.h>
+#include <commoncpp/config.h>
+
+#include <commoncpp/export.h>
+// local includes
+#include <commoncpp/xml.h>
 
 static bool isElement(char c)
 {
     return isalnum(c) || c == ':' || c == '-' || c == '.' || c == '_';
 }
 
-namespace ucommon {
+namespace ost {
+using namespace ucommon;
 
 XMLParser::XMLParser(unsigned size)
 {

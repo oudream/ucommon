@@ -17,6 +17,6 @@ pkgincludedir = $(includedir)/commoncpp
 pkginclude_HEADERS = config.h export.h string.h exception.h thread.h misc.h \
 	slog.h applog.h address.h socket.h tcp.h udp.h dccp.h mime.h file.h \
 	process.h pointer.h serial.h tokenizer.h numbers.h object.h persist.h \
-	commoncpp.h
+	xml.h commoncpp.h
 
 

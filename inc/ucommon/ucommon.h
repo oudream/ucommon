@@ -112,7 +112,6 @@
 #include <ucommon/file.h>
 #include <ucommon/temporary.h>
 #include <ucommon/shell.h>
-#include <ucommon/xml.h>
 
 #ifndef  UCOMMON_SYSRUNTIME
 #include <ucommon/stream.h>

@@ -21,18 +21,15 @@
  * @file ucommon/xml.h
  */
 
-#ifndef _UCOMMON_STRING_H_
-#include <ucommon/string.h>
+
+#ifndef COMMONCPP_XML_H_
+#define COMMONCPP_XML_H_
+
+#ifndef COMMONCPP_CONFIG_H_
+#include <commoncpp/config.h>
 #endif
 
-#ifndef _UCOMMON_PROTOCOLS_H_
-#include <ucommon/protocols.h>
-#endif
-
-#ifndef _UCOMMON_XML_H_
-#define _UCOMMON_XML_H_
-
-namespace ucommon {
+namespace ost {
 
 /**
  * XML streaming parser.  This class implements a basic XML stream parser
@@ -127,7 +124,7 @@ protected:
      * @param stream buffer to parse.
      * @return true if parse complete, false if invalid or EOF.
      */
-    bool parse(CharacterProtocol& stream);
+    bool parse(ucommon::CharacterProtocol& stream);
 
     /**
      * Parse a file buffer and return parser document completion flag.
