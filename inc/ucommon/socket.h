@@ -88,7 +88,7 @@ typedef struct sockaddr sockaddr_struct;    // older gcc needs...?
 /**
  * An object that holds ipv4 or ipv6 binary encoded host addresses.
  */
-typedef struct hostaddr_internet
+struct hostaddr_internet
 {
     union
     {
@@ -97,8 +97,7 @@ typedef struct hostaddr_internet
         struct in6_addr ipv6;
 #endif
     };
-}   inethostaddr_t;
-
+};
 
 #if defined(AF_INET6) || defined(__CYGWIN__)
 /**
@@ -169,12 +168,12 @@ class __EXPORT cidr : public LinkedObject
 {
 protected:
     int Family;
-    inethostaddr_t Netmask, Network;
+    struct hostaddr_internet Netmask, Network;
     char Name[16];
 
     unsigned mask(const char *cp) const;
 
-    inethostaddr_t broadcast(void) const;
+    struct hostaddr_internet broadcast(void) const;
 
     unsigned mask(void) const;
 
@@ -256,21 +255,21 @@ public:
      * Get the network host base address of our cidr block.
      * @return binary network host address.
      */
-    inline inethostaddr_t getNetwork(void) const
+    inline struct hostaddr_internet getNetwork(void) const
         {return Network;}
 
     /**
      * Get the effective network mask for our cidr block.
      * @return binary network mask for our cidr.
      */
-    inline inethostaddr_t getNetmask(void) const
+    inline struct hostaddr_internet getNetmask(void) const
         {return Netmask;}
 
     /**
      * Get the broadcast host address represented by our cidr.
      * @return binary broadcast host address.
      */
-    inline inethostaddr_t getBroadcast(void) const
+    inline struct hostaddr_internet getBroadcast(void) const
         {return broadcast();}
 
     /**
@@ -326,7 +325,7 @@ protected:
 
 public:
     // temporary splints...
-    typedef inethostaddr_t host_t;
+    typedef struct hostaddr_internet host_t;
     typedef cidr cidr_t;
 
     /**
@@ -417,7 +416,7 @@ public:
          * Construct a socket address from a sockaddr object.
          */
         address(const sockaddr& address) : list(NULL)
-            {insert(address);}
+            {insert(&address);}
 
         /**
          * Construct a socket address from an addrinfo structure.
@@ -681,8 +680,6 @@ public:
          * @return true if inserted, false if duplicate.
          */
         bool insert(const struct sockaddr *address);
-        inline bool insert(const struct sockaddr& address)
-            {return insert(&address);}
 
         /**
          * Copy an existing addrinfo into our object.  This is also used
@@ -2018,6 +2015,75 @@ inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
 String str(Socket& so, size_t size);
 
 namespace Type {
+
+    class HostAddress
+    {
+    private:
+        struct hostaddr_internet storage;
+
+    public:
+        inline HostAddress() {
+            memset(&storage, 0, sizeof(storage));
+        }
+
+        inline HostAddress(const HostAddress& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+        }
+
+        inline HostAddress(const struct hostaddr_internet *addr) {
+            memcpy(&storage, addr, sizeof(struct hostaddr_internet));
+        }
+
+        inline HostAddress(const in_addr *addr) {
+            memset(&storage, 0, sizeof(storage));
+            memcpy(&storage, addr, sizeof(struct in_addr));
+        }
+
+#ifdef  AF_INET6
+        inline HostAddress(const in6_addr *addr) {
+            memset(&storage, 0, sizeof(storage));
+            memcpy(&storage, addr, sizeof(struct in6_addr));
+        }
+#endif
+
+        inline operator const struct hostaddr_internet *() const {
+            return &storage;
+        }
+
+        inline struct hostaddr_internet *operator*() {
+            return &storage;
+        }
+
+        inline socklen_t size() {
+            return sizeof(storage);
+        }
+
+        inline HostAddress& operator=(const HostAddress& copy) {
+            memcpy(&storage, &copy.storage, sizeof(storage));
+            return *this;
+        }
+
+        inline HostAddress& operator=(const struct hostaddr_internet *host) {
+            memcpy(&storage, host, sizeof(struct hostaddr_internet));
+            return *this;
+        }
+
+        inline bool operator==(const HostAddress& check) const {
+            return (memcmp(&check.storage, &storage, sizeof(storage)) == 0);
+        }
+
+        inline bool operator!=(const HostAddress& check) const {
+            return (memcmp(&check.storage, &storage, sizeof(storage)) != 0);
+        }
+
+        inline bool operator==(const struct hostaddr_internet *host) const {
+            return (memcmp(host, &storage, sizeof(storage)) == 0);
+        }
+
+        inline bool operator!=(const struct hostaddr_internet *host) const {
+            return (memcmp(host, &storage, sizeof(storage)) != 0);
+        }
+    };
 
     class SockAddress
     {
