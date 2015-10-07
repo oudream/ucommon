@@ -156,7 +156,7 @@ extern "C" {
         {return _stricmp(s1, s2);}
 
     inline int strnicmp(const char *s1, const char *s2, size_t size)
-        {return _strnicmp(s1, s2, l);}
+        {return _strnicmp(s1, s2, size);}
 #endif
 
     __EXPORT uint16_t lsb_getshort(uint8_t *b);
