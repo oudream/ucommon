@@ -1367,12 +1367,12 @@ public:
     const static size_t header = sizeof(String::cstring);
 
 private:
-    bool resize(size_t size);
-    void cow(size_t adj = 0);
-    void release(void);
+    bool resize(size_t size) __FINAL;
+    void cow(size_t adj = 0) __FINAL;
+    void release(void) __FINAL;
 
 protected:
-    cstring *c_copy(void) const;
+    cstring *c_copy(void) const __OVERRIDE;
 
 public:
     /**
