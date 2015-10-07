@@ -1396,15 +1396,17 @@ public:
      * Assign the text of a string to our object.
      * @param object to copy text from.
      */
-    inline void operator=(String& object)
-        {set(object.c_str());}
+    inline void operator=(String& object) {
+        set(object.c_str());
+    }
 
     /**
      * Assign null terminated text to our object.
      * @param text to copy.
      */
-    inline void operator=(const char *text)
-        {set(text);}
+    inline void operator=(const char *text) {
+        set(text);
+    }
 
     /**
      * Create an instance of a memory string.
@@ -1449,95 +1451,112 @@ public:
     /**
      * Create a new character buffer with an empty string.
      */
-    inline charbuf()
-        {buffer[0] = 0;}
+    inline charbuf() {
+        buffer[0] = 0;
+    }
 
     /**
      * Create a character buffer with assigned text.  If the text is
      * larger than the size of the object, it is truncated.
      * @param text to assign.
      */
-    inline charbuf(const char *text)
-        {String::set(buffer, S, text);}
+    inline charbuf(const char *text) {
+        String::set(buffer, S, text);
+    }
 
     /**
      * Copy constructor.
      */
-    inline charbuf(const charbuf& copy)
-        {String::set(buffer, S, copy.buffer);}
+    inline charbuf(const charbuf& copy) {
+        String::set(buffer, S, copy.buffer);
+    }
 
     /**
      * Assign null terminated text to the object.
      * @param text to assign.
      */
-    inline void operator=(const char *text)
-        {String::set(buffer, S, text);}
+    inline void operator=(const char *text) {
+        String::set(buffer, S, text);
+    }
 
     /**
      * Concatenate text into the object.  If the text is larger than the
      * size of the object, then it is truncated.
      * @param text to append.
      */
-    inline void operator+=(const char *text)
-        {String::add(buffer, S, text);}
+    inline void operator+=(const char *text) {
+        String::add(buffer, S, text);
+    }
 
     /**
      * Test if data is contained in the object.
      * @return true if there is text.
      */
-    inline operator bool() const
-        {return buffer[0];}
+    inline operator bool() const {
+        return buffer[0];
+    }
 
     /**
      * Test if the object is empty.
      * @return true if the object is empty.
      */
-    inline bool operator!() const
-        {return buffer[0] == 0;}
+    inline bool operator!() const {
+        return buffer[0] == 0;
+    }
 
     /**
      * Get text by casting reference.
      * @return pointer to text in object.
      */
-    inline operator char *()
-        {return buffer;}
+    inline operator char *() {
+        return buffer;
+    }
 
     /**
      * Get text by object pointer reference.
      * @return pointer to text in object.
      */
-    inline char *operator*()
-        {return buffer;}
+    inline char *operator*() {
+        return buffer;
+    }
 
     /**
      * Array operator to get a character from the object.
      * @param offset of character in string buffer.
      * @return character at offset.
      */
-    inline char& operator[](size_t offset) const
-        {return buffer[offset];}
+    inline char& operator[](size_t offset) const {
+        if(offset >= S)
+            __THROW_RANGE("charbuf offset"); 
+        return buffer[offset];
+    }
 
     /**
      * Get a pointer to an offset in the object by expression operator.
      * @param offset of character in string buffer.
      * @return pointer to offset in object.
      */
-    inline char *operator()(size_t offset)
-        {return buffer + offset;}
+    inline char *operator()(size_t offset) {
+        if(offset >= S)
+            __THROW_RANGE("charbuf range");
+        return buffer + offset;
+    }
 
     /**
      * Get allocated size of the object.
      * @return allocated size.
      */
-    inline size_t size(void) const
-        {return S;}
+    inline size_t size(void) const {
+        return S;
+    }
 
     /**
      * Get current length of string.
      * @return length of string.
      */
-    inline size_t len(void) const
-        {return strlen(buffer);}
+    inline size_t len(void) const {
+        return strlen(buffer);
+    }
 };
 
 /**
@@ -1573,21 +1592,25 @@ public:
      * Create a string buffer from a null terminated string.
      * @param text to place in object.
      */
-    inline stringbuf(const char *text) : memstring(buffer, S) {set(text);}
+    inline stringbuf(const char *text) : memstring(buffer, S) {
+        set(text);
+    }
 
     /**
      * Assign a string buffer from a null terminated string.
      * @param text to assign to object.
      */
-    inline void operator=(const char *text)
-        {set(text);}
+    inline void operator=(const char *text) {
+        set(text);
+    }
 
     /**
      * Assign a string buffer from another string object.
      * @param object to assign from.
      */
-    inline void operator=(String& object)
-        {set(object.c_str());}
+    inline void operator=(String& object) {
+        set(object.c_str());
+    }
 };
 
 /**
@@ -1596,11 +1619,13 @@ public:
  * @param s2 string to compare.
  * @return true if equal.
  */
-inline bool eq(char const *s1, char const *s2)
-    {return String::equal(s1, s2);}
+inline bool eq(char const *s1, char const *s2) {
+    return String::equal(s1, s2);
+}
 
-inline bool ne(char const *s1, char const *s2)
-    {return !String::equal(s1, s2);}
+inline bool ne(char const *s1, char const *s2) {
+    return !String::equal(s1, s2);
+}
 
 /**
  * Compare two null terminated strings if equal up to specified size.
@@ -1609,11 +1634,13 @@ inline bool ne(char const *s1, char const *s2)
  * @param size of string to compare.
  * @return true if equal.
  */
-inline bool eq(char const *s1, char const *s2, size_t size)
-    {return String::equal(s1, s2, size);}
+inline bool eq(char const *s1, char const *s2, size_t size) {
+    return String::equal(s1, s2, size);
+}
 
-inline bool ne(char const *s1, char const *s2, size_t size)
-    {return !String::equal(s1, s2, size);}
+inline bool ne(char const *s1, char const *s2, size_t size) {
+    return !String::equal(s1, s2, size);
+}
 
 /**
  * Compare two string objects if equal.  The left string is an object,
@@ -1624,23 +1651,29 @@ inline bool ne(char const *s1, char const *s2, size_t size)
  * @param s2 string to compare.
  * @return true if equal.
  */
-inline bool eq(String &s1, const char *s2)
-    {return s1.compare(s2) == 0;}
+inline bool eq(String &s1, const char *s2) {
+    return s1.compare(s2) == 0;
+}
 
-inline bool ne(String &s1, String &s2)
-    {return s1.compare(s2) != 0;}
+inline bool ne(String &s1, String &s2) {
+    return s1.compare(s2) != 0;
+}
 
-inline bool lt(String &s1, const char *s2)
-    {return s1.compare(s2) < 0;}
+inline bool lt(String &s1, const char *s2) {
+    return s1.compare(s2) < 0;
+}
 
-inline bool gt(String &s1, const char *s2)
-    {return s1.compare(s2) > 0;}
+inline bool gt(String &s1, const char *s2) {
+    return s1.compare(s2) > 0;
+}
 
-inline bool le(String &s1, const char *s2)
-    {return s1.compare(s2) <= 0;}
+inline bool le(String &s1, const char *s2) {
+    return s1.compare(s2) <= 0;
+}
 
-inline bool ge(String &s1, const char *s2)
-    {return s1.compare(s2) >= 0;}
+inline bool ge(String &s1, const char *s2) {
+    return s1.compare(s2) >= 0;
+}
 
 /**
  * Compare two null terminated strings if equal ignoring case.  This is
@@ -1663,35 +1696,44 @@ inline bool ne_case(char const *s1, char const *s2)
  * @param size of string to compare.
  * @return true if equal.
  */
-inline bool eq_case(char const *s1, char const *s2, size_t size)
-    {return String::eq_case(s1, s2, size);}
+inline bool eq_case(char const *s1, char const *s2, size_t size) {
+    return String::eq_case(s1, s2, size);
+}
 
-inline String str(const char *string)
-    {return (String)string;}
+inline String str(const char *string) {
+    return (String)string;
+}
 
-inline String str(String& string)
-    {return (String)string;}
+inline String str(String& string) {
+    return (String)string;
+}
 
-inline String str(short value)
-    {String temp(16, "%hd", value); return temp;}
+inline String str(short value) {
+    String temp(16, "%hd", value); return temp;
+}
 
-inline String str(unsigned short value)
-    {String temp(16, "%hu", value); return temp;}
+inline String str(unsigned short value) {
+    String temp(16, "%hu", value); return temp;
+}
 
-inline String str(long value)
-    {String temp(32, "%ld", value); return temp;}
+inline String str(long value) {
+    String temp(32, "%ld", value); return temp;
+}
 
-inline String str(unsigned long value)
-    {String temp(32, "%lu", value); return temp;}
+inline String str(unsigned long value) {
+    String temp(32, "%lu", value); return temp;
+}
 
-inline String str(double value)
-    {String temp(40, "%f", value); return temp;}
+inline String str(double value) {
+    String temp(40, "%f", value); return temp;
+}
 
 String str(CharacterProtocol& cp, size_t size);
 
 template<>
-inline void swap<string_t>(string_t& s1, string_t& s2)
-    {String::swap(s1, s2);}
+inline void swap<string_t>(string_t& s1, string_t& s2) {
+    String::swap(s1, s2);
+}
 
 class __EXPORT strdup_t
 {
@@ -1699,42 +1741,54 @@ private:
     char *data;
 
 public:
-    inline strdup_t()
-        {data = NULL;}
+    inline strdup_t() {
+        data = NULL;
+    }
 
-    inline strdup_t(char *str)
-        {data = str;}
+    inline strdup_t(char *str) {
+        data = str;
+    }
 
-    inline ~strdup_t()
-        {if(data) ::free(data);}
+    inline ~strdup_t() {
+        if(data) 
+            ::free(data);
+    }
 
-    inline strdup_t& operator=(char *str)
-        {if(data) ::free(data); data = str; return *this;}
+    inline strdup_t& operator=(char *str) {
+        if(data) 
+            ::free(data); 
+        data = str; 
+        return *this;
+    }
 
-    inline operator bool() const
-        {return data != NULL;}
+    inline operator bool() const {
+        return data != nullptr;
+    }
 
-    inline bool operator!() const
-        {return data == NULL;}
+    inline bool operator!() const {
+        return data == nullptr;
+    }
 
-    inline operator char*() const
-        {return data;}
+    inline operator char*() const {
+        return data;
+    }
 
-    inline const char *c_str(void) const
-        {return data;}
+    inline const char *c_str(void) const {
+        return data;
+    }
 
-    inline const char *operator*() const
-        {return data;}
+    inline const char *operator*() const {
+        return data;
+    }
 
-    inline char& operator[](int size)
-        {return data[size];}
+    inline char& operator[](int size) {
+        return data[size];
+    }
 
-    inline char *operator+(size_t size)
-        {return data + size;}
+    inline char *operator+(size_t size) {
+        return data + size;
+    }
 };
-
-// for older code...
-typedef size_t strsize_t;
 
 } // namespace ucommon
 
