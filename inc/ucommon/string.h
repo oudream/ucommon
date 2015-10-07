@@ -433,8 +433,9 @@ public:
      * Trim lead characters from text.
      * @param count of characters to remove.
      */
-    inline void trim(size_t count = 1)
-        {operator+=(count);}
+    inline void trim(size_t count = 1) {
+        operator+=(count);
+    }
 
     /**
      * Chop trailing characters from the string.
@@ -446,8 +447,9 @@ public:
      * Chop trailing characters from text.
      * @param count of characters to remove.
      */
-    inline void chop(size_t count = 1)
-        {operator-=(count);}
+    inline void chop(size_t count = 1) {
+        operator-=(count);
+    }
 
     /**
      * Strip lead and trailing characters from the string.
@@ -653,15 +655,17 @@ public:
      * Casting reference to raw text string.
      * @return null terminated text of string.
      */
-    inline operator const char *() const
-        {return c_str();}
+    inline operator const char *() const {
+        return c_str();
+    }
 
     /**
      * Reference raw text buffer by pointer operator.
      * @return null terminated text of string.
      */
-    inline const char *operator*() const
-        {return c_str();}
+    inline const char *operator*() const {
+        return c_str();
+    }
 
     /**
      * Test if the string's allocated space is all used up.
@@ -682,16 +686,18 @@ public:
      * @param size of substring to gather.
      * @return string object holding substring.
      */
-    inline String left(size_t size) const
-        {return operator()(0, size);}
+    inline String left(size_t size) const {
+        return operator()(0, size);
+    }
 
     /**
      * Convenience method for right of string.
      * @param offset of substring from right.
      * @return string object holding substring.
      */
-    inline String right(size_t offset) const
-        {return operator()(-((int)offset), 0);}
+    inline String right(size_t offset) const {
+        return operator()(-((int)offset), 0);
+    }
 
     /**
      * Convenience method for substring extraction.
@@ -699,8 +705,9 @@ public:
      * @param size of string to return.
      * @return string object holding substring.
      */
-    inline String copy(size_t offset, size_t size) const
-        {return operator()((int)offset, size);}
+    inline String copy(size_t offset, size_t size) const {
+        return operator()((int)offset, size);
+    }
 
     /**
      * Reference a string in the object by relative offset.  Positive
@@ -869,11 +876,13 @@ public:
      */
     bool operator>=(const char *text) const;
 
-    inline String& operator<<(const char *text)
-        {add(text); return *this;}
+    inline String& operator<<(const char *text) {
+        add(text); return *this;
+    }
 
-    inline String& operator<<(char code)
-        {add(code); return *this;}
+    inline String& operator<<(char code) {
+        add(code); return *this;
+    }
 
     /**
      * Parse short integer value from a string.
@@ -1083,8 +1092,9 @@ public:
      */
     static int compare(const char *text1, const char *text2);
 
-    static inline int collate(const char *text1, const char *text2)
-        {return compare(text1, text2);}
+    inline static int collate(const char *text1, const char *text2) {
+        return compare(text1, text2);
+    }
 
     /**
      * Simple equal test for strings.
@@ -1221,11 +1231,13 @@ public:
      */
     static const char *pos(const char *text, ssize_t offset);
 
-    inline static char *right(const char *text, size_t size)
-        {return dup(pos(text, -(ssize_t)size));}
+    inline static char *right(const char *text, size_t size) {
+        return dup(pos(text, -(ssize_t)size));
+    }
 
-    inline static char *copy(const char *text, size_t offset, size_t len)
-        {return left(pos(text, (ssize_t)offset), len);}
+    inline static char *copy(const char *text, size_t offset, size_t len) {
+        return left(pos(text, (ssize_t)offset), len);
+    }
 
     static void cut(char *text, size_t offset, size_t len);
 
@@ -1243,8 +1255,9 @@ public:
      * @param end of line marker characters or NULL if not used.
      * @return token extracted from string or NULL if no more tokens found.
      */
-    inline char *token(char **last, const char *list, const char *quote = NULL, const char *end = NULL)
-        {return token(c_mem(), last, list, quote, end);}
+    inline char *token(char **last, const char *list, const char *quote = NULL, const char *end = NULL) {
+        return token(c_mem(), last, list, quote, end);
+    }
 
     /**
      * Convert string to a double value.
@@ -1252,8 +1265,9 @@ public:
      * @param pointer to update with end of parsed value.
      * @return double value of object.
      */
-    inline double tod(char **pointer = NULL)
-        {return strtod(c_mem(), pointer);}
+    inline double tod(char **pointer = NULL) {
+        return strtod(c_mem(), pointer);
+    }
 
     /**
      * Convert string to a long value.
@@ -1261,8 +1275,9 @@ public:
      * @param pointer to update with end of parsed value.
      * @return long value of object.
      */
-    inline long tol(char **pointer = NULL)
-        {return strtol(c_mem(), pointer, 0);}
+    inline long tol(char **pointer = NULL) {
+        return strtol(c_mem(), pointer, 0);
+    }
 
     /**
      * Convert text to a double value.
@@ -1270,8 +1285,9 @@ public:
      * @param pointer to update with end of parsed value.
      * @return double value of object.
      */
-    inline static double tod(const char *text, char **pointer = NULL)
-        {return strtod(text, pointer);}
+    inline static double tod(const char *text, char **pointer = NULL) {
+        return strtod(text, pointer);
+    }
 
     /**
      * Convert text to a long value.
@@ -1279,8 +1295,9 @@ public:
      * @param pointer to update with end of parsed value.
      * @return long value of object.
      */
-    inline static long tol(const char *text, char **pointer = NULL)
-        {return strtol(text, pointer, 0);}
+    inline static long tol(const char *text, char **pointer = NULL) {
+        return strtol(text, pointer, 0);
+    }
 
     /**
      * Standard radix 64 string encoding.
