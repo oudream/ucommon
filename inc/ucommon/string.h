@@ -112,8 +112,9 @@ public:
         size_t offset(unsigned member);
         size_t size(unsigned member);
 
-        inline size_t members(void) const
-            {return count;}
+        inline size_t members(void) const {
+            return count;
+        }
 
         bool match(const char *text, unsigned flags = 0);
 
@@ -121,11 +122,13 @@ public:
 
         bool operator*=(const char *string);
 
-        operator bool() const
-            {return object != NULL;}
+        operator bool() const {
+            return object != NULL;
+        }
 
-        bool operator!() const
-            {return object == NULL;}
+        bool operator!() const {
+            return object == NULL;
+        }
     };
 
     class __EXPORT cstring : public CountedObject
@@ -221,9 +224,6 @@ public:
      * @return 0 if equal, <0 if less than, 0> if greater than.
      */
     virtual int compare(const char *string) const;
-
-    inline int collate(const char *string) const
-        {return compare(string);}
 
 protected:
     /**
