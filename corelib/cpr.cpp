@@ -90,6 +90,28 @@ void cpr_runtime_error(const char *str)
     abort();
 }
 
+#if !defined(_MSWINDOWS_) && !defined(__QNX__)
+
+extern "C" int stricmp(const char *s1, const char *s2)
+{
+#ifdef  HAVE_STRICMP
+    return stricmp(s1, s2);
+#else
+    return strcasecmp(s1, s2);
+#endif
+}
+
+extern "C" int strnicmp(const char *s1, const char *s2, size_t size)
+{
+#ifdef  HAVE_STRICMP
+    return strnicmp(s1, s2, size);
+#else
+    return strncasecmp(s1, s2, size);
+#endif
+}
+
+#endif
+
 // just become we need to get binary types in a specific binary endian order.
 
 extern "C" uint16_t lsb_getshort(uint8_t *b)

@@ -1784,36 +1784,6 @@ bool String::eq_case(const char *s1, const char *s2)
 #endif
 }
 
-int String::case_compare(const char *s1, const char *s2)
-{
-    if(!s1)
-        s1 = "";
-
-    if(!s2)
-        s2 = "";
-
-#ifdef  HAVE_STRICMP
-    return stricmp(s1, s2);
-#else
-    return strcasecmp(s1, s2);
-#endif
-}
-
-int String::case_compare(const char *s1, const char *s2, size_t size)
-{
-    if(!s1)
-        s1 = "";
-
-    if(!s2)
-        s2 = "";
-
-#ifdef  HAVE_STRICMP
-    return strnicmp(s1, s2, size);
-#else
-    return strncasecmp(s1, s2, size);
-#endif
-}
-
 bool String::eq_case(const char *s1, const char *s2, size_t size)
 {
     if(!s1)

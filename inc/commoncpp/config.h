@@ -79,18 +79,4 @@ typedef uint32_t    uint32;
 typedef int64_t     int64;
 typedef uint64_t    uint64;
 
-#if !defined(_MSWINDOWS_) && !defined(__QNX__)
-
-#ifndef stricmp
-#define stricmp(x,y) String::case_compare(x,y)
-#endif
-
-#ifndef strnicmp
-#define strnicmp(x,y,z) String::case_compare(x,y,z)
-#endif
-
-#endif
-
-
-
 #endif

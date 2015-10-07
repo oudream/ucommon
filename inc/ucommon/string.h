@@ -1113,30 +1113,13 @@ public:
     static bool equal(const char *text1, const char *text2, size_t size);
 
     /**
-     * Depreciated case insensitive string comparison function.
-     * @param text1 to compare.
-     * @param text2 to compare.
-     * @return 0 if equal, >0 if text1 > text2, <0 if text1 < text2.
-     */
-    static int case_compare(const char *text1, const char *text2);
-
-    /**
      * Simple case insensitive equal test for strings.
      * @param text1 to test.
      * @param text2 to test.
      * @return true if equal.
      */
     static bool eq_case(const char *text1, const char *text2);
-
-    /**
-     * Depreciated case insensitive string comparison function.
-     * @param text1 to compare.
-     * @param text2 to compare.
-     * @param size limit of strings to compare.
-     * @return 0 if equal, >0 if text1 > text2, <0 if text1 < text2.
-     */
-    static int case_compare(const char *text1, const char *text2, size_t size);
-
+    
     /**
      * Simple case insensitive equal test for strings.
      * @param text1 to test.
@@ -1589,18 +1572,6 @@ public:
     inline void operator=(String& object)
         {set(object.c_str());}
 };
-
-#if !defined(_MSWINDOWS_) && !defined(__QNX__)
-
-#ifndef stricmp
-#define stricmp(x,y) String::case_compare(x,y)
-#endif
-
-#ifndef strnicmp
-#define strnicmp(x,y,z) String::case_compare(x,y,z)
-#endif
-
-#endif
 
 /**
  * Compare two null terminated strings if equal.

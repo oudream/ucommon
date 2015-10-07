@@ -144,6 +144,21 @@ extern "C" __EXPORT void __cxa_pure_virtual(void);
 #endif
 
 extern "C" {
+#if !defined(_MSWINDOWS_) && !defined(__QNX__)
+    __EXPORT int stricmp(const char *s1, const char *s2);
+    __EXPORT int strnicmp(const char *s1, const char *s2, size_t size);
+
+#elif defined(_MSWINDOWS_)
+    inline char *strdup(const char *s)
+        {return _strdup(s);}
+
+    inline int stricmp(const char *s1, const char *s2)
+        {return _stricmp(s1, s2);}
+
+    inline int strnicmp(const char *s1, const char *s2, size_t size)
+        {return _strnicmp(s1, s2, l);}
+#endif
+
     __EXPORT uint16_t lsb_getshort(uint8_t *b);
     __EXPORT uint32_t lsb_getlong(uint8_t *b);
     __EXPORT uint16_t msb_getshort(uint8_t *b);
