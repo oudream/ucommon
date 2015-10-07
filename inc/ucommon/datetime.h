@@ -1037,8 +1037,4 @@ typedef Time        tod_t;
 
 } // namespace ucommon
 
-extern "C" {
-    __EXPORT long tzoffset(struct timezone *tz = NULL);
-}
-
 #endif

@@ -256,6 +256,28 @@ void operator delete[](void *array) noexcept(true)
     free(array);
 }
 
+extern "C" {
+    long tzoffset(struct timezone *tz)
+    {
+        struct timeval now;
+        time_t t1, t2 = 0;
+        struct tm t;
+        
+        gettimeofday(&now, tz);
+        t1 = now.tv_sec;
+
+#ifdef  HAVE_GMTIME_R
+        gmtime_r(&t1, &t);
+#else
+        t = *gmtime(&t1);
+#endif
+
+        t.tm_isdst = 0;
+        t2 = mktime(&t);
+        return (long)difftime(t1, t2);
+    } 
+}
+
 #endif
 
 

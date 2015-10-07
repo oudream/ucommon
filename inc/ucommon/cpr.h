@@ -153,6 +153,8 @@ extern "C" {
     __EXPORT void lsb_setlong(uint8_t *b, uint32_t v);
     __EXPORT void msb_setshort(uint8_t *b, uint16_t v);
     __EXPORT void msb_setlong(uint8_t *b, uint32_t v);
+
+    __EXPORT long tzoffset(struct timezone *tz = NULL);
 }
 
 template <typename T>
