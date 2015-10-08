@@ -915,7 +915,7 @@ ucommon::Socket::address Socket::getLocal() const
 
 IPV4Host Socket::getIPV4Local(in_port_t *port) const
 {
-    sockaddr_in* from = getLocal();
+    const sockaddr_in* from = getLocal();
     struct in_addr any;
     any.s_addr = INADDR_ANY;
 
@@ -933,7 +933,7 @@ IPV4Host Socket::getIPV4Local(in_port_t *port) const
 #ifdef  CCXX_IPV6
 IPV6Host Socket::getIPV6Local(in_port_t *port) const
 {
-    sockaddr_in6* from = getLocal();
+    const sockaddr_in6* from = getLocal();
     if (from == NULL) {
         if (port)
             *port = 0;

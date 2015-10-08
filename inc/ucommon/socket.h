@@ -241,43 +241,49 @@ public:
      * block like 127/8 named "localdomain", as well as the ipv6 "::1".
      * @return name of cidr.
      */
-    inline const char *getName(void) const
-        {return Name;}
+    inline const char *getName(void) const {
+        return Name;
+    }
 
     /**
      * Get the address family of our cidr block object.
      * @return family of our cidr.
      */
-    inline int getFamily(void) const
-        {return Family;}
+    inline int getFamily(void) const {
+        return Family;
+    }
 
     /**
      * Get the network host base address of our cidr block.
      * @return binary network host address.
      */
-    inline struct hostaddr_internet getNetwork(void) const
-        {return Network;}
+    inline struct hostaddr_internet getNetwork(void) const {
+        return Network;
+    }
 
     /**
      * Get the effective network mask for our cidr block.
      * @return binary network mask for our cidr.
      */
-    inline struct hostaddr_internet getNetmask(void) const
-        {return Netmask;}
+    inline struct hostaddr_internet getNetmask(void) const {
+        return Netmask;
+    }
 
     /**
      * Get the broadcast host address represented by our cidr.
      * @return binary broadcast host address.
      */
-    inline struct hostaddr_internet getBroadcast(void) const
-        {return broadcast();}
+    inline struct hostaddr_internet getBroadcast(void) const {
+        return broadcast();
+    }
 
     /**
      * Get the number of bits in the cidr bitmask.
      * @return bit mask of cidr.
      */
-    inline unsigned getMask(void) const
-        {return mask();}
+    inline unsigned getMask(void) const {
+        return mask();
+    }
 
     /**
      * Set our cidr to a string address.  Replaces prior value.
@@ -297,16 +303,18 @@ public:
      * @param address of socket to test.
      * @return true if address is within cidr.
      */
-    inline bool operator==(const struct sockaddr *address) const
-        {return is_member(address);}
+    inline bool operator==(const struct sockaddr *address) const {
+        return is_member(address);
+    }
 
     /**
      * Test if a given socket address falls outside this cidr.
      * @param address of socket to test.
      * @return true if address is outside cidr.
      */
-    inline bool operator!=(const struct sockaddr *address) const
-        {return !is_member(address);}
+    inline bool operator!=(const struct sockaddr *address) const {
+        return !is_member(address);
+    }
 };
 
 /**
@@ -415,14 +423,16 @@ public:
         /**
          * Construct a socket address from a sockaddr object.
          */
-        address(const sockaddr& address) : list(NULL)
-            {insert(&address);}
+        address(const sockaddr& address) : list(NULL) {
+            insert(&address);
+        }
 
         /**
          * Construct a socket address from an addrinfo structure.
          */
-        address(const addrinfo* address) : list(NULL)
-            {insert(address);}
+        address(const addrinfo* address) : list(NULL) {
+            insert(address);
+        }
 
         /**
          * Construct an empty address.
@@ -453,47 +463,59 @@ public:
          */
         bool operator==(const address& other) const;
 
-        inline bool operator!=(const address& other) const
-            {return !(*this==other);}
+        inline bool operator!=(const address& other) const {
+            return !(*this==other);
+        }
 
-        inline bool equals(const address& other) const
-            {return *this == other;}
+        inline bool equals(const address& other) const {
+            return *this == other;
+        }
 
         /**
          * Get the first socket address in our address list.
          * @return first socket address or NULL if none.
          */
-        struct sockaddr *get(void) const;
+        const struct sockaddr *get(void) const;
 
-        inline struct sockaddr *getAddr(void) const
-            {return get();}
+        struct sockaddr *modify(void);
 
-        inline struct sockaddr *operator()(void) const
-            {return get();}
+        inline const struct sockaddr *getAddr(void) const {
+            return get();
+        }
+
+        inline const struct sockaddr *operator()(void) const {
+            return get();
+        }
 
         /**
          * Get the first socket address by casted reference.
          * @return first socket address we resolved or NULL if none.
          */
-        inline operator struct sockaddr *() const
-            {return get();}
+        inline operator struct sockaddr *() {
+            return modify();
+        }
 
         /**
          * Get the first socket address of specified family from our list.
          * @param family to seek.
          * @return first socket address of family or NULL if none.
          */
-        struct sockaddr *get(int family) const;
+        const struct sockaddr *get(int family) const;
 
-        inline struct sockaddr *operator()(int family) const
-            {return get(family);}
+        struct sockaddr *modify(int family);
 
-        inline operator struct sockaddr_in *() const
-            {return (struct sockaddr_in *)get(AF_INET);}
+        inline const struct sockaddr *operator()(int family) const {
+            return get(family);
+        }
+
+        inline operator struct sockaddr_in *() {
+            return (struct sockaddr_in *)modify(AF_INET);
+        }
 
 #ifdef  AF_INET6
-        inline operator struct sockaddr_in6 *() const
-            {return (struct sockaddr_in6 *)get(AF_INET6);}
+        inline operator struct sockaddr_in6 *() {
+            return (struct sockaddr_in6 *)modify(AF_INET6);
+        }
 #endif
 
         /**
@@ -506,15 +528,17 @@ public:
          * Get the address size of the first address.
          * @return size in bytes of first socket address or 0 if none.
          */
-        inline size_t getLength(void) const
-            {return len(get());}
+        inline size_t getLength(void) const {
+            return len(get());
+        }
 
         /**
          * Get the port of the first address .
          * @return port of first socket address or 0 if none.
          */
-        inline in_port_t getPort(void) const
-            {return getPort(get());}
+        inline in_port_t getPort(void) const {
+            return getPort(get());
+        }
 
         /**
          * Set the port of all addresses in the list.
@@ -538,22 +562,25 @@ public:
          * Get the full socket address list from the object.
          * @return addrinfo list we resolved or NULL if none.
          */
-        inline struct addrinfo *getList(void) const
-            {return list;}
+        inline struct addrinfo *getList(void) const {
+            return list;
+        }
 
         /**
          * Get the full socket address list by casted reference.
          * @return addrinfo list we resolved or NULL if none.
          */
-        inline operator struct addrinfo *() const
-            {return list;}
+        inline operator struct addrinfo *() const {
+            return list;
+        }
 
         /**
          * Return the full socket address list by pointer reference.
          * @return addrinfo list we resolved or NULL if none.
          */
-        inline struct addrinfo *operator*() const
-            {return list;}
+        inline struct addrinfo *operator*() const {
+            return list;
+        }
 
         /**
          * Print the first socket address as a human-readable string to the
@@ -567,30 +594,34 @@ public:
          * @param ipv6_brackets If true, force printing IPv6 brackets. Ignored if address is an IPv4.
          * @return length (in bytes) of the printed string, excluding trailing zero.
          */
-        size_t print(char* dst, size_t dst_sz, bool port=false, bool force_brackets=false) const
-            {return print(get(), dst, dst_sz, port, force_brackets);}
+        size_t print(char* dst, size_t dst_sz, bool port=false, bool force_brackets=false) const {
+            return print(get(), dst, dst_sz, port, force_brackets);
+        }
 
         /**
          * Test if the address list is valid.
          * @return true if we have an address list.
          */
-        inline operator bool() const
-            {return list != NULL;}
+        inline operator bool() const {
+            return list != nullptr;
+        }
 
         /**
          * Test if we have no address list.
          * @return true if we have no address list.
          */
-        inline bool operator!() const
-            {return list == NULL;}
+        inline bool operator!() const {
+            return list == nullptr;
+        }
 
         /**
          * Test if the first socket address is ADDR_ANY:
          *   0.0.0.0 or ::0
          * @return true if the address is one of the above.
          */
-        inline bool isAny() const
-            {return isAny(get());}
+        inline bool isAny() const {
+            return isAny(get());
+        }
 
         /**
          * Clear the address list and set the first address to be the
@@ -605,8 +636,9 @@ public:
          *   127.0.0.1 or ::1
          * @return true if the address is one of the above.
          */
-        inline bool isLoopback() const
-            {return isLoopback(get());}
+        inline bool isLoopback() const {
+            return isLoopback(get());
+        }
 
         /**
          * Clear the address list and set the first address to be the
@@ -705,15 +737,17 @@ public:
          * Returns the size of the socket address according to the family.
          * @return size in bytes of the valid part of the socket address.
          */
-        static size_t getLength(const struct sockaddr *address)
-            {return len(address);}
+        static size_t getLength(const struct sockaddr *address) {
+            return len(address);
+        }
 
         /**
          * Returns the port of the socket address.
          * @return port associated to the socket address.
          */
-        inline static in_port_t getPort(const struct sockaddr *address)
-            {return Socket::port(address);}
+        inline static in_port_t getPort(const struct sockaddr *address) {
+            return Socket::port(address);
+        }
 
         /**
          * Set the port of the socket address.
@@ -2010,7 +2044,7 @@ inline struct addrinfo *addrinfo(Socket::address& address)
  * @param address list object.
  * @return first socket address in list or NULL if empty.
  */
-inline struct sockaddr *addr(Socket::address& address)
+inline const struct sockaddr *addr(Socket::address& address)
     {return address.get();}
 
 /**

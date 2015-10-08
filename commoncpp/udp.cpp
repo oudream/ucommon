@@ -264,7 +264,7 @@ UDPSocket::~UDPSocket()
 
 ssize_t UDPSocket::send(const void *buf, size_t len)
 {
-    struct sockaddr *addr = peer;
+    const struct sockaddr *addr = peer;
     socklen_t alen = (socklen_t)peer.getLength();
     if(isConnected()) {
         addr = NULL;
@@ -394,7 +394,7 @@ void UDPSocket::connect(const ucommon::Socket::address &host)
     if(so == INVALID_SOCKET)
         return;
 
-    if(!::connect(so, host, (socklen_t)host.getLength()))
+    if(!::connect(so, host.get(), (socklen_t)host.getLength()))
         Socket::state = CONNECTED;
 }
 
@@ -464,7 +464,7 @@ ucommon::Socket::address UDPSocket::getPeer()
 IPV4Host UDPSocket::getIPV4Peer(in_port_t *port)
 {
     ucommon::Socket::address addr = getPeer();
-    if (addr) {
+    if (is(addr)) {
         if(port)
             *port = peer.getPort();
     } else {
@@ -480,7 +480,7 @@ IPV4Host UDPSocket::getIPV4Peer(in_port_t *port)
 IPV6Host UDPSocket::getIPV6Peer(in_port_t *port)
 {
     ucommon::Socket::address addr = getPeer();
-    if (addr) {
+    if (is(addr)) {
         if(port)
             *port = peer.getPort();
     } else {

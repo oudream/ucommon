@@ -1202,7 +1202,15 @@ proc:
 	strfree(addr);
 }
 
-struct sockaddr *Socket::address::get(void) const
+struct sockaddr *Socket::address::modify(void)
+{
+    if(!list)
+        return NULL;
+
+    return list->ai_addr;
+}
+
+const struct sockaddr *Socket::address::get(void) const
 {
     if(!list)
         return NULL;
@@ -1244,10 +1252,26 @@ Socket::address Socket::address::withPort(in_port_t port) const
     return copy;
 }
 
-struct sockaddr *Socket::address::get(int family) const
+struct sockaddr *Socket::address::modify(int family)
 {
     struct sockaddr *ap;
     struct addrinfo *lp;
+
+    lp = list;
+
+    while(lp) {
+        ap = lp->ai_addr;
+        if(ap && ap->sa_family == family)
+            return ap;
+        lp = lp->ai_next;
+    }
+    return NULL;
+}
+
+const struct sockaddr *Socket::address::get(int family) const
+{
+    const struct sockaddr *ap;
+    const struct addrinfo *lp;
 
     lp = list;
 
