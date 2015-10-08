@@ -1937,7 +1937,7 @@ int Socket::error(void)
 }
 #endif
 
-Socket::operator bool()
+Socket::operator bool() const
 {
     if(so == INVALID_SOCKET)
         return false;
@@ -2630,7 +2630,7 @@ exit:
     return rtn;
 }
 
-int Socket::error(socket_t so)
+int Socket::error(const socket_t so)
 {
     assert(so != INVALID_SOCKET);
 
@@ -2930,7 +2930,7 @@ struct ::addrinfo *Socket::hinting(socket_t so, struct addrinfo *hint)
     return hint;
 }
 
-int Socket::type(socket_t so)
+int Socket::type(const socket_t so)
 {
     int sotype;
     socklen_t slen = sizeof(sotype);

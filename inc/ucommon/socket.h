@@ -900,8 +900,9 @@ public:
     /**
      * Get error code.
      */
-    inline int err(void) const
-        {return ioerr;}
+    inline int err(void) const {
+        return ioerr;
+    }
 
     /**
      * See the number of bytes in the receive queue.
@@ -928,8 +929,9 @@ public:
      * Set nodelay option for tcp socket.
      * @return 0 if successful, -1 on error.
      */
-    inline int nodelay(void) const
-        {return nodelay(so);}
+    inline int nodelay(void) const {
+        return nodelay(so);
+    }
 
     /**
      * Test for pending input data.  This function can wait up to a specified
@@ -952,95 +954,105 @@ public:
      * Get the number of bytes of data in the socket receive buffer.
      * @return bytes pending.
      */
-    inline unsigned pending(void) const
-        {return pending(so);}
+    inline unsigned pending(void) const {
+        return pending(so);
+    }
 
     /**
      * Set socket for unicast mode broadcasts.
      * @param enable broadcasting if true.
      * @return 0 on success, -1 if error.
      */
-    inline int broadcast(bool enable)
-        {return broadcast(so, enable);}
+    inline int broadcast(bool enable) {
+        return broadcast(so, enable);
+    }
 
     /**
      * Set socket for keepalive packets.
      * @param enable keep-alive if true.
      * @return 0 on success, -1 if error.
      */
-    inline int keepalive(bool enable)
-        {return keepalive(so, enable);}
+    inline int keepalive(bool enable) {
+        return keepalive(so, enable);
+    }
 
     /**
      * Set socket blocking I/O mode.
      * @param enable true for blocking I/O.
      * @return 0 on success, -1 if error.
      */
-    inline int blocking(bool enable)
-        {return blocking(so, enable);}
+    inline int blocking(bool enable) {
+        return blocking(so, enable);
+    }
 
     /**
      * Set multicast mode and multicast broadcast range.
      * @param ttl to set for multicast socket or 0 to disable multicast.
      * @return 0 on success, -1 if error.
      */
-    inline int multicast(unsigned ttl = 1)
-        {return multicast(so, ttl);}
+    inline int multicast(unsigned ttl = 1) {
+        return multicast(so, ttl);
+    }
 
     /**
      * Set loopback to read multicast packets we broadcast.
      * @param enable true to loopback, false to ignore.
      * @return 0 on success, -1 if error.
      */
-    inline int loopback(bool enable)
-        {return loopback(so, enable);}
+    inline int loopback(bool enable) {
+        return loopback(so, enable);
+    }
 
     /**
      * Get socket error code.
      * @return socket error code.
      */
-    inline int getError(void)
-        {return error(so);}
+    inline int getError(void) const {
+        return error(so);
+    }
 
     /**
      * Set the time to live before packets expire.
      * @param time to live to set.
      * @return 0 on success, -1 on error.
      */
-    inline int ttl(uint8_t time)
-        {return ttl(so, time);}
+    inline int ttl(uint8_t time) {
+        return ttl(so, time);
+    }
 
     /**
      * Set the size of the socket send buffer.
      * @param size of send buffer to set.
      * @return 0 on success, -1 on error.
      */
-    inline int sendsize(unsigned size)
-        {return sendsize(so, size);}
+    inline int sendsize(unsigned size) {
+        return sendsize(so, size);
+    }
 
     /**
      * Set the size to wait before sending.
      * @param size of send wait buffer to set.
      * @return 0 on success, -1 on error.
      */
-    inline int sendwait(unsigned size)
-        {return sendwait(so, size);}
-
+    inline int sendwait(unsigned size) {
+        return sendwait(so, size);
+    }
 
     /**
      * Set the size of the socket receive buffer.
      * @param size of recv buffer to set.
      * @return 0 on success, -1 on error.
      */
-    inline int recvsize(unsigned size)
-        {return recvsize(so, size);}
+    inline int recvsize(unsigned size) {
+        return recvsize(so, size);
+    }
 
     /**
      * Get the type of a socket.
      * @param socket descriptor.
      * @return socket type.
      */
-    static int type(socket_t socket);
+    static int type(const socket_t socket);
 
     /**
      * Set segment size and get MTU.
@@ -1062,24 +1074,27 @@ public:
      * Get the type of a socket.
      * @return socket type.
      */
-    inline int type(void)
-        {return type(so);}
+    inline int type(void) const {
+        return type(so);
+    }
 
     /**
      * Set segment size and get mtu of a socket.
      * @param size of segment or 0 to leave unchanged.
      * @return mtu size.
      */
-    inline unsigned segsize(unsigned size)
-        {return segsize(so, size);}
+    inline unsigned segsize(unsigned size) {
+        return segsize(so, size);
+    }
 
     /**
      * Set ccid of dccp socket.
      * @param ccid to set.
      * @return true if success, false if not dccp or not supported ccid used.
      */
-    inline bool ccid(uint8_t id)
-        {return ccid(so, id);}
+    inline bool ccid(uint8_t id) {
+        return ccid(so, id);
+    }
 
     /**
      * Set the type of service field of outgoing packets.  Some useful
@@ -1089,8 +1104,9 @@ public:
      * @param type of service value.
      * @return 0 on success or -1 on error.
      */
-    inline int tos(int type)
-        {return tos(so, type);}
+    inline int tos(int type) {
+        return tos(so, type);
+    }
 
     /**
      * Set packet priority, 0 to 6 unless privileged.  Should be set before
@@ -1098,14 +1114,16 @@ public:
      * @param scheduling priority for packet scheduling.
      * @return 0 on success, -1 on error.
      */
-    inline int priority(int scheduling)
-        {return priority(so, scheduling);}
+    inline int priority(int scheduling) {
+        return priority(so, scheduling);
+    }
 
     /**
      * Shutdown the socket communication channel.
      */
-    inline void shutdown(void)
-        {::shutdown(so, SHUT_RDWR);}
+    inline void shutdown(void) {
+        ::shutdown(so, SHUT_RDWR);
+    }
 
     /**
      * Connect our socket to a remote host from an address list.
@@ -1241,7 +1259,7 @@ public:
      * Test if socket is valid.
      * @return true if valid socket.
      */
-    operator bool();
+    operator bool() const;
 
     /**
      * Test if socket is invalid.
@@ -1260,15 +1278,17 @@ public:
      * Get the socket descriptor by casting.
      * @return socket descriptor of object.
      */
-    inline operator socket_t() const
-        {return so;}
+    inline operator socket_t() const {
+        return so;
+    }
 
     /**
      * Get the socket descriptor by pointer reference.
      * @return socket descriptor of object.
      */
-    inline socket_t operator*() const
-        {return so;}
+    inline socket_t operator*() const {
+        return so;
+    }
 
     /**
      * Get the number of bytes pending in the receive buffer of a socket
@@ -1340,7 +1360,7 @@ public:
      * @param socket descriptor.
      * @return socket error code.
      */
-    static int error(socket_t socket);
+    static int error(const socket_t socket);
 
     /**
      * Set multicast mode and multicast broadcast range for socket descriptor.
@@ -1424,16 +1444,18 @@ public:
      * @param address to examine.
      * @return address family.
      */
-    inline static int family(const struct sockaddr_storage& address)
-        {return ((const struct sockaddr *)&address)->sa_family;}
+    inline static int family(const struct sockaddr_storage& address) {
+        return ((const struct sockaddr *)&address)->sa_family;
+    }
 
     /**
      * Get the address family of an internet socket address object.
      * @param address to examine.
      * @return address family.
      */
-    inline static int family(const struct sockaddr_internet& address)
-        {return address.address.sa_family;}
+    inline static int family(const struct sockaddr_internet& address) {
+        return address.address.sa_family;
+    }
 
     /**
      * Get data waiting in receive queue.
@@ -1466,8 +1488,9 @@ public:
      * @param address to reply to.
      * @return number of bytes sent, -1 if error.
      */
-    inline static ssize_t replyto(socket_t socket, const void *buffer, size_t size, int flags, const struct sockaddr_storage *address)
-        {return sendto(socket, buffer, size, flags, (const struct sockaddr *)address);}
+    inline static ssize_t replyto(socket_t socket, const void *buffer, size_t size, int flags, const struct sockaddr_storage *address) {
+        return sendto(socket, buffer, size, flags, (const struct sockaddr *)address);
+    }
 
     /**
      * Bind the socket descriptor to a known interface and service port.
@@ -1632,8 +1655,9 @@ public:
      * @param address2 to compare.
      * @return true if same family and equal.
      */
-    inline static bool eq_from(const struct sockaddr_storage *address1, const struct sockaddr_storage *address2)
-        {return equal((const struct sockaddr *)address1, (const struct sockaddr *)address2);}
+    inline static bool eq_from(const struct sockaddr_storage *address1, const struct sockaddr_storage *address2) {
+        return equal((const struct sockaddr *)address1, (const struct sockaddr *)address2);
+    }
 
     /**
      * Compare socket addresses.  Test if the internet addresses received match.
@@ -1642,8 +1666,9 @@ public:
      * @param address2 to compare.
      * @return true if same family and equal.
      */
-    inline static bool eq_inet(const struct sockaddr_internet *address1, const struct sockaddr_internet *address2)
-        {return equal((const struct sockaddr *)address1, (const struct sockaddr *)address2);}
+    inline static bool eq_inet(const struct sockaddr_internet *address1, const struct sockaddr_internet *address2) {
+        return equal((const struct sockaddr *)address1, (const struct sockaddr *)address2);
+    }
 
     /**
      * See if both addresses are in the same subnet.  This is only relevant
@@ -1685,8 +1710,9 @@ public:
      * @param address of internet socket to examine.
      * @return service port number.
      */
-    inline static in_port_t port(const struct sockaddr_internet *address)
-        {return port((const struct sockaddr *)address);}
+    inline static in_port_t port(const struct sockaddr_internet *address) {
+        return port((const struct sockaddr *)address);
+    }
 
     /**
      * Convert a socket address and service into a hash map index.
@@ -1822,32 +1848,37 @@ public:
      * @param timeout to wait.
      * @return true when acceptable connection is pending.
      */
-    inline bool wait(timeout_t timeout = Timer::inf) const
-        {return Socket::wait(timeout);}
+    inline bool wait(timeout_t timeout = Timer::inf) const {
+        return Socket::wait(timeout);
+    }
 
     /**
      * Get the socket descriptor of the listener.
      * @return socket descriptor.
      */
-    inline operator socket_t() const
-        {return so;}
+    inline operator socket_t() const {
+        return so;
+    }
 
     /**
      * Get the socket descriptor of the listener by pointer reference.
      * @return socket descriptor.
      */
-    inline socket_t operator*() const
-        {return so;}
+    inline socket_t operator*() const {
+        return so;
+    }
 
     /**
      * Get the socket descriptor of the listener.
      * @return socket descriptor.
      */
-    inline socket_t getsocket(void) const
-        {return so;}
+    inline socket_t getsocket(void) const {
+        return so;
+    }
 
-    inline socket_t handle(void) const
-        {return so;}
+    inline socket_t handle(void) const {
+        return so;
+    }
 
 };
 
@@ -2035,8 +2066,9 @@ public:
  * @param address list object.
  * @return addrinfo list or NULL if empty.
  */
-inline struct addrinfo *addrinfo(Socket::address& address)
-    {return address.getList();}
+inline struct addrinfo *addrinfo(Socket::address& address) {
+    return address.getList();
+}
 
 /**
  * A convenience function to convert a socket address list into a socket
@@ -2044,8 +2076,9 @@ inline struct addrinfo *addrinfo(Socket::address& address)
  * @param address list object.
  * @return first socket address in list or NULL if empty.
  */
-inline const struct sockaddr *addr(Socket::address& address)
-    {return address.get();}
+inline const struct sockaddr *addr(Socket::address& address) {
+    return address.get();
+}
 
 /**
  * Compare two socket addresses to see if equal.  If the port is zero
@@ -2054,8 +2087,9 @@ inline const struct sockaddr *addr(Socket::address& address)
  * @param s2 socket address to compare.
  * @return true if addresses same.
  */
-inline bool eq(const struct sockaddr *s1, const struct sockaddr *s2)
-    {return Socket::equal(s1, s2);}
+inline bool eq(const struct sockaddr *s1, const struct sockaddr *s2) {
+    return Socket::equal(s1, s2);
+}
 
 /**
  * Compare two stored socket addresses to see if equal.  If the port is zero
@@ -2064,8 +2098,9 @@ inline bool eq(const struct sockaddr *s1, const struct sockaddr *s2)
  * @param s2 stored socket address to compare.
  * @return true if addresses same.
  */
-inline bool eq(const struct sockaddr_storage *s1, const struct sockaddr_storage *s2)
-    {return Socket::equal((const struct sockaddr *)s1, (const struct sockaddr *)s2);}
+inline bool eq(const struct sockaddr_storage *s1, const struct sockaddr_storage *s2) {
+    return Socket::equal((const struct sockaddr *)s1, (const struct sockaddr *)s2);
+}
 
 /**
  * Compare two host addresses to see if equal.  The port numbers are
@@ -2074,11 +2109,13 @@ inline bool eq(const struct sockaddr_storage *s1, const struct sockaddr_storage 
  * @param s2 socket address to compare.
  * @return true if addresses same.
  */
-inline bool eq_host(const struct sockaddr *s1, const struct sockaddr *s2)
-    {return Socket::eq_host(s1, s2);}
+inline bool eq_host(const struct sockaddr *s1, const struct sockaddr *s2) {
+    return Socket::eq_host(s1, s2);
+}
 
-inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2)
-    {return Socket::eq_subnet(s1, s2);}
+inline bool eq_subnet(const struct sockaddr *s1, const struct sockaddr *s2) {
+    return Socket::eq_subnet(s1, s2);
+}
 
 String str(Socket& so, size_t size);
 

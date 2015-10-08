@@ -85,24 +85,28 @@ public:
     ~ConditionMutex();
 
 #ifdef  _MSTHREADS_
-    inline void lock(void)
-        {EnterCriticalSection(&mutex);};
+    inline void lock(void) {
+        EnterCriticalSection(&mutex);
+    }
 
-    inline void unlock(void)
-        {LeaveCriticalSection(&mutex);};
+    inline void unlock(void) {
+        LeaveCriticalSection(&mutex);
+    }
 
 #else
     /**
      * Lock the conditional's supporting mutex.
      */
-    inline void lock(void)
-        {pthread_mutex_lock(&mutex);}
+    inline void lock(void) {
+        pthread_mutex_lock(&mutex);
+    }
 
     /**
      * Unlock the conditional's supporting mutex.
      */
-    inline void unlock(void)
-        {pthread_mutex_unlock(&mutex);}
+    inline void unlock(void) {
+        pthread_mutex_unlock(&mutex);
+    }
 #endif
 
     class __EXPORT autolock
@@ -190,20 +194,23 @@ public:
     /**
      * Wait (block) until signalled.
      */
-    inline void wait(void)
-        {pthread_cond_wait(&cond, &shared->mutex);}
+    inline void wait(void) {
+        pthread_cond_wait(&cond, &shared->mutex);
+    }
 
     /**
      * Signal the conditional to release one waiting thread.
      */
-    inline void signal(void)
-        {pthread_cond_signal(&cond);}
+    inline void signal(void) {
+        pthread_cond_signal(&cond);
+    }
 
     /**
      * Signal the conditional to release all waiting threads.
      */
-    inline void broadcast(void)
-        {pthread_cond_broadcast(&cond);}
+    inline void broadcast(void) {
+        pthread_cond_broadcast(&cond);
+    }
 #endif
 };
 
@@ -268,20 +275,23 @@ protected:
     /**
      * Wait (block) until signalled.
      */
-    inline void wait(void)
-        {pthread_cond_wait(&cond, &mutex);}
+    inline void wait(void) {
+        pthread_cond_wait(&cond, &mutex);
+    }
 
     /**
      * Signal the conditional to release one waiting thread.
      */
-    inline void signal(void)
-        {pthread_cond_signal(&cond);}
+    inline void signal(void) {
+        pthread_cond_signal(&cond);
+    }
 
     /**
      * Signal the conditional to release all waiting threads.
      */
-    inline void broadcast(void)
-        {pthread_cond_broadcast(&cond);}
+    inline void broadcast(void) {
+        pthread_cond_broadcast(&cond);
+    }
 #endif
 
     /**
@@ -303,8 +313,9 @@ public:
      * scheduling.
      * @return attributes to use for creating realtime conditionals.
      */
-    static inline pthread_condattr_t *initializer(void)
-        {return &attr.attr;}
+    static inline pthread_condattr_t *initializer(void) {
+        return &attr.attr;
+    }
 #endif
 
     /**
@@ -374,64 +385,75 @@ protected:
      * @param hires timespec representation to set.
      * @param timeout to convert.
      */
-    inline static void set(struct timespec *hires, timeout_t timeout)
-        {Conditional::set(hires, timeout);}
+    inline static void set(struct timespec *hires, timeout_t timeout) {
+        Conditional::set(hires, timeout);
+    }
 
 
 #ifdef  _MSTHREADS_
-    inline void lock(void)
-        {EnterCriticalSection(&mutex);};
+    inline void lock(void) {
+        EnterCriticalSection(&mutex);
+    }
 
-    inline void unlock(void)
-        {LeaveCriticalSection(&mutex);};
+    inline void unlock(void) {
+        LeaveCriticalSection(&mutex);
+    }
 
     void waitSignal(void);
 
     void waitBroadcast(void);
 
-    inline void signal(void)
-        {Conditional::signal();};
+    inline void signal(void) {
+        Conditional::signal();
+    }
 
-    inline void broadcast(void)
-        {Conditional::broadcast();};
+    inline void broadcast(void) {
+        Conditional::broadcast();
+    }
 
 #else
     /**
      * Lock the conditional's supporting mutex.
      */
-    inline void lock(void)
-        {pthread_mutex_lock(&mutex);}
+    inline void lock(void) {
+        pthread_mutex_lock(&mutex);
+    }
 
     /**
      * Unlock the conditional's supporting mutex.
      */
-    inline void unlock(void)
-        {pthread_mutex_unlock(&mutex);}
+    inline void unlock(void) {
+        pthread_mutex_unlock(&mutex);
+    }
 
     /**
      * Wait (block) until signalled.
      */
-    inline void waitSignal(void)
-        {pthread_cond_wait(&cond, &mutex);}
+    inline void waitSignal(void) {
+        pthread_cond_wait(&cond, &mutex);
+    }
 
     /**
      * Wait (block) until broadcast.
      */
-    inline void waitBroadcast(void)
-        {pthread_cond_wait(&bcast, &mutex);}
+    inline void waitBroadcast(void) {
+        pthread_cond_wait(&bcast, &mutex);
+    }
 
 
     /**
      * Signal the conditional to release one signalled thread.
      */
-    inline void signal(void)
-        {pthread_cond_signal(&cond);}
+    inline void signal(void) {
+        pthread_cond_signal(&cond);
+    }
 
     /**
      * Signal the conditional to release all broadcast threads.
      */
-    inline void broadcast(void)
-        {pthread_cond_broadcast(&bcast);}
+    inline void broadcast(void) {
+        pthread_cond_broadcast(&bcast);
+    }
 #endif
 public:
     /**
@@ -685,14 +707,16 @@ public:
     /**
      * Convenience operator to wait on a counting semaphore.
      */
-    inline void operator++(void)
-        {wait();}
+    inline void operator++(void) {
+        wait();
+    }
 
     /**
      * Convenience operator to release a counting semaphore.
      */
-    inline void operator--(void)
-        {release();}
+    inline void operator--(void) {
+        release();
+    }
 };
 
 /**

@@ -149,7 +149,7 @@ public:
     }
 
     inline operator bool() {
-        return get();
+        return value;
     }
 };
 
