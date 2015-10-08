@@ -1839,19 +1839,29 @@ public:
 };
 
 /**
- * Helper function for linked_pointer<struct sockaddr>.
+ * Helper class for linked_pointer template.
+ * @author David Sugar <dyfet@gnutelephony.org>
  */
-__EXPORT struct addrinfo *_nextaddrinfo(struct addrinfo *addrinfo);
+class __EXPORT linked_sockaddr_operations
+{
+protected:
+    inline linked_sockaddr_operations() {}
 
-/**
- * Helper function for linked_pointer<struct sockaddr>.
- */
-__EXPORT struct sockaddr *_getaddrinfo(struct addrinfo *addrinfo);
+    /**
+    * Helper function for linked_pointer<struct sockaddr>.
+    */
+    const struct addrinfo *_nextaddrinfo(const struct addrinfo *addrinfo) const;
 
-/**
- * Helper function for linked_pointer<struct sockaddr>.
- */
-__EXPORT socket_t _getaddrsock(struct addrinfo *addrinfo);
+    /**
+    * Helper function for linked_pointer<struct sockaddr>.
+    */
+    const struct sockaddr *_getaddrinfo(const struct addrinfo *addrinfo) const;
+
+    /**
+    * Helper function for linked_pointer<struct sockaddr>.
+    */
+    socket_t _getaddrsock(const struct addrinfo *addrinfo) const;
+};
 
 /**
  * Linked pointer for address lists.  This can be used to iterate through
@@ -1859,107 +1869,131 @@ __EXPORT socket_t _getaddrsock(struct addrinfo *addrinfo);
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 template <>
-class linked_pointer<sockaddr_struct>
+class linked_pointer<sockaddr_struct> : private linked_sockaddr_operations
 {
 private:
-    struct addrinfo *ptr;
+    const struct addrinfo *ptr;
 
 public:
-    inline linked_pointer(struct addrinfo *list)
-        {ptr = list;}
+    inline linked_pointer(const struct addrinfo *list) {
+        ptr = list;
+    }
 
-    inline linked_pointer()
-        {ptr = NULL;}
+    inline linked_pointer(const linked_pointer& copy) {
+        ptr = copy.ptr;
+    }
 
-    inline linked_pointer(Socket::address& list)
-        {ptr = list.getList();}
+    inline linked_pointer() {
+        ptr = nullptr;
+    }
+
+    inline linked_pointer(Socket::address& list) {
+        ptr = list.getList();
+    }
 
     /**
      * Get the full socket address list by casted reference.
      * @return addrinfo list we resolved or NULL if none.
      */
-    inline operator struct sockaddr *() const
-        {return _getaddrinfo(ptr);}
+    inline operator const struct sockaddr *() const {
+        return _getaddrinfo(ptr);
+    }
 
     /**
      * Return the full socket address list by pointer reference.
      * @return addrinfo list we resolved or NULL if none.
      */
-    inline struct sockaddr *operator*() const
-        {return _getaddrinfo(ptr);}
+    inline const struct sockaddr *operator*() const {
+        return _getaddrinfo(ptr);
+    }
 
-    inline operator struct sockaddr_in *() const
-        {return (struct sockaddr_in *)_getaddrinfo(ptr);}
+    inline operator const struct sockaddr_in *() const {
+        return (struct sockaddr_in *)_getaddrinfo(ptr);
+    }
 
-    inline struct sockaddr_in *in(void) const
-        {return (struct sockaddr_in *)_getaddrinfo(ptr);}
+    inline const struct sockaddr_in *in(void) const {
+        return (struct sockaddr_in *)_getaddrinfo(ptr);
+    }
 
 #ifdef  AF_INET6
-    inline operator struct sockaddr_in6 *() const
-        {return (struct sockaddr_in6 *)_getaddrinfo(ptr);}
+    inline operator const struct sockaddr_in6 *() const {
+        return (struct sockaddr_in6 *)_getaddrinfo(ptr);
+    }
 
-    inline struct sockaddr_in6 *in6(void) const
-        {return (struct sockaddr_in6 *)_getaddrinfo(ptr);}
+    inline const struct sockaddr_in6 *in6(void) const {
+        return (struct sockaddr_in6 *)_getaddrinfo(ptr);
+    }
 #endif
 
     /**
      * Get socket as expression operator.
      */
-    inline socket_t operator()(void) const
-        {return _getaddrsock(ptr);}
+    inline socket_t operator()(void) const {
+        return _getaddrsock(ptr);
+    }
 
     /**
      * Test if the address list is valid.
      * @return true if we have an address list.
      */
-    inline operator bool() const
-        {return ptr != NULL;}
+    inline operator bool() const {
+        return ptr != nullptr;
+    }
 
     /**
      * Assign our pointer from an address list.
      * @param pointer of linked list.
      */
-    inline void operator=(struct addrinfo *list)
-        {ptr = list;}
+    inline linked_pointer& operator=(const struct addrinfo *list) {
+        ptr = list;
+        return *this;
+    }
 
     /**
      * Assign our pointer from an address list.
      * @param pointer of linked list.
      */
-    inline void operator=(Socket::address& list)
-        {ptr = list.getList();}
+    inline linked_pointer& operator=(Socket::address& list) {
+        ptr = list.getList();
+        return *this;
+    }
 
     /**
      * Assign our pointer from an address list.
      * @param pointer of linked list.
      */
-    inline void set(struct addrinfo *list)
-        {ptr = list;}
+    inline void set(const struct addrinfo *list) {
+        ptr = list;
+    }
 
     /**
      * Assign our pointer from an address list.
      * @param pointer of linked list.
      */
-    inline void set(Socket::address& list)
-        {ptr = list.getList();}
+    inline void set(Socket::address& list) {
+        ptr = list.getList();
+    }
 
 
     /**
      * Return member from typed object our pointer references.
      * @return evaluated member of object we point to.
      */
-    inline struct sockaddr* operator->() const
-        {return _getaddrinfo(ptr);}
+    inline const struct sockaddr* operator->() const {
+        return _getaddrinfo(ptr);
+    }
 
     /**
      * Test if we have no address list.
      * @return true if we have no address list.
      */
-    inline bool operator!() const
-        {return ptr == NULL;}
+    inline bool operator!() const {
+        return ptr == nullptr;
+    }
 
-    inline void next(void)
-        {ptr = _nextaddrinfo(ptr);}
+    inline void next(void) {
+        ptr = _nextaddrinfo(ptr);
+    }
 };
 
 /**

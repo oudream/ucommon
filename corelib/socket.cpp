@@ -3573,12 +3573,12 @@ String str(Socket& so, size_t size)
     return s;
 }
 
-struct sockaddr *_getaddrinfo(struct addrinfo *list)
+const struct sockaddr *linked_sockaddr_operations::_getaddrinfo(const struct addrinfo *list) const
 {
     return list->ai_addr;
 }
 
-struct addrinfo *_nextaddrinfo(struct addrinfo *list)
+const struct addrinfo *linked_sockaddr_operations::_nextaddrinfo(const struct addrinfo *list) const
 {
     if(!list)
         return NULL;
@@ -3586,7 +3586,7 @@ struct addrinfo *_nextaddrinfo(struct addrinfo *list)
     return list->ai_next;
 }
 
-socket_t _getaddrsock(struct addrinfo *list)
+socket_t linked_sockaddr_operations::_getaddrsock(const struct addrinfo *list) const
 {
     if(!list)
         return INVALID_SOCKET;
