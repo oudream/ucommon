@@ -151,8 +151,9 @@ public:
          * held, it is released.
          * @param pointer to object to guard.
          */
-        inline void operator=(const void *pointer)
-            {set(pointer);}
+        inline void operator=(const void *pointer) {
+            set(pointer);
+        }
 
        /**
         * Shared access to an arbitrary object.  This is based on the protect
@@ -213,8 +214,9 @@ public:
          * held, it is released.
          * @param pointer to object to guard.
          */
-        inline void operator=(const void *pointer)
-            {set(pointer);}
+        inline void operator=(const void *pointer) {
+            set(pointer);
+        }
 
         /**
         * Write protect access to an arbitrary object.  This is like the
@@ -430,8 +432,9 @@ protected:
      * @param object from list.
      * @return next object.
      */
-    inline ReusableObject *next(ReusableObject *object)
-        {return object->getNext();}
+    inline ReusableObject *next(ReusableObject *object) {
+        return object->getNext();
+    }
 
     /**
      * Release resuable object
@@ -480,40 +483,46 @@ public:
     /**
      * Acquire mutex lock.  This is a blocking operation.
      */
-    inline void acquire(void)
-        {pthread_mutex_lock(&mlock);}
+    inline void acquire(void) {
+        pthread_mutex_lock(&mlock);
+    }
 
     /**
      * Acquire mutex lock.  This is a blocking operation.
      */
-    inline void lock(void)
-        {pthread_mutex_lock(&mlock);}
+    inline void lock(void) {
+        pthread_mutex_lock(&mlock);
+    }
 
     /**
      * Release acquired lock.
      */
-    inline void unlock(void)
-        {pthread_mutex_unlock(&mlock);}
+    inline void unlock(void) {
+        pthread_mutex_unlock(&mlock);
+    }
 
     /**
      * Release acquired lock.
      */
-    inline void release(void)
-        {pthread_mutex_unlock(&mlock);}
+    inline void release(void) {
+        pthread_mutex_unlock(&mlock);
+    }
 
     /**
      * Convenience function to acquire os native mutex lock directly.
      * @param lock to acquire.
      */
-    inline static void acquire(pthread_mutex_t *lock)
-        {pthread_mutex_lock(lock);}
+    inline static void acquire(pthread_mutex_t *lock) {
+        pthread_mutex_lock(lock);
+    }
 
     /**
      * Convenience function to release os native mutex lock directly.
      * @param lock to release.
      */
-    inline static void release(pthread_mutex_t *lock)
-        {pthread_mutex_unlock(lock);}
+    inline static void release(pthread_mutex_t *lock) {
+        pthread_mutex_unlock(lock);
+    }
 
     /**
      * Specify hash table size for guard protection.  The default is 1.
@@ -750,14 +759,17 @@ public:
      */
     static pthread_t self(void);
 
-    inline operator bool() const
-        {return is_active();}
+    inline operator bool() const {
+        return is_active();
+    }
 
-    inline bool operator!() const
-        {return !is_active();}
+    inline bool operator!() const {
+        return !is_active();
+    }
 
-    inline bool isRunning(void) const
-        {return is_active();}
+    inline bool isRunning(void) const {
+        return is_active();
+    }
 };
 
 /**
@@ -822,8 +834,9 @@ public:
      * Start execution of child context as background thread.  This is
      * assumed to be off main thread, with a priority lowered by one.
      */
-    inline void background(void)
-        {start(-1);}
+    inline void background(void) {
+        start(-1);
+    }
 };
 
 /**
