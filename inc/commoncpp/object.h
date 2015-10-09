@@ -63,6 +63,9 @@ class MapIndex;
  */
 class __EXPORT RefObject
 {
+private:
+    __DELETE_COPY(RefObject);
+
 protected:
     friend class RefPointer;
 
@@ -169,6 +172,9 @@ public:
  */
 class __EXPORT LinkedSingle
 {
+private:
+    __DELETE_COPY(LinkedSingle);
+
 protected:
     LinkedSingle *nextObject;
 
@@ -230,6 +236,9 @@ public:
  */
 class __EXPORT LinkedDouble
 {
+private:
+    __DELETE_COPY(LinkedDouble);
+
 protected:
     LinkedDouble *nextObject, *prevObject;
 
@@ -339,6 +348,9 @@ public:
  */
 class __EXPORT MapTable : public Mutex
 {
+private:
+    __DELETE_COPY(MapTable);
+
 protected:
     friend class MapObject;
     friend class MapIndex;
@@ -573,6 +585,9 @@ public :
  */
 class __EXPORT MapObject
 {
+private:
+    __DELETE_COPY(MapObject);
+
 protected:
     friend class MapTable;
     friend class MapIndex;

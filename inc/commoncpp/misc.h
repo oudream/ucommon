@@ -64,6 +64,9 @@ namespace ost {
 
 class __EXPORT MemPager : private ucommon::memalloc
 {
+private:
+    __DELETE_COPY(MemPager);
+
 public:
     inline MemPager(size_t pagesize = 4096) : ucommon::memalloc(pagesize) {}
 
@@ -100,6 +103,9 @@ public:
  */
 class __EXPORT SharedMemPager : public MemPager, public Mutex
 {
+private:
+    __DELETE_COPY(SharedMemPager);
+
 protected:
     /**
      * Create a mempager mutex pool.
@@ -126,7 +132,6 @@ protected:
     }
 };
 
-
 /**
  * This class is used to associate (object) pointers with named strings.
  * A virtual is used to allocate memory which can be overriden in the
@@ -145,6 +150,8 @@ private:
     };
 
     entry *entries[KEYDATA_INDEX_SIZE];
+
+    __DELETE_COPY(Assoc);
 
 protected:
     Assoc();

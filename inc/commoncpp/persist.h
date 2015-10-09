@@ -62,6 +62,9 @@ protected:
  */
 class __EXPORT TypeManager
 {
+private:
+    __DELETE_DEFAULTS(TypeManager);
+
 public:
     /**
      * This manages a registration to the typemanager - attempting to
@@ -73,6 +76,8 @@ public:
         registration(const char* name, NewPersistObjectFunction func);
         virtual ~registration();
     private:
+        __DELETE_COPY(registration);
+
         std::string myName;
     };
 
@@ -188,6 +193,9 @@ public:
  */
 class __EXPORT PersistEngine
 {
+private:
+    __DELETE_COPY(PersistEngine);
+
 public:
     /**
      * These are the modes the Persistence::Engine can work in

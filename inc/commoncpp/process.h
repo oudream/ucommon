@@ -69,6 +69,8 @@ class __EXPORT Process
 private:
     static bool rtflag;
 
+    __DELETE_DEFAULTS(Process);
+
 public:
 #ifndef _MSWINDOWS_
     typedef void (*Trap)(int);
@@ -265,6 +267,8 @@ private:
     char *_path;
 #endif
 
+    __DELETE_COPY(Lockfile);
+
 public:
     /**
      * Create a lock under a known name.
@@ -281,8 +285,9 @@ public:
     /**
      * Destroy the current lock and release it.
      */
-    ~Lockfile()
-        {unlock();}
+    ~Lockfile() {
+        unlock();
+    }
 
     /**
      * Lock a system-wide name for this process.  If the lock

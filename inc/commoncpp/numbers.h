@@ -129,6 +129,8 @@ public:
 
     inline Time(int h, int m, int s) : ucommon::Time(h, m, s) {}
 
+    inline Time(const Time& object) : ucommon::Time(object) {}
+
     inline Time() : ucommon::Time() {}
 
     inline int getHour(void) const {
