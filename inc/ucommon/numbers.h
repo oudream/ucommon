@@ -68,8 +68,9 @@ public:
      * Get string buffer representing the number.
      * @return string buffer.
      */
-    inline const char *c_str() const
-        {return buffer;}
+    inline const char *c_str() const {
+        return buffer;
+    }
 
     /**
      * Get value of string buffer as a long integer.
@@ -81,22 +82,25 @@ public:
      * Get value of string buffer as expression of object.
      * @return long integer value of string buffer.
      */
-    inline long operator()() const
-        {return get();}
+    inline long operator()() const {
+        return get();
+    }
 
     /**
      * Cast string as long integer and get value of buffer.
      * @return long integer value of string buffer.
      */
-    inline operator long() const
-        {return get();}
+    inline operator long() const {
+        return get();
+    }
 
     /**
      * Cast object as a string to retrieve buffer.
      * @return string buffer of value.
      */
-    inline operator char*() const
-        {return buffer;}
+    inline operator char*() const {
+        return buffer;
+    }
 
     /**
      * Assign a value to the number.  This rewrites the string buffer.
@@ -138,23 +142,29 @@ public:
      */
     long operator++();
 
-    inline bool operator==(const long value) const
-        {return get() == value;}
+    inline bool operator==(const long value) const {
+        return get() == value;
+    }
 
-    inline bool operator!=(const long value) const
-        {return get() != value;}
+    inline bool operator!=(const long value) const {
+        return get() != value;
+    }
 
-    inline bool operator<(const long value) const
-        {return get() < value;}
+    inline bool operator<(const long value) const {
+        return get() < value;
+    }
 
-    inline bool operator>(const long value) const
-        {return get() > value;}
+    inline bool operator>(const long value) const {
+        return get() > value;
+    }
 
-    inline bool operator<=(const long value) const
-        {return get() <= value;}
+    inline bool operator<=(const long value) const {
+        return get() <= value;
+    }
 
-    inline bool operator>=(const long value) const
-        {return get() >= value;}
+    inline bool operator>=(const long value) const {
+        return get() >= value;
+    }
 };
 
 /**
@@ -204,7 +214,7 @@ typedef ZNumber znumber_t;
  * @return absolute value
  */
 template<typename T>
-inline const T abs(const T& value)
+inline const T abs(const T& value) 
 {
     if(value < (T)0)
         return -value;
@@ -219,7 +229,7 @@ inline const T abs(const T& value)
  * @return v1 if < v2, else v2
  */
 template<typename T>
-inline const T (min)(const T& v1, const T& v2)
+inline const T (min)(const T& v1, const T& v2) 
 {
     return ((v1 < v2) ? v1 : v2);
 }
@@ -231,7 +241,7 @@ inline const T (min)(const T& v1, const T& v2)
  * @return v1 if > v2, else v2
  */
 template<typename T>
-inline const T (max)(const T& v1, const T& v2)
+inline const T (max)(const T& v1, const T& v2) 
 {
     return ((v1 > v2) ? v1 : v2);
 }

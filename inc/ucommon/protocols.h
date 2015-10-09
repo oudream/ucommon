@@ -62,8 +62,9 @@ public:
      * @param size of memory request.
      * @return alocated memory or NULL if not possible.
      */
-    inline void *alloc(size_t size)
-        {return _alloc(size);}
+    inline void *alloc(size_t size) {
+        return _alloc(size);
+    }
 
     /**
      * Allocate memory from the pager heap.  The size of the request must be
@@ -104,7 +105,7 @@ private:
 public:
     MemoryRedirect(MemoryProtocol *protocol);
 
-    virtual void *_alloc(size_t size);
+    virtual void *_alloc(size_t size) __OVERRIDE;
 };
 
 /**
@@ -195,8 +196,9 @@ protected:
      * Write to back buffer.  Mostly used for input format processing.
      * @param code to write into backbuffer.
      */
-    inline void putback(int code)
-        {back = code;}
+    inline void putback(int code) {
+        back = code;
+    }
 
     /**
      * Set end of line marker.  Normally this is set to cr & lf, which
@@ -215,16 +217,18 @@ public:
      * Get the next character.
      * @return next character or EOF.
      */
-    inline int getchar(void)
-        {return _getch();}
+    inline int getchar(void) {
+        return _getch();
+    }
 
     /**
      * Put the next character.
      * @param code to put.
      * @return code or EOF if cannot put.
      */
-    inline int putchar(int code)
-        {return _putch(code);}
+    inline int putchar(int code) {
+        return _putch(code);
+    }
 
     size_t print(const PrintProtocol& format);
 
@@ -312,14 +316,16 @@ public:
     /**
      * Increase retention operator.
      */
-    inline void operator++(void)
-        {retain();};
+    inline void operator++(void) {
+        retain();
+    }
 
     /**
      * Decrease retention operator.
      */
-    inline void operator--(void)
-        {release();};
+    inline void operator--(void) {
+        release();
+    }
 };
 
 /**
