@@ -246,7 +246,7 @@ bool Dir::rewind(void)
 	return rtn;
 }
 
-bool Dir::isValid(void)
+bool Dir::isValid(void) const
 {
 #ifdef _MSWINDOWS_
 	if(hDir == INVALID_HANDLE_VALUE)

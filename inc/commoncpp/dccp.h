@@ -179,17 +179,17 @@ public:
     /**
      * Get TX CCID DCCP.
      */
-    int getTxCCID();
+    int getTxCCID() const;
 
     /**
      * Get RX CCID DCCP.
      */
-    int getRxCCID();
+    int getRxCCID() const;
 
     /**
      * Return number of bytes to be read
      */
-    size_t available();
+    size_t available() const;
 
     /**
      * Create a DCCP client connection to a DCCP socket (on

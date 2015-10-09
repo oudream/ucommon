@@ -368,7 +368,19 @@ off_t RandomFile::getCapacity(void)
     return eof;
 }
 
-bool RandomFile::operator!(void)
+RandomFile::operator bool(void) const
+{
+#ifdef _MSWINDOWS_
+    return fd != INVALID_HANDLE_VALUE;
+#else
+    if(fd < 0)
+        return false;
+
+    return true;
+#endif
+}
+
+bool RandomFile::operator!(void) const
 {
 #ifdef _MSWINDOWS_
     return fd == INVALID_HANDLE_VALUE;

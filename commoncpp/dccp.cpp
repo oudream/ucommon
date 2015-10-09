@@ -655,7 +655,7 @@ bool DCCPSocket::setCCID(uint8_t ccid)
     return true;
 }
 
-int DCCPSocket::getTxCCID()
+int DCCPSocket::getTxCCID() const
 {
     int ccid, ret;
     socklen_t ccidlen;
@@ -669,7 +669,7 @@ int DCCPSocket::getTxCCID()
     return ccid;
 }
 
-int DCCPSocket::getRxCCID()
+int DCCPSocket::getRxCCID() const
 {
     int ccid, ret;
     socklen_t ccidlen;
@@ -683,7 +683,7 @@ int DCCPSocket::getRxCCID()
     return ccid;
 }
 
-size_t  DCCPSocket::available()
+size_t  DCCPSocket::available() const
 {
     size_t readsize = 0;
 #ifndef _MSWINDOWS_

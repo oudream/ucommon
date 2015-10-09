@@ -267,24 +267,35 @@ public:
 
     const char *getName(void);
 
-    const char *operator++()
-        {return getName();}
+    const char *operator++() {
+        return getName();
+    }
 
-    const char *operator++(int)
-        {return getName();}
+    const char *operator++(int) {
+        return getName();
+    }
 
     const char *operator*();
 
     bool rewind(void);
 
-    bool operator!()
+    bool operator!()  const {
 #ifndef _MSWINDOWS_
-        {return !dir;}
+        return !dir;
 #else
-        {return hDir != INVALID_HANDLE_VALUE;}
+        return hDir == INVALID_HANDLE_VALUE;
 #endif
+    }
 
-    bool isValid(void);
+    operator bool() const {
+#ifndef _MSWINDOWS_
+        return dir;
+#else
+        return hDir != INVALID_HANDLE_VALUE;
+#endif
+    }
+
+    bool isValid(void) const;
 };
 
 /**
@@ -425,8 +436,9 @@ protected:
      * @return errExtended.
      * @param err error string.
      */
-    inline Error error(char *err)
-        {return error(errExtended, err);}
+    inline Error error(char *err) {
+        return error(errExtended, err);
+    }
 
     /**
      * Used to enable or disable throwing of exceptions on
@@ -434,8 +446,9 @@ protected:
      *
      * @param enable true if errors will be thrown.
      */
-    inline void setError(bool enable)
-        {flags.thrown = !enable;}
+    inline void setError(bool enable) {
+        flags.thrown = !enable;
+    }
 
 #ifndef _MSWINDOWS_
     /**
@@ -454,8 +467,9 @@ protected:
      *
      * @param enable true for marking as temporary.
      */
-    inline void setTemporary(bool enable)
-        {flags.temp = enable;}
+    inline void setTemporary(bool enable) {
+        flags.temp = enable;
+    }
 
     /**
      * This method is used to initialize a newly created file as
@@ -510,18 +524,22 @@ public:
      *
      * @return last error identifier set.
      */
-    inline Error getErrorNumber(void)
-        {return errid;}
+    inline Error getErrorNumber(void) const {
+        return errid;
+    }
 
     /**
      * Return current error string.
      *
      * @return last error string set.
      */
-    inline char *getErrorString(void)
-        {return errstr;}
+    inline char *getErrorString(void) const {
+        return errstr;
+    }
 
-    bool operator!(void);
+    operator bool() const;
+
+    bool operator!(void) const;
 };
 
 /**
@@ -571,8 +589,9 @@ public:
      *
      * @return errSuccess if successful.
      */
-    Error restart(void)
-        {return open(pathname);}
+    Error restart(void) {
+        return open(pathname);
+    }
 
     /**
      * Lock and Fetch a portion of the file into physical memory.
@@ -736,8 +755,9 @@ public:
      *
      * @param offset from start of mapped memory.
      */
-    inline caddr_t fetch(size_t offset = 0)
-        {return ((char *)(fcb.address)) + offset;}
+    inline caddr_t fetch(size_t offset = 0) {
+        return ((char *)(fcb.address)) + offset;
+    }
 
     /**
      * Fetch and map a portion of a disk file to a logical memory
@@ -801,18 +821,21 @@ public:
      *
      * @param filename pathname of object file to load.
      */
-    DSO(const char *filename)
-        {loader(filename, true);}
+    DSO(const char *filename) {
+        loader(filename, true);
+    }
 
-    DSO(const char *filename, bool resolve)
-        {loader(filename, resolve);}
+    DSO(const char *filename, bool resolve) {
+        loader(filename, resolve);
+    }
 
     /**
      * Retrieve error indicator associated with DSO failure.  This
      * is often used in catch handlers.
      */
-    inline const char *getError(void)
-        {return err;}
+    inline const char *getError(void) const {
+        return err;
+    }
 
     /**
      * Detach a DSO object from running memory.
@@ -855,8 +878,9 @@ bool __EXPORT isFile(const char *path);
 bool __EXPORT isDevice(const char *path);
 #else
 /** @relates RandomFile */
-inline bool isDevice(const char *path)
-{ return false; }
+inline bool isDevice(const char *path) {
+    return false; 
+}
 #endif
 /** @relates RandomFile */
 bool __EXPORT canAccess(const char *path);
