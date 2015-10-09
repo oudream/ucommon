@@ -1117,14 +1117,6 @@ typedef StringPager::member stringlistitem_t;
  */
 typedef DirPager dirlist_t;
 
-/*
-inline const char *shift(stringlist_t& list)
-    {return list.pull();}
-
-inline void unshift(stringlist_t& list, const char *text)
-    {list.push(text);}
-*/
-
 inline String str(StringPager& list, const char *prefix = NULL, const char *middle = NULL, const char *suffix = NULL) {
     return list.join(prefix, middle, suffix);
 }
