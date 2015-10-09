@@ -135,7 +135,7 @@ public:
      * Application operator. Apply the validation algorithm
      * specific to multicast addresses
      */
-    void operator()(const in_addr address) const;
+    void operator()(const in_addr address) const __OVERRIDE;
 };
 
 /**
@@ -157,16 +157,18 @@ public:
      *
      * @return system binary coded address.
      */
-    inline struct in_addr getNetwork(void) const
-        {return network;}
+    inline struct in_addr getNetwork(void) const {
+        return network;
+    }
 
     /**
      * Get network mask associated with this cidr.
      *
      * @return system binary coded network mask.
      */
-    inline struct in_addr getNetmask(void) const
-        {return netmask;}
+    inline struct in_addr getNetmask(void) const {
+        return netmask;
+    }
 
     /**
      * Compute the broadcast address associated with this cidr.
@@ -218,11 +220,21 @@ public:
      */
     bool isMember(const struct in_addr &inaddr) const;
 
-    inline bool operator==(const struct sockaddr *a) const
-        {return isMember(a);}
+    inline bool operator==(const struct sockaddr *a) const {
+        return isMember(a);
+    }
 
-    inline bool operator==(const struct in_addr &a) const
-        {return isMember(a);}
+    inline bool operator==(const struct in_addr &a) const {
+        return isMember(a);
+    }
+
+    inline bool operator!=(const struct sockaddr *a) const {
+        return !isMember(a);
+    }
+
+    inline bool operator!=(const struct in_addr &a) const {
+        return !isMember(a);
+    }
 };
 
 #ifdef  CCXX_IPV6
@@ -245,16 +257,18 @@ public:
      *
      * @return system binary coded address.
      */
-    inline struct in6_addr getNetwork(void) const
-        {return network;}
+    inline struct in6_addr getNetwork(void) const {
+        return network;
+    }
 
     /**
      * Get network mask associated with this cidr.
      *
      * @return system binary coded network mask.
      */
-    inline struct in6_addr getNetmask(void) const
-        {return netmask;}
+    inline struct in6_addr getNetmask(void) const {
+        return netmask;
+    }
 
     /**
      * Compute the broadcast address associated with this cidr.
@@ -306,11 +320,21 @@ public:
      */
     bool isMember(const struct in6_addr &inaddr) const;
 
-    inline bool operator==(const struct sockaddr *sa) const
-        {return isMember(sa);}
+    inline bool operator==(const struct sockaddr *sa) const {
+        return isMember(sa);
+    }
 
-    inline bool operator==(const struct in6_addr &a) const
-        {return isMember(a);}
+    inline bool operator==(const struct in6_addr &a) const {
+        return isMember(a);
+    }
+
+    inline bool operator!=(const struct sockaddr *sa) const {
+        return !isMember(sa);
+    }
+
+    inline bool operator!=(const struct in6_addr &a) const {
+        return !isMember(a);
+    }
 };
 
 #endif
@@ -463,8 +487,13 @@ public:
      */
     IPV4Address &operator=(in_addr_t addr);
 
-    inline bool operator!() const
-        {return !isInetAddress();}
+    inline operator bool() const {
+        return isInetAddress();
+    }
+
+    inline bool operator!() const {
+        return !isInetAddress();
+    }
 
     /**
      * Compare two internet addresses to see if they are equal
@@ -519,15 +548,15 @@ public:
      * @param addr host address to be masked by subnet.
      * @param mask inetnet mask address object to mask by.
      */
-    friend __EXPORT IPV4Host operator&(const IPV4Host &addr,
-                     const IPV4Mask &mask);
+    friend __EXPORT IPV4Host operator&(const IPV4Host &addr, const IPV4Mask &mask);
 
     /**
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(in_addr_t addr)
-        { return IPV4Address::operator =(addr); }
+    IPV4Address &operator=(in_addr_t addr) {
+        return IPV4Address::operator =(addr); 
+    }
 };
 
 /**
@@ -570,8 +599,9 @@ public:
      * Allows assignment from the return of functions like
      * inet_addr() or htonl()
      */
-    IPV4Address &operator=(in_addr_t addr)
-    { return IPV4Address::operator =(addr); }
+    IPV4Address &operator=(in_addr_t addr) {
+        return IPV4Address::operator =(addr); 
+    }
 
     /**
      * Mask the internet host address object with a network mask address.
@@ -580,8 +610,7 @@ public:
     IPV4Host &operator&=(const IPV4Mask &mask);
 
     friend class IPV4Mask;
-    friend __EXPORT IPV4Host operator&(const IPV4Host &addr,
-                     const IPV4Mask &mask);
+    friend __EXPORT IPV4Host operator&(const IPV4Host &addr, const IPV4Mask &mask);
 };
 
 /**
@@ -651,8 +680,9 @@ private:
 
 extern __EXPORT std::ostream& operator<<(std::ostream &os, const IPV4Address &ia);
 
-inline struct in_addr getaddress(const IPV4Address &ia)
-    {return ia.getAddress();}
+inline struct in_addr getaddress(const IPV4Address &ia) {
+    return ia.getAddress();
+}
 
 
 #ifdef  CCXX_IPV6
@@ -712,7 +742,7 @@ public:
      * Application operator. Apply the validation algorithm
      * specific to multicast addresses
      */
-    void operator()(const in6_addr address) const;
+    void operator()(const in6_addr address) const __OVERRIDE;
 };
 
 /**
@@ -851,14 +881,21 @@ public:
      * contains.  This usually only happens with IPV6Host objects
      * where multiple IP addresses are returned for a DNS lookup
      */
-    size_t getAddressCount() const { return addr_count; }
+    size_t getAddressCount() const { 
+        return addr_count; 
+    }
 
     IPV6Address &operator=(const char *str);
     IPV6Address &operator=(struct in6_addr addr);
     IPV6Address &operator=(const IPV6Address &rhs);
 
-    inline bool operator!() const
-        {return !isInetAddress();}
+    inline operator bool () const {
+        return isInetAddress();
+    }
+
+    inline bool operator!() const {
+        return !isInetAddress();
+    }
 
     /**
      * Compare two internet addresses to see if they are equal
@@ -913,8 +950,7 @@ public:
      * @param addr host address to be masked by subnet.
      * @param mask inetnet mask address object to mask by.
      */
-    friend __EXPORT IPV6Host operator&(const IPV6Host &addr,
-                     const IPV6Mask &mask);
+    friend __EXPORT IPV6Host operator&(const IPV6Host &addr, const IPV6Mask &mask);
 };
 
 /**
@@ -1027,9 +1063,9 @@ private:
 
 extern __EXPORT std::ostream& operator<<(std::ostream &os, const IPV6Address &ia);
 
-inline struct in6_addr getaddress(const IPV6Address &ia)
-    {return ia.getAddress();}
-
+inline struct in6_addr getaddress(const IPV6Address &ia) {
+    return ia.getAddress();
+}
 
 #endif
 
