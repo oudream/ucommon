@@ -66,6 +66,9 @@ class MIMEItemPart;
  */
 class __EXPORT MIMEMultipart
 {
+private:
+    __DELETE_COPY(MIMEMultipart);
+
 protected:
     friend class MIMEItemPart;
     char boundry[8];
@@ -120,6 +123,9 @@ public:
  */
 class __EXPORT MIMEMultipartForm : public MIMEMultipart
 {
+private:
+    __DELETE_COPY(MIMEMultipartForm);
+
 protected:
     virtual ~MIMEMultipartForm();
 
@@ -141,6 +147,9 @@ public:
  */
 class __EXPORT MIMEItemPart
 {
+private:
+    __DELETE_COPY(MIMEItemPart);
+
 protected:
     friend class MIMEMultipart;
 
@@ -182,6 +191,9 @@ protected:
  */
 class __EXPORT MIMEFormData : public MIMEItemPart
 {
+private:
+    __DELETE_COPY(MIMEFormData);
+
 protected:
     const char *content;
     const char *name;

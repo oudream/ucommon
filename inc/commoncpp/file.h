@@ -252,6 +252,8 @@ private:
     char *name;
 #endif
 
+    __DELETE_COPY(Dir);
+
 public:
     Dir(const char *name = NULL);
 
@@ -310,6 +312,8 @@ private:
     char path[PATH_MAX + 1];
     Dir *dir;
     unsigned max, current, prefixpos;
+
+    __DELETE_COPY(DirTree);
 
 protected:
     /**
@@ -666,6 +670,8 @@ private:
     char mapname[64];
 #endif
 
+    __DELETE_COPY(MappedFile);
+
 public:
     /**
      * Open a file for mapping.  More than one segment of a file
@@ -811,6 +817,8 @@ private:
     void *image;
 
     typedef ucommon::dso::addr_t addr_t;
+
+    __DELETE_COPY(DSO);
 
 protected:
     void loader(const char *filename, bool resolve);
