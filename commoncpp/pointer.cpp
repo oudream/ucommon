@@ -94,6 +94,14 @@ void *RefPointer::getObject() const
     return NULL;
 }
 
+RefPointer::operator bool() const
+{
+    if(ref && ref->refCount == 1)
+        return false;
+
+    return true;
+}
+
 bool RefPointer::operator!() const
 {
     if(ref && ref->refCount == 1)

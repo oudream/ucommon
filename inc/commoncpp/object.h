@@ -155,6 +155,8 @@ public:
 
     void *getObject(void) const;
 
+    operator bool() const;
+
     bool operator!() const;
 };
 
