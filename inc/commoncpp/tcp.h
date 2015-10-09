@@ -173,8 +173,9 @@ public:
      * @return true if data packets available.
      * @param timeout in milliseconds. TIMEOUT_INF if not specified.
      */
-    inline bool isPendingConnection(timeout_t timeout = TIMEOUT_INF) /* not const -- jfc */
-        {return Socket::isPending(Socket::pendingInput, timeout);}
+    inline bool isPendingConnection(timeout_t timeout = TIMEOUT_INF) {
+        return Socket::isPending(Socket::pendingInput, timeout);
+    }
 
     /**
      * Use base socket handler for ending this socket.
@@ -289,8 +290,9 @@ public:
      * @return true if data packets available.
      * @param timeout in milliseconds. TIMEOUT_INF if not specified.
      */
-    inline bool isPendingConnection(timeout_t timeout = TIMEOUT_INF) /* not const -- jfc */
-        {return Socket::isPending(Socket::pendingInput, timeout);}
+    inline bool isPendingConnection(timeout_t timeout = TIMEOUT_INF) {
+        return Socket::isPending(Socket::pendingInput, timeout);
+    }
 
     /**
      * Use base socket handler for ending this socket.

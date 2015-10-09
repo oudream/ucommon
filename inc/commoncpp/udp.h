@@ -420,8 +420,9 @@ public:
      * @return true if output available.
      * @param timeout in milliseconds to wait.
      */
-    inline bool isOutputReady(unsigned long timeout = 0l)
-        {return Socket::isPending(Socket::pendingOutput, timeout);}
+    inline bool isOutputReady(unsigned long timeout = 0l) {
+        return Socket::isPending(Socket::pendingOutput, timeout);
+    }
 
 
     inline Error setRouting(bool enable)
@@ -481,8 +482,9 @@ protected:
      * @return true if data is waiting.
      * @param timeout in milliseconds.
      */
-    bool isPendingReceive(timeout_t timeout)
-        {return Socket::isPending(Socket::pendingInput, timeout);}
+    bool isPendingReceive(timeout_t timeout) {
+        return Socket::isPending(Socket::pendingInput, timeout);
+    }
 
     /**
      * End receiver.
@@ -535,8 +537,9 @@ public:
      * @return true if data packets available.
      * @param timeout in milliseconds.
      */
-    inline bool isInputReady(timeout_t timeout = TIMEOUT_INF)
-        {return Socket::isPending(Socket::pendingInput, timeout);}
+    inline bool isInputReady(timeout_t timeout = TIMEOUT_INF) {
+        return Socket::isPending(Socket::pendingInput, timeout);
+    }
 };
 
 /**

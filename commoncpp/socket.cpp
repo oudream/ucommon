@@ -240,7 +240,7 @@ Socket::Error Socket::error(Error err, const char *errs, long systemError) const
 }
 
 #ifdef _MSWINDOWS_
-Socket::Error Socket::connectError(void)
+Socket::Error Socket::connectError(void) const
 {
     const char* str = "Could not connect to remote host";
     switch(WSAGetLastError()) {
@@ -259,7 +259,7 @@ Socket::Error Socket::connectError(void)
     }
 }
 #else
-Socket::Error Socket::connectError(void)
+Socket::Error Socket::connectError(void) const
 {
     char* str = (char *)"Could not connect to remote host";
     switch(errno) {

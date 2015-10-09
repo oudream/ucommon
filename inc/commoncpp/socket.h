@@ -202,8 +202,9 @@ protected:
      *
      * @param err string or message to pass.
      */
-    inline void error(const char *err) const
-        {error(errExtended, err);}
+    inline void error(const char *err) const {
+        error(errExtended, err);
+    }
 
     /**
      * This service is used to turn the error handler on or off for
@@ -211,8 +212,9 @@ protected:
      *
      * @param enable true to enable handler.
      */
-    inline void setError(bool enable)
-        {flags.thrown = !enable;}
+    inline void setError(bool enable) {
+        flags.thrown = !enable;
+    }
 
     /**
      * Used as the default destructor for ending a socket.  This
@@ -226,7 +228,7 @@ protected:
      *
      * @return correct failure code to apply.
      */
-    Error connectError(void);
+    Error connectError(void) const;
 
     /**
      * Set the send limit.
@@ -330,9 +332,13 @@ protected:
      * @param ia address of multicast group to join.
      */
     Error join(const ucommon::Socket::address &ia, int iface = 0);
-    inline Error join(const IPV4Multicast &ia) { return join(ucommon::Socket::address(getaddress(ia))); }
+    inline Error join(const IPV4Multicast &ia) { 
+        return join(ucommon::Socket::address(getaddress(ia))); 
+    }
 #ifdef  CCXX_IPV6
-    inline Error join(const IPV6Multicast &ia, int iface = 0) { return join(ucommon::Socket::address(getaddress(ia)), iface); }
+    inline Error join(const IPV6Multicast &ia, int iface = 0) { 
+        return join(ucommon::Socket::address(getaddress(ia)), iface); 
+    }
 #endif
 
     /**
@@ -342,9 +348,13 @@ protected:
      * @param ia address of multicast group to drop.
      */
     Error drop(const ucommon::Socket::address &ia, int iface = 0);
-    Error drop(const IPV4Multicast &ia) { return drop(ucommon::Socket::address(getaddress(ia))); }
+    Error drop(const IPV4Multicast &ia) { 
+        return drop(ucommon::Socket::address(getaddress(ia))); 
+    }
 #ifdef  CCXX_IPV6
-    Error drop(const IPV6Multicast &ia, int iface = 0) { return drop(ucommon::Socket::address(getaddress(ia)), iface); }
+    Error drop(const IPV6Multicast &ia, int iface = 0) { 
+        return drop(ucommon::Socket::address(getaddress(ia)), iface); 
+    }
 #endif
 
     /**
@@ -443,7 +453,9 @@ public:
      *
      * @return error number of Error error.
      */
-    inline Error getErrorNumber(void) const {return errid;}
+    inline Error getErrorNumber(void) const {
+        return errid;
+    }
 
     /**
      * Often used by a "catch" to fetch the user set error string
@@ -451,9 +463,13 @@ public:
      *
      * @return string for error message.
      */
-    inline const char *getErrorString(void) const {return errstr;}
+    inline const char *getErrorString(void) const {
+        return errstr;
+    }
 
-    inline long getSystemError(void) const {return syserr;}
+    inline long getSystemError(void) const {
+        return syserr;
+    }
 
     const char *getSystemErrorString(void) const;
 
@@ -502,8 +518,9 @@ public:
 
     virtual IPV4Host getIPV4Sender(in_port_t *port = NULL) const;
 
-    inline IPV4Host getSender(in_port_t *port) const
-        {return getIPV4Sender(port);}
+    inline IPV4Host getSender(in_port_t *port) const {
+        return getIPV4Sender(port);
+    }
 
 #ifdef  CCXX_IPV6
     virtual IPV6Host getIPV6Sender(in_port_t *port = NULL) const;
@@ -522,8 +539,9 @@ public:
 
     IPV4Host getIPV4Peer(in_port_t *port = NULL) const;
 
-    inline IPV4Host getPeer(in_port_t *port) const
-        {return getIPV4Peer(port);}
+    inline IPV4Host getPeer(in_port_t *port) const {
+        return getIPV4Peer(port);
+    }
 
 #ifdef  CCXX_IPV6
     IPV6Host getIPV6Peer(in_port_t *port = NULL) const;
@@ -538,8 +556,9 @@ public:
      */
     IPV4Host getIPV4Local(in_port_t *port = NULL) const;
 
-    inline IPV4Host getLocal(in_port_t *port) const
-        {return getIPV4Local(port);}
+    inline IPV4Host getLocal(in_port_t *port) const {
+        return getIPV4Local(port);
+    }
 
 #ifdef  CCXX_IPV6
     IPV6Host getIPV6Local(in_port_t *port = NULL) const;
@@ -610,24 +629,28 @@ public:
      *
      * @return true if broadcast socket.
      */
-    inline bool isBroadcast(void) const
-        {return flags.broadcast;}
+    inline bool isBroadcast(void) const {
+        return flags.broadcast;
+    }
 
     /**
      * Return if socket routing is enabled.
      *
      * @return true if routing enabled.
      */
-    inline bool isRouted(void) const
-        {return flags.route;}
+    inline bool isRouted(void) const {
+        return flags.route;
+    }
 
 
-    inline struct in_addr getaddress(const IPV4Address &ia)
-        {return ia.getAddress();}
+    inline struct in_addr getaddress(const IPV4Address &ia) const {
+        return ia.getAddress();
+    }
 
 #ifdef  CCXX_IPV6
-    inline struct in6_addr getaddress(const IPV6Address &ia)
-        {return ia.getAddress();}
+    inline struct in6_addr getaddress(const IPV6Address &ia) const {
+        return ia.getAddress();
+    }
 #endif
 
 };
@@ -643,8 +666,9 @@ public:
     inline SockException(const String &str, Socket::Error socketError, long systemError = 0) :
         IOException(str, systemError), _socketError(socketError) {}
 
-    inline Socket::Error getSocketError() const
-        {return _socketError;}
+    inline Socket::Error getSocketError() const {
+        return _socketError;
+    }
 };
 
 #endif
