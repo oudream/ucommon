@@ -463,7 +463,7 @@ protected:
      *
      * @return char from tty serial port, EOF also possible.
      */
-    int uflow(void);
+    int uflow(void) __OVERRIDE;
 
     /**
      * This streambuf method is used to write the output

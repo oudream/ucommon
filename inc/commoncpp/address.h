@@ -91,6 +91,9 @@ class IPV4Host;
  */
 class __EXPORT IPV4Validator
 {
+private:
+    __DELETE_COPY(IPV4Validator);
+
 public:
     /**
      * Constructor. Does not deal with any state.
@@ -120,6 +123,9 @@ public:
  */
 class __EXPORT IPV4MulticastValidator: public IPV4Validator
 {
+private:
+    __DELETE_COPY(IPV4MulticastValidator);
+
 public:
     /**
      * Constructor. Does not deal with any state.
@@ -529,6 +535,9 @@ public:
  */
 class __EXPORT IPV4Mask : public IPV4Address
 {
+private:
+    __DELETE_COPY(IPV4Mask);
+
 public:
     /**
      * Create the mask from a null terminated ASCII string such as
@@ -699,6 +708,9 @@ class IPV6Host;
  */
 class __EXPORT IPV6Validator
 {
+private:
+    __DELETE_COPY(IPV6Validator);
+
 public:
     /**
      * Constructor. Does not deal with any state.
@@ -727,6 +739,9 @@ public:
  */
 class __EXPORT IPV6MulticastValidator: public IPV6Validator
 {
+private:
+    __DELETE_COPY(IPV6MulticastValidator);
+
 public:
     /**
      * Constructor. Does not deal with any state.
@@ -931,6 +946,9 @@ public:
  */
 class __EXPORT IPV6Mask : public IPV6Address
 {
+private:
+    __DELETE_COPY(IPV6Mask);
+
 public:
     /**
      * Create the mask from a null terminated ASCII string such as

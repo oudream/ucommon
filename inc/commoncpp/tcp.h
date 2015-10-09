@@ -390,7 +390,7 @@ protected:
      *
      * @return char from tcp socket connection, EOF if not connected.
      */
-    int uflow();
+    int uflow() __OVERRIDE;
 
     /**
      * This streambuf method is used to write the output

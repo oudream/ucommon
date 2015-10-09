@@ -92,6 +92,7 @@ namespace ost {
  */
 class __EXPORT DCCPSocket : public Socket
 {
+private:
     union {
         struct sockaddr_in ipv4;
 #ifdef  CCXX_IPV6
@@ -100,6 +101,8 @@ class __EXPORT DCCPSocket : public Socket
     }   peer;
 
     Family family;
+
+    __DELETE_COPY(DCCPSocket);
 
 public:
     /**

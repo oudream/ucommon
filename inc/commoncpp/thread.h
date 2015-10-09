@@ -64,24 +64,29 @@ class __EXPORT Mutex : protected ucommon::RecursiveMutex
 public:
     inline Mutex() : RecursiveMutex() {}
 
-    inline void enterMutex(void)
-        {RecursiveMutex::lock();}
+    inline void enterMutex(void) {
+        RecursiveMutex::lock();
+    }
 
-    inline void leaveMutex(void)
-        {RecursiveMutex::release();}
+    inline void leaveMutex(void) {
+        RecursiveMutex::release();
+    }
 
-    inline bool tryEnterMutex(void)
-        {return RecursiveMutex::lock(0l);}
+    inline bool tryEnterMutex(void) {
+        return RecursiveMutex::lock(0l);
+    }
 
-    inline void enter(void)
-        {RecursiveMutex::lock();}
+    inline void enter(void) {
+        RecursiveMutex::lock();
+    }
 
-    inline void leave(void)
-        {RecursiveMutex::release();}
+    inline void leave(void) {
+        RecursiveMutex::release();
+    }
 
-    inline bool test(void)
-        {return RecursiveMutex::lock(0l);}
-
+    inline bool test(void) {
+        return RecursiveMutex::lock(0l);
+    }
 };
 
 /**
@@ -150,15 +155,17 @@ public:
      *
      * @param _mutex reference to mutex to aquire.
      */
-    inline MutexLock( Mutex& _mutex ) : mutex( _mutex )
-        { mutex.enterMutex(); }
+    inline MutexLock( Mutex& _mutex ) : mutex( _mutex ) {
+        mutex.enterMutex(); 
+    }
 
     /**
      * Release the mutex automatically
      */
     // this should be not-virtual
-    inline ~MutexLock()
-        { mutex.leaveMutex(); }
+    inline ~MutexLock() {
+        mutex.leaveMutex(); 
+    }
 };
 
 class __EXPORT ThreadLock : protected ucommon::RWLock
@@ -166,20 +173,25 @@ class __EXPORT ThreadLock : protected ucommon::RWLock
 public:
     inline ThreadLock() : ucommon::RWLock() {}
 
-    inline void readLock(void)
-        {ucommon::RWLock::access();}
+    inline void readLock(void) {
+        ucommon::RWLock::access();
+    }
 
-    inline void writeLock(void)
-        {ucommon::RWLock::modify();}
+    inline void writeLock(void) {
+        ucommon::RWLock::modify();
+    }
 
-    inline void tryReadLock(void)
-        {ucommon::RWLock::access(0);}
+    inline void tryReadLock(void) {
+        ucommon::RWLock::access(0);
+    }
 
-    inline void tryWriteLock(void)
-        {ucommon::RWLock::modify(0);}
+    inline void tryWriteLock(void) {
+        ucommon::RWLock::modify(0);
+    }
 
-    inline void unlock(void)
-        {ucommon::RWLock::release();}
+    inline void unlock(void) {
+        ucommon::RWLock::release();
+    }
 };
 
 /**
@@ -213,14 +225,16 @@ public:
      *
      * @param _tl reference to lock to aquire.
      */
-    inline ReadLock( ThreadLock& _tl ) : tl( _tl )
-        { tl.readLock(); }
+    inline ReadLock( ThreadLock& _tl ) : tl( _tl ) {
+        tl.readLock(); 
+    }
     /**
      * Post the semaphore automatically
      */
     // this should be not-virtual
-    inline ~ReadLock()
-        { tl.unlock(); }
+    inline ~ReadLock() {
+        tl.unlock(); 
+    }
 };
 
 /**
@@ -254,14 +268,16 @@ public:
      *
      * @param _tl reference to threadlock to aquire.
      */
-    inline WriteLock( ThreadLock& _tl ) : tl( _tl )
-        { tl.writeLock(); }
+    inline WriteLock( ThreadLock& _tl ) : tl( _tl ) {
+        tl.writeLock(); 
+    }
     /**
      * Post the semaphore automatically
      */
     // this should be not-virtual
-    inline ~WriteLock()
-        { tl.unlock(); }
+    inline ~WriteLock() {
+        tl.unlock(); 
+    }
 };
 
 class __EXPORT Conditional : private ucommon::Conditional
@@ -273,11 +289,13 @@ public:
 
     void signal(bool broadcast);
 
-    inline void enterMutex(void)
-        {ucommon::Conditional::lock();}
+    inline void enterMutex(void) {
+        ucommon::Conditional::lock();
+    }
 
-    inline void leaveMutex(void)
-        {ucommon::Conditional::unlock();}
+    inline void leaveMutex(void) {
+        ucommon::Conditional::unlock();
+    }
 };
 
 class __EXPORT Semaphore : private ucommon::Semaphore
@@ -285,14 +303,17 @@ class __EXPORT Semaphore : private ucommon::Semaphore
 public:
     inline Semaphore(unsigned size = 0) : ucommon::Semaphore(size) {}
 
-    inline bool wait(timeout_t timeout)
-        {return ucommon::Semaphore::wait(timeout);}
+    inline bool wait(timeout_t timeout) {
+        return ucommon::Semaphore::wait(timeout);
+    }
 
-    inline void wait(void)
-        {ucommon::Semaphore::wait();}
+    inline void wait(void) {
+        ucommon::Semaphore::wait();
+    }
 
-    inline void post(void)
-        {ucommon::Semaphore::release();}
+    inline void post(void) {
+        ucommon::Semaphore::release();
+    }
 };
 
 /**
@@ -323,14 +344,16 @@ public:
     /**
      * Wait for the semaphore
      */
-    inline SemaphoreLock( Semaphore& _sem ) : sem( _sem )
-        { sem.wait(); }
+    inline SemaphoreLock( Semaphore& _sem ) : sem( _sem ) {
+        sem.wait(); 
+    }
     /**
      * Post the semaphore automatically
      */
     // this should be not-virtual
-    inline ~SemaphoreLock()
-        { sem.post(); }
+    inline ~SemaphoreLock() {
+        sem.post(); 
+    }
 };
 
 class __EXPORT Event : private ucommon::TimedEvent
@@ -338,20 +361,25 @@ class __EXPORT Event : private ucommon::TimedEvent
 public:
     inline Event() : ucommon::TimedEvent() {}
 
-    inline void wait(void)
-        {ucommon::TimedEvent::wait();}
+    inline void wait(void) {
+        ucommon::TimedEvent::wait();
+    }
 
-    inline bool wait(timeout_t timeout)
-        {return ucommon::TimedEvent::wait(timeout);}
+    inline bool wait(timeout_t timeout) {
+        return ucommon::TimedEvent::wait(timeout);
+    }
 
-    inline void signal(void)
-        {ucommon::TimedEvent::signal();}
+    inline void signal(void) {
+        ucommon::TimedEvent::signal();
+    }
 
-    inline void reset(void)
-        {ucommon::TimedEvent::reset();}
+    inline void reset(void) {
+        ucommon::TimedEvent::reset();
+    }
 
-    inline void set(timeout_t timeout = 0)
-        {ucommon::TimedEvent::set(timeout);}
+    inline void set(timeout_t timeout = 0) {
+        ucommon::TimedEvent::set(timeout);
+    }
 };
 
 class __EXPORT Thread : protected ucommon::JoinableThread
@@ -380,13 +408,14 @@ public:
 
     virtual ~Thread();
 
-    inline void map(void)
-        {JoinableThread::map();}
+    inline void map(void) {
+        JoinableThread::map();
+    }
 
     virtual void initial(void);
     virtual void notify(Thread *thread);
     virtual void final(void);
-    virtual void run(void) = 0;
+    virtual void run(void) __OVERRIDE = 0;
 
     void terminate(void);
     void finalize(void);
@@ -395,20 +424,25 @@ public:
     void start(void);
     void exit(void);
 
-    inline void join(void)
-        {JoinableThread::join();}
+    inline void join(void) {
+        JoinableThread::join();
+    }
 
-    inline void sync(void)
-        {Thread::exit();}
+    inline void sync(void) {
+        Thread::exit();
+    }
 
-    static inline Thread *get(void)
-        {return (Thread *)JoinableThread::get();}
+    static inline Thread *get(void) {
+        return (Thread *)JoinableThread::get();
+    }
 
-    inline static void yield(void)
-        {ucommon::Thread::yield();}
+    inline static void yield(void) {
+        ucommon::Thread::yield();
+    }
 
-    inline static void sleep(timeout_t msec = TIMEOUT_INF)
-        {ucommon::Thread::sleep(msec);}
+    inline static void sleep(timeout_t msec = TIMEOUT_INF) {
+        ucommon::Thread::sleep(msec);
+    }
 
     bool isRunning(void);
 
@@ -431,8 +465,9 @@ public:
     /**
      * Get the thread id.
      */
-    inline pthread_t getId(void)
-        {return tid;}
+    inline pthread_t getId(void) const {
+        return tid;
+    }
 };
 
 /**
@@ -468,20 +503,24 @@ class __EXPORT SysTime
 {
 public:
     static time_t getTime(time_t *tloc = NULL);
-    static time_t time(time_t *tloc)
-        {return getTime(tloc);}
+    static time_t time(time_t *tloc) {
+        return getTime(tloc);
+    }
 
     static int getTimeOfDay(struct timeval *tp);
-    static int gettimeofday(struct timeval *tp, struct timezone *)
-        {return getTimeOfDay(tp);}
+    static int gettimeofday(struct timeval *tp, struct timezone *) {
+        return getTimeOfDay(tp);
+    }
 
     static struct tm *getLocalTime(const time_t *clock, struct tm *result);
-    static struct tm *locatime(const time_t *clock, struct tm *result)
-        {return getLocalTime(clock, result);}
+    static struct tm *locatime(const time_t *clock, struct tm *result) {
+        return getLocalTime(clock, result);
+    }
 
     static struct tm *getGMTTime(const time_t *clock, struct tm *result);
-    static struct tm *gmtime(const time_t *clock, struct tm *result)
-        {return getGMTTime(clock, result);}
+    static struct tm *gmtime(const time_t *clock, struct tm *result) {
+        return getGMTTime(clock, result);
+    }
 };
 
 /**
@@ -587,21 +626,26 @@ struct  timespec *getTimeout(struct timespec *spec, timeout_t timeout);
 #endif
 
 #if !defined(_MSWINDOWS_) || defined(_MSTHREADS_)
-inline struct tm *localtime_r(const time_t *t, struct tm *b)
-    {return SysTime::getLocalTime(t, b);}
+inline struct tm *localtime_r(const time_t *t, struct tm *b) {
+    return SysTime::getLocalTime(t, b);
+}
 
-inline char *ctime_r(const time_t *t, char *buf)
-    {return ctime(t);}
+inline char *ctime_r(const time_t *t, char *buf) {
+    return ctime(t);
+}
 
-inline struct tm *gmtime_r(const time_t *t, struct tm *b)
-    {return SysTime::getGMTTime(t, b);}
+inline struct tm *gmtime_r(const time_t *t, struct tm *b) {
+    return SysTime::getGMTTime(t, b);
+}
 
-inline char *asctime_r(const struct tm *tm, char *b)
-    {return asctime(tm);}
+inline char *asctime_r(const struct tm *tm, char *b) {
+    return asctime(tm);
+}
 #endif
 
-inline Thread *getThread(void)
-    {return Thread::get();}
+inline Thread *getThread(void) {
+    return Thread::get();
+}
 
 /**
  * The buffer class represents an IPC service that is built upon a buffer
@@ -681,8 +725,9 @@ public:
      * Return the capacity of the buffer as specified at creation.
      * @return size of buffer.
      */
-    inline size_t getSize(void)
-        {return _size;}
+    inline size_t getSize(void) const {
+        return _size;
+    }
 
     /**
      * Return the current capacity in use for the buffer.  Free space
@@ -690,8 +735,9 @@ public:
      * @return integer used capacity of the buffer.
      * @see #getSize
      */
-    inline size_t getUsed(void)
-        {return _used;}
+    inline size_t getUsed(void) const {
+        return _used;
+    }
 
     /**
      * Let one or more threads wait for an object to become available
@@ -748,21 +794,21 @@ protected:
      * @return predefined size of this buffers objects.
      * @param buf pointer to copy contents of head of buffer to.
      */
-    size_t onPeek(void *buf);
+    size_t onPeek(void *buf) __OVERRIDE;
 
     /**
      * Wait for and return a fixed object in the buffer.
      * @return predefined size of this buffers objects.
      * @param buf pointer to hold object returned from the buffer.
      */
-    size_t onWait(void *buf);
+    size_t onWait(void *buf) __OVERRIDE;
 
     /**
      * Post an object of the appropriate size into the buffer.
      * @return predefined size of this buffers objects.
      * @param buf pointer to data to copy into the buffer.
      */
-    size_t onPost(void *buf);
+    size_t onPost(void *buf) __OVERRIDE;
 
 public:
     /**
@@ -789,7 +835,7 @@ public:
 
     FixedBuffer &operator=(const FixedBuffer &fb);
 
-    bool isValid(void);
+    bool isValid(void) __OVERRIDE;
 };
 
 /**
@@ -810,7 +856,7 @@ public:
 class __EXPORT ThreadQueue : public Mutex, public Thread, public Semaphore
 {
 private:
-    void run(void);         // private run method
+    void run(void) __FINAL;         // private run method
 
 protected:
     typedef struct _data {
@@ -829,7 +875,7 @@ protected:
     /*
      * Overloading of final(). It demarks Semaphore to avoid deadlock.
      */
-    virtual void final();
+    virtual void final() __OVERRIDE;
 
     /**
      * Start of dequeing.  Maybe we need to connect a database
@@ -896,16 +942,19 @@ public:
 
 
 /** @relates Buffer */
-inline size_t get(Buffer &b, void *o, timeout_t t = 0)
-    {return b.wait(o, t);}
+inline size_t get(Buffer &b, void *o, timeout_t t = 0) {
+    return b.wait(o, t);
+}
 
 /** @relates Buffer */
-inline size_t put(Buffer &b, void *o, timeout_t t = 0)
-    {return b.post(o, t);}
+inline size_t put(Buffer &b, void *o, timeout_t t = 0) {
+    return b.post(o, t);
+}
 
 /** @relates Buffer */
-inline size_t peek(Buffer &b, void *o)
-    {return b.peek(o);}
+inline size_t peek(Buffer &b, void *o) {
+    return b.peek(o);
+}
 
 } // namespace ost
 
