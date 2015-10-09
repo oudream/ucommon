@@ -139,6 +139,8 @@ private:
     bool _enable;
     bool _clogEnable;
 
+    __DELETE_COPY(Slog);
+
 protected:
     /**
      * This is the streambuf function that actually outputs the data

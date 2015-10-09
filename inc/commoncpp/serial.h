@@ -425,6 +425,8 @@ private:
     friend TTYStream& crlf(TTYStream&);
     friend TTYStream& lfcr(TTYStream&);
 
+    __DELETE_COPY(TTYStream);
+
 protected:
     char *gbuf, *pbuf;
     timeout_t timeout;
@@ -539,6 +541,9 @@ public:
 
 class __EXPORT ttystream : public TTYStream
 {
+private:
+    __DELETE_COPY(ttystream);
+
 public:
     /**
      * Construct an unopened "ttystream" object.
@@ -586,6 +591,9 @@ public:
 
 class __EXPORT TTYSession : public Thread, public TTYStream
 {
+private:
+    __DELETE_COPY(TTYSession);
+
 public:
     /**
      * Create TTY stream that will be managed by it's own thread.
@@ -640,6 +648,8 @@ private:
     bool detect_disconnect;
 
     friend class SerialService;
+
+    __DELETE_COPY(SerialPort);
 
 protected:
     /**
@@ -780,6 +790,8 @@ private:
     int hiwater;
     int count;
     SerialPort *first, *last;
+
+    __DELETE_COPY(SerialService);
 
     /**
      * Attach a new serial port to this service thread.
