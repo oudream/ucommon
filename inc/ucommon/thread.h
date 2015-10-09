@@ -814,9 +814,9 @@ protected:
      */
     void join(void);
 
-    bool is_active(void) const;
+    bool is_active(void) const __OVERRIDE;
 
-    virtual void run(void) = 0;
+    virtual void run(void) __OVERRIDE = 0;
 
 public:
 
@@ -875,11 +875,11 @@ protected:
      * still be used to modify the "delete this" behavior of detached threads
      * while merging thread exit behavior with Mozilla NSPR.
      */
-    void exit(void);
+    void exit(void) __OVERRIDE;
 
-    bool is_active(void) const;
+    bool is_active(void) const __OVERRIDE;
 
-    virtual void run(void) = 0;
+    virtual void run(void) __OVERRIDE = 0;
 
 public:
     /**
