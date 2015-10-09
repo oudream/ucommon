@@ -111,14 +111,16 @@ public:
     /**
      * Fetch out the socket.
      */
-    inline SOCKET getSocket(void)
-        {return so;}
+    inline SOCKET getSocket(void) const {
+        return so;
+    }
 
     /**
      * Get the buffer size for servers.
      */
-    inline int getSegmentSize(void)
-        {return segsize;}
+    inline int getSegmentSize(void) const {
+        return segsize;
+    }
 
     /**
      * A TCP "server" is created as a TCP socket that is bound
@@ -154,8 +156,9 @@ public:
      * @return host requesting a connection.
      * @param port number of requestor.
      */
-    inline IPV4Host getRequest(tpport_t *port = NULL) const
-        {return Socket::getIPV4Sender(port);}
+    inline IPV4Host getRequest(tpport_t *port = NULL) const {
+        return Socket::getIPV4Sender(port);
+    }
 
     /**
      * Used to reject the next incoming connection request.
@@ -165,8 +168,9 @@ public:
     /**
      * Used to get local bound address.
      */
-    inline IPV4Host getLocal(tpport_t *port = NULL) const
-        {return Socket::getIPV4Local(port);}
+    inline IPV4Host getLocal(tpport_t *port = NULL) const {
+        return Socket::getIPV4Local(port);
+    }
 
     /**
      * Used to wait for pending connection requests.
@@ -231,11 +235,13 @@ public:
     /**
      * Fetch out the socket.
      */
-    inline SOCKET getSocket(void)
-        {return so;}
+    inline SOCKET getSocket(void) {
+        return so;
+    }
 
-    inline int getSegmentSize(void)
-        {return segsize;}
+    inline int getSegmentSize(void) {
+        return segsize;
+    }
 
     /**
      * A TCP "server" is created as a TCP socket that is bound
@@ -271,8 +277,9 @@ public:
      * @return host requesting a connection.
      * @param port number of requestor.
      */
-    inline IPV6Host getRequest(tpport_t *port = NULL) const
-        {return Socket::getIPV6Sender(port);}
+    inline IPV6Host getRequest(tpport_t *port = NULL) const {
+        return Socket::getIPV6Sender(port);
+    }
 
     /**
      * Used to reject the next incoming connection request.
@@ -282,8 +289,9 @@ public:
     /**
      * Used to get local bound address.
      */
-    inline IPV6Host getLocal(tpport_t *port = NULL) const
-        {return Socket::getIPV6Local(port);}
+    inline IPV6Host getLocal(tpport_t *port = NULL) const {
+        return Socket::getIPV6Local(port);
+    }
 
     /**
      * Used to wait for pending connection requests.
@@ -372,7 +380,7 @@ protected:
      *
      * @return char from get buffer, EOF if not connected.
      */
-    int underflow();
+    int underflow() __OVERRIDE;
 
     /**
      * This streambuf method is used for doing unbuffered reads
@@ -391,7 +399,7 @@ protected:
      * @param ch char to push through.
      * @return char pushed through.
      */
-    int overflow(int ch);
+    int overflow(int ch) __OVERRIDE;
 
     /**
      * Create a TCP stream by connecting to a TCP socket (on
@@ -422,8 +430,9 @@ protected:
      *
      * @return stream pointer of this object.
      */
-    std::iostream *tcp(void)
-        {return ((std::iostream *)this);}
+    std::iostream *tcp(void) {
+        return ((std::iostream *)this);
+    }
 
 public:
     /**
@@ -481,8 +490,9 @@ public:
      *
      * @param timer to change timeout.
      */
-    inline void setTimeout(timeout_t timer)
-        {timeout = timer;}
+    inline void setTimeout(timeout_t timer) {
+        timeout = timer;
+    }
 
 
     /**
@@ -514,7 +524,7 @@ public:
      * contains data then input is ready and if write buffer
      * contains data it is first flushed and then checked.
      */
-    bool isPending(Pending pend, timeout_t timeout = TIMEOUT_INF);
+    bool isPending(Pending pend, timeout_t timeout = TIMEOUT_INF) __OVERRIDE;
 
     /**
       * Examine contents of next waiting packet.
@@ -523,16 +533,18 @@ public:
       * @param len of packet buffer.
       * @return number of bytes examined.
       */
-     inline ssize_t peek(void *buf, size_t len)
-         {return ::recv(so, (char *)buf, (socksize_t)len, MSG_PEEK);}
+     inline ssize_t peek(void *buf, size_t len) {
+         return ::recv(so, (char *)buf, (socksize_t)len, MSG_PEEK);
+    }
 
     /**
      * Return the size of the current stream buffering used.
      *
      * @return size of stream buffers.
      */
-    inline size_t getBufferSize(void) const
-        {return bufsize;}
+    inline size_t getBufferSize(void) const {
+        return bufsize;
+    }
 };
 
 /**
@@ -570,7 +582,7 @@ protected:
      * terminates without having to wait for a connection request
      * to complete.
      */
-    void initial(void);
+    void initial(void) __OVERRIDE;
 
 public:
     /**

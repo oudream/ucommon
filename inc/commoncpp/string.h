@@ -60,14 +60,17 @@ __EXPORT void delString(char *str);
 __EXPORT char *setUpper(char *string, size_t size);
 __EXPORT char *setLower(char *string, size_t size);
 
-inline char *setString(char *target, size_t size, const char *str)
-    {return String::set(target, size, str);}
+inline char *setString(char *target, size_t size, const char *str) {
+    return String::set(target, size, str);
+}
 
-inline char *addString(char *target, size_t size, const char *str)
-    {return String::add(target, size, str);}
+inline char *addString(char *target, size_t size, const char *str) {
+    return String::add(target, size, str);
+}
 
-inline char *dupString(const char *src, size_t size = 0)
-    {return newString(src, size);}
+inline char *dupString(const char *src, size_t size = 0) {
+    return newString(src, size);
+}
 
 /*
 __EXPORT char *find(const char *cs, char *str, size_t len = 0);

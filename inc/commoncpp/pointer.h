@@ -113,6 +113,10 @@ public:
         return ptrObject;
     }
 
+    inline operator bool() const {
+        return (*ptrCount != 1);
+    }
+
     inline bool operator!() const {
         return (*ptrCount == 1);
     }

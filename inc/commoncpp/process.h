@@ -241,8 +241,9 @@ public:
     /**
      * Return true if realtime scheduling.
      */
-    static inline bool isRealtime(void)
-        {return rtflag;}
+    static inline bool isRealtime(void) {
+        return rtflag;
+    }
 };
 
 /**

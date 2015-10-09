@@ -197,8 +197,9 @@ protected:
      *
      * @param err string or message to pass.
      */
-    inline void error(char *err)
-        {error(errExtended, err);}
+    inline void error(char *err) {
+        error(errExtended, err);
+    }
 
 
     /**
@@ -207,8 +208,9 @@ protected:
      *
      * @param enable true to enable handler.
      */
-    inline void setError(bool enable)
-        {flags.thrown = !enable;}
+    inline void setError(bool enable) {
+        flags.thrown = !enable;
+    }
 
     /**
      * Set packet read mode and "size" of packet read buffer.
@@ -270,8 +272,9 @@ protected:
      * This allows later ttystream class to open and close a serial
      * device.
      */
-    Serial()
-        {initSerial();}
+    Serial() {
+        initSerial();
+    }
 
     /**
      * A serial object may be constructed from a named file on the
@@ -356,8 +359,9 @@ public:
      *
      * @return error numbr of last Error.
      */
-    inline Error getErrorNumber(void)
-        {return errid;}
+    inline Error getErrorNumber(void) const {
+        return errid;
+    }
 
     /**
      * Often used by a "catch" to fetch the user set error string
@@ -365,8 +369,9 @@ public:
      *
      * @return string for error message.
      */
-    inline char *getErrorString(void)
-        {return errstr;}
+    inline char *getErrorString(void) const {
+        return errstr;
+    }
 
     /**
      * Get the "buffer" size for buffered operations.  This can
@@ -375,8 +380,9 @@ public:
      *
      * @return number of bytes used for buffering.
      */
-    inline int getBufferSize(void)
-        {return bufsize;}
+    inline int getBufferSize(void) const {
+        return bufsize;
+    }
 
     /**
      * Get the status of pending operations.  This can be used to
@@ -447,7 +453,7 @@ protected:
      *
      * @return char from get buffer, EOF also possible.
      */
-    int underflow(void);
+    int underflow(void) __OVERRIDE;
 
     /**
      * This streambuf method is used for doing unbuffered reads
@@ -466,7 +472,7 @@ protected:
      * @param ch char to push through.
      * @return char pushed through.
      */
-    int overflow(int ch);
+    int overflow(int ch) __OVERRIDE;
 
 public:
     /**
@@ -487,8 +493,9 @@ public:
      *
      * @param to timeout to use.
      */
-    inline void setTimeout(timeout_t to)
-        {timeout = to;}
+    inline void setTimeout(timeout_t to) {
+        timeout = to;
+    }
 
     /**
      * Set tty mode to buffered or "interactive".  When interactive,
@@ -518,7 +525,7 @@ public:
      * @param pend ready check to perform.
      * @param timeout in milliseconds.
      */
-    bool isPending(Pending pend, timeout_t timeout = TIMEOUT_INF);
+    bool isPending(Pending pend, timeout_t timeout = TIMEOUT_INF) __OVERRIDE;
 };
 
 /**
@@ -562,8 +569,9 @@ public:
     /**
      * Test to see if stream is opened.
      */
-    inline bool operator!()
-        {return (dev < 0);}
+    inline bool operator!() {
+        return (dev < 0);
+    }
 };
 
 /**
@@ -657,8 +665,9 @@ protected:
     /**
      * Get the current state of the DetectPending flag.
      */
-    inline bool getDetectPending( void ) const
-        { return detect_pending; }
+    inline bool getDetectPending( void ) const {
+        return detect_pending; 
+    }
 
     /**
      * Used to indicate if output ready monitoring should be performed
@@ -669,8 +678,9 @@ protected:
     /**
      * Get the current state of the DetectOutput flag.
      */
-    inline bool getDetectOutput( void ) const
-        { return detect_output; }
+    inline bool getDetectOutput( void ) const {
+        return detect_output; 
+    }
 
     /**
      * Called by the service thread when the objects timer
@@ -700,8 +710,9 @@ protected:
      * @param buf address of buffer to send.
      * @param len of bytes to send.
      */
-    inline int output(void *buf, int len)
-        {return aWrite((char *)buf, len);}
+    inline int output(void *buf, int len) {
+        return aWrite((char *)buf, len);
+    }
 
     /**
      * Perform when output is available for sending data.
@@ -717,8 +728,9 @@ protected:
      * @param buf address of buffer to input.
      * @param len of input buffer used.
      */
-    inline int input(void *buf, int len)
-        {return aRead((char *)buf, len);}
+    inline int input(void *buf, int len) {
+        return aRead((char *)buf, len);
+    }
 
 public:
     /**
@@ -786,7 +798,7 @@ private:
     /**
      * The service thread itself.
      */
-    void run(void);
+    void run(void) __OVERRIDE;
 
     friend class SerialPort;
 
@@ -846,8 +858,9 @@ public:
      *
      * @return count of active ports.
      */
-    inline int getCount(void)
-        {return count;}
+    inline int getCount(void) const {
+        return count;
+    }
 };
 
 #endif

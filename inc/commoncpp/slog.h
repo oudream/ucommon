@@ -145,7 +145,7 @@ protected:
      * to the device.  Since all output should be done with the standard
      * ostream operators, this function should never be called directly.
      */
-    int overflow(int c);
+    int overflow(int c) __OVERRIDE;
 
 public:
     /**
@@ -249,40 +249,50 @@ public:
      * Sets the logging level.
      * @param enable is the logging level to use for further output
      */
-    inline void level(Level enable)
-        {_level = enable;}
+    inline void level(Level enable) {
+        _level = enable;
+    }
 
     /**
      * Enables or disables the echoing of the messages to clog in addition
      * to the syslog daemon.  This is enabled by the default class constructor.
      * @param f true to enable, false to disable clog output
      */
-    inline void clogEnable(bool f=true)
-        {_clogEnable = f;}
+    inline void clogEnable(bool f=true) {
+        _clogEnable = f;
+    }
 
-    inline Slog &warn(void)
-        {return operator()(Slog::levelWarning);}
+    inline Slog &warn(void) {
+        return operator()(Slog::levelWarning);
+    }
 
-    inline Slog &error(void)
-        {return operator()(Slog::levelError);}
+    inline Slog &error(void) {
+        return operator()(Slog::levelError);
+    }
 
-    inline Slog &debug(void)
-        {return operator()(Slog::levelDebug);}
+    inline Slog &debug(void) {
+        return operator()(Slog::levelDebug);
+    }
 
-    inline Slog &emerg(void)
-        {return operator()(Slog::levelEmergency);}
+    inline Slog &emerg(void) {
+        return operator()(Slog::levelEmergency);
+    }
 
-    inline Slog &alert(void)
-        {return operator()(Slog::levelAlert);}
+    inline Slog &alert(void) {
+        return operator()(Slog::levelAlert);
+    }
 
-    inline Slog &critical(void)
-        {return operator()(Slog::levelCritical);}
+    inline Slog &critical(void) {
+        return operator()(Slog::levelCritical);
+    }
 
-    inline Slog &notice(void)
-        {return operator()(Slog::levelNotice);}
+    inline Slog &notice(void) {
+        return operator()(Slog::levelNotice);
+    }
 
-    inline Slog &info(void)
-        {return operator()(Slog::levelInfo);}
+    inline Slog &info(void) {
+        return operator()(Slog::levelInfo);
+    }
 
 };
 
