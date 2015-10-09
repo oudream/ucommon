@@ -103,8 +103,9 @@ public:
      * Get the number of pages that have been allocated from the real heap.
      * @return pages allocated from heap.
      */
-    inline unsigned pages(void) const
-        {return count;}
+    inline unsigned pages(void) const {
+        return count;
+    }
 
     /**
      * Get the maximum number of pages that are permitted.  One can use a
@@ -113,15 +114,17 @@ public:
      * to detect and bring down apps that are leaking.
      * @return page allocation limit.
      */
-    inline unsigned max(void) const
-        {return limit;}
+    inline unsigned max(void) const {
+        return limit;
+    }
 
     /**
      * Get the size of a memory page.
      * @return size of each pager heap allocation.
      */
-    inline size_t size(void) const
-        {return pagesize;}
+    inline size_t size(void) const {
+        return pagesize;
+    }
 
     /**
      * Determine fragmentation level of acquired heap pages.  This is
@@ -148,7 +151,7 @@ protected:
      * @param size of memory request.
      * @return allocated memory or NULL if not possible.
      */
-    virtual void *_alloc(size_t size);
+    virtual void *_alloc(size_t size) __OVERRIDE;
 
 public:
     /**
@@ -251,7 +254,7 @@ protected:
      * @param size of memory request.
      * @return allocated memory or NULL if not possible.
      */
-    virtual void *_alloc(size_t size);
+    virtual void *_alloc(size_t size) __OVERRIDE;
 
 public:
     /**
@@ -277,18 +280,21 @@ public:
     protected:
         friend class ObjectPager;
 
-        inline void set(member *node)
-            {Next = node;}
+        inline void set(member *node) {
+            Next = node;
+        }
 
-        inline void *get(void) const
-            {return mem;}
+        inline void *get(void) const {
+            return mem;
+        }
 
         member(LinkedObject **root);
         member();
 
     public:
-        inline void *operator*() const
-            {return mem;}
+        inline void *operator*() const {
+            return mem;
+        }
     };
 
 private:
@@ -349,32 +355,38 @@ public:
      * the list of strings.
      * @return first member of list or NULL if empty.
      */
-    inline ObjectPager::member *begin(void)
-        {return static_cast<ObjectPager::member *>(root);}
+    inline ObjectPager::member *begin(void) {
+        return static_cast<ObjectPager::member *>(root);
+    }
 
-    inline operator bool() const
-        {return members > 0;}
+    inline operator bool() const {
+        return members > 0;
+    }
 
-    inline bool operator!() const
-        {return !members;}
+    inline bool operator!() const {
+        return !members;
+    }
 
     /**
      * Get the number of items in the pager string list.
      * @return number of items stored.
      */
-    inline unsigned count(void) const
-        {return members;}
+    inline unsigned count(void) const {
+        return members;
+    }
 
     /**
      * Convenience typedef for iterative pointer.
      */
     typedef linked_pointer<ObjectPager::member> iterator;
 
-    inline size_t size(void)
-        {return memalloc::size();}
+    inline size_t size(void) {
+        return memalloc::size();
+    }
 
-    inline unsigned pages(void)
-        {return memalloc::pages();}
+    inline unsigned pages(void) {
+        return memalloc::pages();
+    }
 
 protected:
     /**
@@ -440,11 +452,13 @@ public:
         member(const char *data);
 
     public:
-        inline const char *operator*() const
-            {return text;}
+        inline const char *operator*() const {
+            return text;
+        }
 
-        inline const char *get(void) const
-            {return text;}
+        inline const char *get(void) const {
+            return text;
+        }
     };
 
     /**
@@ -459,8 +473,9 @@ public:
      * Get the number of items in the pager string list.
      * @return number of items stored.
      */
-    inline unsigned count(void) const
-        {return members;}
+    inline unsigned count(void) const {
+        return members;
+    }
 
     /**
      * Get string item from list.  This is useful when StringPager is
@@ -533,36 +548,44 @@ public:
      * @param item to access.
      * @return text of item or NULL if invalid.
      */
-    inline const char *operator[](unsigned item) const
-        {return get(item);}
+    inline const char *operator[](unsigned item) const {
+        return get(item);
+    }
 
-    inline const char *at(unsigned item) const
-        {return get(item);}
+    inline const char *at(unsigned item) const {
+        return get(item);
+    }
 
     /**
      * Get root of pager list.  This is useful for externally enumerating
      * the list of strings.
      * @return first member of list or NULL if empty.
      */
-    inline StringPager::member *begin(void) const
-        {return static_cast<StringPager::member *>(root);}
+    inline StringPager::member *begin(void) const {
+        return static_cast<StringPager::member *>(root);
+    }
 
     /**
      * Convenience operator to add to pager and auto-sort.
      * @param text to add to list.
      */
-    inline void operator+=(const char *text)
-        {add(text);}
+    inline void operator+=(const char *text) {
+        add(text);
+    }
 
     /**
      * Convenience operator to add to pager.
      * @param text to add to list.
      */
-    inline StringPager& operator<<(const char *text)
-        {add(text); return *this;}
+    inline StringPager& operator<<(const char *text) {
+        add(text); 
+        return *this;
+    }
 
-    inline StringPager& operator>>(const char *text)
-        {push(text); return *this;}
+    inline StringPager& operator>>(const char *text) {
+        push(text); 
+        return *this;
+    }
 
     /**
      * Sort members.
@@ -591,31 +614,39 @@ public:
 
     String join(const char *prefix = NULL, const char *middle = NULL, const char *suffix = NULL);
 
-    inline operator bool()
-        {return members > 0;}
+    inline operator bool() const {
+        return members > 0;
+    }
 
-    inline bool operator!()
-        {return !members;}
+    inline bool operator!() const {
+        return !members;
+    }
 
-    inline StringPager& operator=(char **list)
-        {set(list); return *this;}
+    inline StringPager& operator=(char **list) {
+        set(list); 
+        return *this;
+    }
 
-    inline const char *operator*()
-        {return pull();}
+    inline const char *operator*() {
+        return pull();
+    }
 
-    inline operator char **()
-        {return list();}
+    inline operator char **() {
+        return list();
+    }
 
     /**
      * Convenience typedef for iterative pointer.
      */
     typedef linked_pointer<StringPager::member> iterator;
 
-    inline size_t size(void) const
-        {return memalloc::size();}
+    inline size_t size(void) const {
+        return memalloc::size();
+    }
 
-    inline unsigned pages(void) const
-        {return memalloc::pages();}
+    inline unsigned pages(void) const {
+        return memalloc::pages();
+    }
 
 private:
     member *last;
@@ -656,7 +687,7 @@ protected:
      * @param size of filename buffer.
      * @return true if include in final list.
      */
-    virtual bool filter(char *filename, size_t size);
+    virtual bool filter(char *filename, size_t size) __OVERRIDE;
 
     /**
      * Load a directory path.
@@ -672,17 +703,21 @@ public:
 
     void operator=(const char *path);
 
-    inline const char *operator*() const
-        {return dir;}
+    inline const char *operator*() const {
+        return dir;
+    }
 
-    inline operator bool() const
-        {return dir != NULL;}
+    inline operator bool() const {
+        return dir != NULL;
+    }
 
-    inline bool operator!() const
-        {return dir == NULL;}
+    inline bool operator!() const {
+        return dir == NULL;
+    }
 
-    inline unsigned count(void) const
-        {return StringPager::count();}
+    inline unsigned count(void) const {
+        return StringPager::count();
+    }
 
     /**
      * Return specified filename from directory list.  This is a convenience
@@ -690,20 +725,25 @@ public:
      * @param item to access.
      * @return text of item or NULL if invalid.
      */
-    inline const char *operator[](unsigned item) const
-        {return StringPager::get(item);}
+    inline const char *operator[](unsigned item) const {
+        return StringPager::get(item);
+    }
 
-    inline const char *get(unsigned item) const
-        {return StringPager::get(item);}
+    inline const char *get(unsigned item) const {
+        return StringPager::get(item);
+    }
 
-    inline const char *at(unsigned item) const
-        {return StringPager::get(item);}
+    inline const char *at(unsigned item) const {
+        return StringPager::get(item);
+    }
 
-    inline size_t size(void) const
-        {return memalloc::size();}
+    inline size_t size(void) const {
+        return memalloc::size();
+    }
 
-    inline unsigned pages(void) const
-        {return memalloc::pages();}
+    inline unsigned pages(void) const {
+        return memalloc::pages();
+    }
 
 public:
     /**
@@ -742,7 +782,7 @@ private:
     __DELETE_COPY(bufpager);
 
 protected:
-    virtual void *_alloc(size_t size);
+    virtual void *_alloc(size_t size) __OVERRIDE;
 
 public:
     /**
@@ -792,22 +832,26 @@ public:
      * Get total size.
      * @return number of characters in buffer.
      */
-    inline unsigned long used(void) const
-        {return ccount;}
+    inline unsigned long used(void) const {
+        return ccount;
+    }
 
     /**
      * Convenience operator to get text.
      * @return text string of buffer.
      */
-    inline char *operator *()
-        {return dup();}
+    inline char *operator *() {
+        return dup();
+    }
 
     /**
      * Convenience operator to add to pager.
      * @param text to add to list.
      */
-    inline bufpager& operator<<(const char *text)
-        {add(text); return *this;}
+    inline bufpager& operator<<(const char *text) {
+        add(text);
+        return *this;
+    }
 
     bufpager(size_t page = 0);
 
@@ -836,15 +880,17 @@ public:
      * Check if can still save into buffer.
      * @return true if buffer is full.
      */
-    inline bool operator!() const
-        {return eom;}
+    inline bool operator!() const {
+        return eom;
+    }
 
     /**
      * Check if can still save into buffer.  Used for is() function.
      * @return true if pager can still store more.
      */
-    inline operator bool() const
-        {return !eom;}
+    inline operator bool() const {
+        return !eom;
+    }
 
     /**
      * Assign foreign pager to us.  This relocates the heap references
@@ -993,11 +1039,13 @@ public:
 
     void set(size_t size);
 
-    inline void reset(void)
-        {inp = out = 0;}
+    inline void reset(void) {
+        inp = out = 0;
+    }
 
-    inline void rewind(void)
-        {inp = 0;}
+    inline void rewind(void) {
+        inp = 0;
+    }
 };
 
 class __EXPORT chartext : public CharacterProtocol
@@ -1041,15 +1089,17 @@ public:
      * Create a managed object by casting reference.
      * @return pointer to typed managed pager pool object.
      */
-    inline T *operator()(void)
-        {return new(get(sizeof(T))) T;}
+    inline T *operator()(void) {
+        return new(get(sizeof(T))) T;
+    }
 
     /**
      * Create a managed object by pointer reference.
      * @return pointer to typed managed pager pool object.
      */
-    inline T *operator*()
-        {return new(get(sizeof(T))) T;}
+    inline T *operator*() {
+        return new(get(sizeof(T))) T;
+    }
 };
 
 /**
@@ -1067,15 +1117,17 @@ typedef StringPager::member stringlistitem_t;
  */
 typedef DirPager dirlist_t;
 
+/*
 inline const char *shift(stringlist_t& list)
     {return list.pull();}
 
 inline void unshift(stringlist_t& list, const char *text)
     {list.push(text);}
+*/
 
-
-inline String str(StringPager& list, const char *prefix = NULL, const char *middle = NULL, const char *suffix = NULL)
-    {return list.join(prefix, middle, suffix);}
+inline String str(StringPager& list, const char *prefix = NULL, const char *middle = NULL, const char *suffix = NULL) {
+    return list.join(prefix, middle, suffix);
+}
 
 } // namespace ucommon
 
