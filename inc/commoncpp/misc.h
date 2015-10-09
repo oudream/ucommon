@@ -67,22 +67,27 @@ class __EXPORT MemPager : private ucommon::memalloc
 public:
     inline MemPager(size_t pagesize = 4096) : ucommon::memalloc(pagesize) {}
 
-	inline void *alloc(size_t size)
-		{return _alloc(size);}
+	inline void *alloc(size_t size) {
+		return _alloc(size);
+    }
 
 	char *alloc(const char *str);
 
-    inline char *first(const char *str)
-        {return alloc(str);}
+    inline char *first(const char *str) {
+        return alloc(str);
+    }
 
-	inline void *first(size_t size)
-		{return _alloc(size);}
+	inline void *first(size_t size) {
+		return _alloc(size);
+    }
 
-	inline int getPages(void)
-		{return pages();}
+	inline int getPages(void) const {
+		return pages();
+    }
 
-    inline void purge(void)
-        {memalloc::purge();}
+    inline void purge(void) {
+        memalloc::purge();
+    }
 };
 
 /**
@@ -116,8 +121,9 @@ protected:
      */
     void* alloc(size_t size);
 
-    inline void *first(size_t size)
-        {return alloc(size);}
+    inline void *first(size_t size) {
+        return alloc(size);
+    }
 };
 
 

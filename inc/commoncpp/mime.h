@@ -105,8 +105,9 @@ public:
      *
      * @return array of headers.
      */
-    char **getHeaders(void)
-        {return header;}
+    char **getHeaders(void) {
+        return header;
+    }
 };
 
 /**
@@ -193,14 +194,14 @@ public:
      *
      * @param output stream to send header to.
      */
-    void head(std::ostream *output);
+    void head(std::ostream *output) __OVERRIDE;
 
     /**
      * Stream content (value) of this form data field.
      *
      * @param output stream to send body to.
      */
-    void body(std::ostream *output);
+    void body(std::ostream *output) __OVERRIDE;
 
     /**
      * Construct form data field part of multipart form.
