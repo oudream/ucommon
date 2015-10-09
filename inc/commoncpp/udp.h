@@ -102,6 +102,8 @@ private:
     inline Error setKeepAlive(bool enable)
         {return Socket::setKeepAlive(enable);}
 
+    __DELETE_COPY(UDPSocket);
+
 protected:
     Socket::address peer;
 
@@ -269,6 +271,8 @@ private:
     Error setBroadcast(bool enable)
         {return Socket::setBroadcast(enable);}
 
+    __DELETE_COPY(UDPBroadcast);
+
 public:
     /**
      * Create and bind a subnet broadcast socket.
@@ -306,6 +310,8 @@ private:
      * @param port port number to associate with
      */
     Error cConnect(const IPV4Address &ia, tpport_t port);
+
+    __DELETE_COPY(UDPTransmit);
 
 protected:
     /**
@@ -445,6 +451,9 @@ public:
  */
 class __EXPORT UDPReceive : protected UDPSocket
 {
+private:
+    __DELETE_COPY(UDPReceive);
+
 protected:
     /**
      * Create a UDP receiver, bind it to a specific interface
@@ -554,6 +563,9 @@ public:
  */
 class __EXPORT UDPDuplex : public UDPTransmit, public UDPReceive
 {
+private:
+    __DELETE_COPY(UDPDuplex);
+
 public:
     /**
      * Create a UDP duplex as a pair of UDP simplex objects

@@ -94,6 +94,8 @@ protected:
     int segsize;
     void setSegmentSize(unsigned mss);
 
+    __DELETE_COPY(TCPSocket);
+
 public:
     /**
      * A method to call in a derived TCPSocket class that is acting
@@ -217,6 +219,8 @@ class __EXPORT TCPV6Socket : protected Socket
 private:
     int segsize;
     void setSegmentSize(unsigned mss);
+
+    __DELETE_COPY(TCPV6Socket);
 
 public:
     /**
@@ -561,6 +565,7 @@ class __EXPORT TCPSession : public Thread, public TCPStream
 {
 private:
     TCPSession(const TCPSession &rhs); // not defined
+
 protected:
     /**
      * Normally called during the thread Initial() method by default,

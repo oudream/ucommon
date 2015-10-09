@@ -61,6 +61,9 @@ namespace ost {
 
 class __EXPORT Mutex : protected ucommon::RecursiveMutex
 {
+private:
+    __DELETE_COPY(Mutex);
+
 public:
     inline Mutex() : RecursiveMutex() {}
 
@@ -100,6 +103,9 @@ public:
  */
 class __EXPORT MutexCounter : public Mutex
 {
+private:
+    __DELETE_COPY(MutexCounter);
+
 protected:
     volatile int    counter;
 
@@ -149,6 +155,8 @@ class __EXPORT MutexLock
 private:
     Mutex& mutex;
 
+    __DELETE_COPY(MutexLock);
+
 public:
     /**
      * Acquire the mutex
@@ -170,6 +178,9 @@ public:
 
 class __EXPORT ThreadLock : protected ucommon::RWLock
 {
+private:
+    __DELETE_COPY(ThreadLock);
+
 public:
     inline ThreadLock() : ucommon::RWLock() {}
 
@@ -219,6 +230,8 @@ class __EXPORT ReadLock
 private:
     ThreadLock& tl;
 
+    __DELETE_COPY(ReadLock);
+
 public:
     /**
      * Wait for read access
@@ -262,6 +275,8 @@ class __EXPORT WriteLock
 private:
     ThreadLock& tl;
 
+    __DELETE_COPY(WriteLock);
+
 public:
     /**
      * Wait for write access
@@ -282,6 +297,9 @@ public:
 
 class __EXPORT Conditional : private ucommon::Conditional
 {
+private:
+    __DELETE_COPY(Conditional);
+
 public:
     inline Conditional() : ucommon::Conditional() {}
 
@@ -358,6 +376,9 @@ public:
 
 class __EXPORT Event : private ucommon::TimedEvent
 {
+private:
+    __DELETE_COPY(Event);
+
 public:
     inline Event() : ucommon::TimedEvent() {}
 
@@ -402,6 +423,8 @@ private:
     Thread *parent;
     size_t msgpos;
     char msgbuf[128];
+
+    __DELETE_COPY(Thread);
 
 public:
     Thread(int pri = 0, size_t stack = 0);
@@ -501,6 +524,9 @@ public:
  */
 class __EXPORT SysTime
 {
+private:
+    __DELETE_DEFAULTS(SysTime);
+
 public:
     static time_t getTime(time_t *tloc = NULL);
     static time_t time(time_t *tloc) {
@@ -535,12 +561,15 @@ public:
  */
 class __EXPORT TimerPort
 {
+private:
 #ifndef _MSWINDOWS_
     struct timeval timer;
 #else
     DWORD timer;
 #endif
     bool active;
+
+    __DELETE_COPY(TimerPort);
 
 public:
     /**
@@ -857,6 +886,8 @@ class __EXPORT ThreadQueue : public Mutex, public Thread, public Semaphore
 {
 private:
     void run(void) __FINAL;         // private run method
+
+    __DELETE_COPY(ThreadQueue);
 
 protected:
     typedef struct _data {
