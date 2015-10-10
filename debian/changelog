@@ -1,3 +1,12 @@
+ucommon (1:7.0.0-1) UNRELEASED; urgency=high
+
+  * Clean new ucommon 8.0 abi
+  * atomic typeref system completed
+  * c++11 support completed
+  * deprecated functions removed, modules relocated
+
+ -- David Sugar <dsugar@cherokeesofidaho.org>  Sat, 10 Oct 2015 07:28:30 -0400
+
 ucommon (1:6.6.0-1) UNRELEASED; urgency=medium
 
   * Expanded usecure for rsa keys
