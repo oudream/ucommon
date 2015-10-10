@@ -94,8 +94,7 @@ html browsable.
 %build
 %cmake \
     -DCMAKE_INSTALL_SYSCONFDIR:PATH=%{_sysconfdir} \
-    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir} \
-    -DBUILD_ATOMICS:BOOL=TRUE
+    -DCMAKE_INSTALL_LOCALSTATEDIR:PATH=%{_localstatedir}
 
 make %{?_smp_mflags}
 %if	%{build_docs}
