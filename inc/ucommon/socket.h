@@ -606,7 +606,7 @@ public:
             return list != nullptr;
         }
 
-        inline bool is() const {
+        inline bool isValid() const {
             return list != nullptr;
         }
 
