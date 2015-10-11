@@ -64,7 +64,7 @@ private:
     friend class bufpager;
 
     size_t pagesize, align;
-    mutable unsigned count;
+    unsigned count;
 
     typedef struct mempage {
         struct mempage *next;
@@ -74,7 +74,9 @@ private:
         };
     }   page_t;
 
-    mutable page_t *page;
+    page_t *page;
+
+    __DELETE_COPY(memalloc);
 
 protected:
     unsigned limit;
@@ -152,20 +154,11 @@ protected:
     virtual void *_alloc(size_t size) __OVERRIDE;
 
 public:
-    inline memalloc(const memalloc& source) {
-        assign(source);
-    }
-
     /**
      * Assign foreign pager to us.  This relocates the heap references
      * to our object, clears the other object.
      */
-    void assign(const memalloc& source);
-
-    inline memalloc& operator=(const memalloc& source) {
-        assign(source);
-        return *this;
-    }
+    void assign(memalloc& source);
 };
 
 /**
@@ -192,6 +185,8 @@ class __EXPORT mempager : public memalloc, public LockingProtocol
 {
 private:
     mutable pthread_mutex_t mutex;
+
+    __DELETE_COPY(mempager);
 
 protected:
     /**
@@ -257,20 +252,11 @@ protected:
     virtual void *_alloc(size_t size) __OVERRIDE;
 
 public:
-    inline mempager(const mempager& source) {
-        assign(source);
-    }
-
     /**
      * Assign foreign pager to us.  This relocates the heap references
      * to our object, clears the other object.
      */
-    void assign(const mempager& source);
-
-    inline mempager& operator=(const mempager& source) {
-        assign(source);
-        return *this;
-    }
+    void assign(mempager& source);
 };
 
 class __EXPORT ObjectPager : protected memalloc
