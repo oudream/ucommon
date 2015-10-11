@@ -580,6 +580,9 @@ public:
         inline operator bool() const
             {return list != NULL;}
 
+        inline bool isValid() const
+            {return list != NULL;}
+
         /**
          * Test if we have no address list.
          * @return true if we have no address list.

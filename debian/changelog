@@ -1,3 +1,9 @@
+ucommon (1:6.6.2-1) UNRELEASED; urgency=low
+
+  * Updated for isValid in socket address for some broken compilers
+
+ -- David Sugar <dsugar@cherokeesofidaho.org>  Sat, 10 Oct 2015 21:51:57 -0400
+
 ucommon (1:6.6.1-1) UNRELEASED; urgency=low
 
   * Updated for errlog in transition to 7.0
