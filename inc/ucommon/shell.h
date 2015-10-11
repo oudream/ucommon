@@ -186,7 +186,7 @@ public:
     class __EXPORT Option : public LinkedObject
     {
     private:
-        __DELETE_DEFAULTS(Option);
+        __DELETE_COPY(Option);
 
     public:
         char short_option;

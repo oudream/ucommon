@@ -56,7 +56,7 @@ extern "C" {
     }
 }
 
-void memalloc::assign(memalloc& source)
+void memalloc::assign(const memalloc& source)
 {
     memalloc::purge();
     pagesize = source.pagesize;
@@ -272,7 +272,7 @@ void *mempager::_alloc(size_t size)
     return mem;
 }
 
-void mempager::assign(mempager& source)
+void mempager::assign(const mempager& source)
 {
     pthread_mutex_lock(&source.mutex);
     pthread_mutex_lock(&mutex);

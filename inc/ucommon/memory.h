@@ -64,7 +64,7 @@ private:
     friend class bufpager;
 
     size_t pagesize, align;
-    unsigned count;
+    mutable unsigned count;
 
     typedef struct mempage {
         struct mempage *next;
@@ -74,9 +74,7 @@ private:
         };
     }   page_t;
 
-    page_t *page;
-
-    __DELETE_COPY(memalloc);
+    mutable page_t *page;
 
 protected:
     unsigned limit;
@@ -154,13 +152,17 @@ protected:
     virtual void *_alloc(size_t size) __OVERRIDE;
 
 public:
+    inline memalloc(const memalloc& source) {
+        assign(source);
+    }
+
     /**
      * Assign foreign pager to us.  This relocates the heap references
      * to our object, clears the other object.
      */
-    void assign(memalloc& source);
+    void assign(const memalloc& source);
 
-    inline memalloc& operator=(memalloc& source) {
+    inline memalloc& operator=(const memalloc& source) {
         assign(source);
         return *this;
     }
@@ -190,8 +192,6 @@ class __EXPORT mempager : public memalloc, public LockingProtocol
 {
 private:
     mutable pthread_mutex_t mutex;
-
-    __DELETE_COPY(mempager);
 
 protected:
     /**
@@ -257,13 +257,17 @@ protected:
     virtual void *_alloc(size_t size) __OVERRIDE;
 
 public:
+    inline mempager(const mempager& source) {
+        assign(source);
+    }
+
     /**
      * Assign foreign pager to us.  This relocates the heap references
      * to our object, clears the other object.
      */
-    void assign(mempager& source);
+    void assign(const mempager& source);
 
-    inline mempager& operator=(mempager& source) {
+    inline mempager& operator=(const mempager& source) {
         assign(source);
         return *this;
     }
@@ -401,11 +405,6 @@ public:
      * to our object, clears the other object.
      */
     void assign(ObjectPager& source);
-
-    inline ObjectPager& operator=(ObjectPager& source) {
-        assign(source);
-        return *this;
-    }
 };
 
 /**
@@ -418,8 +417,6 @@ class __EXPORT StringPager : protected memalloc
 private:
     unsigned members;
     LinkedObject *root;
-
-    __DELETE_COPY(StringPager);
 
 public:
     /**
@@ -658,11 +655,6 @@ public:
      * to our object, clears the other object.
      */
     void assign(StringPager& source);
-
-    inline StringPager& operator=(StringPager& source) {
-        assign(source);
-        return *this;
-    }
 };
 
 /**
@@ -751,11 +743,6 @@ public:
      * to our object, clears the other object.
      */
     void assign(DirPager& source);
-
-    inline DirPager& operator=(DirPager& source) {
-        assign(source);
-        return *this;
-    }
 };
 
 /**
@@ -897,11 +884,6 @@ public:
      * to our object, clears the other object.
      */
     void assign(bufpager& source);
-
-    inline bufpager& operator=(bufpager& source) {
-        assign(source);
-        return *this;
-    }
 };
 
 /**
