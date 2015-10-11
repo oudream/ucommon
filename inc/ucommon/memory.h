@@ -76,8 +76,6 @@ private:
 
     page_t *page;
 
-    __DELETE_COPY(memalloc);
-
 protected:
     unsigned limit;
 
@@ -93,6 +91,8 @@ public:
      * @param page size to use or 0 for OS allocation size.
      */
     memalloc(size_t page = 0);
+
+    memalloc(const memalloc& copy);
 
     /**
      * Destroy a memory pager.  Release all pages back to the heap at once.
@@ -186,8 +186,6 @@ class __EXPORT mempager : public memalloc, public LockingProtocol
 private:
     mutable pthread_mutex_t mutex;
 
-    __DELETE_COPY(mempager);
-
 protected:
     /**
      * Lock the memory pager mutex.  It will be more efficient to lock
@@ -208,6 +206,8 @@ public:
      * @param page size to use or 0 for OS allocation size.
      */
     mempager(size_t page = 0);
+
+    mempager(const mempager& copy);
 
     /**
      * Destroy a memory pager.  Release all pages back to the heap at once.

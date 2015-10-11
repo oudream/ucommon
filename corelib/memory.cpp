@@ -107,6 +107,15 @@ memalloc::memalloc(size_t ps)
     page = NULL;
 }
 
+memalloc::memalloc(const memalloc& copy)
+{
+    count = 0;
+    limit = 0;
+    page = NULL;
+    pagesize = copy.pagesize;
+    align = copy.align;
+}
+
 memalloc::~memalloc()
 {
     memalloc::purge();
@@ -220,6 +229,12 @@ void *memalloc::_alloc(size_t size)
 
 mempager::mempager(size_t ps) :
 memalloc(ps)
+{
+    pthread_mutex_init(&mutex, NULL);
+}
+
+mempager::mempager(const mempager& copy) :
+memalloc(copy) 
 {
     pthread_mutex_init(&mutex, NULL);
 }
