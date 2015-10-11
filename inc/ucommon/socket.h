@@ -606,6 +606,10 @@ public:
             return list != nullptr;
         }
 
+        inline bool is() const {
+            return list != nullptr;
+        }
+
         /**
          * Test if we have no address list.
          * @return true if we have no address list.
