@@ -102,8 +102,6 @@ private:
 
     Family family;
 
-    __DELETE_COPY(DCCPSocket);
-
 public:
     /**
      * A method to call in a derived DCCPSocket class that is acting
