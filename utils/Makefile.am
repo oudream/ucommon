@@ -17,7 +17,8 @@ EXTRA_DIST = *.1 CMakeLists.txt
 
 man_MANS = args.1 scrub-files.1 mdsum.1 zerofill.1 car.1 sockaddr.1 \
 	pdetach.1 keywait.1
-bin_PROGRAMS = args scrub-files mdsum zerofill car sockaddr pdetach keywait
+bin_PROGRAMS = args scrub-files mdsum zerofill car sockaddr pdetach \
+	keywait urlout
 
 args_SOURCES = args.cpp
 
@@ -39,3 +40,5 @@ zerofill_LDFLAGS = @SECURE_LOCAL@
 car_SOURCES = car.cpp
 car_LDFLAGS = @SECURE_LOCAL@
 
+urlout_SOURCES = urlout.cpp
+urlout_LDFLAGS = @SECURE_LOCAL@

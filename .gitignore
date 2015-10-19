@@ -36,6 +36,7 @@ pdetach
 sockaddr
 zerofill
 scrub-files
+urlout
 ucommon-config
 ucommon-config.h*
 commoncpp-config
@@ -79,5 +80,6 @@ utils/sockaddr
 utils/zerofill
 utils/scrub-files
 utils/pdetach
+utils/urlout
 m4/
 TAGS

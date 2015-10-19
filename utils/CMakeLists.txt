@@ -54,11 +54,16 @@ add_dependencies(usecure-mdsum usecure ucommon)
 set_target_properties(usecure-mdsum PROPERTIES OUTPUT_NAME mdsum)
 target_link_libraries(usecure-mdsum usecure ucommon ${SECURE_LIBS} ${UCOMMON_LIBS} ${WITH_LIBS})
 
+add_executable(usecure-urlout urlout.cpp)
+add_dependencies(usecure-urlout usecure ucommon)
+set_target_properties(usecure-urlout PROPERTIES OUTPUT_NAME urlout)
+target_link_libraries(usecure-urlout usecure ucommon ${SECURE_LIBS} ${UCOMMON_LIBS} ${WITH_LIBS})
+
 add_executable(usecure-zerofill zerofill.cpp)
 add_dependencies(usecure-zerofill usecure ucommon)
 set_target_properties(usecure-zerofill PROPERTIES OUTPUT_NAME zerofill)
 target_link_libraries(usecure-zerofill usecure ucommon ${SECURE_LIBS} ${UCOMMON_LIBS} ${WITH_LIBS})
 
-install(TARGETS ucommon-args ucommon-pdetach ucommon-keywait usecure-car usecure-scrub usecure-mdsum ucommon-sockaddr usecure-zerofill DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS ucommon-args ucommon-pdetach ucommon-keywait usecure-car usecure-scrub usecure-mdsum ucommon-sockaddr usecure-urlout usecure-zerofill DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(FILES ${ucommon_man} DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
 
