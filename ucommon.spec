@@ -124,6 +124,7 @@ chmod 0755 %{buildroot}%{_bindir}/commoncpp-config
 %{_bindir}/sockaddr
 %{_bindir}/zerofill
 %{_bindir}/pdetach
+%{_bindir}/urlout
 %{_mandir}/man1/args.*
 %{_mandir}/man1/car.*
 %{_mandir}/man1/scrub-files.*
@@ -132,6 +133,7 @@ chmod 0755 %{buildroot}%{_bindir}/commoncpp-config
 %{_mandir}/man1/zerofill.*
 %{_mandir}/man1/keywait.*
 %{_mandir}/man1/pdetach.*
+%{_mandir}/man1/urlout.*
 
 %files devel
 %defattr(-,root,root,-)

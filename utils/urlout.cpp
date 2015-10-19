@@ -36,8 +36,8 @@ int main(int argc, char **argv)
     else
         url_secure = true;
 
-    char *path = strdup(url);
-    char *host = strdup(url);
+    string_t host = url;
+    string_t path = strdup(url);
 
     if(url_secure && secure::init()) {
         proto = "443";
@@ -49,18 +49,16 @@ int main(int argc, char **argv)
     else
         svc = proto;
 
-    char *sep = strchr(path, '/');
-    if(sep)
-        path = sep;
+    const char *find = path.find("/");
+    if(find)
+        path.rsplit(find);
     else
-        path = (char *)"/";
+        path = "/";
 
-    sep = strchr(host, '/');
-    if(sep)
-        *sep = 0;
+    host.split(host.find("/"));
 
     sstream web(ctx);
-    web.open(host, *svc);
+    web.open(host, svc);
 
     web << "GET /\r\n\r\n";
     web.flush();
