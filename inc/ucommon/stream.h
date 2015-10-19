@@ -147,8 +147,9 @@ protected:
      */
     int overflow(int ch) __OVERRIDE;
 
-    inline socket_t getsocket(void) const
-        {return so;}
+    inline socket_t getsocket(void) const {
+        return so;
+	}
 
 public:
     /**
@@ -191,15 +192,17 @@ public:
      * See if stream connection is active.
      * @return true if stream is active.
      */
-    inline operator bool() const
-        {return so != INVALID_SOCKET && bufsize > 0;}
+    inline operator bool() const {
+        return so != INVALID_SOCKET && bufsize > 0;
+	}
 
     /**
      * See if stream is disconnected.
      * @return true if stream disconnected.
      */
-    inline bool operator!() const
-        {return so == INVALID_SOCKET || bufsize == 0;}
+    inline bool operator!() const {
+        return so == INVALID_SOCKET || bufsize == 0;
+	}
 
     /**
      * Open a stream connection to a tcp service.
@@ -296,15 +299,17 @@ public:
      * See if stream connection is active.
      * @return true if stream is active.
      */
-    inline operator bool() const
-        {return (bufsize > 0);}
+    inline operator bool() const {
+        return (bufsize > 0);
+	}
 
     /**
      * See if stream is disconnected.
      * @return true if stream disconnected.
      */
-    inline bool operator!() const
-        {return bufsize == 0;}
+    inline bool operator!() const {
+        return bufsize == 0;
+	}
 
     /**
      * Open a stream connection to a pipe service.
@@ -327,8 +332,9 @@ public:
      */
     void terminate(void);
 
-    inline void cancel(void)
-        {terminate();}
+    inline void cancel(void) {
+        terminate();
+	}
 };
 
 /**
@@ -402,15 +408,17 @@ public:
      * See if stream connection is active.
      * @return true if stream is active.
      */
-    inline operator bool() const
-        {return (bufsize > 0);}
+    inline operator bool() const {
+        return (bufsize > 0);
+	}
 
     /**
      * See if stream is disconnected.
      * @return true if stream disconnected.
      */
-    inline bool operator!() const
-        {return bufsize == 0;}
+    inline bool operator!() const {
+        return bufsize == 0;
+	}
 
     /**
      * Open a stream connection to a tcp service.
@@ -465,29 +473,37 @@ public:
     static std::string& append(std::string& target, String& source);
 };
 
-inline std::ostream& operator<< (std::ostream& out, const PrintProtocol& format)
-    {return _stream_operators::print(out, format);}
+inline std::ostream& operator<< (std::ostream& out, const PrintProtocol& format) {
+    return _stream_operators::print(out, format);
+}
 
-inline std::istream& operator>> (std::istream& inp, InputProtocol& format)
-    {return _stream_operators::input(inp, format);}
+inline std::istream& operator>> (std::istream& inp, InputProtocol& format) {
+    return _stream_operators::input(inp, format);
+}
 
-inline std::ostream& operator<< (std::ostream& out, const string_t& str)
-    {return _stream_operators::print(out, str);}
+inline std::ostream& operator<< (std::ostream& out, const string_t& str) {
+    return _stream_operators::print(out, str);
+}
 
-inline std::istream& operator>> (std::istream& inp, string_t& str)
-    {return _stream_operators::input(inp, str);}
+inline std::istream& operator>> (std::istream& inp, string_t& str) {
+    return _stream_operators::input(inp, str);
+}
 
-inline std::ostream& operator<< (std::ostream& out, const stringlist_t& list)
-    {return _stream_operators::print(out, list);}
+inline std::ostream& operator<< (std::ostream& out, const stringlist_t& list) {
+    return _stream_operators::print(out, list);
+}
 
-inline std::istream& operator>> (std::istream& in, stringlist_t& list)
-    {return _stream_operators::input(in, list);}
+inline std::istream& operator>> (std::istream& in, stringlist_t& list) {
+    return _stream_operators::input(in, list);
+}
 
-inline std::string& operator+(std::string& target, String& source)
-    {return _stream_operators::append(target, source);}
+inline std::string& operator+(std::string& target, String& source) {
+    return _stream_operators::append(target, source);
+}
 
-inline std::string& operator+=(std::string& target, String& source)
-    {return _stream_operators::append(target, source);}
+inline std::string& operator+=(std::string& target, String& source) {
+    return _stream_operators::append(target, source);
+}
  
 inline std::ostream& operator<<(std::ostream& os, Socket::address& addr) {
 #ifdef  AF_INET6
@@ -501,6 +517,10 @@ inline std::ostream& operator<<(std::ostream& os, Socket::address& addr) {
 }
 
 } // namespace ucommon
+
+namespace std {
+	extern std::ostream null;
+}
 
 #endif
 #endif

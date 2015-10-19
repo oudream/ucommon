@@ -683,7 +683,6 @@ public:
      */
     static void errexit(int exitcode, const char *format = NULL, ...) __PRINTF(2, 3);
 
-
     /**
      * Convert condition to exit code if true.
      * @param test condition.
@@ -882,7 +881,6 @@ public:
     static char *getpass(const char *prompt, char *buffer, size_t size);
 
     static char *getline(const char *prompt, char *buffer, size_t size);
-
 };
 
 /**

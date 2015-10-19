@@ -884,5 +884,35 @@ std::string& _stream_operators::append(std::string& target, String& source)
 
 } // namespace ucommon
 
+namespace std {
+
+class __LOCAL NullBuffer : public std::streambuf
+{
+private:
+	__DELETE_COPY(NullBuffer);
+
+    NullBuffer();
+
+public:
+	int overflow(int c) __OVERRIDE;
+
+	static NullBuffer null;
+};
+
+NullBuffer::NullBuffer() : streambuf()
+{
+}
+
+int NullBuffer::overflow(int c)
+{
+    return c;
+}
+
+NullBuffer NullBuffer::null;
+
+ostream null(&NullBuffer::null);
+
+}
+
 #endif
 

@@ -24,6 +24,11 @@
 #include <ucommon/thread.h>
 #include <ucommon/fsys.h>
 #include <ucommon/shell.h>
+
+#ifndef  UCOMMON_SYSRUNTIME
+#include <ucommon/stream.h>
+#endif
+
 #include <stdlib.h>
 #include <stdarg.h>
 #ifdef  HAVE_UNISTD_H
