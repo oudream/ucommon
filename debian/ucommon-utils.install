@@ -6,6 +6,7 @@ usr/bin/pdetach
 usr/bin/sockaddr
 usr/bin/zerofill
 usr/bin/keywait
+usr/bin/urlout
 usr/share/man/man1/args.*
 usr/share/man/man1/car.*
 usr/share/man/man1/mdsum.*
@@ -14,3 +15,4 @@ usr/share/man/man1/scrub-files.*
 usr/share/man/man1/sockaddr.*
 usr/share/man/man1/zerofill.*
 usr/share/man/man1/keywait.*
+usr/share/man/man1/urlout.*

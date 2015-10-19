@@ -1,0 +1,51 @@
+.\" urlout - stream output of url
+.\" Copyright (C) 2013-2014 David Sugar <dyfet@gnutelephony.org>
+.\" Copyright (C) 2015 Cherokees of Idaho.
+.\"
+.\" This manual page is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 3 of the License, or
+.\" (at your option) any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU Lesser General Public License
+.\" along with this program.  If not, see <http://www.gnu.org/licenses/>.
+.\"
+.\" This manual page is written especially for Debian GNU/Linux.
+.\"
+.TH urlout "1" "August 2013" "GNU uCommon" "GNU Telephony"
+.SH NAME
+urlout \- stream output of url.
+.SH SYNOPSIS
+.B urlout
+.RI [ options ]
+.RI url
+.br
+.SH DESCRIPTION
+This utility will stream a url address to stdout.  It can be used to test
+usecure ssl/tls streaming operations, as well as supporting generic http
+urls.  Various options will be added to aide debugging of tls streams in
+the future.
+.SH OPTIONS
+.TP
+.BI \-\-port= numnber
+Specify alternate port number.
+.TP
+.B \-\-help
+Outputs help screen for the user.
+.SH AUTHOR
+.B urlout
+was written by David Sugar <dyfet@gnutelephony.org>.
+.SH "REPORTING BUGS"
+Report bugs to bug-commoncpp@gnu.org or bugs@gnutelephony.org.
+.SH COPYRIGHT
+Copyright \(co 2013-2014 David Sugar, Tycho Softworks.
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+
