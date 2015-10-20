@@ -189,7 +189,7 @@ Socket(fam, SOCK_DGRAM, IPPROTO_UDP)
         (socklen_t)sizeof(opt));
 #endif
 
-    if(addr && !bind(so, addr, addr.getLength()))
+    if(addr.isValid() && !bind(so, addr, addr.getLength()))
         state = BOUND;
 
     if(state != BOUND) {
