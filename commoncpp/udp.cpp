@@ -464,7 +464,7 @@ ucommon::Socket::address UDPSocket::getPeer()
 IPV4Host UDPSocket::getIPV4Peer(in_port_t *port)
 {
     ucommon::Socket::address addr = getPeer();
-    if (addr.isValid()) {
+    if (addr.is_valid()) {
         if(port)
             *port = peer.getPort();
     } else {
@@ -480,7 +480,7 @@ IPV4Host UDPSocket::getIPV4Peer(in_port_t *port)
 IPV6Host UDPSocket::getIPV6Peer(in_port_t *port)
 {
     ucommon::Socket::address addr = getPeer();
-    if (addr.isValid()) {
+    if (addr.is_valid()) {
         if(port)
             *port = peer.getPort();
     } else {

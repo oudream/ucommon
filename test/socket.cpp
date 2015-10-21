@@ -67,7 +67,7 @@ extern "C" int main()
     assert(testing.getPort() == 4444);
     assert(testing == localhost);
     localhost.setAny();
-    assert(localhost.isValid());
+    assert(localhost.is_valid());
     assert(localhost.isAny());
     assert(localhost.family() == AF_INET);
 

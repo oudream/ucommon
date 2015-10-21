@@ -51,6 +51,7 @@
 #endif
 
 #include <iostream>
+#include <fstream>
 
 namespace ucommon {
 

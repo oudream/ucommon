@@ -606,6 +606,10 @@ public:
             return list != nullptr;
         }
 
+        inline bool is_valid() const {
+            return list != nullptr;
+        }
+
         inline bool isValid() const {
             return list != nullptr;
         }
@@ -623,6 +627,10 @@ public:
          *   0.0.0.0 or ::0
          * @return true if the address is one of the above.
          */
+        inline bool is_any() const {
+            return isAny(get());
+        }
+
         inline bool isAny() const {
             return isAny(get());
         }
@@ -640,6 +648,10 @@ public:
          *   127.0.0.1 or ::1
          * @return true if the address is one of the above.
          */
+        inline bool is_loopback() const {
+            return isLoopback(get());
+        }
+
         inline bool isLoopback() const {
             return isLoopback(get());
         }
