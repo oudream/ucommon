@@ -49,10 +49,6 @@
 #include <ucommon/fsys.h>
 #endif
 
-#ifndef _UCOMMON_FILE_H_
-#include <ucommon/file.h>
-#endif
-
 #include <cstdlib>
 #include <cstring>
 #include <stdexcept>
@@ -184,19 +180,19 @@ public:
         array[index] = value;
     }
 
-    inline size_t read(file& fp) {
-        return (*fp == NULL) || (array == NULL) ? 
-            0 : fread(array, sizeof(T), used, *fp);
+    inline size_t read(FILE *fp) {
+        return (fp == NULL) || (array == NULL) ? 
+            0 : fread(array, sizeof(T), used, fp);
     }
 
-    inline size_t write(file& fp) {
-        return (*fp == NULL) || (array == NULL) ? 
-            0 : fwrite(array, sizeof(T), used, *fp);
+    inline size_t write(FILE *fp) {
+        return (fp == NULL) || (array == NULL) ? 
+            0 : fwrite(array, sizeof(T), used, fp);
     }
 
-    inline size_t seek(file& fp, long pos) {
-        return (*fp == NULL) ? 
-            0 : (fseek(*fp, sizeof(T) * pos, SEEK_CUR) / sizeof(T));
+    inline size_t seek(FILE *fp, long pos) {
+        return (fp == NULL) ? 
+            0 : (fseek(fp, sizeof(T) * pos, SEEK_CUR) / sizeof(T));
     }
 };
 
@@ -257,19 +253,19 @@ public:
         }
     }
 
-    inline size_t read(file& fp) {
-        return (*fp == NULL) || (object == NULL) ? 
-            0 : String::count(fgets(object, (socksize_t)used, *fp));
+    inline size_t read(FILE *fp) {
+        return (fp == NULL) || (object == NULL) ? 
+            0 : String::count(fgets(object, (socksize_t)used, fp));
     }
     
-    inline size_t write(file& fp) {
-        return (*fp == NULL) || (object == NULL) ? 
-            0 : fputs(object, *fp);
+    inline size_t write(FILE *fp) {
+        return (fp == NULL) || (object == NULL) ? 
+            0 : fputs(object, fp);
     }
 
-    inline size_t seek(file& fp, long pos) {
-        return (*fp == NULL) ? 
-            0 : fseek(*fp, pos, SEEK_CUR);
+    inline size_t seek(FILE *fp, long pos) {
+        return (fp == NULL) ? 
+            0 : fseek(fp, pos, SEEK_CUR);
     }
 };
 
@@ -323,19 +319,19 @@ public:
         }
     }
 
-    inline size_t read(file& fp) {
-        return (*fp == NULL) || (object == NULL) ? 
-            0 : fread(object, 1, used, *fp);
+    inline size_t read(FILE *fp) {
+        return (fp == NULL) || (object == NULL) ? 
+            0 : fread(object, 1, used, fp);
     }
     
-    inline size_t write(file& fp) {
-        return (*fp == NULL) || (object == NULL) ? 
-            0 : fwrite(object, 1, used, *fp);
+    inline size_t write(FILE *fp) {
+        return (fp == NULL) || (object == NULL) ? 
+            0 : fwrite(object, 1, used, fp);
     }
 
-    inline size_t seek(file& fp, long pos) {
-        return (*fp == NULL) ? 
-            0 : fseek(*fp, pos, SEEK_CUR);
+    inline size_t seek(FILE *fp, long pos) {
+        return (fp == NULL) ? 
+            0 : fseek(fp, pos, SEEK_CUR);
     }
 
     inline size_t read(fsys& fs) {
