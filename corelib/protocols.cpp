@@ -297,56 +297,6 @@ ObjectProtocol *ObjectProtocol::copy(void)
     return this;
 }
 
-CharacterProtocol& _character_operators::print(CharacterProtocol& p, const char& c)
-{
-    p.putchar((int)c);
-    return p;
-}
-
-CharacterProtocol& _character_operators::input(CharacterProtocol& p, char& c)
-{
-    int code = p.getchar();
-    if(code == EOF)
-        code = 0;
-    c = code;
-    return p;
-}
-
-CharacterProtocol& _character_operators::print(CharacterProtocol& p, const char *str)
-{
-    if(!str)
-        p.putline("");
-    else
-        p.putchars(str);
-    return p;
-}
-
-CharacterProtocol& _character_operators::input(CharacterProtocol& p, String& str)
-{
-    if(str.c_mem()) {
-        p.getline(str.c_mem(), str.size());
-        String::fix(str);
-    }
-    return p;
-}
-
-CharacterProtocol& _character_operators::print(CharacterProtocol& p, const long& v)
-{
-    char buf[40];
-    snprintf(buf, sizeof(buf), "%ld", v);
-    p.putchars(buf);
-    return p;
-}
-
-CharacterProtocol& _character_operators::print(CharacterProtocol& p, const double& v)
-{
-    char buf[40];
-    snprintf(buf, sizeof(buf), "%f", v);
-    p.putchars(buf);
-    return p;
-}
-
-
 class __LOCAL _input_long : public InputProtocol
 {
 public:
@@ -438,20 +388,6 @@ int _input_double::_input(int code)
 valid:
     buf[pos++] = code;
     return 0;
-}
-
-CharacterProtocol& _character_operators::input(CharacterProtocol& p, long& v)
-{
-    _input_long lv(v);
-    p.input(lv);
-    return p;
-}
-
-CharacterProtocol& _character_operators::input(CharacterProtocol& p, double& v)
-{
-    _input_double lv(v);
-    p.input(lv);
-    return p;
 }
 
 PrintProtocol::~PrintProtocol()

@@ -355,69 +355,6 @@ protected:
     virtual ~KeyProtocol();
 };
 
-/**
- * At least with gcc, linking of stream operators was broken.  This provides
- * an auxillory class to solve the issue.
- */
-class __EXPORT _character_operators
-{
-private:
-    __DELETE_DEFAULTS(_character_operators);
-
-public:
-    static CharacterProtocol& print(CharacterProtocol& p, const char *s);
-
-    static CharacterProtocol& print(CharacterProtocol& p, const char& ch);
-
-    static CharacterProtocol& input(CharacterProtocol& p, char& ch);
-
-    static CharacterProtocol& input(CharacterProtocol& p, String& str);
-
-    static CharacterProtocol& print(CharacterProtocol& p, const long& value);
-
-    static CharacterProtocol& input(CharacterProtocol& p, long& value);
-
-    static CharacterProtocol& print(CharacterProtocol& p, const double& value);
-
-    static CharacterProtocol& input(CharacterProtocol& p, double& value);
-};
-
-inline CharacterProtocol& operator<< (CharacterProtocol& p, const char *s)
-    {return _character_operators::print(p, s);}
-
-inline CharacterProtocol& operator<< (CharacterProtocol& p, const char& ch)
-    {return _character_operators::print(p, ch);}
-
-inline CharacterProtocol& operator>> (CharacterProtocol& p, char& ch)
-    {return _character_operators::input(p, ch);}
-
-inline CharacterProtocol& operator>> (CharacterProtocol& p, String& str)
-    {return _character_operators::input(p, str);}
-
-inline CharacterProtocol& operator<< (CharacterProtocol& p, const PrintProtocol& format)
-    {p.print(format); return p;}
-
-inline CharacterProtocol& operator>> (CharacterProtocol& p, InputProtocol& format)
-    {p.input(format); return p;}
-
-inline CharacterProtocol& operator<< (CharacterProtocol& p, const StringPager& list)
-    {p.save(&list); return p;}
-
-inline CharacterProtocol& operator>> (CharacterProtocol& p, StringPager& list)
-    {p.load(&list); return p;}
-
-inline CharacterProtocol& operator<< (CharacterProtocol& p, const long& value)
-    {return _character_operators::print(p, value);}
-
-inline CharacterProtocol& operator>> (CharacterProtocol& p, long& value)
-    {return _character_operators::input(p, value);}
-
-inline CharacterProtocol& operator<< (CharacterProtocol& p, const double& value)
-    {return _character_operators::print(p, value);}
-
-inline CharacterProtocol& operator>> (CharacterProtocol& p, double& value)
-    {return _character_operators::input(p, value);}
-
 } // namespace ucommon
 
 #endif
