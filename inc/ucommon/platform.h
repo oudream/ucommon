@@ -160,7 +160,7 @@
 #if __cplusplus <= 199711L && !defined(_MSC_VER)
 #if defined(__GNUC_MINOR__) && !defined(__clang__)
 #define nullptr __null
-#else
+#elif !defined(__clang__)
 const class nullptr_t 
 {
 public:

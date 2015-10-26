@@ -324,7 +324,7 @@ void IPV4Address::setAddress(const char *host)
 
     if(!host)  // The way this is currently used, this can never happen
     {
-        *this = (long unsigned int)htonl(INADDR_ANY);
+        *this = (in_addr_t)htonl(INADDR_ANY);
         return;
     }
 
