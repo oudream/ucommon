@@ -517,11 +517,9 @@ inline std::ostream& operator<<(std::ostream& os, Socket::address& addr) {
     return os;
 }
 
-} // namespace ucommon
+extern std::iostream nullstream;
 
-namespace std {
-	extern std::ostream null;
-}
+} // namespace ucommon
 
 #endif
 #endif

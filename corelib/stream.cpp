@@ -882,10 +882,6 @@ std::string& _stream_operators::append(std::string& target, String& source)
     return target;
 }
 
-} // namespace ucommon
-
-namespace std {
-
 class __LOCAL NullBuffer : public std::streambuf
 {
 private:
@@ -895,6 +891,8 @@ private:
 
 public:
 	int overflow(int c) __OVERRIDE;
+
+    int underflow() __OVERRIDE;
 
 	static NullBuffer null;
 };
@@ -908,11 +906,16 @@ int NullBuffer::overflow(int c)
     return c;
 }
 
+int NullBuffer::underflow()
+{
+    return EOF;
+}
+
 NullBuffer NullBuffer::null;
 
-ostream null(&NullBuffer::null);
+std::iostream nullstream(&NullBuffer::null);
 
-}
+} // namespace ucommon
 
 #endif
 
