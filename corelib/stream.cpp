@@ -650,6 +650,14 @@ void filestream::seek(fsys::offset_t offset)
     }
 }
 
+void filestream::rewind(void)
+{
+    sync();
+    if(bufsize) {
+        fd.seek(0);
+    }
+}
+
 void filestream::close(void)
 {
     sync();
@@ -799,6 +807,52 @@ int filestream::overflow(int c)
     return c;
 }
 
+memwriter::memwriter(uint8_t *mem, size_t size)
+{
+    count = size;
+    pos = mem;
+}
+
+int memwriter::overflow(int ch)
+{
+    if(ch == EOF)
+        return EOF;
+
+    if(!count || !pos)
+        return EOF;
+
+    --count;
+    *(pos++) = (uint8_t)ch;
+    return ch;
+}
+
+memreader::memreader(const char *str)
+{
+    count = strlen(str);
+    pos = (const uint8_t *)str;
+}
+
+memreader::memreader(const uint8_t *str, size_t size)
+{
+    pos = str;
+    count = size;
+}
+
+int memreader::underflow() 
+{
+    if(!count || !pos)
+        return EOF;
+    return *pos;
+}
+
+int memreader::uflow()
+{
+    if(!count || !pos)
+        return EOF;
+    --count;
+    return *(pos++);
+} 
+
 std::istream& _stream_operators::input(std::istream& inp, InputProtocol& fmt)
 {
     int c = 0;
@@ -894,6 +948,8 @@ public:
 
     int underflow() __OVERRIDE;
 
+    int uflow() __OVERRIDE;
+
 	static NullBuffer null;
 };
 
@@ -908,7 +964,12 @@ int NullBuffer::overflow(int c)
 
 int NullBuffer::underflow()
 {
-    return EOF;
+    return traits_type::eof();
+}
+
+int NullBuffer::uflow()
+{
+    return traits_type::eof();
 }
 
 NullBuffer NullBuffer::null;
