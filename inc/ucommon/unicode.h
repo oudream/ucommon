@@ -131,8 +131,6 @@ public:
      * @param buffer of character protocol to put data into.
      * @return number of code points converted.
      */
-    static size_t unpack(const unicode_t string, CharacterProtocol& buffer);
-
     static size_t unpack(const unicode_t string, char *text, size_t size);
 
     /**
@@ -142,8 +140,6 @@ public:
      * @param size of unicode data buffer in codepoints.
      * @return number of code points converted.
      */
-    static size_t pack(unicode_t unicode, CharacterProtocol& buffer, size_t size);
-
     static size_t pack(unicode_t unicode, const char *cp, size_t len);
 
     /**
@@ -187,8 +183,6 @@ public:
      * @param buffer of character protocol to read from.
      * @return unicode character or EOF error.
      */
-    static ucs4_t get(CharacterProtocol& buffer);
-
     static ucs4_t get(const char *cp);
 
     /**
@@ -197,8 +191,6 @@ public:
      * @param buffer of character protocol to push character to.
      * @return unicode character or EOF on error.
      */
-    static ucs4_t put(ucs4_t character, CharacterProtocol& buffer);
-
     static void put(ucs4_t character, char *buf);
 };
 
