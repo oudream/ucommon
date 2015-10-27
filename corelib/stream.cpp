@@ -48,8 +48,10 @@ using std::streambuf;
 using std::ios;
 
 #undef  EOF
-#define EOF     std::streambuf::traits_type::eof()
-#define GET(x)  std::streambuf::traits_type::to_int_type(x)
+#define EOF         std::streambuf::traits_type::eof()
+#define IS_EOF(x)    std::streambuf::traits_type::eq_int_type(x, EOF)
+#define GET(x)      std::streambuf::traits_type::to_int_type(x)
+#define PUT(x)      std::streambuf::traits_type::to_char_type(x)
 
 StreamBuffer::StreamBuffer() :
 streambuf(), iostream((streambuf *)this)
@@ -62,7 +64,7 @@ int StreamBuffer::uflow()
 {
     int ret = underflow();
 
-    if (ret == EOF)
+    if(IS_EOF(ret))
         return EOF;
 
     if (bufsize != 1)
@@ -237,14 +239,14 @@ int tcpstream::underflow(void)
 
 int tcpstream::overflow(int c)
 {
-    unsigned char ch;
+    char ch;
     ssize_t rlen, req;
 
     if(bufsize == 1) {
-        if(c == EOF)
-            return 0;
+        if(IS_EOF(c))
+            return EOF;
 
-        ch = (unsigned char)(c);
+        ch = PUT(c);
         rlen = _write((const char *)&ch, 1);
         if(rlen < 1) {
             if(rlen < 0)
@@ -277,7 +279,7 @@ int tcpstream::overflow(int c)
     pbump(req);
 
     if(c != EOF) {
-        *pptr() = (unsigned char)c;
+        *pptr() = PUT(c);
         pbump(1);
     }
     return c;
@@ -507,17 +509,17 @@ int pipestream::underflow(void)
 
 int pipestream::overflow(int c)
 {
-    unsigned char ch;
+    char ch;
     ssize_t rlen, req;
 
     if(!pbuf)
         return EOF;
 
     if(bufsize == 1) {
-        if(c == EOF)
-            return 0;
+        if(IS_EOF(c))
+            return EOF;
 
-        ch = (unsigned char)(c);
+        ch = PUT(c);
         rlen = wr.write(&ch, 1);
         if(rlen < 1) {
             if(rlen < 0)
@@ -550,7 +552,7 @@ int pipestream::overflow(int c)
     pbump(req);
 
     if(c != EOF) {
-        *pptr() = (unsigned char)c;
+        *pptr() = PUT(c);
         pbump(1);
     }
     return c;
@@ -805,7 +807,7 @@ int filestream::overflow(int c)
     pbump(req);
 
     if(c != EOF) {
-        *pptr() = (unsigned char)c;
+        *pptr() = PUT(c);
         pbump(1);
     }
     return c;
@@ -827,7 +829,7 @@ int memwriter::overflow(int ch)
         return EOF;
 
     --count;
-    *(pos++) = (uint8_t)ch;
+    *(pos++) = PUT(ch);
     return ch;
 }
 
