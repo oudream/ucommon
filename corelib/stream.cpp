@@ -987,5 +987,10 @@ std::iostream nullstream(&NullBuffer::null);
 
 } // namespace ucommon
 
+namespace std {
+    using namespace ucommon;
+    iostream& null = nullstream;
+}
+
 #endif
 

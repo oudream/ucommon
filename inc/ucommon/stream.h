@@ -587,9 +587,13 @@ inline std::ostream& operator<<(std::ostream& os, Socket::address& addr) {
     return os;
 }
 
-extern std::iostream nullstream;
+extern __EXPORT std::iostream nullstream;
 
 } // namespace ucommon
+
+namespace std {
+	extern __EXPORT iostream& null;
+}
 
 #endif
 #endif
