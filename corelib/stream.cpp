@@ -47,6 +47,10 @@ using std::iostream;
 using std::streambuf;
 using std::ios;
 
+#undef  EOF
+#define EOF     std::streambuf::traits_type::eof()
+#define GET(x)  std::streambuf::traits_type::to_int_type(x)
+
 StreamBuffer::StreamBuffer() :
 streambuf(), iostream((streambuf *)this)
 {
@@ -187,7 +191,7 @@ ssize_t tcpstream::_write(const char *buffer, size_t size)
 int tcpstream::underflow(void)
 {
     ssize_t rlen = 1;
-    unsigned char ch;
+    char ch;
 
     if(bufsize == 1) {
         if(!_wait()) {
@@ -195,20 +199,20 @@ int tcpstream::underflow(void)
             return EOF;
         }
         else
-            rlen = _read((char *)&ch, 1);
+            rlen = _read(&ch, 1);
         if(rlen < 1) {
             if(rlen < 0)
                 reset();
             return EOF;
         }
-        return ch;
+        return GET(ch);
     }
 
     if(!gptr())
         return EOF;
 
     if(gptr() < egptr())
-        return (unsigned char)*gptr();
+        return GET(*gptr());
 
     rlen = (ssize_t)((gbuf + bufsize) - eback());
     if(!_wait()) {
@@ -228,7 +232,7 @@ int tcpstream::underflow(void)
     }
 
     setg(eback(), eback(), eback() + rlen);
-    return (unsigned char) *gptr();
+    return GET(*gptr());
 }
 
 int tcpstream::overflow(int c)
@@ -465,7 +469,7 @@ void pipestream::allocate(size_t size, access_t mode)
 int pipestream::underflow(void)
 {
     ssize_t rlen = 1;
-    unsigned char ch;
+    char ch;
 
     if(!gbuf)
         return EOF;
@@ -477,14 +481,14 @@ int pipestream::underflow(void)
                 close();
             return EOF;
         }
-        return ch;
+        return GET(ch);
     }
 
     if(!gptr())
         return EOF;
 
     if(gptr() < egptr())
-        return (unsigned char)*gptr();
+        return GET(*gptr());
 
     rlen = (ssize_t)((gbuf + bufsize) - eback());
     rlen = rd.read(eback(), rlen);
@@ -498,7 +502,7 @@ int pipestream::underflow(void)
     }
 
     setg(eback(), eback(), eback() + rlen);
-    return (unsigned char) *gptr();
+    return GET(*gptr());
 }
 
 int pipestream::overflow(int c)
@@ -755,7 +759,7 @@ int filestream::underflow(void)
         return EOF;
 
     if(gptr() < egptr())
-        return (unsigned char)*gptr();
+        return GET(*gptr());
 
     rlen = (ssize_t)((gbuf + bufsize) - eback());
     rlen = fd.read(eback(), rlen);
@@ -769,7 +773,7 @@ int filestream::underflow(void)
     }
 
     setg(eback(), eback(), eback() + rlen);
-    return (unsigned char) *gptr();
+    return GET(*gptr());
 }
 
 int filestream::overflow(int c)
@@ -842,7 +846,7 @@ int memreader::underflow()
 {
     if(!count || !pos)
         return EOF;
-    return *pos;
+    return GET(*pos);
 }
 
 int memreader::uflow()
@@ -850,7 +854,7 @@ int memreader::uflow()
     if(!count || !pos)
         return EOF;
     --count;
-    return *(pos++);
+    return GET(*(pos++));
 } 
 
 std::istream& _stream_operators::input(std::istream& inp, InputProtocol& fmt)
@@ -964,12 +968,12 @@ int NullBuffer::overflow(int c)
 
 int NullBuffer::underflow()
 {
-    return traits_type::eof();
+    return EOF;
 }
 
 int NullBuffer::uflow()
 {
-    return traits_type::eof();
+    return EOF;
 }
 
 NullBuffer NullBuffer::null;
