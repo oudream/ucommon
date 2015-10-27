@@ -133,6 +133,8 @@ public:
      */
     static size_t unpack(const unicode_t string, CharacterProtocol& buffer);
 
+    static size_t unpack(const unicode_t string, char *text, size_t size);
+
     /**
      * Convert a utf8 string into a unicode data buffer.
      * @param unicode data buffer.
@@ -141,6 +143,8 @@ public:
      * @return number of code points converted.
      */
     static size_t pack(unicode_t unicode, CharacterProtocol& buffer, size_t size);
+
+    static size_t pack(unicode_t unicode, const char *cp, size_t len);
 
     /**
      * Dup a utf8 string into a ucs4_t string.
@@ -185,6 +189,8 @@ public:
      */
     static ucs4_t get(CharacterProtocol& buffer);
 
+    static ucs4_t get(const char *cp);
+
     /**
      * Push a unicode character to a character protocol.
      * @param character to push to file.
@@ -192,6 +198,8 @@ public:
      * @return unicode character or EOF on error.
      */
     static ucs4_t put(ucs4_t character, CharacterProtocol& buffer);
+
+    static void put(ucs4_t character, char *buf);
 };
 
 /**

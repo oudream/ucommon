@@ -41,6 +41,52 @@ namespace ucommon {
 const char *utf8::nil = NULL;
 const unsigned utf8::ucsize = sizeof(wchar_t);
 
+ucs4_t utf8::get(const char *cp)
+{
+    uint8_t ch = (uint8_t)(*(cp++));
+    unsigned count = 0;
+    ucs4_t code;
+
+    if(!ch)
+        return EOF;
+
+    if(ch < 0x80)
+        return ch;
+
+    if((ch & 0xe0) == 0xc0) {
+        code = ch & 0x1f;
+        count = 1;
+    }
+    else if((ch & 0xf0) == 0xe0) {
+        code = ch & 0x0f;
+        count = 2;
+    }
+    else if((ch & 0xf8) == 0xf0) {
+        code = ch & 0x07;
+        count = 3;
+    }
+    else if((ch & 0xfc) == 0xf8) {
+        code = ch & 0x03;
+        count = 4;
+    }
+    else if((ch & 0xfe) == 0xfc) {
+        code = ch & 0x01;
+        count = 5;
+    }
+    else
+        return EOF;
+
+    while(count--) {
+        ch = (uint8_t)*(cp++); 
+        if(!ch)
+            return EOF;
+        if((ch & 0xc0) != 0x80)
+            return EOF;
+        code = (code << 6) | (ch & 0x3f);
+    }
+    return code;
+}
+
 ucs4_t utf8::get(CharacterProtocol& cp)
 {
     int ch = cp.getchar();
@@ -239,6 +285,22 @@ unicode_t unidup(const char *string)
     return (unicode_t) utf8::udup(string);
 }
 
+size_t utf8::pack(unicode_t buffer, const char *str, size_t len)
+{
+    size_t used = 0;
+    wchar_t *target = (wchar_t *)buffer;
+    while(--len) {
+        ucs4_t code = utf8::get(str);
+        if(!code || code == (ucs4_t)EOF)
+            break;
+        str += chars(code);
+        *(target++) = (wchar_t)code;
+        ++used;
+    }
+    *target = (wchar_t)0;
+    return used;        
+}
+
 size_t utf8::pack(unicode_t buffer, CharacterProtocol& cp, size_t len)
 {
     size_t used = 0;
@@ -256,6 +318,57 @@ size_t utf8::pack(unicode_t buffer, CharacterProtocol& cp, size_t len)
 
     *target = (wchar_t)0;
     return used;
+}
+
+void utf8::put(ucs4_t code, char *buffer)
+{
+    if(code == EOF)
+        return;
+
+    if(code < 0x80) {
+        *buffer = code;
+        return;
+    }
+
+    unsigned used = 0;
+    if(code < 0x000007ff) {
+        buffer[used++] = (code >> 6) | 0xc0;
+        buffer[used++] = (code & 0x3f) | 0x80;
+        return;
+    }
+
+    if(code <= 0x0000ffff) {
+        buffer[used++] = (code >> 12) | 0xe0;
+        buffer[used++] = (code >> 6 & 0x3f) | 0x80;
+        buffer[used++] = (code & 0x3f) | 0x80;
+        return;
+    }
+
+    if(code <= 0x001fffff) {
+        buffer[used++] = (code >> 18) | 0xf0;
+        buffer[used++] = (code >> 12 & 0x3f) | 0x80;
+        buffer[used++] = (code >> 6  & 0x3f) | 0x80;
+        buffer[used++] = (code & 0x3f) | 0x80;
+        return;
+
+    }
+
+    if(code <= 0x03ffffff) {
+        buffer[used++] = (code >> 24) | 0xf8;
+        buffer[used++] = (code >> 18 & 0x3f) | 0x80;
+        buffer[used++] = (code >> 12 & 0x3f) | 0x80;
+        buffer[used++] = (code >> 6  & 0x3f) | 0x80;
+        buffer[used++] = (code & 0x3f) | 0x80;
+        return;
+
+    }
+
+    buffer[used++] = (code >> 30) | 0xfc;
+    buffer[used++] = (code >> 24 & 0x3f) | 0x80;
+    buffer[used++] = (code >> 18 & 0x3f) | 0x80;
+    buffer[used++] = (code >> 12 & 0x3f) | 0x80;
+    buffer[used++] = (code >> 6  & 0x3f) | 0x80;
+    buffer[used++] = (code & 0x3f) | 0x80;
 }
 
 ucs4_t utf8::put(ucs4_t code, CharacterProtocol& cp)
@@ -360,6 +473,23 @@ size_t utf8::unpack(const unicode_t str, CharacterProtocol& cp)
             break;
         ++points;
     }
+    return points;
+}
+
+size_t utf8::unpack(const unicode_t str, char *buf, size_t bufsize)
+{
+    unsigned points = 0;
+    ucs4_t code;
+    const wchar_t *string = (const wchar_t *)str;
+
+    while(0 != (code = (*(string++)))) {
+        size_t ps = chars(code);
+        if(ps > (bufsize - 1))
+            break;
+        put(code, buf);
+        buf += ps;
+    }
+    *buf = 0;
     return points;
 }
 
