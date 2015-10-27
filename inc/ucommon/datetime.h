@@ -253,14 +253,14 @@ public:
      * @param days to add.
      * @return new date object with modified days.
      */
-    Date operator+(long days);
+    const Date operator+(long days) const;
 
     /**
      * Subtract days from a julian date in an expression.
      * @param days to subtract.
      * @return new date object with modified days.
      */
-    Date operator-(long days);
+    const Date operator-(long days) const;
 
     /**
      * Operator to compute number of days between two dates.
@@ -499,14 +499,14 @@ public:
      * @param seconds to add.
      * @return new time object with modified value.
      */
-    Time operator+(long seconds);
+    const Time operator+(long seconds) const;
 
     /**
      * Subtract seconds to the current time, wrap if 24 hours.
      * @param seconds to subtract.
      * @return new time object with modified value.
      */
-    Time operator-(long seconds);
+    const Time operator-(long seconds) const;
 
     /**
      * Get time in seconds.
@@ -728,7 +728,7 @@ public:
      * @param seconds to add to datetime.
      * @return new modified datetime object.
      */
-    DateTime operator+(long seconds);
+    const DateTime operator+(long seconds) const;
 
     /**
      * Subtract seconds from datetime in an expression.  Day underflows
@@ -736,7 +736,7 @@ public:
      * @param seconds to subtract from datetime.
      * @return new modified datetime object.
      */
-    DateTime operator-(long seconds);
+    const DateTime operator-(long seconds) const;
 
     /**
      * Add a day from the current date and time.

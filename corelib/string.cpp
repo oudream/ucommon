@@ -1237,7 +1237,7 @@ String &String::operator|(const char *s)
     return *this;
 }
 
-String String::operator+(const char *s)
+const String String::operator+(const char *s) const
 {
     String tmp;
     if(str && str->text[0])

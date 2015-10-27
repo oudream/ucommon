@@ -770,7 +770,7 @@ public:
      * Concatenate null terminated text to our object.
      * @param text to concatenate.
      */
-    String operator+(const char *text);
+    const String operator+(const char *text) const;
 
     /**
      * Concatenate null terminated text to our object.  This creates a new

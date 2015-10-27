@@ -180,7 +180,7 @@ size_t typeref<const char *>::len() const
     return v->len();
 }
 
-typeref<const char *> typeref<const char *>::operator+(const char *str2) const 
+const typeref<const char *> typeref<const char *>::operator+(const char *str2) const 
 {
     value *v1 = polystatic_cast<value *>(ref);
     const char *str1 = "";
@@ -427,7 +427,7 @@ bool typeref<const uint8_t *>::operator==(value *bytes) const
     return !memcmp(&(v->mem[0]), &(bytes->mem[0]), v->size);
 }
 
-typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref<const uint8_t *>&add) const 
+const typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref<const uint8_t *>&add) const 
 {
     value *v1 = polystatic_cast<value *>(ref);
     value *v2 = polystatic_cast<value *>(add.ref);

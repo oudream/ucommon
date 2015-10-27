@@ -311,7 +311,7 @@ long Date::get(void) const
     return atol(buf) * 10000 + atol(buf + 5) * 100 + atol(buf + 8);
 }
 
-Date& Date::operator++()
+Date& Date::operator++() 
 {
     ++julian;
     update();
@@ -325,14 +325,14 @@ Date& Date::operator--()
     return *this;
 }
 
-Date Date::operator+(long val)
+const Date Date::operator+(long val) const
 {
     Date result = *this;
     result += val;
     return result;
 }
 
-Date Date::operator-(long val)
+const Date Date::operator-(long val) const
 {
     Date result = *this;
     result -= val;
@@ -582,14 +582,14 @@ Time& Time::operator-=(long val)
     return *this;
 }
 
-Time Time::operator+(long val)
+const Time Time::operator+(long val) const
 {
     Time result = *this;
     result += val;
     return result;
 }
 
-Time Time::operator-(long val)
+const Time Time::operator-(long val) const
 {
     Time result = *this;
     result -= val;
@@ -891,14 +891,14 @@ long DateTime::operator-(const DateTime &dt)
     return secs;
 }
 
-DateTime DateTime::operator+(long value)
+const DateTime DateTime::operator+(long value) const
 {
     DateTime result = *this;
     result += value;
     return result;
 }
 
-DateTime DateTime::operator-(long value)
+const DateTime DateTime::operator-(long value) const
 {
     DateTime result = *this;
     result -= value;
