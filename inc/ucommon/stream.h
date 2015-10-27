@@ -459,7 +459,7 @@ private:
 	__DELETE_DEFAULTS(memreader);
 
 	size_t count;
-	const uint8_t *pos;
+	const uint8_t *pos, *bp;
 	
 public:
 	memreader(const uint8_t *data, size_t size);
@@ -469,8 +469,20 @@ public:
 
 	int uflow() __OVERRIDE;
 
-	inline size_t remains() {
+	inline size_t remains() const {
 		return count;
+	}
+
+	inline const uint8_t *mem() const {
+		return bp;
+	}
+
+	inline const char *chr() const {
+		return (const char *)bp;
+	}
+
+	inline size_t len() const {
+		return (size_t)(pos - bp) + count;
 	}
 };
 
@@ -483,15 +495,27 @@ private:
 	__DELETE_DEFAULTS(memwriter);
 
 	size_t count;
-	uint8_t *pos;
+	uint8_t *pos, *bp;
 	
 public:
 	memwriter(uint8_t *data, size_t size);
 
 	int overflow(int ch) __OVERRIDE;
 
-	inline size_t remains() {
+	inline size_t remains() const {
 		return count;
+	}
+
+	inline uint8_t *mem() const {
+		return bp;
+	}
+
+	inline char *chr() const {
+		return (char *)bp;
+	}
+
+	inline size_t len() const {
+		return (size_t)(pos - bp);
 	}
 };
 

@@ -815,6 +815,7 @@ memwriter::memwriter(uint8_t *mem, size_t size)
 {
     count = size;
     pos = mem;
+    bp = mem;
 }
 
 int memwriter::overflow(int ch)
@@ -832,12 +833,14 @@ int memwriter::overflow(int ch)
 
 memreader::memreader(const char *str)
 {
+    bp = (const uint8_t *)str;
     count = strlen(str);
     pos = (const uint8_t *)str;
 }
 
 memreader::memreader(const uint8_t *str, size_t size)
 {
+    bp = str;
     pos = str;
     count = size;
 }
