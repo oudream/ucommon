@@ -604,8 +604,7 @@ void UString::set(const unicode_t text)
     str = create(size);
     str->retain();
 
-    chartext cp(str->text, str->max);
-    utf8::unpack(text, cp);
+    utf8::unpack(text, str->text, str->max);
     str->fix();
 }
 
@@ -620,15 +619,17 @@ void UString::add(const unicode_t text)
     if(!resize(alloc))
         return;
 
-    chartext cp(str->text + str->len, size);
-    utf8::unpack(text, cp);
+    utf8::unpack(text, str->text + str->len, size);
     str->fix();
 }
 
 size_t UString::get(unicode_t output, size_t points) const
 {
-    chartext cp(str->text);
-    return utf8::pack(output, cp, points);
+    const char *buf = "";
+    if(str)
+        buf = str->text;
+        
+    return utf8::pack(output, buf, points);
 }
 
 void UString::cut(size_t pos, size_t size)
