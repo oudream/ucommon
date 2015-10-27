@@ -982,58 +982,6 @@ public:
     void put(PagerObject *object);
 };
 
-class __EXPORT charmem : public CharacterProtocol
-{
-private:
-    __DELETE_COPY(charmem);
-
-protected:
-    char *buffer;
-    size_t inp, out, size;
-    bool dynamic;
-
-    int _getch(void) __OVERRIDE;
-    int _putch(int code) __OVERRIDE;
-
-public:
-    charmem(char *mem, size_t size);
-    charmem(size_t size);
-    charmem();
-    virtual ~charmem();
-
-    void release(void);
-
-    void set(char *mem, size_t size);
-
-    void set(size_t size);
-
-    inline void reset(void) {
-        inp = out = 0;
-    }
-
-    inline void rewind(void) {
-        inp = 0;
-    }
-};
-
-class __EXPORT chartext : public CharacterProtocol
-{
-private:
-    char *pos;
-    size_t max;
-
-    int _putch(int code) __FINAL;
-    int _getch(void) __FINAL;
-
-    __DELETE_COPY(chartext);
-
-public:
-    chartext();
-    chartext(char *buf);
-    chartext(char *buf, size_t size);
-    virtual ~chartext();
-};
-
 /**
  * Mempager managed type factory for pager pool objects.  This is used to
  * construct a type factory that creates and manages typed objects derived
