@@ -862,6 +862,28 @@ int memreader::uflow()
     return GET(*(pos++));
 } 
 
+bool getline(std::istream& in, char *buffer, size_t size)
+{
+    *buffer = 0;
+    if(!in.good())
+        return false;
+
+    in.getline(buffer, size);
+    if(!buffer[0])
+        return false;
+
+    return true;
+}
+
+bool putline(std::ostream& out, char *buffer)
+{
+    if(!out.good())
+        return false;
+
+    out << buffer << std::endl;
+    return out.good();
+}
+
 std::istream& _stream_operators::input(std::istream& inp, InputProtocol& fmt)
 {
     int c = 0;

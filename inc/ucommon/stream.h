@@ -519,6 +519,10 @@ public:
 	}
 };
 
+bool __EXPORT getline(std::istream& in, char *buffer, size_t size);
+
+bool __EXPORT putline(std::ostream& out, const char *buffer);
+
 /**
  * At least with gcc, linking of stream operators was broken.  This provides
  * an auxillory class to solve the issue.
