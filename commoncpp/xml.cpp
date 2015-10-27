@@ -179,16 +179,16 @@ bool XMLParser::parse(FILE *fp)
 }
 
 
-bool XMLParser::parse(CharacterProtocol& io)
+bool XMLParser::parse(const char *buf)
 {
     state = NONE;
     bufpos = 0;
     ecount = dcount = 0;
 
-    int ch;
+    uint8_t ch;
     unsigned char cp;
 
-    while((ch = io.getchar()) != EOF) {
+    while((ch = (uint8_t)*(buf++)) != 0) {
         switch(state) {
         case AMP:
             if((!bufpos && ch == '#') || isElement(ch)) {

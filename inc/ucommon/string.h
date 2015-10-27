@@ -1728,8 +1728,6 @@ inline String str(double value) {
     String temp(40, "%f", value); return temp;
 }
 
-String str(CharacterProtocol& cp, size_t size);
-
 template<>
 inline void swap<string_t>(string_t& s1, string_t& s2) {
     String::swap(s1, s2);

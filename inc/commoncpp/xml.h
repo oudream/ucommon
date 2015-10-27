@@ -124,7 +124,7 @@ protected:
      * @param stream buffer to parse.
      * @return true if parse complete, false if invalid or EOF.
      */
-    bool parse(ucommon::CharacterProtocol& stream);
+    bool parse(const char *cp);
 
     /**
      * Parse a file buffer and return parser document completion flag.

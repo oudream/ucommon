@@ -2067,35 +2067,6 @@ String &String::operator%(const char *get)
     return *this;
 }
 
-String str(CharacterProtocol *p, size_t size)
-{
-    String temp(size);
-    char *cp = temp.c_mem();
-    int ch;
-    bool cr = false;
-
-    while(--size) {
-        ch = p->getchar();
-        if(ch == 0 || ch == EOF || ch == '\n')
-            break;
-
-        if(cr) {
-            cr = false;
-            *(cp++) = '\r';
-        }
-
-        if(ch == '\r')
-            cr = true;
-        else
-            *(cp++) = ch;
-    }
-
-    *cp = 0;
-
-    String::fix(temp);
-    return temp;
-}
-
 static const uint8_t alphabet[65] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
