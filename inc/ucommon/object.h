@@ -346,7 +346,7 @@ public:
      * @return pointer to object we are pointing to.
      */
     inline T* operator*() const {
-        return __protocol_cast<T*>(object);
+        return protocol_cast<T*>(object);
     }
 
     /**
@@ -362,7 +362,7 @@ public:
      * @return reference to member of pointed object.
      */
     inline T* operator->() const {
-        return __protocol_cast<T*>(object);
+        return protocol_cast<T*>(object);
     }
 
     /**
@@ -370,7 +370,7 @@ public:
      * @return pointer or NULL if we are not referencing an object.
      */
     inline T* get(void) const {
-        return __protocol_cast<T*>(object);
+        return protocol_cast<T*>(object);
     }
 
     /**
