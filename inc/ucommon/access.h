@@ -52,10 +52,10 @@ namespace ucommon {
  * exclusive lock while being actively referenced by a smart pointer.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT ExclusiveAccess
+class __EXPORT ExclusiveProtocol
 {
 protected:
-    virtual ~ExclusiveAccess();
+    virtual ~ExclusiveProtocol();
 
     virtual void _lock(void) = 0;
 
@@ -72,7 +72,7 @@ public:
     class __EXPORT Locking
     {
     private:
-        ExclusiveAccess *lock;
+        ExclusiveProtocol *lock;
 
         __DELETE_COPY(Locking);
 
@@ -81,7 +81,7 @@ public:
         * Create an instance of an exclusive object reference.
         * @param object containing Exclusive base class protocol to lock.
         */
-        Locking(ExclusiveAccess *object);
+        Locking(ExclusiveProtocol *object);
 
         /**
         * Destroy reference to exclusively locked object, release lock.
@@ -119,10 +119,10 @@ public:
  * exclusive lock while being actively referenced by a smart pointer.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT SharedAccess
+class __EXPORT SharedProtocol
 {
 protected:
-    virtual ~SharedAccess();
+    virtual ~SharedProtocol();
 
     /**
      * Access interface to share lock the object.
@@ -142,7 +142,7 @@ public:
     class __EXPORT Locking
     {
     private:
-        SharedAccess *lock;
+        SharedProtocol *lock;
         int state;
         bool modify;
 
@@ -151,7 +151,7 @@ public:
         * Create an instance of an exclusive object reference.
         * @param object containing Exclusive base class protocol to lock.
         */
-        Locking(SharedAccess *object);
+        Locking(SharedProtocol *object);
 
         Locking(const Locking& copy);
 
@@ -224,7 +224,7 @@ public:
 class __EXPORT shared_access
 {
 private:
-    SharedAccess *lock;
+    SharedProtocol *lock;
     int state;
     bool modify;
 
@@ -233,7 +233,7 @@ public:
      * Create an instance of an exclusive object reference.
      * @param object containing Exclusive base class protocol to lock.
      */
-    shared_access(SharedAccess *object);
+    shared_access(SharedProtocol *object);
 
     shared_access(const shared_access& copy);
 
@@ -279,25 +279,25 @@ public:
 };
 
 template<class T>
-class autoexclusive : private ExclusiveAccess::Locking
+class autoexclusive : private ExclusiveProtocol::Locking
 {
 private:
     __DELETE_DEFAULTS(autoexclusive);
 
 public:
     inline autoexclusive(T *lock) :
-    Locking(polystatic_cast<ExclusiveAccess *>(lock)) {};
+    Locking(polystatic_cast<ExclusiveProtocol *>(lock)) {};
 };
 
 template<class T>
-class autoshared : private SharedAccess::Locking
+class autoshared : private SharedProtocol::Locking
 {
 private:
     __DELETE_DEFAULTS(autoshared);
 
 public:
     inline autoshared(T *lock) :
-    Locking(polystatic_cast<SharedAccess *>(lock)) {};
+    Locking(polystatic_cast<SharedProtocol *>(lock)) {};
 };
 
 // Special macros to allow member functions of an object with a protocol

@@ -22,23 +22,23 @@
 
 namespace ucommon {
 
-SharedAccess::~SharedAccess()
+SharedProtocol::~SharedProtocol()
 {
 }
 
-ExclusiveAccess::~ExclusiveAccess()
+ExclusiveProtocol::~ExclusiveProtocol()
 {
 }
 
-void SharedAccess::exclusive(void)
+void SharedProtocol::exclusive(void)
 {
 }
 
-void SharedAccess::share(void)
+void SharedProtocol::share(void)
 {
 }
 
-SharedAccess::Locking::Locking(SharedAccess *obj)
+SharedProtocol::Locking::Locking(SharedProtocol *obj)
 {
     assert(obj != NULL);
     lock = obj;
@@ -47,7 +47,7 @@ SharedAccess::Locking::Locking(SharedAccess *obj)
     lock->_share();
 }
 
-SharedAccess::Locking::Locking(const Locking& copy)
+SharedProtocol::Locking::Locking(const Locking& copy)
 {
     assert(copy.modify == false);
 
@@ -58,7 +58,7 @@ SharedAccess::Locking::Locking(const Locking& copy)
         lock->_share();
 }
 
-SharedAccess::Locking& SharedAccess::Locking::operator=(const Locking& copy)
+SharedProtocol::Locking& SharedProtocol::Locking::operator=(const Locking& copy)
 {
     assert(copy.modify == false);
 
@@ -71,14 +71,14 @@ SharedAccess::Locking& SharedAccess::Locking::operator=(const Locking& copy)
     return *this;
 }
 
-ExclusiveAccess::Locking::Locking(ExclusiveAccess *obj)
+ExclusiveProtocol::Locking::Locking(ExclusiveProtocol *obj)
 {
     assert(obj != NULL);
     lock = obj;
     lock->_lock();
 }
 
-SharedAccess::Locking::~Locking()
+SharedProtocol::Locking::~Locking()
 {
     if(lock) {
         if(modify)
@@ -89,7 +89,7 @@ SharedAccess::Locking::~Locking()
     }
 }
 
-ExclusiveAccess::Locking::~Locking()
+ExclusiveProtocol::Locking::~Locking()
 {
     if(lock) {
         lock->_unlock();
@@ -97,7 +97,7 @@ ExclusiveAccess::Locking::~Locking()
     }
 }
 
-void SharedAccess::Locking::release()
+void SharedProtocol::Locking::release()
 {
     if(lock) {
         if(modify)
@@ -108,7 +108,7 @@ void SharedAccess::Locking::release()
     }
 }
 
-void ExclusiveAccess::Locking::release()
+void ExclusiveProtocol::Locking::release()
 {
     if(lock) {
         lock->_unlock();
@@ -116,7 +116,7 @@ void ExclusiveAccess::Locking::release()
     }
 }
 
-void SharedAccess::Locking::exclusive(void)
+void SharedProtocol::Locking::exclusive(void)
 {
     if(lock && !modify) {
         lock->exclusive();
@@ -124,7 +124,7 @@ void SharedAccess::Locking::exclusive(void)
     }
 }
 
-void SharedAccess::Locking::share(void)
+void SharedProtocol::Locking::share(void)
 {
     if(lock && modify) {
         lock->share();
