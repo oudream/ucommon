@@ -813,7 +813,8 @@ int filestream::overflow(int c)
     return c;
 }
 
-memwriter::memwriter(uint8_t *mem, size_t size)
+memwriter::memwriter(uint8_t *mem, size_t size) :
+std::streambuf(), std::ostream(this)
 {
     count = size;
     pos = mem;
@@ -833,14 +834,16 @@ int memwriter::overflow(int ch)
     return ch;
 }
 
-memreader::memreader(const char *str)
+memreader::memreader(const char *str) :
+std::streambuf(), std::istream(this)
 {
     bp = (const uint8_t *)str;
     count = strlen(str);
     pos = (const uint8_t *)str;
 }
 
-memreader::memreader(const uint8_t *str, size_t size)
+memreader::memreader(const uint8_t *str, size_t size) :
+std::streambuf(), std::istream(this)
 {
     bp = str;
     pos = str;
