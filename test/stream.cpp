@@ -53,6 +53,12 @@ int main(int argc, char *argv[])
         tcp.getline(line, 200);
         assert(!strcmp(line, "pippo"));
         tcp.close();
+
+        line[0] = 0;
+        memwriter memout(line, sizeof(line));
+        memout << "test";
+        assert(eq(line, "test"));
+
         return 0;
     }
     assert(0);

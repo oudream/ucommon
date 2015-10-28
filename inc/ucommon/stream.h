@@ -496,9 +496,11 @@ private:
 
 	size_t count;
 	uint8_t *pos, *bp;
+	bool zb;
 	
 public:
-	memwriter(uint8_t *data, size_t size);
+	explicit memwriter(uint8_t *data, size_t size);
+	memwriter(char *data, size_t size);
 
 	int overflow(int ch) __OVERRIDE;
 

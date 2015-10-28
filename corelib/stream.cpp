@@ -813,12 +813,24 @@ int filestream::overflow(int c)
     return c;
 }
 
+memwriter::memwriter(char *mem, size_t size) :
+std::streambuf(), std::ostream(this)
+{
+    count = size;
+    pos = (uint8_t *)mem;
+    bp = (uint8_t *)mem;
+    zb = true;
+    *mem = 0;
+    --count;
+}
+
 memwriter::memwriter(uint8_t *mem, size_t size) :
 std::streambuf(), std::ostream(this)
 {
     count = size;
     pos = mem;
     bp = mem;
+    zb = false;
 }
 
 int memwriter::overflow(int ch)
@@ -831,6 +843,8 @@ int memwriter::overflow(int ch)
 
     --count;
     *(pos++) = PUT(ch);
+    if(zb)
+        *(pos) = 0;
     return ch;
 }
 
