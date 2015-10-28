@@ -850,7 +850,7 @@ public:
  * @author David Sugar <dyfet@gnutelephony.org>
  */
 template <typename T>
-class pager : protected __VIRTUAL MemoryRedirect, private PagerPool
+class pager : private MemoryRedirect, private PagerPool
 {
 private:
     __DELETE_COPY(pager);

@@ -283,7 +283,7 @@ public:
      * @param size of buffer to allocate.
      * @param format control for string.
      */
-    String(size_t size, const char *format, ...) __PRINTF(3, 4);
+    String(size_t size, const char *format, ...);
 
 
     /**
