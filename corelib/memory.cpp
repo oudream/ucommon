@@ -918,6 +918,11 @@ void PagerObject::release(void)
     CountedObject::release();
 }
 
+void PagerObject::retain(void)
+{
+    CountedObject::retain();
+}
+
 PagerPool::PagerPool()
 {
     freelist = NULL;

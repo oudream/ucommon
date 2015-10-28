@@ -72,7 +72,7 @@ protected:
 	 * containers through templates.
 	 * @author David Sugar <dyfet@gnutelephony.org>
 	 */
-	class __EXPORT Counted : public ObjectProtocol
+	class __EXPORT Counted : public __VIRTUAL ObjectProtocol
 	{
 	private:
 		__DELETE_COPY(Counted);

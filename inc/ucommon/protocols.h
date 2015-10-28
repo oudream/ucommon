@@ -97,7 +97,7 @@ public:
  * sometimes we choose a common memory pool to manage different objects.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT MemoryRedirect : public MemoryProtocol
+class __EXPORT MemoryRedirect : public __VIRTUAL MemoryProtocol
 {
 private:
     MemoryProtocol *target;

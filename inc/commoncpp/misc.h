@@ -62,7 +62,7 @@
 
 namespace ost {
 
-class __EXPORT MemPager : private ucommon::memalloc
+class __EXPORT MemPager : protected ucommon::memalloc
 {
 private:
     __DELETE_COPY(MemPager);

@@ -991,7 +991,7 @@ public:
     void set(void);
 };
 
-class __EXPORT isotime : public PrintProtocol, public InputProtocol
+class __EXPORT isotime : public __VIRTUAL PrintProtocol, public __VIRTUAL InputProtocol
 {
 private:
     Date *d;

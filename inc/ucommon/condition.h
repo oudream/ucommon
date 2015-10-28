@@ -505,7 +505,7 @@ public:
  * locks, rather than having to release and re-aquire locks to change mode.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT ConditionalLock : protected ConditionalAccess, public SharedAccess
+class __EXPORT ConditionalLock : protected ConditionalAccess, public __VIRTUAL SharedAccess
 {
 private:
     __DELETE_COPY(ConditionalLock);
@@ -652,7 +652,7 @@ public:
  * implements the shared_lock protocol.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT Semaphore : public SharedAccess, protected Conditional
+class __EXPORT Semaphore : public __VIRTUAL SharedAccess, protected Conditional
 {
 protected:
     unsigned count, waits, used;

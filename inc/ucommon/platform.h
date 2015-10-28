@@ -108,6 +108,14 @@
 #endif
 #endif
 
+#ifdef  UCOMMON_RTTI
+#define __VIRTUAL   virtual
+#define __protocol_cast     dynamic_cast
+#else
+#define __VIRTUAL
+#define __protocol_cast     static_cast
+#endif
+
 #if defined(__GNUC__) && (__GNUC < 3) && !defined(_GNU_SOURCE)
 #define _GNU_SOURCE
 #endif

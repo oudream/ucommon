@@ -53,7 +53,7 @@ namespace ucommon {
  * automatic heap management when used in conjunction with smart pointers.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT CountedObject : public ObjectProtocol
+class __EXPORT CountedObject : public __VIRTUAL ObjectProtocol
 {
 private:
     volatile unsigned count;
@@ -346,7 +346,7 @@ public:
      * @return pointer to object we are pointing to.
      */
     inline T* operator*() const {
-        return static_cast<T*>(object);
+        return __protocol_cast<T*>(object);
     }
 
     /**
@@ -362,7 +362,7 @@ public:
      * @return reference to member of pointed object.
      */
     inline T* operator->() const {
-        return static_cast<T*>(object);
+        return __protocol_cast<T*>(object);
     }
 
     /**
@@ -370,7 +370,7 @@ public:
      * @return pointer or NULL if we are not referencing an object.
      */
     inline T* get(void) const {
-        return static_cast<T*>(object);
+        return __protocol_cast<T*>(object);
     }
 
     /**

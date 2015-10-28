@@ -316,7 +316,7 @@ public:
     }
 };
 
-class __EXPORT Semaphore : private ucommon::Semaphore
+class __EXPORT Semaphore : protected ucommon::Semaphore
 {
 public:
     inline Semaphore(unsigned size = 0) : ucommon::Semaphore(size) {}

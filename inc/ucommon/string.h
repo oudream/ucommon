@@ -75,7 +75,7 @@ namespace ucommon {
  * manipulate ordinary null terminated character arrays directly in memory.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT String : public ObjectProtocol
+class __EXPORT String : public __VIRTUAL ObjectProtocol
 {
 protected:
     /**
