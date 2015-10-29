@@ -1022,7 +1022,7 @@ int NullBuffer::uflow()
 
 NullBuffer NullBuffer::null;
 
-std::iostream nullstream(&NullBuffer::null);
+static std::iostream nullstream(&NullBuffer::null);
 
 } // namespace ucommon
 

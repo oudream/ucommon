@@ -593,8 +593,6 @@ inline std::ostream& operator<<(std::ostream& os, Socket::address& addr) {
     return os;
 }
 
-extern __EXPORT std::iostream nullstream;
-
 } // namespace ucommon
 
 namespace std {

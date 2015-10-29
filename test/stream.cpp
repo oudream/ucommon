@@ -59,6 +59,10 @@ int main(int argc, char *argv[])
         memout << "test";
         assert(eq(line, "test"));
 
+        std::null << "test";
+        String s;
+        std::null >> s;
+
         return 0;
     }
     assert(0);
