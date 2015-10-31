@@ -317,7 +317,7 @@ Socket::Error UDPSocket::join(const ucommon::Socket::address &ia, int InterfaceI
 Socket::Error UDPSocket::getInterfaceIndex(const char *DeviceName,int& InterfaceIndex)
 {
 #ifndef _MSWINDOWS_
-#if defined(IP_ADD_MEMBERSHIP) && defined(SIOCGIFINDEX) && !defined(__FreeBSD__) && !defined(__FreeBSD_kernel__) && !defined(_OSF_SOURCE) && !defined(__hpux) && !defined(__GNU__)
+#if defined(IP_ADD_MEMBERSHIP) && defined(SIOCGIFINDEX) && !defined(__FreeBSD__) && !defined(__FreeBSD_kernel__) && !defined(_OSF_SOURCE) && !defined(__hpux) && !defined(__GNU__) && !defined(__NetBSD__)
 
     struct ip_mreqn  mreqn;
     struct ifreq       m_ifreq;
