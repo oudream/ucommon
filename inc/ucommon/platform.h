@@ -109,13 +109,13 @@
 #endif
 
 #ifdef  UCOMMON_RTTI
-#define __VIRTUAL   virtual
+#define __PROTOCOL   virtual
 template<typename T, typename S>
 T protocol_cast(S *s) {
     return dynamic_cast<T>(s);
 }
 #else
-#define __VIRTUAL
+#define __PROTOCOL
 template<typename T, typename S>
 T protocol_cast(S *s) {
     return static_cast<T>(s);

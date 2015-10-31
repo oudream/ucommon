@@ -58,7 +58,7 @@ class PagerPool;
  * performance.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT memalloc : public __VIRTUAL MemoryProtocol
+class __EXPORT memalloc : public __PROTOCOL MemoryProtocol
 {
 private:
     friend class bufpager;
@@ -181,7 +181,7 @@ public:
  * insufficient space in the current page to complete a request.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT mempager : public memalloc, public __VIRTUAL LockingProtocol
+class __EXPORT mempager : public memalloc, public __PROTOCOL LockingProtocol
 {
 private:
     mutable pthread_mutex_t mutex;
@@ -821,7 +821,7 @@ protected:
  * redirection such as the MemoryRedirect class.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT PagerPool : public __VIRTUAL MemoryProtocol
+class __EXPORT PagerPool : public __PROTOCOL MemoryProtocol
 {
 private:
     LinkedObject *freelist;

@@ -52,7 +52,7 @@ class OrderedObject;
  * start of list of objects that are linked together as a list.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT LinkedObject : public __VIRTUAL ObjectProtocol
+class __EXPORT LinkedObject : public __PROTOCOL ObjectProtocol
 {
 private:
     friend class OrderedIndex;

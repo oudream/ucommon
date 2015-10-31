@@ -53,7 +53,7 @@ namespace ucommon {
  * automatic heap management when used in conjunction with smart pointers.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT CountedObject : public __VIRTUAL ObjectProtocol
+class __EXPORT CountedObject : public __PROTOCOL ObjectProtocol
 {
 private:
     volatile unsigned count;

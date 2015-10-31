@@ -76,7 +76,7 @@ protected:
  * returned for reuse.
   * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT PagerReuse : protected __VIRTUAL MemoryRedirect, protected ReusableAllocator
+class __EXPORT PagerReuse : protected __PROTOCOL MemoryRedirect, protected ReusableAllocator
 {
 private:
     unsigned limit, count;

@@ -80,7 +80,7 @@ namespace ucommon {
  * are also different as we protect a target object, not a rwlock instance.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT RWLock : private ConditionalAccess, public __VIRTUAL ExclusiveProtocol, public __VIRTUAL SharedProtocol
+class __EXPORT RWLock : private ConditionalAccess, public __PROTOCOL ExclusiveProtocol, public __PROTOCOL SharedProtocol
 {
 private:
     __DELETE_COPY(RWLock);
@@ -366,7 +366,7 @@ public:
  * style mutex locking.  The exclusive protocol is implimented to support
  * exclusive_lock referencing.
  */
-class __EXPORT RecursiveMutex : private Conditional, public __VIRTUAL ExclusiveProtocol
+class __EXPORT RecursiveMutex : private Conditional, public __PROTOCOL ExclusiveProtocol
 {
 private:
     __DELETE_COPY(RecursiveMutex);
@@ -456,7 +456,7 @@ protected:
  * access by reducing the chance for collisions on the primary index mutex.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __EXPORT Mutex : public __VIRTUAL ExclusiveProtocol
+class __EXPORT Mutex : public __PROTOCOL ExclusiveProtocol
 {
 private:
     __DELETE_COPY(Mutex);
