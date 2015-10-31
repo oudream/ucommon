@@ -623,12 +623,12 @@ public:
     }
 
     inline T* operator->() const {
-        return object;
+        return static_cast<T*>(object);
     }
 
     inline T& operator*() const {
         __THROW_DEREF(object);
-        return *object;
+        return *(static_cast<T*>(object));
     }
 };
 
