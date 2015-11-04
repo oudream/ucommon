@@ -934,21 +934,6 @@ public:
     static secure::keybytes sha384(secure::keybytes key, const uint8_t *mem, size_t soze);
 };
 
-class __SHARED RSA
-{
-private:
-    void *keypair;
-
-    __DELETE_COPY(RSA);
-
-public:
-    RSA(secure::string privkey, secure::string pubkey); // pem
-    RSA(size_t keysize);
-    ~RSA();
-
-    secure::string pem(secure::strtype_t type);
-};
-
 /**
  * Cryptographically relevant random numbers.  This is used both to gather
  * entropy pools and pseudo-random values.
