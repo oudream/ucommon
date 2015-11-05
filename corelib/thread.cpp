@@ -1328,7 +1328,7 @@ void Thread::map(void)
     pth_key_setdata(threadmap, this);
 #else
 #ifdef  _MSTHREADS_
-    SetValue(threadmap, this);
+    TlsSetValue(threadmap, this);
 #else
     pthread_setspecific(threadmap, this);
 #endif
