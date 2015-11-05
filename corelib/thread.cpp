@@ -80,16 +80,7 @@ static mutex_index single_table;
 static mutex_index *mutex_table = &single_table;
 static unsigned mutex_indexing = 1;
 static unsigned rwlock_indexing = 1;
-
-#ifdef  __PTH__
-static pth_key_t threadmap;
-#else
-#ifdef  _MSTHREADS_
-static DWORD threadmap;
-#else
 static pthread_key_t threadmap;
-#endif
-#endif
 
 mutex_index::mutex_index() : Mutex()
 {
@@ -105,28 +96,6 @@ rwlock_entry::rwlock_entry() : RWLock()
 {
     count = 0;
 }
-
-#ifdef  __PTH__
-static int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime)
-{
-    static pth_key_t ev_key = PTH_KEY_INIT;
-    pth_event_t ev = pth_event(PTH_EVENT_TIME|PTH_MODE_STATIC, &ev_key,
-        pth_time(abstime->tv_sec, (abstime->tv_nsec) / 1000));
-
-    if(!pth_cond_await(cond, mutex, ev))
-        return errno;
-    return 0;
-}
-
-static void pthread_shutdown(void)
-{
-    pth_kill();
-}
-
-inline pthread_t pthread_self(void)
-    {return pth_self();};
-
-#endif
 
 static unsigned hash_address(const void *ptr, unsigned indexing)
 {
@@ -229,6 +198,19 @@ void *Thread::Local::get(void)
 }
 #endif
 
+void *Thread::Local::operator*()
+{
+    void *current = get();
+    if(!current) {
+        set(current = allocate());
+    }
+    return current;
+}
+
+void *Thread::Local::allocate()
+{
+    return nullptr;
+}
 
 void Thread::release(void)
 {
@@ -251,11 +233,7 @@ bool Thread::equal(pthread_t t1, pthread_t t2)
 #include <stdio.h>
 bool Thread::equal(pthread_t t1, pthread_t t2)
 {
-#ifdef  __PTH__
-    return (t1 == t2);
-#else
     return pthread_equal(t1, t2) != 0;
-#endif
 }
 
 #endif
@@ -472,12 +450,8 @@ void AutoProtect::release(void)
 
 Mutex::Mutex()
 {
-#ifdef  __PTH__
-    pth_mutex_init(&mlock);
-#else
     if(pthread_mutex_init(&mlock, NULL))
          __THROW_RUNTIME("mutex init failed");
-#endif
 }
 
 Mutex::~Mutex()
@@ -854,16 +828,10 @@ TimedEvent::TimedEvent() :
 Timer()
 {
     signalled = false;
-#ifdef  __PTH__
-    Thread::init();
-    pth_cond_init(&cond);
-    pth_mutex_init(&mutex);
-#else
     if(pthread_cond_init(&cond, Conditional::initializer()))
         __THROW_RUNTIME("conditional init failed");
     if(pthread_mutex_init(&mutex, NULL))
         __THROW_RUNTIME("mutex init failed");
-#endif
     set();
 }
 
@@ -871,40 +839,26 @@ TimedEvent::TimedEvent(timeout_t timeout) :
 Timer(timeout)
 {
     signalled = false;
-#ifdef  __PTH__
-    Thread::init();
-    pth_cond_init(&cond);
-    pth_mutex_init(&mutex);
-#else
     if(pthread_cond_init(&cond, Conditional::initializer()))
         __THROW_RUNTIME("conditional init failed");
     if(pthread_mutex_init(&mutex, NULL))
         __THROW_RUNTIME("mutex init failed");
-#endif
 }
 
 TimedEvent::TimedEvent(time_t timer) :
 Timer(timer)
 {
     signalled = false;
-#ifdef  __PTH__
-    Thread::init();
-    pth_cond_init(&cond);
-    pth_mutex_init(&mutex);
-#else
     if(pthread_cond_init(&cond, Conditional::initializer()))
         __THROW_RUNTIME("conditional init failed");
     if(pthread_mutex_init(&mutex, NULL))
         __THROW_RUNTIME("mutex init failed");
-#endif
 }
 
 TimedEvent::~TimedEvent()
 {
-#ifndef __PTH__
     pthread_cond_destroy(&cond);
     pthread_mutex_destroy(&mutex);
-#endif
 }
 
 void TimedEvent::reset(void)
@@ -1006,7 +960,6 @@ void Thread::setPriority(void)
 
 void Thread::setPriority(void)
 {
-#ifndef __PTH__
     int policy;
     struct sched_param sp;
     pthread_t ptid = pthread_self();
@@ -1035,7 +988,6 @@ void Thread::setPriority(void)
 
     sp.sched_priority = pri;
     pthread_setschedparam(ptid, policy, &sp);
-#endif
 }
 
 #else
@@ -1083,9 +1035,7 @@ DetachedThread::DetachedThread(size_t size)
 
 void Thread::sleep(timeout_t timeout)
 {
-#if defined(__PTH__)
-    pth_usleep(timeout * 1000);
-#elif defined(_MSTHREADS_)
+#if defined(_MSTHREADS_)
 	::Sleep(timeout);
 #elif defined(HAVE_PTHREAD_DELAY)
     timespec ts;
@@ -1106,8 +1056,6 @@ void Thread::yield(void)
 {
 #if defined(_MSTHREADS_)
     SwitchToThread();
-#elif defined(__PTH__)
-    pth_yield(NULL);
 #elif defined(HAVE_PTHREAD_YIELD_NP)
     pthread_yield_np();
 #elif defined(HAVE_PTHREAD_YIELD)
@@ -1229,14 +1177,12 @@ void JoinableThread::start(int adj)
     joining = false;
     priority = adj;
 
-#ifndef __PTH__
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 #if HAVE_PTHREAD_ATTR_SETINHRITSCHED
     pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
 #endif
-#endif
 // we typically use "stack 1" for min stack...
 #ifdef  PTHREAD_STACK_MIN
     if(stack && stack < PTHREAD_STACK_MIN)
@@ -1245,30 +1191,22 @@ void JoinableThread::start(int adj)
     if(stack && stack < 2)
         stack = 0;
 #endif
-#ifdef  __PTH__
-    pth_attr_t attr = PTH_ATTR_DEFAULT;
-    pth_attr_set(attr, PTH_ATTR_JOINABLE);
-    tid = pth_spawn(attr, &exec_thread, this);
-#else
     if(stack)
         pthread_attr_setstacksize(&attr, stack);
     result = pthread_create(&tid, &attr, &exec_thread, this);
     pthread_attr_destroy(&attr);
     if(!result)
         running = true;
-#endif
 }
 
 void DetachedThread::start(int adj)
 {
     priority = adj;
-#ifndef __PTH__
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 #if HAVE_PTHREAD_ATTR_SETINHRITSCHED
     pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
-#endif
 #endif
 // we typically use "stack 1" for min stack...
 #ifdef  PTHREAD_STACK_MIN
@@ -1278,14 +1216,10 @@ void DetachedThread::start(int adj)
     if(stack && stack < 2)
         stack = 0;
 #endif
-#ifdef  __PTH__
-    tid = pth_spawn(PTH_ATTR_DEFAULT, &exec_thread, this);
-#else
     if(stack)
         pthread_attr_setstacksize(&attr, stack);
     pthread_create(&tid, &attr, &exec_thread, this);
     pthread_attr_destroy(&attr);
-#endif
     active = true;
 }
 
@@ -1304,13 +1238,8 @@ void JoinableThread::join(void)
 
     joining = true;
 
-#ifdef  __PTH__
-    if(pth_join(tid, NULL))
-        running = false;
-#else
     if(!pthread_join(tid, NULL))
         running = false;
-#endif
 }
 
 #endif
@@ -1324,27 +1253,19 @@ void Thread::exit(void)
 void Thread::map(void)
 {
     Thread::init();
-#ifdef  __PTH__
-    pth_key_setdata(threadmap, this);
-#else
 #ifdef  _MSTHREADS_
     TlsSetValue(threadmap, this);
 #else
     pthread_setspecific(threadmap, this);
 #endif
-#endif
 }
 
 Thread *Thread::get(void)
 {
-#ifdef  __PTH__
-    return (Thread *)pth_key_setdata(threadmap);
-#else
 #ifdef  _MSTHREADS_
     return (Thread *)TlsGetValue(threadmap);
 #else
     return (Thread *)pthread_getspecific(threadmap);
-#endif
 #endif
 }
 
@@ -1353,31 +1274,18 @@ void Thread::init(void)
     static volatile bool initialized = false;
 
     if(!initialized) {
-#ifdef  __PTH__
-        pth_init();
-        pth_key_create(&threadmap, NULL);
-        atexit(pthread_shutdown);
-#else
 #ifdef  _MSTHREADS_
         threadmap = TlsAlloc();
 #else
         pthread_key_create(&threadmap, NULL);
 #endif
-#endif
         initialized = true;
     }
 }
 
-#ifdef  __PTH__
-pthread_t Thread::self(void)
-{
-    return pth_self();
-}
-#else
 pthread_t Thread::self(void)
 {
     return pthread_self();
 }
-#endif
 
 } // namespace ucommon

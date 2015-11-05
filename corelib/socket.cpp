@@ -127,19 +127,6 @@ struct addrinfo {
 #undef  sendto
 #undef  recvfrom
 #undef  select
-#elif defined(__PTH__)
-#define _send_(so, buf, bytes, flag) pth_send(so, buf, bytes, flag)
-#define _recv_(so, buf, bytes, flag) pth_recv(so, buf, bytes, flag)
-#define _sendto_(so, buf, bytes, flag, to, tolen) pth_sendto(so, buf, bytes, flag, to, tolen)
-#define _recvfrom_(so, buf, bytes, flag, from, fromlen) pth_recvfrom(so, buf, bytes, flag, from, fromlen)
-#define _connect_(so, addr, addrlen) pth_connect(so, addr, addrlen)
-#define _accept_(so, addr, addrlen) pth_accept(so, addr, addrlen)
-#define _select_(cnt, rfd, wfd, efd, timeout) pth_select(cnt, rfd, wfd, efd, timeout)
-#define _poll_(fds, cnt, timeout) pth_poll(fds, cnt, timeout)
-#define _getsockname_(so, addr, alen) ::getsockname(so, addr, alen)
-#define _getpeername_(so, addr, alen) ::getpeername(so, addr, alen)
-#define _bind_(so, addr, alen) ::bind(so, addr, alen)
-#define _listen_(so, count) ::listen(so, count)
 #else
 #define _send_(so, buf, bytes, flag) ::send(so, buf, bytes, flag)
 #define _recv_(so, buf, bytes, flag) ::recv(so, buf, bytes, flag)

@@ -692,15 +692,19 @@ public:
 
         virtual void release(void *instance) = 0;
 
+        virtual void *allocate();
+
     public:
         ~Local();
+
+        void *operator*();
 
         void set(void *instance);
 
         void *get(void);
 
         inline void clear() {
-            set(NULL);
+            set(nullptr);
         }
     };
 

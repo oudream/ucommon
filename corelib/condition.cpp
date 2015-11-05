@@ -30,25 +30,11 @@
 
 namespace ucommon {
 
-#if !defined(_MSTHREADS_) && !defined(__PTH__)
+#if !defined(_MSTHREADS_)
 Conditional::attribute Conditional::attr;
 #endif
 
 unsigned ConditionalAccess::max_sharing = 0;
-
-#ifdef  __PTH__
-static int pthread_cond_timedwait(pthread_cond_t *cond, pthread_mutex_t *mutex, const struct timespec *abstime)
-{
-    static pth_key_t ev_key = PTH_KEY_INIT;
-    pth_event_t ev = pth_event(PTH_EVENT_TIME|PTH_MODE_STATIC, &ev_key,
-        pth_time(abstime->tv_sec, (abstime->tv_nsec) / 1000));
-
-    if(!pth_cond_await(cond, mutex, ev))
-        return errno;
-    return 0;
-}
-#endif
-
 
 void ConditionalAccess::limit_sharing(unsigned max)
 {
@@ -170,7 +156,6 @@ bool ConditionVar::wait(struct timespec *ts)
 
 #include <stdio.h>
 
-#ifndef __PTH__
 Conditional::attribute::attribute()
 {
     Thread::init();
@@ -184,41 +169,27 @@ Conditional::attribute::attribute()
 #endif
 #endif
 }
-#endif
 
 ConditionMutex::ConditionMutex()
 {
-#ifdef	__PTH__
-	pth_mutex_init(&mutex);
-#else
 	if(pthread_mutex_init(&mutex, NULL))
 		__THROW_RUNTIME("mutex init failed");
-#endif
 }
 
 ConditionMutex::~ConditionMutex()
 {
-#ifndef	__PTH__
 	pthread_mutex_destroy(&mutex);
-#endif
 }
 
 Conditional::Conditional()
 {
-#ifdef  __PTH__
-    Thread::init();
-    pth_cond_init(&cond);
-#else
 	if(pthread_cond_init(&cond, &Conditional::attr.attr))
 		__THROW_RUNTIME("conditional init failed");
-#endif
 }
 
 Conditional::~Conditional()
 {
-#ifndef __PTH__
     pthread_cond_destroy(&cond);
-#endif
 }
 
 bool Conditional::wait(timeout_t timeout)
@@ -241,20 +212,13 @@ bool Conditional::wait(struct timespec *ts)
 ConditionVar::ConditionVar(ConditionMutex *m)
 {
 	shared = m;
-#ifdef  __PTH__
-    Thread::init();
-    pth_cond_init(&cond);
-#else
     if(pthread_cond_init(&cond, &Conditional::attr.attr))
 		__THROW_RUNTIME("conditional init failed");
-#endif
 }
 
 ConditionVar::~ConditionVar()
 {
-#ifndef __PTH__
     pthread_cond_destroy(&cond);
-#endif
 }
 
 bool ConditionVar::wait(timeout_t timeout)
@@ -333,19 +297,13 @@ bool ConditionalAccess::waitSignal(struct timespec *ts)
 ConditionalAccess::ConditionalAccess()
 {
     waiting = pending = sharing = 0;
-#ifdef  __PTH__
-    pth_cond_init(&bcast);
-#else
     if(pthread_cond_init(&bcast, &attr.attr))
 		__THROW_RUNTIME("conditional init failed");
-#endif
 }
 
 ConditionalAccess::~ConditionalAccess()
 {
-#ifndef __PTH__
     pthread_cond_destroy(&bcast);
-#endif
 }
 
 bool ConditionalAccess::waitSignal(timeout_t timeout)

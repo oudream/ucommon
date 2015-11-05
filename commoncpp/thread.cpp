@@ -235,14 +235,13 @@ void Thread::start(void)
     if(running)
         return;
 
-#ifndef __PTH__
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 #if HAVE_PTHREAD_ATTR_SETINHRITSCHED
     pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
 #endif
-#endif
+
 // we typically use "stack 1" for min stack...
 #ifdef  PTHREAD_STACK_MIN
     if(stack && stack < PTHREAD_STACK_MIN)
@@ -251,11 +250,6 @@ void Thread::start(void)
     if(stack && stack < 2)
         stack = 0;
 #endif
-#ifdef  __PTH__
-    pth_attr_t attr = PTH_ATTR_DEFAULT;
-    pth_attr_set(attr, PTH_ATTR_JOINABLE);
-    tid = pth_spawn(attr, &exec_thread, this);
-#else
     if(stack)
         pthread_attr_setstacksize(&attr, stack);
     result = pthread_create(&tid, &attr, &exec_thread, this);
@@ -264,18 +258,15 @@ void Thread::start(void)
         terminated = false;
         running = true;
     }
-#endif
 }
 
 void Thread::detach(void)
 {
-#ifndef __PTH__
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 #if HAVE_PTHREAD_ATTR_SETINHRITSCHED
     pthread_attr_setinheritsched(&attr, PTHREAD_INHERIT_SCHED);
-#endif
 #endif
 // we typically use "stack 1" for min stack...
 #ifdef  PTHREAD_STACK_MIN
@@ -285,14 +276,10 @@ void Thread::detach(void)
     if(stack && stack < 2)
         stack = 0;
 #endif
-#ifdef  __PTH__
-    tid = pth_spawn(PTH_ATTR_DEFAULT, &exec_thread, this);
-#else
     if(stack)
         pthread_attr_setstacksize(&attr, stack);
     pthread_create(&tid, &attr, &exec_thread, this);
     pthread_attr_destroy(&attr);
-#endif
 }
 
 #endif

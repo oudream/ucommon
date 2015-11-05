@@ -362,21 +362,11 @@ if test "$threading" = "none" ; then
             fi
         ],[
             AC_CHECK_HEADER(windows.h,, [
-                AC_CHECK_HEADER(pth.h,[
-                    UCOMMON_LIBS="$UCOMMON_LIBS -lpth"
-                    UCOMMON_FLAGS="$UCOMMON_FLAGS -D__PTH__"
-                ],[
-                    AC_MSG_ERROR("pthread or GNU pth support required")
-                ])
+                AC_MSG_ERROR("pthread support required")
             ])
         ])
     else
-        AC_CHECK_HEADER(pth.h,[
-            UCOMMON_LIBS="$UCOMMON_LIBS -lpth"
-            UCOMMON_FLAGS="$UCOMMON_FLAGS -D__PTH__"
-        ],[
-            AC_MSG_ERROR("GNU pth required")
-        ])
+        AC_MSG_ERROR("thread support required")
     fi
 fi
 

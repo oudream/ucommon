@@ -749,11 +749,7 @@ ssize_t dir::read(char *buf, size_t len)
 
 ssize_t fsys::read(void *buf, size_t len)
 {
-#ifdef  __PTH__
-    int rtn = ::pth_read(fd, buf, len);
-#else
     int rtn = ::read(fd, buf, len);
-#endif
 
     if(rtn < 0)
         error = remapError();
@@ -772,11 +768,7 @@ int fsys::sync(void)
 
 ssize_t fsys::write(const void *buf, size_t len)
 {
-#ifdef  __PTH__
-    int rtn = pth_write(fd, buf, len);
-#else
     int rtn = ::write(fd, buf, len);
-#endif
 
     if(rtn < 0)
         error = remapError();
