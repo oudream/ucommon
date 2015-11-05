@@ -314,6 +314,7 @@ typedef size_t stacksize_t;
 #else   
 #define _MSTHREADS_
 typedef DWORD pthread_t;
+typedef DWORD pthread_key_t;
 typedef unsigned stacksize_t;
 typedef CRITICAL_SECTION pthread_mutex_t;
 #endif

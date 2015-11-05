@@ -176,6 +176,69 @@ void ReusableAllocator::release(ReusableObject *obj)
     unlock();
 }
 
+LinkedObject *Thread::Local::list = NULL;
+
+#ifdef  _MSTHREADS_
+
+Thread::Local::Local() : LinkedObject(&list)
+{
+    key = TlsAlloc();
+}
+
+Thread::Local::~Local()
+{
+    TlsFree(key);
+}
+
+void Thread::Local::set(void *ptr)
+{
+    void *current = TlsGetValue(key);
+    if(current)
+        release(current);
+    TlsSetValue(key, ptr);
+}
+
+void *Thread::Local::get(void)
+{
+    return TlsGetValue(key);
+}
+
+#else
+
+Thread::Local::Local() : LinkedObject(&list)
+{
+    pthread_key_create(&key, NULL);
+}
+
+Thread::Local::~Local()
+{
+    pthread_key_delete(key);
+}
+
+void Thread::Local::set(void *ptr)
+{
+    void *current = pthread_getspecific(key);
+    if(current)
+        release(current);
+    pthread_setspecific(key, ptr);
+}
+
+void *Thread::Local::get(void)
+{
+    return pthread_getspecific(key);
+}
+#endif
+
+
+void Thread::release(void)
+{
+    linked_pointer<Thread::Local> lp = Thread::Local::list;
+    while(is(lp)) {
+        lp->clear();
+        lp.next();
+    }
+}
+
 #ifdef  _MSTHREADS_
 
 bool Thread::equal(pthread_t t1, pthread_t t2)
@@ -1254,6 +1317,7 @@ void JoinableThread::join(void)
 
 void Thread::exit(void)
 {
+    release();
     pthread_exit(NULL);
 }
 
@@ -1264,7 +1328,7 @@ void Thread::map(void)
     pth_key_setdata(threadmap, this);
 #else
 #ifdef  _MSTHREADS_
-    TlsSetValue(threadmap, this);
+    SetValue(threadmap, this);
 #else
     pthread_setspecific(threadmap, this);
 #endif

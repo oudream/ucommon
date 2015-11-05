@@ -679,6 +679,31 @@ protected:
     virtual bool is_active(void) const;
 
 public:
+    class __EXPORT Local : public LinkedObject
+    {
+    private:
+        friend class Thread;
+
+        pthread_key_t key;
+        static LinkedObject *list;
+
+    protected:
+        Local();
+
+        virtual void release(void *instance) = 0;
+
+    public:
+        ~Local();
+
+        void set(void *instance);
+
+        void *get(void);
+
+        inline void clear() {
+            set(NULL);
+        }
+    };
+
     /**
      * Set thread priority without disrupting scheduling if possible.
      * Based on scheduling policy.  It is recommended that the process
@@ -770,6 +795,8 @@ public:
     inline bool isRunning(void) const {
         return is_active();
     }
+
+    static void release(void);
 };
 
 /**
