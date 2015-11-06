@@ -379,7 +379,7 @@ inline void store_unsafe(T& target, const T* source) {
 }
 
 /**
- * Convenience function to swap objects.
+ * Convenience function to swap objects.  Can be specialized.
  * @param o1 to swap.
  * @param o2 to swap.
  */
@@ -387,6 +387,28 @@ template<typename T>
 inline void swap(T& o1, T& o2) {
     cpr_memswap(&o1, &o2, sizeof(T));
 }
+
+/**
+ * Convenience function to copy objects.
+ */
+template<typename T>
+inline T copy(const T& src) {
+    return T(src);
+}
+
+template<typename T>
+inline void copy(const T& src, T& to) {
+    new((caddr_t)&to) T(src);
+}
+
+/**
+ * Convenience function to move objects.
+ */
+template<typename T>
+inline void move(T& src, T& to) {
+    memcpy((void *)&to, (void *)&src, sizeof(T));
+    new((caddr_t)&src) T();
+} 
 
 /**
  * Convenience function to check memory arrays.

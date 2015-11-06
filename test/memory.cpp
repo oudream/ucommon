@@ -228,5 +228,16 @@ extern "C" int main()
     assert(out == nullptr);
     pmap.release(out);
 
+    int a = 1, b = 2;
+    swap(a, b);
+    assert(b == 1);
+    assert(a == 2);
+    copy(b, a);
+    assert(a == 1);
+    b = 2; 
+    move(b, a);
+    assert(a == 2);
+    assert(b == 0);
+
     return 0;
 }
