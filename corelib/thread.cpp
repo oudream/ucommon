@@ -151,6 +151,7 @@ LinkedObject *Thread::Local::list = NULL;
 
 Thread::Local::Local() : LinkedObject(&list)
 {
+    Thread::init();
     key = TlsAlloc();
 }
 
@@ -176,6 +177,7 @@ void *Thread::Local::get(void)
 
 Thread::Local::Local() : LinkedObject(&list)
 {
+    Thread::init();
     pthread_key_create(&key, NULL);
 }
 

@@ -28,12 +28,29 @@ using namespace ucommon;
 
 static unsigned count = 0;
 
+class testLocal : public Thread::Local
+{
+private:
+    virtual void release(void *mem) __FINAL {
+        ::free(mem);
+    }
+
+    virtual void *allocate() __FINAL {
+        return ::malloc(100);
+    }
+};
+
+static testLocal local;
+
 class testThread : public JoinableThread
 {
 public:
     testThread() : JoinableThread() {};
 
     void run(void) {
+        assert(local.get() == nullptr);
+        assert(*local != nullptr);
+
         ++count;
         ::sleep(2);
     };
@@ -43,6 +60,12 @@ extern "C" int main()
 {
     time_t now, later;
     testThread *thr;
+    void *mem;
+
+    assert(local.get() == nullptr);
+    mem = *local;
+    assert(mem != nullptr);
+    assert(mem == *local);
 
     time(&now);
     thr = new testThread();

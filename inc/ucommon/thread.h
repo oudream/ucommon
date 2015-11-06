@@ -687,6 +687,8 @@ public:
         pthread_key_t key;
         static LinkedObject *list;
 
+        __DELETE_COPY(Local);
+
     protected:
         Local();
 
