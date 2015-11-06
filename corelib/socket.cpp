@@ -36,12 +36,6 @@
 #endif
 #include <errno.h>
 
-#if defined(HAVE_SOCKS)
-#include <socks.h>
-#undef  HAVE_POLL_H
-#undef  HAVE_SYS_POLL_H
-#endif
-
 #if defined(HAVE_POLL_H)
 #include <poll.h>
 #elif defined(HAVE_SYS_POLL_H)
@@ -108,38 +102,6 @@ struct addrinfo {
 #define AI_NUMERICHOST  0x0400
 #define AI_NUMERICSERV  0x0800
 
-#endif
-
-#if defined(HAVE_SOCKS)
-#define _getsockname_(so, addr, alen) ::Rgetsockname(so, addr, alen)
-#define _getpeername_(so, addr, alen) ::Rgetpeername(so, addr, alen)
-#define _accept_(so, addr, alen) ::Raccept(so, addr, alen)
-#define _connect_(so, addr, alen) ::Rconnect(so, addr, alen)
-#define _bind_(so, addr, alen) ::Rbind(so, addr, alen)
-#define _listen_(so, backlog) ::Rlisten(so, backlog)
-#define _select_(cnt, rfd, wfd, efd, timeout) ::Rselect(cnt, rfd, wfd, efd, timeout)
-#define _send_(so, buf, bytes, flag) ::Rsend(so, buf, bytes, flag)
-#define _recv_(so, buf, bytes, flag) ::Rrecv(so, buf, bytes, flag)
-#define _sendto_(so, buf, bytes, flag, to, tolen) ::Rsendto(so, buf, bytes, flag, to, tolen)
-#define _recvfrom_(so, buf, bytes, flag, from, fromlen) ::Rrecvfrom(so, buf, bytes, flag, from, fromlen)
-#undef  USE_POLL
-#undef  accept
-#undef  sendto
-#undef  recvfrom
-#undef  select
-#else
-#define _send_(so, buf, bytes, flag) ::send(so, buf, bytes, flag)
-#define _recv_(so, buf, bytes, flag) ::recv(so, buf, bytes, flag)
-#define _sendto_(so, buf, bytes, flag, to, tolen) ::sendto(so, buf, bytes, flag, to, tolen)
-#define _recvfrom_(so, buf, bytes, flag, from, fromlen) ::recvfrom(so, buf, bytes, flag, from, fromlen)
-#define _connect_(so, addr, addrlen) ::connect(so, addr, addrlen)
-#define _accept_(so, addr, addrlen) ::accept(so, addr, addrlen)
-#define _select_(cnt, rfd, wfd, efd, timeout) ::select(cnt, rfd, wfd, efd, timeout)
-#define _poll_(fds, cnt, timeout) ::poll(fds, cnt, timeout)
-#define _getsockname_(so, addr, alen) ::getsockname(so, addr, alen)
-#define _getpeername_(so, addr, alen) ::getpeername(so, addr, alen)
-#define _bind_(so, addr, alen) ::bind(so, addr, alen)
-#define _listen_(so, count) ::listen(so, count)
 #endif
 
 namespace ucommon {
@@ -570,40 +532,6 @@ void Socket::init(void)
 {
 }
 #endif
-
-void Socket::init(const char *progname)
-{
-    assert(progname != NULL);
-
-    Socket::init();
-#ifdef  HAVE_SOCKS
-    const char *cp;
-
-#ifdef  _MSWINDOWS_
-    char path[65];
-
-    cp = strrchr(progname, '/');
-    if(!cp)
-        cp = strrchr(progname, '\\');
-    if(!cp)
-        cp = strrchr(progname, ':');
-    if(cp)
-        progname = ++cp;
-
-    String::set(path, sizeof(path), progname);
-    const char *ext = strrchr(path, '.');
-    if(ext && (case_eq(ext, ".exe") || case_eq(ext, ".com")))
-        *ext = 0;
-    progname = path;
-#else
-    cp = strrchr(progname, '/');
-    if(cp)
-        progname = ++cp;
-#endif
-
-    SOCKSinit((char *)progname);
-#endif
-}
 
 void Socket::v4mapping(bool enable)
 {
@@ -1682,7 +1610,7 @@ Socket::Socket(const struct addrinfo *addr)
         so = ::socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
         socket_mapping(addr->ai_family, so);
         if(so != INVALID_SOCKET) {
-            if(!_connect_(so, addr->ai_addr, (socklen_t)addr->ai_addrlen))
+            if(!::connect(so, addr->ai_addr, (socklen_t)addr->ai_addrlen))
                 return;
         }
         addr = addr->ai_next;
@@ -1764,7 +1692,7 @@ socket_t Socket::create(const char *iface, const char *port, int family, int typ
         so = create(AF_UNIX, type, 0);
         if(so == INVALID_SOCKET)
             return INVALID_SOCKET;
-        if(_bind_(so, (struct sockaddr *)&uaddr, len)) {
+        if(::bind(so, (struct sockaddr *)&uaddr, len)) {
             release(so);
             return INVALID_SOCKET;
         }
@@ -1786,7 +1714,7 @@ socket_t Socket::create(const char *iface, const char *port, int family, int typ
     }
     setsockopt(so, SOL_SOCKET, SO_REUSEADDR, (caddr_t)&reuse, sizeof(reuse));
     if(res->ai_addr) {
-        if(_bind_(so, res->ai_addr, (socklen_t)res->ai_addrlen)) {
+        if(::bind(so, res->ai_addr, (socklen_t)res->ai_addrlen)) {
             release(so);
             so = INVALID_SOCKET;
         }
@@ -1953,7 +1881,7 @@ size_t Socket::peek(void *data, size_t len) const
     if(iowait && iowait != Timer::inf && !Socket::wait(so, iowait))
         return 0;
 
-    ssize_t rtn = _recv_(so, (caddr_t)data, 1, MSG_DONTWAIT | MSG_PEEK);
+    ssize_t rtn = ::recv(so, (caddr_t)data, 1, MSG_DONTWAIT | MSG_PEEK);
     if(rtn < 1)
         return 0;
     return (size_t)rtn;
@@ -1965,7 +1893,7 @@ ssize_t Socket::recvfrom(socket_t so, void *data, size_t len, int flags, struct 
     assert(len > 0);
 
     socklen_t slen = sizeof(struct sockaddr_storage);
-    return _recvfrom_(so, (caddr_t)data, (socksize_t)len, flags, (struct sockaddr *)addr, (socklen_t *)&slen);
+    return ::recvfrom(so, (caddr_t)data, (socksize_t)len, flags, (struct sockaddr *)addr, (socklen_t *)&slen);
 }
 
 size_t Socket::readfrom(void *data, size_t len, struct sockaddr_storage *from)
@@ -1978,7 +1906,7 @@ size_t Socket::readfrom(void *data, size_t len, struct sockaddr_storage *from)
         return 0;
 
     socklen_t slen = sizeof(struct sockaddr_storage);
-    ssize_t result = _recvfrom_(so, (caddr_t)data, (socksize_t)len, 0, (struct sockaddr *)from, (socklen_t *)&slen);
+    ssize_t result = ::recvfrom(so, (caddr_t)data, (socksize_t)len, 0, (struct sockaddr *)from, (socklen_t *)&slen);
 
     if(result < 0) {
         ioerr = Socket::error();
@@ -1996,7 +1924,7 @@ size_t Socket::writeto(const void *data, size_t dlen, const struct sockaddr *des
     if(dest)
         slen = len(dest);
 
-    ssize_t result = _sendto_(so, (caddr_t)data, (socksize_t)dlen, MSG_NOSIGNAL, dest, (socklen_t)slen);
+    ssize_t result = ::sendto(so, (caddr_t)data, (socksize_t)dlen, MSG_NOSIGNAL, dest, (socklen_t)slen);
 
     if(result < 0) {
         ioerr = Socket::error();
@@ -2014,7 +1942,7 @@ ssize_t Socket::sendto(socket_t so, const void *data, size_t dlen, int flags, co
     if(dest)
         slen = len(dest);
 
-    return _sendto_(so, (caddr_t)data, (socksize_t)dlen, MSG_NOSIGNAL | flags, dest, (socklen_t)slen);
+    return ::sendto(so, (caddr_t)data, (socksize_t)dlen, MSG_NOSIGNAL | flags, dest, (socklen_t)slen);
 }
 
 size_t Socket::writes(const char *str)
@@ -2092,7 +2020,7 @@ ssize_t Socket::readline(socket_t so, char *data, size_t max, timeout_t timeout)
             if(!wait(so, timeout))
                 return 0;
         }
-        nstat = _recv_(so, data, (socksize_t)nleft, MSG_PEEK);
+        nstat = ::recv(so, data, (socksize_t)nleft, MSG_PEEK);
         if(nstat < 0)
             return -1;
 
@@ -2109,7 +2037,7 @@ ssize_t Socket::readline(socket_t so, char *data, size_t max, timeout_t timeout)
             }
         }
 
-        nstat = _recv_(so, (caddr_t)data, c, 0);
+        nstat = ::recv(so, (caddr_t)data, c, 0);
         if(nstat < 0)
             break;
 
@@ -2147,7 +2075,7 @@ int Socket::loopback(socket_t so, bool enable)
     if(so == INVALID_SOCKET)
         return EBADF;
 
-    _getsockname_(so, addr, &len);
+    ::getsockname(so, addr, &len);
     family = us.inaddr.sin_family;
     switch(family) {
     case AF_INET:
@@ -2180,7 +2108,7 @@ int Socket::ttl(socket_t so, uint8_t t)
     if(so == INVALID_SOCKET)
         return EBADF;
 
-    _getsockname_(so, addr, &len);
+    ::getsockname(so, addr, &len);
     family = us.inaddr.sin_family;
     switch(family) {
     case AF_INET:
@@ -2298,7 +2226,7 @@ int Socket::multicast(socket_t so, unsigned ttl)
     else
         enable = false;
 
-    _getsockname_(so, (struct sockaddr *)&addr, &len);
+    ::getsockname(so, (struct sockaddr *)&addr, &len);
     if(!enable)
         switch(addr.address.sa_family)
         {
@@ -2413,7 +2341,7 @@ int Socket::disconnect(socket_t so)
     socklen_t len = sizeof(us.saddr);
 
 #if defined(_MSWINDOWS_)
-    _getsockname_(so, addr, &len);
+    ::getsockname(so, addr, &len);
     int family = us.inaddr.sin_family;
     memset(addr, 0, sizeof(us.saddr));
     us.inaddr.sin_family = family;
@@ -2425,7 +2353,7 @@ int Socket::disconnect(socket_t so)
         len = sizeof(us.saddr);
     if(so == INVALID_SOCKET)
         return EBADF;
-    if(!_connect_(so, addr, len))
+    if(!::connect(so, addr, len))
         return 0;
     int err = Socket::error();
     if(!err)
@@ -2447,7 +2375,7 @@ int Socket::join(socket_t so, const struct addrinfo *node, const int ifindex)
     if(so == INVALID_SOCKET)
         return EBADF;
 
-    _getsockname_(so, (struct sockaddr *)&addr, &len);
+    ::getsockname(so, (struct sockaddr *)&addr, &len);
     while(!rtn && node && node->ai_addr) {
         target = (const struct sockaddr_internet *)node->ai_addr;
         family = node->ai_family;
@@ -2495,7 +2423,7 @@ int Socket::drop(socket_t so, const struct addrinfo *node, const int ifindex)
     if(so == INVALID_SOCKET)
         return EBADF;
 
-    _getsockname_(so, (struct sockaddr *)&addr, &len);
+    ::getsockname(so, (struct sockaddr *)&addr, &len);
     while(!rtn && node && node->ai_addr) {
         target = (const struct sockaddr_internet *)node->ai_addr;
         family = node->ai_family;
@@ -2561,7 +2489,7 @@ socket_t Socket::create(const struct addrinfo *node, int stype, int sprotocol)
             so = Socket::create(sfamily, ctype, cprotocol);
         }
         if(so != INVALID_SOCKET) {
-            if(!_connect_(so, node->ai_addr, (socklen_t)node->ai_addrlen))
+            if(!::connect(so, node->ai_addr, (socklen_t)node->ai_addrlen))
                 return so;
         }
 next:
@@ -2596,7 +2524,7 @@ int Socket::connectto(socket_t so, struct addrinfo *node)
 
     while(node) {
         if(node->ai_family == socket_family) {
-            if(!_connect_(so, node->ai_addr, (socklen_t)node->ai_addrlen)) {
+            if(!::connect(so, node->ai_addr, (socklen_t)node->ai_addrlen)) {
                 rtn = 0;
                 goto exit;
             }
@@ -2686,7 +2614,7 @@ bool Socket::connected(void) const
     if(!wait())
         return true;
 
-    if(_recv_(so, &buf, 1, MSG_DONTWAIT | MSG_PEEK) < 1)
+    if(::recv(so, &buf, 1, MSG_DONTWAIT | MSG_PEEK) < 1)
         return false;
 
     return true;
@@ -2729,9 +2657,9 @@ socket_t Socket::acceptfrom(socket_t so, struct sockaddr_storage *addr)
 {
     socklen_t len = sizeof(struct sockaddr_storage);
     if(addr)
-        return _accept_(so, (struct sockaddr *)addr, &len);
+        return ::accept(so, (struct sockaddr *)addr, &len);
     else
-        return _accept_(so, NULL, NULL);
+        return ::accept(so, NULL, NULL);
 }
 
 bool Socket::wait(timeout_t timeout) const
@@ -2756,9 +2684,9 @@ bool Socket::wait(socket_t so, timeout_t timeout)
     status = 0;
     while(status < 1) {
         if(timeout == Timer::inf)
-            status = _poll_(&pfd, 1, -1);
+            status = ::poll(&pfd, 1, -1);
         else
-            status = _poll_(&pfd, 1, timeout);
+            status = ::poll(&pfd, 1, timeout);
         if(status == -1 && errno == EINTR)
             continue;
         if(status < 0)
@@ -2785,7 +2713,7 @@ bool Socket::wait(socket_t so, timeout_t timeout)
 
     FD_ZERO(&grp);
     FD_SET(so, &grp);
-    status = _select_((int)(so + 1), &grp, NULL, NULL, tvp);
+    status = ::select((int)(so + 1), &grp, NULL, NULL, tvp);
     if(status < 1)
         return false;
     if(FD_ISSET(so, &grp))
@@ -2810,9 +2738,9 @@ bool Socket::waitSending(timeout_t timeout) const
     status = 0;
     while(status < 1) {
         if(timeout == Timer::inf)
-            status = _poll_(&pfd, 1, -1);
+            status = ::poll(&pfd, 1, -1);
         else
-            status = _poll_(&pfd, 1, timeout);
+            status = ::poll(&pfd, 1, timeout);
         if(status == -1 && errno == EINTR)
             continue;
         if(status < 0)
@@ -2839,7 +2767,7 @@ bool Socket::waitSending(timeout_t timeout) const
 
     FD_ZERO(&grp);
     FD_SET(so, &grp);
-    status = _select_((int)(so + 1), NULL, &grp, NULL, tvp);
+    status = ::select((int)(so + 1), NULL, &grp, NULL, tvp);
     if(status < 1)
         return false;
     if(FD_ISSET(so, &grp))
@@ -2871,7 +2799,7 @@ socket_t ListenSocket::create(const char *iface, const char *svc, unsigned backl
     if(so == INVALID_SOCKET)
         return so;
 
-    if(_listen_(so, backlog)) {
+    if(::listen(so, backlog)) {
         release(so);
         return INVALID_SOCKET;
     }
@@ -2882,9 +2810,9 @@ socket_t ListenSocket::accept(struct sockaddr_storage *addr) const
 {
     socklen_t len = sizeof(struct sockaddr_storage);
     if(addr)
-        return _accept_(so, (struct sockaddr *)addr, &len);
+        return ::accept(so, (struct sockaddr *)addr, &len);
     else
-        return _accept_(so, NULL, NULL);
+        return ::accept(so, NULL, NULL);
 }
 
 TCPServer::TCPServer(const char *address, const char *service, unsigned backlog) :
@@ -2909,7 +2837,7 @@ struct ::addrinfo *Socket::hinting(socket_t so, struct addrinfo *hint)
 
     memset(hint, 0, sizeof(struct addrinfo));
     memset(sa, 0, sizeof(us.st));
-    if(_getsockname_(so, sa, &slen))
+    if(::getsockname(so, sa, &slen))
         return NULL;
     hint->ai_family = us.in.sin_family;
     slen = sizeof(hint->ai_socktype);
@@ -3052,16 +2980,16 @@ exit:
 
 int Socket::bindto(socket_t so, const struct sockaddr *iface)
 {
-    if(!_bind_(so, iface, len(iface)))
+    if(!::bind(so, iface, len(iface)))
         return 0;
     return Socket::error();
 }
 
 int Socket::listento(socket_t so, const struct sockaddr *iface, int backlog)
 {
-    if(_bind_(so, iface, len(iface)))
+    if(::bind(so, iface, len(iface)))
         return Socket::error();
-    if(_listen_(so, backlog))
+    if(::listen(so, backlog))
         return Socket::error();
     return 0;
 }
@@ -3083,7 +3011,7 @@ int Socket::bindto(socket_t so, const char *host, const char *svc, int protocol)
     if(host && strchr(host, '/')) {
         struct sockaddr_storage uaddr;
         socklen_t len = unixaddr((struct sockaddr_un *)&uaddr, host);
-        rtn = _bind_(so, (struct sockaddr *)&uaddr, len);
+        rtn = ::bind(so, (struct sockaddr *)&uaddr, len);
         goto exit;
     };
 #endif
@@ -3117,7 +3045,7 @@ int Socket::bindto(socket_t so, const char *host, const char *svc, int protocol)
     if(rtn)
         goto exit;
 
-    rtn = _bind_(so, res->ai_addr, (socklen_t)res->ai_addrlen);
+    rtn = ::bind(so, res->ai_addr, (socklen_t)res->ai_addrlen);
 exit:
     if(res)
         freeaddrinfo(res);
@@ -3283,8 +3211,8 @@ int Socket::via(struct sockaddr *iface, const struct sockaddr *dest, socklen_t s
         if((socket_t)so == INVALID_SOCKET)
             return -1;
         socket_mapping(dest->sa_family, so);
-        if(!_connect_(so, dest, slen))
-            rtn = _getsockname_(so, iface, &slen);
+        if(!::connect(so, dest, slen))
+            rtn = ::getsockname(so, iface, &slen);
         break;
     default:
         return ENOSYS;
@@ -3509,7 +3437,7 @@ int Socket::family(socket_t so)
 
     socklen_t len = sizeof(us.saddr);
 	struct sockaddr *addr = (struct sockaddr *)(&us.saddr);
-    if(_getsockname_(so, addr, &len))
+    if(::getsockname(so, addr, &len))
         return AF_UNSPEC;
 
     return us.inaddr.sin_family;
@@ -3566,14 +3494,14 @@ int Socket::local(socket_t sock, struct sockaddr_storage *addr)
 {
     socklen_t slen = sizeof(sockaddr_storage);
 	memset(addr, 0, slen);
-    return _getsockname_(sock, (struct sockaddr *)addr, &slen);
+    return ::getsockname(sock, (struct sockaddr *)addr, &slen);
 }
 
 int Socket::remote(socket_t sock, struct sockaddr_storage *addr)
 {
     socklen_t slen = sizeof(sockaddr_storage);
 	memset(addr, 0, slen);
-    return _getpeername_(sock, (struct sockaddr *)addr, &slen);
+    return ::getpeername(sock, (struct sockaddr *)addr, &slen);
 }
 
 String str(Socket& so, size_t size)

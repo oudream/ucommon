@@ -1752,12 +1752,6 @@ public:
     static void init(void);
 
     /**
-     * Initialize with program name.  Used by socks, for example.
-     * @param program name.
-     */
-    static void init(const char *program);
-
-    /**
      * Set default socket family preference for query options when the
      * socket type is otherwise not specified.
      * @param family to select.

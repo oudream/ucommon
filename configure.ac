@@ -235,29 +235,6 @@ AC_CHECK_LIB(msvcrt, fopen, [
     ])
 ])
 
-AC_ARG_ENABLE(socks,
-    AC_HELP_STRING([--enable-socks],
-        [compile with socks proxy support]))
-
-if test "x$enable_socks" = "xyes" ; then
-    enable_socks="no"
-    AC_CHECK_HEADERS(socks.h, [
-        enable_socks="yes"
-    ])
-else
-    enable_socks="no"
-fi
-
-AC_MSG_CHECKING([for socks proxy support])
-
-if test "x$enable_socks" = "xyes" ; then
-    socket_lib="-lsocksd $socket_lib"
-    AC_DEFINE(HAVE_SOCKS, [1], "Socks proxy support")
-    AC_MSG_RESULT(yes)
-else
-    AC_MSG_RESULT(no)
-fi
-
 AC_CHECK_LIB($clib, lstat, [
     AC_DEFINE(HAVE_LSTAT, [1], [have lstat])
 ])
