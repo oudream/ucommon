@@ -397,23 +397,26 @@ inline T copy(const T& src) {
 }
 
 template<typename T>
-inline void copy(const T& src, T& to) {
+inline T& copy(const T& src, T& to) {
     new((caddr_t)&to) T(src);
+    return to;
 }
 
 /**
  * Convenience function to move objects.
  */
 template<typename T>
-inline void move(T& src, T& to) {
+inline T& move(T& src, T& to) {
     memcpy((void *)&to, (void *)&src, sizeof(T));
     new((caddr_t)&src) T();
+    return to;
 } 
 
 template<typename T>
-inline void clear(T& o) {
+inline T& clear(T& o) {
     o.~T();
     new((caddr_t)&o) T();
+    return o;
 }
 
 /**
