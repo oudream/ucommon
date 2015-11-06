@@ -238,6 +238,8 @@ extern "C" int main()
     move(b, a);
     assert(a == 2);
     assert(b == 0);
+    clear(a);
+    assert(a == 0);
 
     return 0;
 }

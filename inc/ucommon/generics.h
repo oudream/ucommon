@@ -410,6 +410,12 @@ inline void move(T& src, T& to) {
     new((caddr_t)&src) T();
 } 
 
+template<typename T>
+inline void clear(T& o) {
+    o.~T();
+    new((caddr_t)&o) T();
+}
+
 /**
  * Convenience function to check memory arrays.
  * @param pointer to validate.
