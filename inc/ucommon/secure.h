@@ -1115,6 +1115,8 @@ public:
 
     void release(void);
 
+    virtual bool _verify(void *cert);
+
     ssize_t _write(const char *address, size_t size) __OVERRIDE;
 
     ssize_t _read(char *address, size_t size) __OVERRIDE;
