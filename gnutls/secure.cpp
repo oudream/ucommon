@@ -67,9 +67,6 @@ secure::server_t secure::server(const char *certfile, const char *ca)
     gnutls_certificate_set_x509_key_file(ctx->xcred, certfile, certfile, GNUTLS_X509_FMT_PEM);
 
     if(!ca)
-        return ctx;
-
-    if(eq(ca, "*"))
         ca = oscerts();
 
     gnutls_certificate_set_x509_trust_file (ctx->xcred, ca, GNUTLS_X509_FMT_PEM);
@@ -77,7 +74,7 @@ secure::server_t secure::server(const char *certfile, const char *ca)
     return ctx;
 }
 
-secure::client_t secure::client(const char *ca)
+secure::client_t secure::client(const char *ca, const char *paths)
 {
     __context *ctx = new __context;
 
@@ -91,10 +88,12 @@ secure::client_t secure::client(const char *ca)
     ctx->dh = NULL;
     gnutls_certificate_allocate_credentials(&ctx->xcred);
 
-    if(!ca)
+    if(!ca && !paths)
         return ctx;
 
-    if(eq(ca, "*"))
+    if(!ca && paths)
+        ca = paths;
+    else if(!ca)
         ca = oscerts();
 
     gnutls_certificate_set_x509_trust_file (ctx->xcred, ca, GNUTLS_X509_FMT_PEM);
@@ -130,7 +129,7 @@ gnutls_session_t __context::session(__context *ctx)
 {
     SSL ssl = NULL;
     if(ctx && ctx->xcred && ctx->err() == secure::OK) {
-        gnutls_init(&ssl, ctx->connect);
+        gnutls_init(&ssl, (gnutls_connection_end_t)(ctx->connect));
         switch(ctx->connect) {
         case GNUTLS_CLIENT:
             gnutls_priority_set_direct(ssl, "PERFORMANCE", NULL);

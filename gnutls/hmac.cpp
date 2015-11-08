@@ -88,12 +88,6 @@ void HMAC::set(const char *digest, const secure::keybytes& key)
         gnutls_hmac_init((HMAC_CTX *)&context, id, *key, len);
 }
 
-void HMAC::set(const char *digest, const secure::keybytes& key)
-{
-    set(digest, (const char *)*key, key.size() / 8);
->>>>>>> 6e22545057986ccc557c567f639fb002fbc6276a
-}
-
 bool HMAC::has(const char *type)
 {
     HMAC_ID id = (HMAC_ID)__context::map_hmac(type);

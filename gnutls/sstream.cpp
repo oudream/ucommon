@@ -27,7 +27,9 @@ tcpstream()
 {
     ssl = __context::session((__context *)scontext);
     bio = NULL;
+    cert = NULL;
     server = false;
+    verified = secure::NONE;
 }
 
 sstream::sstream(const TCPServer *tcp, secure::server_t scontext, size_t size) :
@@ -36,7 +38,9 @@ tcpstream(tcp, size)
 
     ssl = __context::session((__context *)scontext);
     bio = NULL;
+    cert = NULL;
     server = true;
+    verified = secure::NONE;
 
     if(!is_open() || !ssl)
         return;
@@ -44,8 +48,9 @@ tcpstream(tcp, size)
     gnutls_transport_set_ptr((SSL)ssl, reinterpret_cast<gnutls_transport_ptr_t>( so));
     int result = gnutls_handshake((SSL)ssl);
 
-    if(result >= 0)
+    if(result >= 0) {
         bio = ssl;
+    }
 }
 
 sstream::~sstream()
@@ -67,8 +72,9 @@ void sstream::open(const char *host, const char *service, size_t bufsize)
     gnutls_transport_set_ptr((SSL)ssl, reinterpret_cast<gnutls_transport_ptr_t>(so));
     int result = gnutls_handshake((SSL)ssl);
 
-    if(result >= 0)
+    if(result >= 0) {
         bio = ssl;
+    }
 }
 
 void sstream::close(void)
