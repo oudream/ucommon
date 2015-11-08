@@ -102,6 +102,7 @@ void sstream::open(const char *host, const char *service, size_t size)
             case X509_V_OK:
                 verified = secure::VERIFIED;
                 break;
+            case X509_V_ERR_DEPTH_ZERO_SELF_SIGNED_CERT:
             case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
                 verified = secure::SIGNED;
                 break;
