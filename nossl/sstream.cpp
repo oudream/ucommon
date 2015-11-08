@@ -27,7 +27,9 @@ tcpstream()
 {
     ssl = NULL;
     bio = NULL;
+    cert = NULL;
     server = false;
+    verified = secure::NONE;
 }
 
 sstream::sstream(const TCPServer *tcp, secure::server_t context, size_t size) :
@@ -35,7 +37,9 @@ tcpstream(tcp, (unsigned)size)
 {
     ssl = NULL;
     bio = NULL;
+    cert = NULL;
     server = true;
+    verified = secure::NONE;
 }
 
 sstream::~sstream()

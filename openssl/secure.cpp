@@ -94,7 +94,7 @@ void secure::cipher(secure *scontext, const char *ciphers)
     SSL_CTX_set_cipher_list(ctx->ctx, ciphers);
 }
 
-secure::client_t secure::client(const char *ca)
+secure::client_t secure::client(const char *ca, const char *paths)
 {
     __context *ctx = new(__context);
     secure::init();
@@ -111,13 +111,13 @@ secure::client_t secure::client(const char *ca)
         return ctx;
     }
 
-    if(!ca)
-        return ctx;
-
-    if(eq(ca, "*"))
-        ca = oscerts();
-
-    if(!SSL_CTX_load_verify_locations(ctx->ctx, ca, 0)) {
+    if(!ca && !paths) {
+        if(!SSL_CTX_set_default_verify_paths(ctx->ctx)) {
+            ctx->error = secure::INVALID_AUTHORITY;
+            return ctx;
+        }
+    }
+    else if(!SSL_CTX_load_verify_locations(ctx->ctx, ca, paths)) {
         ctx->error = secure::INVALID_AUTHORITY;
         return ctx;
     }
@@ -125,7 +125,7 @@ secure::client_t secure::client(const char *ca)
     return ctx;
 }
 
-secure::server_t secure::server(const char *certfile, const char *ca)
+secure::server_t secure::server(const char *ca, const char *paths)
 {
     __context *ctx = new(__context);
 
@@ -141,12 +141,12 @@ secure::server_t secure::server(const char *certfile, const char *ca)
         return ctx;
     }
 
-    if(!SSL_CTX_use_certificate_chain_file(ctx->ctx, certfile)) {
+    if(!SSL_CTX_use_certificate_chain_file(ctx->ctx, ca)) {
         ctx->error = secure::MISSING_CERTIFICATE;
         return ctx;
     }
 
-    if(!SSL_CTX_use_PrivateKey_file(ctx->ctx, certfile, SSL_FILETYPE_PEM)) {
+    if(!SSL_CTX_use_PrivateKey_file(ctx->ctx, ca, SSL_FILETYPE_PEM)) {
         ctx->error = secure::MISSING_PRIVATEKEY;
         return ctx;
     }
@@ -156,13 +156,10 @@ secure::server_t secure::server(const char *certfile, const char *ca)
         return ctx;
     }
 
-    if(!ca)
-        return ctx;
+    if(!paths)
+        paths = oscerts();
 
-    if(eq(ca, "*"))
-        ca = oscerts();
-
-    if(!SSL_CTX_load_verify_locations(ctx->ctx, ca, 0)) {
+    if(!SSL_CTX_load_verify_locations(ctx->ctx, ca, paths)) {
         ctx->error = secure::INVALID_AUTHORITY;
         return ctx;
     }

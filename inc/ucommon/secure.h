@@ -299,6 +299,8 @@ public:
      */
     typedef enum {OK=0, INVALID, MISSING_CERTIFICATE, MISSING_PRIVATEKEY, INVALID_CERTIFICATE, INVALID_AUTHORITY, INVALID_PEERNAME, INVALID_CIPHER} error_t;
 
+    typedef enum {NONE, SIGNED, VERIFIED} verify_t;
+
     typedef typeref<Type::SecChars> string;
 
     typedef arrayref<Type::SecChars> strarray;
@@ -340,6 +342,11 @@ public:
      * Convenience type to represent a secure socket session.
      */
     typedef void *session_t;
+
+    /**
+     * Convenience type to represent a ssl certificate object.
+     */
+    typedef void *cert_t;
 
     /**
      * Convenience type to represent a secure socket buf i/o stream.
@@ -400,9 +407,10 @@ public:
      * Create an anonymous client context with an optional authority to
      * validate.
      * @param authority path to use or NULL if none.
+     * @param paths of certificates to use.
      * @return a basic client security context.
      */
-    static client_t client(const char *authority = NULL);
+    static client_t client(const char *authority = NULL, const char *paths = NULL);
 
     /**
      * Create a peer user client context.  This assumes a user certificate
@@ -1090,8 +1098,9 @@ private:
 protected:
     secure::session_t ssl;
     secure::bufio_t bio;
+    secure::cert_t cert;
+    secure::verify_t verified;
     bool server;
-    bool verify;
 
 public:
     sstream(secure::client_t context);
@@ -1112,11 +1121,29 @@ public:
 
     bool _wait(void) __OVERRIDE;
 
-    inline void flush(void)
-        {sync();}
+    inline void flush(void) {
+        sync();
+    }
 
-    inline bool is_secure(void) const
-        {return bio != NULL;}
+    inline secure::cert_t certificate(void) const {
+        return cert;
+    }
+
+    inline bool is_secure(void) const {
+        return bio != NULL;
+    }
+
+    inline bool is_certificate(void) const {
+        return cert != NULL;
+    }
+
+    inline bool is_verified(void) const {
+        return verified == secure::VERIFIED;
+    }
+
+    inline bool is_signed(void) const {
+        return verified != secure::NONE;
+    }
 };
 
 #endif

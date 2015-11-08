@@ -5,6 +5,8 @@ using namespace ucommon;
 
 static shell::flagopt helpflag('h',"--help",    _TEXT("display this list"));
 static shell::flagopt althelp('?', NULL, NULL);
+static shell::flagopt reqcert('C', NULL, _TEXT("requires certificate"));
+static shell::flagopt verified('V', NULL, _TEXT("requires verification"));
 static shell::numericopt port('p', "--port", _TEXT("port to use"), "port", 0);
 
 int main(int argc, char **argv)
@@ -42,6 +44,8 @@ int main(int argc, char **argv)
     if(url_secure && secure::init()) {
         proto = "443";
         ctx = secure::client();
+        if(ctx->err() != secure::OK) 
+            shell::errexit(2, _TEXT("%s: no certificates found"), argv[0]);
     }
 
     if(is(port))
@@ -59,6 +63,15 @@ int main(int argc, char **argv)
 
     sstream web(ctx);
     web.open(host, svc);
+
+    if(!web.is_open())
+        shell::errexit(1, _TEXT("%s: failed to access"), url); 
+
+    if(is(verified) && !web.is_verified())
+        shell::errexit(8, _TEXT("%s: unverified host"), url);
+
+    if(is(reqcert) && !web.is_certificate())
+        shell::errexit(9, _TEXT("%s: no certificate"), url);
 
     web << "GET /\r\n\r\n";
     web.flush();

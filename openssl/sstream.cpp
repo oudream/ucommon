@@ -28,10 +28,14 @@ tcpstream()
     __context *ctx = (__context *)scontext;
     ssl = NULL;
     bio = NULL;
+    cert = NULL;
     server = false;
+    verified = secure::NONE;
 
-    if(ctx && ctx->ctx && ctx->err() == secure::OK)
+    if(ctx && ctx->ctx && ctx->err() == secure::OK) {
         ssl = SSL_new(ctx->ctx);
+        cert = SSL_get_peer_certificate((SSL *)ssl);
+    }
 }
 
 sstream::sstream(const TCPServer *tcp, secure::server_t scontext, size_t size) :
@@ -40,7 +44,9 @@ tcpstream(tcp, (unsigned)size)
     __context *ctx = (__context *)scontext;
     ssl = NULL;
     bio = NULL;
+    cert = NULL;
     server = true;
+    verified = secure::NONE;
 
     if(ctx && ctx->ctx && ctx->err() == secure::OK)
         ssl = SSL_new(ctx->ctx);
@@ -50,8 +56,23 @@ tcpstream(tcp, (unsigned)size)
 
     SSL_set_fd((SSL *)ssl, (int)getsocket());
 
-    if(SSL_accept((SSL *)ssl) > 0)
+    if(SSL_accept((SSL *)ssl) > 0) {
         bio = SSL_get_wbio((SSL *)ssl);
+        cert = SSL_get_peer_certificate((SSL *)ssl);
+        if(cert) {
+            unsigned long res = SSL_get_verify_result((SSL *)ssl);
+            switch(res) {
+            case X509_V_OK:
+                verified = secure::VERIFIED;
+                break;
+            case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+                verified = secure::SIGNED;
+                break;
+            default:
+                break;
+            }
+        }
+    }
 }
 
 sstream::~sstream()
@@ -72,8 +93,23 @@ void sstream::open(const char *host, const char *service, size_t size)
 
     SSL_set_fd((SSL *)ssl, (int)getsocket());
 
-    if(SSL_connect((SSL *)ssl) > 0)
+    if(SSL_connect((SSL *)ssl) > 0) {
         bio = SSL_get_wbio((SSL *)ssl);
+        cert = SSL_get_peer_certificate((SSL *)ssl);
+        if(cert) {
+            unsigned long res = SSL_get_verify_result((SSL *)ssl);
+            switch(res) {
+            case X509_V_OK:
+                verified = secure::VERIFIED;
+                break;
+            case X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN:
+                verified = secure::SIGNED;
+                break;
+            default:
+                break;
+            }
+        }
+    }
 }
 
 void sstream::close(void)
@@ -84,6 +120,12 @@ void sstream::close(void)
     if(bio) {
         SSL_shutdown((SSL *)ssl);
         bio = NULL;
+    }
+
+    if(cert) {
+        X509_free((X509*)cert);
+        cert = NULL;
+        verified = secure::NONE;
     }
 
     tcpstream::close();
