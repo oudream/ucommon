@@ -1104,47 +1104,104 @@ protected:
     secure::verify_t verified;
     bool server;
 
-public:
-    sstream(secure::client_t context);
-    sstream(const TCPServer *server, secure::server_t context, size_t size = 536);
-    ~sstream();
-
-    void open(const char *host, const char *service, size_t size = 536);
-
-    void close(void);
-
-    int sync();
-
-    void release(void);
-
-    virtual bool _verify(void *cert);
-
     ssize_t _write(const char *address, size_t size) __OVERRIDE;
 
     ssize_t _read(char *address, size_t size) __OVERRIDE;
 
     bool _wait(void) __OVERRIDE;
 
+public:
+    /**
+     * Construct a ssl client stream.  The context will be loaded with
+     * relevant certificates from secure::client().
+     * @param context to use
+     */
+    sstream(secure::client_t context);
+
+    /**
+     * Construct a ssl server stream.  The context will be loaded with
+     * relevant certificates from secure::server().
+     * @param server instance of tcp socket.
+     * @param context to use.
+     * @param size of streaming buffer.
+     */
+    sstream(const TCPServer *server, secure::server_t context, size_t size = 536);
+    
+    /**
+     * Destroy ssl stream.  Clean up any resources used.
+     */
+    ~sstream();
+
+    /**
+     * For derived classes that may change verification behavior.  This is
+     * actually tricky, since the generic sstream class knows nothing of
+     * the underlying library backend.  Hence, it most likely would only
+     * be used within usecure itself to derive sstream based classes.
+     * @param cert store used (at least in case of openssl)
+     * @return true if verification successful
+     */
+    virtual bool _verify(void *cert);
+
+    /**
+     * Open a connection to a ssl server.
+     * @param host name to connect with.
+     * @param service id to connect to.
+     * @param size of stream buffer to use.
+     */
+    void open(const char *host, const char *service, size_t size = 536);
+
+    /**
+     * Close a connection with a ssl server.
+     */
+    void close(void);
+
+    /**
+     * Release all ssl resources.
+     */
+    void release(void);
+
+    int sync() __OVERRIDE;
+
     inline void flush(void) {
         sync();
     }
 
+    /**
+     * Get peer (x509) certificate for current stream if present.
+     * @return certificate of peer or nullptr if none.
+     */
     inline secure::cert_t certificate(void) const {
         return cert;
     }
 
+    /**
+     * Check if ssl session active, otherwise pure tcp.
+     * @return true if ssl session.
+     */
     inline bool is_secure(void) const {
         return bio != NULL;
     }
 
+    /**
+     * Check if a peer certificate is present.
+     * @return true if peer certificate.
+     */
     inline bool is_certificate(void) const {
         return cert != NULL;
     }
 
+    /**
+     * Check if peer certificate is verified through an authority.
+     * @return true if verified peer.
+     */
     inline bool is_verified(void) const {
         return verified == secure::VERIFIED;
     }
 
+    /**
+     * Check if peer certificate is present and at least self-signed.
+     * @return true if signed or verified peer.
+     */
     inline bool is_signed(void) const {
         return verified != secure::NONE;
     }
