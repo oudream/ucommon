@@ -270,6 +270,8 @@ public:
     size_t size(void) const;
 
     size_t bytes(void) const;
+
+    uint8_t *bin();
 };
 
 template<>
@@ -309,9 +311,9 @@ public:
 
     typedef typeref<Type::KeyBytes> keybytes;
     
-    typedef typeref<Type::KeyBytes> keyarray;
+    typedef arrayref<Type::KeyBytes> keyarray;
 
-    typedef typeref<Type::KeyBytes> keyqueue;
+    typedef queueref<Type::KeyBytes> keyqueue;
 
 private:
     __DELETE_COPY(secure);

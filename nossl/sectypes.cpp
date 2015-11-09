@@ -270,6 +270,15 @@ const uint8_t *typeref<Type::KeyBytes>::operator*() const
     return &v->mem[0];
 }
 
+uint8_t *typeref<Type::KeyBytes>::bin()
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(!v)
+        return NULL;
+
+    return &v->mem[0];
+}
+
 bool typeref<Type::KeyBytes>::operator==(const typeref<Type::KeyBytes>& ptr) const
 {
     storage *v1 = polystatic_cast<storage*>(ref);
