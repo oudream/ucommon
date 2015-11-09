@@ -67,7 +67,7 @@ void sstream::release(void)
     tcpstream::close();
 }
 
-bool sstream::_verify(void *cert)
+bool sstream::verify(void *cert)
 {
     return false;
 }

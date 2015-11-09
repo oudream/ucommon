@@ -1140,7 +1140,7 @@ public:
      * @param cert store used (at least in case of openssl)
      * @return true if verification successful
      */
-    virtual bool _verify(void *cert);
+    virtual bool verify(void *cert);
 
     /**
      * Open a connection to a ssl server.

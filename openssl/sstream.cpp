@@ -26,7 +26,7 @@ extern "C" {
     int verify_callback(X509_STORE_CTX *cert, void *obj) 
     {
         sstream *str = reinterpret_cast<sstream *>(obj);
-        if(str->_verify(cert))
+        if(str->verify(cert))
             return 1;
         else
             return 0;
@@ -154,7 +154,7 @@ void sstream::release(void)
     }
 }
 
-bool sstream::_verify(void *cert)
+bool sstream::verify(void *cert)
 {
     return true;
 }

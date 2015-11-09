@@ -101,7 +101,7 @@ void sstream::release(void)
     }
 }
 
-bool sstream::_verify(void *cert)
+bool sstream::verify(void *cert)
 {
     return true;
 }
