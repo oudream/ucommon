@@ -267,11 +267,11 @@ public:
 
     keytype_t type(void) const;
 
+    size_t bits(void) const;
+
     size_t size(void) const;
 
-    size_t bytes(void) const;
-
-    uint8_t *bin();
+    uint8_t *data();
 };
 
 template<>

@@ -1973,10 +1973,10 @@ size_t Socket::readline(char *data, size_t max)
 
 size_t Socket::readline(String& s)
 {
-    if(!s.c_mem())
+    if(!s.data())
         return 0;
 
-    ssize_t result = Socket::readline(so, s.c_mem(), s.size() + 1, iowait);
+    ssize_t result = Socket::readline(so, s.data(), s.size() + 1, iowait);
     if(result < 0) {
         ioerr = Socket::error();
         s.clear();
@@ -3507,7 +3507,7 @@ int Socket::remote(socket_t sock, struct sockaddr_storage *addr)
 String str(Socket& so, size_t size)
 {
     String s(size);
-    so.readline(s.c_mem(), s.size());
+    so.readline(s.data(), s.size());
     String::fix(s);
     return s;
 }

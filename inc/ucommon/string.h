@@ -363,7 +363,11 @@ public:
      * Get memory text buffer of string object.
      * @return writable string buffer.
      */
-    char *c_mem(void) const;
+    char *data(void);
+
+    inline char *c_mem() {
+        return data();
+    }
 
     /**
      * Get character text buffer of string object.
@@ -1256,7 +1260,7 @@ public:
      * @return token extracted from string or NULL if no more tokens found.
      */
     inline char *token(char **last, const char *list, const char *quote = NULL, const char *end = NULL) {
-        return token(c_mem(), last, list, quote, end);
+        return token(data(), last, list, quote, end);
     }
 
     /**
@@ -1266,7 +1270,7 @@ public:
      * @return double value of object.
      */
     inline double tod(char **pointer = NULL) {
-        return strtod(c_mem(), pointer);
+        return strtod(data(), pointer);
     }
 
     /**
@@ -1276,7 +1280,7 @@ public:
      * @return long value of object.
      */
     inline long tol(char **pointer = NULL) {
-        return strtol(c_mem(), pointer, 0);
+        return strtol(data(), pointer, 0);
     }
 
     /**

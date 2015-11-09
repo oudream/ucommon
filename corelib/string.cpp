@@ -278,7 +278,7 @@ void String::release(void)
     str = NULL;
 }
 
-char *String::c_mem(void) const
+char *String::data(void)
 {
     if(!str)
         return NULL;
@@ -1885,7 +1885,7 @@ unsigned String::hexsize(const char *format)
 String String::hex(const uint8_t *binary, size_t size)
 {
     String out(size * 2);
-    char *buf = out.c_mem();
+    char *buf = out.data();
     while(size--) {
         snprintf(buf, 3, "%02x", *(binary++));
         buf += 2;
@@ -2075,7 +2075,7 @@ String String::b64(const uint8_t *bin, size_t size)
     size_t dsize = (size * 4 / 3) + 1;
     String out(dsize);
 
-    b64encode(out.c_mem(), bin, size);
+    b64encode(out.data(), bin, size);
     return out;
 }
 

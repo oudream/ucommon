@@ -50,7 +50,7 @@ extern "C" int main()
     assert(eq_case("second test", *testing));
     assert(eq_case(" Is a test", mystr(-10)));
     mystr = "  abc 123 \n  ";
-    assert(eq_case("abc 123", String::strip(mystr.c_mem(), " \n")));
+    assert(eq_case("abc 123", String::strip(mystr.data(), " \n")));
     String::set(buff, sizeof(buff), "this is \"a test\"");
     while(NULL != (tp = String::token(buff, &tokens, " ", "\"\"")) && count < 4)
         array[count++] = tp;

@@ -226,7 +226,7 @@ Type::KeyBytes::keytype_t typeref<Type::KeyBytes>::type(void) const
     return UNDEFINED_KEYTYPE;
 }
 
-size_t typeref<Type::KeyBytes>::size(void) const
+size_t typeref<Type::KeyBytes>::bits(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -235,7 +235,7 @@ size_t typeref<Type::KeyBytes>::size(void) const
     return v->size * 8;
 }
 
-size_t typeref<Type::KeyBytes>::bytes(void) const
+size_t typeref<Type::KeyBytes>::size(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)
@@ -270,7 +270,7 @@ const uint8_t *typeref<Type::KeyBytes>::operator*() const
     return &v->mem[0];
 }
 
-uint8_t *typeref<Type::KeyBytes>::bin()
+uint8_t *typeref<Type::KeyBytes>::data()
 {
     storage *v = polystatic_cast<storage *>(ref);
     if(!v)

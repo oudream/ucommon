@@ -934,7 +934,7 @@ std::ostream& _stream_operators::print(std::ostream& out, const PrintProtocol& f
 
 std::istream& _stream_operators::input(std::istream& inp, string_t& str)
 {
-    inp.getline(str.c_mem(), str.size());
+    inp.getline(str.data(), str.size());
     return inp;
 }
 
