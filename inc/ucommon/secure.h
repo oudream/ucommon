@@ -177,6 +177,8 @@ public:
 
     typeref(const char *str, strtype_t strtype = GENERIC_STRING);
 
+    typeref(size_t alloc, const char *str = "", strtype_t strtype = GENERIC_STRING);
+
     const char *operator*() const;
 
     inline operator const char *() const {
@@ -206,6 +208,8 @@ public:
     void hex(const uint8_t *bytes, size_t bsize);
 
     strtype_t type(void) const;
+
+    char *data();
 
     size_t size(void) const;
 

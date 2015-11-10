@@ -144,6 +144,13 @@ TypeRef()
     TypeRef::set(new(mem(p)) value(p, size, str));
 }
 
+typeref<const char *>::typeref(size_t size) :
+TypeRef()
+{
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    TypeRef::set(new(mem(p)) value(p, size, ""));
+}
+
 const char *typeref<const char *>::operator()(ssize_t offset) const
 {
     value *v = polystatic_cast<value *>(ref);

@@ -60,6 +60,13 @@ TypeRef()
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
+typeref<Type::SecChars>::typeref(size_t size, const char *str, strtype_t strtype) :
+TypeRef()
+{
+    caddr_t p = TypeRef::alloc(sizeof(storage) + size);
+    TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
+}
+
 Type::SecChars::strtype_t typeref<Type::SecChars>::type(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
@@ -130,6 +137,15 @@ bool typeref<Type::SecChars>::operator==(const typeref<Type::SecChars>& ptr) con
     if(!v1 || !v2)
         return false;
     return eq(&(v1->mem[0]), &(v2->mem[0]));
+}
+
+char *typeref<Type::SecChars>::data()
+{
+    storage *v = polystatic_cast<storage *>(ref);
+    if(!v)
+        return NULL;
+
+    return &v->mem[0];
 }
 
 bool typeref<Type::SecChars>::operator==(const char *obj) const

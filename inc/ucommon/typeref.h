@@ -383,6 +383,8 @@ public:
 
 	typeref(const char *str);
 
+	typeref(size_t size);
+
 	inline explicit typeref(Counted *object) : TypeRef(object) {};
 
 	const char *operator*() const;
