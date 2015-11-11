@@ -309,7 +309,7 @@ typeref<Type::SecChars> typeref<Type::KeyBytes>::hex()
     typeref<Type::SecChars> str;
     if(ref) {
         storage *v = polystatic_cast<storage*>(ref);
-        str.b64(&v->mem[0], v->size);
+        str.hex(&v->mem[0], v->size);
     }
     return str;
 }
@@ -319,7 +319,7 @@ typeref<Type::SecChars> typeref<Type::KeyBytes>::b64()
     typeref<Type::SecChars> str;
     if(ref) {
         storage *v = polystatic_cast<storage*>(ref);
-        str.hex(&v->mem[0], v->size);
+        str.b64(&v->mem[0], v->size);
     }
     return str;
 }
