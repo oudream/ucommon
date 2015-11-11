@@ -441,6 +441,10 @@ public:
 
 	void set(const char *str);
 
+	void hex(const uint8_t *mem, size_t size);
+
+	void b64(const uint8_t *mem, size_t size);
+
 	void assign(value *chars);
 
 	static void expand(value **handle, size_t size);
@@ -527,6 +531,10 @@ public:
 	size_t count(size_t offset, size_t bits = 1);	
 
 	void assign(value *bytes);
+
+	typeref<const char *> hex();
+
+	typeref<const char *> b64();
 
 	static value *create(size_t size);
 

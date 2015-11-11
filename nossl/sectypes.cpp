@@ -171,7 +171,7 @@ typeref<Type::SecChars>& typeref<Type::SecChars>::operator=(const char *str)
 void typeref<Type::SecChars>::b64(const uint8_t *bytes, size_t bsize)
 {
     clear();
-    size_t len = ((bsize * 4 / 3) + 1);
+    size_t len = String::b64size(bsize);
 
     caddr_t p = TypeRef::alloc(sizeof(storage) + len);
     storage *s = new(mem(p)) storage(p, len, NULL, secure::B64_STRING);
@@ -293,6 +293,26 @@ uint8_t *typeref<Type::KeyBytes>::data()
         return NULL;
 
     return &v->mem[0];
+}
+
+typeref<Type::SecChars> typeref<Type::KeyBytes>::hex()
+{
+    typeref<Type::SecChars> str;
+    if(ref) {
+        storage *v = polystatic_cast<storage*>(ref);
+        str.b64(&v->mem[0], v->size);
+    }
+    return str;
+}
+
+typeref<Type::SecChars> typeref<Type::KeyBytes>::b64()
+{
+    typeref<Type::SecChars> str;
+    if(ref) {
+        storage *v = polystatic_cast<storage*>(ref);
+        str.hex(&v->mem[0], v->size);
+    }
+    return str;
 }
 
 bool typeref<Type::KeyBytes>::operator==(const typeref<Type::KeyBytes>& ptr) const

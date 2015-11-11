@@ -49,10 +49,13 @@ typedef struct {
     int v;
 } maptest;
 
+static uint8_t memdata[7] = {0x20, 0x55, 0x77, 0x78, 0x33, 0x66, 0x55};
+
 extern "C" int main()
 {
     stringlist_t mylist;
     stringlistitem_t *item;
+
 
     mylist.add("100");
     mylist.add("050");
@@ -240,6 +243,13 @@ extern "C" int main()
     assert(b == 0);
     clear(a);
     assert(a == 0);
+
+    stringref s1, s2;
+    s1.hex(memdata, sizeof(memdata));
+    s2.b64(memdata, 4);
+
+    assert(eq(s1, "20557778336655"));
+    assert(eq(s2, "IFV3eA=="));
 
     return 0;
 }

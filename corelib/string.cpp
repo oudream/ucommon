@@ -2086,7 +2086,7 @@ size_t String::b64encode(char *dest, const uint8_t *bin, size_t size, size_t dsi
     size_t count = 0;
 
     if(!dsize)
-        dsize = (size * 4 / 3) + 1;
+        dsize = b64size(size);
 
     if (!dsize || !size)
         goto end;
@@ -2126,6 +2126,11 @@ size_t String::b64encode(char *dest, const uint8_t *bin, size_t size, size_t dsi
 end:
     *dest = 0;
     return count;
+}
+
+size_t String::b64size(size_t size)
+{
+    return (size * 4 / 3) + 4;
 }
 
 size_t String::b64decode(uint8_t *dest, const char *src, size_t size)

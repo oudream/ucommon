@@ -1311,6 +1311,8 @@ public:
      */
     static String b64(const uint8_t *binary, size_t size);
 
+    static size_t b64size(size_t size);
+
     /**
      * Standard radix 64 encoding.
      * @param string of encoded text save into.

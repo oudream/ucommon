@@ -276,6 +276,10 @@ public:
     size_t size(void) const;
 
     uint8_t *data();
+
+    typeref<Type::SecChars> hex();
+
+    typeref<Type::SecChars> b64();
 };
 
 template<>
