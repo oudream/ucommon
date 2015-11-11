@@ -1328,9 +1328,12 @@ public:
      * @param binary data to save.
      * @param string of encoded text.
      * @param size of destination buffer.
-     * @return number of bytes actually decoded.
+     * @param ws flag to skip whitespaces.
+     * @return number of characters actually decoded.
      */
-    static size_t b64decode(uint8_t *binary, const char *string, size_t size);
+    static size_t b64decode(uint8_t *binary, const char *string, size_t size, bool ws = false);
+
+    static size_t b64count(const char *str, bool ws = false);
 
     /**
      * 24 bit crc as used in openpgp.

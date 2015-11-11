@@ -279,6 +279,8 @@ public:
 
     size_t hex(const char *text, bool ws = false);
 
+    size_t b64(const char *text, bool ws = false);
+
     typeref<Type::SecChars> hex();
 
     typeref<Type::SecChars> b64();

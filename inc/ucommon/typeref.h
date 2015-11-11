@@ -528,6 +528,8 @@ public:
 
 	size_t hex(const char *str, bool ws = false);
 
+	size_t b64(const char *str, bool ws = false);
+
 	uint8_t *data(void);
 
 	bool get(size_t offset);

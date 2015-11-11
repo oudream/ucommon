@@ -2177,7 +2177,7 @@ size_t String::b64size(size_t size)
     return (size * 4 / 3) + 4;
 }
 
-size_t String::b64decode(uint8_t *dest, const char *src, size_t size)
+size_t String::b64count(const char *src, bool ws)
 {
     char decoder[256];
     unsigned long bits;
@@ -2194,19 +2194,73 @@ size_t String::b64decode(uint8_t *dest, const char *src, size_t size)
     bits = 1;
 
     while(*src) {
+        if(isspace(*src)) {
+            if(ws) {
+                ++src;
+                continue;
+            }
+            break;
+        }
         c = (uint8_t)(*(src++));
+        if (c == '=') {
+            if (bits & 0x40000) {
+                count += 2;
+                break;
+            }
+            if (bits & 0x1000) {
+                ++count;
+            }
+            break;
+        }
+        // end on invalid chars
+        if (decoder[c] == 64)
+            break;
+        bits = (bits << 6) + decoder[c];
+        if (bits & 0x1000000) {
+            bits = 1;
+            count += 3;
+        }
+    }
+    return count;
+}
+
+size_t String::b64decode(uint8_t *dest, const char *src, size_t size, bool ws)
+{
+    char decoder[256];
+    unsigned long bits;
+    uint8_t c;
+    unsigned i;
+    size_t count = 0;
+
+    for (i = 0; i < 256; ++i)
+        decoder[i] = 64;
+
+    for (i = 0; i < 64 ; ++i)
+        decoder[alphabet[i]] = i;
+
+    bits = 1;
+
+    while(*src) {
+        if(isspace(*src)) {
+            if(ws) {
+                ++count;
+                ++src;
+                continue;
+            }
+            break;
+        }
+        c = (uint8_t)(*(src++));
+        ++count;
         if (c == '=') {
             if (bits & 0x40000) {
                 if (size < 2)
                     break;
                 *(dest++) = (uint8_t)((bits >> 10) & 0xff);
                 *(dest++) = (uint8_t)((bits >> 2) & 0xff);
-                count += 2;
                 break;
             }
             if ((bits & 0x1000) && size) {
                 *(dest++) = (uint8_t)((bits >> 4) & 0xff);
-                ++count;
             }
             break;
         }
@@ -2222,7 +2276,6 @@ size_t String::b64decode(uint8_t *dest, const char *src, size_t size)
             *(dest++) = (uint8_t)((bits & 0xff));
             bits = 1;
             size -= 3;
-            count += 3;
         }
     }
     return count;
