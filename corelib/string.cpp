@@ -2202,25 +2202,25 @@ size_t String::b64count(const char *src, bool ws)
             break;
         }
         c = (uint8_t)(*(src++));
-        if (c == '=') {
-            if (bits & 0x40000) {
-                count += 2;
-                break;
-            }
-            if (bits & 0x1000) {
-                ++count;
-            }
+        if (c == '=')
+            break;
+        // end on invalid chars
+        if (decoder[c] == 64) {
+            bits = 1;
             break;
         }
-        // end on invalid chars
-        if (decoder[c] == 64)
-            break;
         bits = (bits << 6) + decoder[c];
         if (bits & 0x1000000) {
             bits = 1;
             count += 3;
         }
     }
+
+    if (bits & 0x40000)
+        count += 2;
+    else if (bits & 0x1000)
+        ++count;
+
     return count;
 }
 
@@ -2250,33 +2250,38 @@ size_t String::b64decode(uint8_t *dest, const char *src, size_t size, bool ws)
             break;
         }
         c = (uint8_t)(*(src++));
-        ++count;
         if (c == '=') {
-            if (bits & 0x40000) {
-                if (size < 2)
-                    break;
-                *(dest++) = (uint8_t)((bits >> 10) & 0xff);
-                *(dest++) = (uint8_t)((bits >> 2) & 0xff);
-                break;
-            }
-            if ((bits & 0x1000) && size) {
-                *(dest++) = (uint8_t)((bits >> 4) & 0xff);
-            }
+            ++count;
+            if(*src == '=')
+                ++count;
             break;
         }
         // end on invalid chars
-        if (decoder[c] == 64)
+        if (decoder[c] == 64) {
             break;
+        }
+        ++count;
         bits = (bits << 6) + decoder[c];
         if (bits & 0x1000000) {
-            if (size < 3)
+            if (size < 3) {
+                bits = 1;
                 break;
+            }
             *(dest++) = (uint8_t)((bits >> 16) & 0xff);
             *(dest++) = (uint8_t)((bits >> 8) & 0xff);
             *(dest++) = (uint8_t)((bits & 0xff));
             bits = 1;
             size -= 3;
         }
+    }
+    if (bits & 0x40000) {
+        if (size >= 2) {
+            *(dest++) = (uint8_t)((bits >> 10) & 0xff);
+            *(dest++) = (uint8_t)((bits >> 2) & 0xff);
+        }
+    }
+    else if ((bits & 0x1000) && size) {
+        *(dest++) = (uint8_t)((bits >> 4) & 0xff);
     }
     return count;
 }
