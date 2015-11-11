@@ -2206,7 +2206,6 @@ size_t String::b64count(const char *src, bool ws)
             break;
         // end on invalid chars
         if (decoder[c] == 64) {
-            bits = 1;
             break;
         }
         bits = (bits << 6) + decoder[c];
