@@ -1363,18 +1363,23 @@ public:
      * @param format string to convert with.
      * @return number of bytes processed.
      */
-    static unsigned hexdump(const uint8_t *binary, char *string, const char *format);
+    static size_t hexdump(const uint8_t *binary, char *string, const char *format);
 
     /**
      * Pack hex data from a string buffer.
      * @param binary memory to pack.
      * @param string to save into.
      * @param format string to convert with.
+     * @param whitespace flag to ignore.
      * @return number of bytes processed.
      */
-    static unsigned hexpack(uint8_t *binary, const char *string, const char *format);
+    static size_t hexpack(uint8_t *binary, const char *string, const char *format);
 
-    static unsigned hexsize(const char *format);
+    static size_t hex2bin(const char *string, uint8_t *binary, size_t maxsize, bool wsflag = false);
+
+    static size_t hexsize(const char *format);
+
+    static size_t hexcount(const char *str, bool ws = false);
 };
 
 /**

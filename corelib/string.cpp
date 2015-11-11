@@ -1862,9 +1862,37 @@ char *String::fill(char *str, size_t size, char fill)
     return str;
 }
 
-unsigned String::hexsize(const char *format)
+static int hexcode(char ch)
 {
-    unsigned count = 0;
+    ch = toupper(ch);
+    if(ch >= '0' && ch <= '9')
+        return ch - '0';
+    else if(ch >= 'A' && ch <= 'F')
+        return ch - 'A' + 10;
+    return -1;  // error flag
+}
+
+size_t String::hexcount(const char *str, bool ws)
+{
+    size_t count = 0;
+
+    while(str && *str) {
+        if(ws && isspace(*str)) {
+            ++str;
+            continue;
+        }
+        if(hexcode(str[0]) < 0 || hexcode(str[1]) < 0)
+            break;
+        str += 2;
+        ++count;
+    }
+
+    return count;
+}
+
+size_t String::hexsize(const char *format)
+{
+    size_t count = 0;
     char *ep;
     unsigned skip;
 
@@ -1893,9 +1921,9 @@ String String::hex(const uint8_t *binary, size_t size)
     return out;
 } 
 
-unsigned String::hexdump(const uint8_t *binary, char *string, const char *format)
+size_t String::hexdump(const uint8_t *binary, char *string, const char *format)
 {
-    unsigned count = 0;
+    size_t count = 0;
     char *ep;
     unsigned skip;
 
@@ -1918,17 +1946,33 @@ unsigned String::hexdump(const uint8_t *binary, char *string, const char *format
     return count;
 }
 
-static unsigned hexcode(char ch)
+size_t String::hex2bin(const char *str, uint8_t *bin, size_t max, bool ws)
 {
-    if(ch >= '0' && ch <= '9')
-        return ch - '0';
-    else
-        return toupper(ch) - 'A' + 10;
+    size_t count = 0;
+    size_t out = 0;
+    int hi, lo;
+    while(str && *str) {
+        if(ws && isspace(*str)) {
+            ++count;
+            ++str;
+            continue;
+        }
+        hi = hexcode(str[0]);
+        lo = hexcode(str[1]);
+        if(hi < 0 || lo < 0)
+            break;
+        *(bin++) = (hi << 4) | lo;
+        str += 2;
+        count += 2;
+        if(++out > max)
+            break;
+    }
+    return count;
 }
 
-unsigned String::hexpack(uint8_t *binary, const char *string, const char *format)
+size_t String::hexpack(uint8_t *binary, const char *string, const char *format)
 {
-    unsigned count = 0;
+    size_t count = 0;
     char *ep;
     unsigned skip;
 

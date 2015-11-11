@@ -343,7 +343,7 @@ bool typeref<const char *>::operator<(const typeref<const char *>& ptr) const
 typeref<const uint8_t *>::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
 TypeRef::Counted(addr, objsize)
 {
-    if(objsize)
+    if(objsize && str)
         memcpy(mem, str, objsize);
 }
 
@@ -383,14 +383,6 @@ void typeref<const uint8_t *>::value::destroy(void)
 	release();
 }
 
-const uint8_t *typeref<const uint8_t *>::operator*() const 
-{
-    if(!ref)
-	    return NULL;
-    value *v = polystatic_cast<value *>(ref);
-    return &v->mem[0];
-}
-
 typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(const byteref& objref)
 {
     TypeRef::set(objref);
@@ -408,6 +400,35 @@ void typeref<const uint8_t *>::set(const uint8_t *str, size_t size)
     clear();
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str));
+}
+
+size_t typeref<const uint8_t *>::hex(const char *str, bool ws)
+{
+    clear();
+    size_t size = String::hexcount(str);
+    if(!size)
+        return 0;
+
+    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    TypeRef::set(new(mem(p)) value(p, size, NULL));
+    String::hex2bin(str, data(), size, ws);
+    return size;
+}
+
+const uint8_t *typeref<const uint8_t *>::operator*() const
+{
+    if(!ref)
+	    return NULL;
+    value *v = polystatic_cast<value *>(ref);
+    return &v->mem[0];
+}
+
+uint8_t *typeref<const uint8_t *>::data()
+{
+    if(!ref)
+	    return NULL;
+    value *v = polystatic_cast<value *>(ref);
+    return &v->mem[0];
 }
 
 void typeref<const uint8_t *>::assign(value *bytes)

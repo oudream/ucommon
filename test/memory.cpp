@@ -251,5 +251,10 @@ extern "C" int main()
     assert(eq(s1, "20557778336655"));
     assert(eq(s2, "IFV3eA=="));
 
+    byteref bin;
+    bin.hex(*s1);
+    s2 = bin.hex();
+    assert(eq(s2, "20557778336655"));
+
     return 0;
 }

@@ -526,6 +526,10 @@ public:
 
 	size_t set(bool bit, size_t offset, size_t bits = 1);
 
+	size_t hex(const char *str, bool ws = false);
+
+	uint8_t *data(void);
+
 	bool get(size_t offset);
 
 	size_t count(size_t offset, size_t bits = 1);	

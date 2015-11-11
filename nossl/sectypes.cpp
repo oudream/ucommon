@@ -268,6 +268,19 @@ void typeref<Type::KeyBytes>::set(const uint8_t *key, size_t keysize, keytype_t 
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
 
+size_t typeref<Type::KeyBytes>::hex(const char *str, bool ws)
+{
+    clear();
+    size_t size = String::hexcount(str);
+    if(!size)
+        return 0;
+
+    caddr_t p = TypeRef::alloc(sizeof(storage) + size);
+    TypeRef::set(new(mem(p)) storage(p, size, NULL));
+    String::hex2bin(str, data(), size, ws);
+    return size;
+}
+
 void typeref<Type::KeyBytes>::generate(size_t keysize, keytype_t keytype)
 {
     clear();

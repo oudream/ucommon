@@ -277,6 +277,8 @@ public:
 
     uint8_t *data();
 
+    size_t hex(const char *text, bool ws = false);
+
     typeref<Type::SecChars> hex();
 
     typeref<Type::SecChars> b64();
