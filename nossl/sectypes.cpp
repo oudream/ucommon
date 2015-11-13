@@ -88,11 +88,21 @@ size_t typeref<Type::SecChars>::len(void) const
 size_t typeref<Type::SecChars>::size(void) const
 {
     storage *v = polystatic_cast<storage *>(ref);
-    size_t len = v->len();
+    
+    if(!v)
+        return 0;
+
+    return v->len();
+}
+
+size_t typeref<Type::SecChars>::bits(void) const
+{
+    storage *v = polystatic_cast<storage *>(ref);
 
     if(!v)
         return 0;
 
+    size_t len = v->len();
     switch(v->type) {
     case GENERIC_STRING:
         return len * 8;

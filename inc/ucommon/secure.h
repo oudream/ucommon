@@ -213,6 +213,8 @@ public:
 
     size_t size(void) const;
 
+    size_t bits(void) const;
+
     size_t len(void) const;
 };
 
