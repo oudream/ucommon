@@ -1315,6 +1315,11 @@ size_t Thread::cache(void)
     size_t sizeof_line_size = sizeof(line_size);
     sysctlbyname("hw.cachelinesize", &line_size, &sizeof_line_size, 0, 0);
     return line_size;
+#elif defined(_SC_LEVEL1_DCACHE_LINESIZE)
+    line_size = sysconf(_SC_LEVEL1_DCACHE_LINESIZE);
+    if(!line_size)
+        line_size = 64;
+    return line_size;
 #elif defined(linux)
     FILE * fp = 0;
     fp = fopen("/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size", "r");
