@@ -55,7 +55,7 @@ extern "C" int main()
 {
     stringlist_t mylist;
     stringlistitem_t *item;
-
+    Atomic::aligned<int> al;
 
     mylist.add("100");
     mylist.add("050");
@@ -259,6 +259,9 @@ extern "C" int main()
     bin.b64("IFV3eA");
     s1 = bin.hex();
     assert(eq(s1, "20557778"));
+
+    al((int)3);
+    assert(*al == 3);
 
     return 0;
 }

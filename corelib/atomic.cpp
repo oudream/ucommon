@@ -385,5 +385,31 @@ atomic_t Atomic::counter::operator-=(atomic_t change) volatile
     return fetch_sub(change) - change;
 }
 
+Atomic::Aligned::Aligned(size_t object, size_t align)
+{
+    if(!align)
+        align = Thread::cache();
+
+    offset = 0;
+    caddr_t base = (caddr_t)::malloc(align + object);
+    size_t mask = align - 1;
+    while((intptr_t)base & mask) {
+        ++offset;
+        ++base;
+    }
+    address = (void *)base;
+}
+
+Atomic::Aligned::~Aligned()
+{
+    caddr_t base = (caddr_t)address;
+    if(base) {
+        while(offset--) {
+            --base;
+        }
+        ::free(base);
+        address = nullptr;
+    }
+}
 
 } // namespace ucommon

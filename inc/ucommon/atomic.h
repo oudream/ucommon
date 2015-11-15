@@ -126,6 +126,47 @@ public:
         void release(void) volatile;
     };
 
+    class __EXPORT Aligned
+    {
+    private:
+        __DELETE_DEFAULTS(Aligned);
+
+    protected:
+        void *address;
+        size_t offset;
+
+        Aligned(size_t object, size_t offset = 0);
+    
+    public:
+        virtual ~Aligned();
+    };
+
+    template<typename T, unsigned alignment = 0>
+    class aligned : public Aligned
+    {
+    protected:
+        inline T* get() const {
+            return static_cast<T*>(address);
+        }
+
+    public:
+        inline aligned() : Aligned(sizeof(T), alignment) { 
+            new((caddr_t)address) T;
+        }
+        
+        inline T& operator*() const {
+            return *(static_cast<T*>(address));
+        }
+
+        inline operator T&() {
+            return *get();
+        }
+
+        inline void operator()(T value) {
+            *get() = value;
+        }
+    };
+
     static bool is_lockfree(void);
 };
 
