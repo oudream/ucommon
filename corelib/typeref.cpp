@@ -19,6 +19,7 @@
 #include <ucommon/export.h>
 #include <ucommon/typeref.h>
 #include <ucommon/string.h>
+#include <ucommon/thread.h>
 #include <cstdlib>
 
 namespace ucommon {
@@ -101,12 +102,13 @@ void TypeRef::set(TypeRef::Counted *object)
 
 caddr_t TypeRef::alloc(size_t size)
 {
-    return (caddr_t)::malloc(size + 16);
+    return (caddr_t)::malloc(size + Thread::cache());
 }
 
 caddr_t TypeRef::mem(caddr_t addr)
 {
-    while(((uintptr_t)addr) & 0xf)
+    size_t mask = (Thread::cache() - 1);
+    while(((uintptr_t)addr) & mask)
         ++addr;
     return addr;
 }

@@ -764,6 +764,11 @@ public:
     static void init(void);
 
     /**
+     * Get cache line size.
+     */
+    static size_t cache(void);
+
+    /**
      * Used to specify scheduling policy for threads above priority "0".
      * Normally we apply static realtime policy SCHED_FIFO (default) or
      * SCHED_RR.  However, we could apply SCHED_OTHER, etc.
