@@ -167,32 +167,6 @@ secure::server_t secure::server(const char *ca, const char *paths)
     return ctx;
 }
 
-secure::error_t secure::verify(session_t session, const char *peername)
-{
-    SSL *ssl = (SSL *)session;
-
-    char peer_cn[256];
-
-    if(SSL_get_verify_result(ssl) != X509_V_OK)
-        return secure::INVALID_CERTIFICATE;
-
-    if(!peername)
-        return secure::OK;
-
-    X509 *peer = SSL_get_peer_certificate(ssl);
-
-    if(!peer)
-        return secure::INVALID_PEERNAME;
-
-    X509_NAME_get_text_by_NID(
-        X509_get_subject_name(peer),
-        NID_commonName, peer_cn, sizeof(peer_cn));
-    if(!eq_case(peer_cn, peername))
-        return secure::INVALID_PEERNAME;
-
-    return secure::OK;
-}
-
 secure::~secure()
 {
 }

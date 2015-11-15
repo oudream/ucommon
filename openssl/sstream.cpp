@@ -22,17 +22,6 @@
 
 namespace ucommon {
 
-extern "C" {
-    int verify_callback(X509_STORE_CTX *cert, void *obj) 
-    {
-        sstream *str = reinterpret_cast<sstream *>(obj);
-        if(str->verify(cert))
-            return 1;
-        else
-            return 0;
-    }
-}
-
 sstream::sstream(secure::client_t scontext) :
 tcpstream()
 {
@@ -152,11 +141,6 @@ void sstream::release(void)
         SSL_free((SSL *)ssl);
         ssl = NULL;
     }
-}
-
-bool sstream::verify(void *cert)
-{
-    return true;
 }
 
 ssize_t sstream::_write(const char *address, size_t size)

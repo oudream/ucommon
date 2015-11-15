@@ -67,11 +67,6 @@ void sstream::release(void)
     tcpstream::close();
 }
 
-bool sstream::verify(void *cert)
-{
-    return false;
-}
-
 ssize_t sstream::_write(const char *address, size_t size)
 {
     return tcpstream::_write(address, size);

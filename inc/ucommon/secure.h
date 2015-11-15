@@ -398,17 +398,6 @@ public:
     static const char *oscerts(void);
 
     /**
-     * Verify a certificate chain through your certificate authority.
-     * This uses the ca loaded as an optional argument for client and
-     * server.  Optionally the hostname of the connection can also be
-     * verified by pulling the peer certificate.
-     * @param session that is connected.
-     * @param peername that we expect.
-     * @return secure error level or secure::OK if none.
-     */
-    static error_t verify(session_t session, const char *peername = NULL);
-
-    /**
      * Create a sever context.  The certificate file used will be based on
      * the init() method name.  This may often be /etc/ssl/certs/initname.pem.
      * Similarly, a matching private key certificate will also be loaded.  An
@@ -1145,16 +1134,6 @@ public:
      * Destroy ssl stream.  Clean up any resources used.
      */
     ~sstream();
-
-    /**
-     * For derived classes that may change verification behavior.  This is
-     * actually tricky, since the generic sstream class knows nothing of
-     * the underlying library backend.  Hence, it most likely would only
-     * be used within usecure itself to derive sstream based classes.
-     * @param cert store used (at least in case of openssl)
-     * @return true if verification successful
-     */
-    virtual bool verify(void *cert);
 
     /**
      * Open a connection to a ssl server.

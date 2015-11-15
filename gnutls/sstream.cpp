@@ -101,11 +101,6 @@ void sstream::release(void)
     }
 }
 
-bool sstream::verify(void *cert)
-{
-    return true;
-}
-
 ssize_t sstream::_write(const char *address, size_t size)
 {
     if(!bio)
