@@ -41,6 +41,8 @@ int main(int argc, char **argv)
     md5 = "md5";
     md5.puts("this is some text");
     assert(eq("684d9d89b9de8178dcd80b7b4d018103", *md5));
+    secure::keybytes key = md5.key();
+    assert(eq("684d9d89b9de8178dcd80b7b4d018103", key.hex()));
 
     secure::string dig = Digest::md5("this is some text");
     assert(eq("684d9d89b9de8178dcd80b7b4d018103", *dig));
