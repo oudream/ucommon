@@ -453,17 +453,17 @@ public:
  * Stream class to read from a memory buffer.  May optionally be 0 byte
  * terminated if no length is specified.
  */
-class __EXPORT memreader : protected std::streambuf, public std::istream
+class __EXPORT imemstream : protected std::streambuf, public std::istream
 {
 private:
-	__DELETE_DEFAULTS(memreader);
+	__DELETE_DEFAULTS(imemstream);
 
 	size_t count;
 	const uint8_t *pos, *bp;
 	
 public:
-	memreader(const uint8_t *data, size_t size);
-	memreader(const char *data);
+	imemstream(const uint8_t *data, size_t size);
+	imemstream(const char *data);
 
 	int underflow() __OVERRIDE;
 
@@ -489,18 +489,18 @@ public:
 /**
  * Stream class to write to memory buffer.
  */
-class __EXPORT memwriter : protected std::streambuf, public std::ostream
+class __EXPORT omemstream : protected std::streambuf, public std::ostream
 {
 private:
-	__DELETE_DEFAULTS(memwriter);
+	__DELETE_DEFAULTS(omemstream);
 
 	size_t count;
 	uint8_t *pos, *bp;
 	bool zb;
 	
 public:
-	explicit memwriter(uint8_t *data, size_t size);
-	memwriter(char *data, size_t size);
+	explicit omemstream(uint8_t *data, size_t size);
+	omemstream(char *data, size_t size);
 
 	int overflow(int ch) __OVERRIDE;
 

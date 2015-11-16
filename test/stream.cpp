@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
         tcp.close();
 
         line[0] = 0;
-        memwriter memout(line, sizeof(line));
+        omemstream memout(line, sizeof(line));
         memout << "test";
         assert(eq(line, "test"));
 

@@ -813,7 +813,7 @@ int filestream::overflow(int c)
     return c;
 }
 
-memwriter::memwriter(char *mem, size_t size) :
+omemstream::omemstream(char *mem, size_t size) :
 std::streambuf(), std::ostream(this)
 {
     count = size;
@@ -824,7 +824,7 @@ std::streambuf(), std::ostream(this)
     --count;
 }
 
-memwriter::memwriter(uint8_t *mem, size_t size) :
+omemstream::omemstream(uint8_t *mem, size_t size) :
 std::streambuf(), std::ostream(this)
 {
     count = size;
@@ -833,7 +833,7 @@ std::streambuf(), std::ostream(this)
     zb = false;
 }
 
-int memwriter::overflow(int ch)
+int omemstream::overflow(int ch)
 {
     if(ch == EOF)
         return EOF;
@@ -848,7 +848,7 @@ int memwriter::overflow(int ch)
     return ch;
 }
 
-memreader::memreader(const char *str) :
+imemstream::imemstream(const char *str) :
 std::streambuf(), std::istream(this)
 {
     bp = (const uint8_t *)str;
@@ -856,7 +856,7 @@ std::streambuf(), std::istream(this)
     pos = (const uint8_t *)str;
 }
 
-memreader::memreader(const uint8_t *str, size_t size) :
+imemstream::imemstream(const uint8_t *str, size_t size) :
 std::streambuf(), std::istream(this)
 {
     bp = str;
@@ -864,14 +864,14 @@ std::streambuf(), std::istream(this)
     count = size;
 }
 
-int memreader::underflow() 
+int imemstream::underflow() 
 {
     if(!count || !pos)
         return EOF;
     return GET(*pos);
 }
 
-int memreader::uflow()
+int imemstream::uflow()
 {
     if(!count || !pos)
         return EOF;
