@@ -79,6 +79,16 @@ atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
     return InterlockedExchangeAdd(&value, -change);
 }
 
+atomic_t Atomic::counter::fetch_retain() volatile
+{
+    return InterlockedExchangeAdd(&value, (atomic_t)1);
+}
+
+atomic_t Atomic::counter::fetch_release() volatile
+{
+    return InterlockedExchangeAdd(&value, (atomic_t)-1);
+}
+
 atomic_t Atomic::counter::get() volatile
 {
     return fetch_add(0);
@@ -124,6 +134,16 @@ atomic_t Atomic::counter::get() volatile
 void Atomic::counter::clear() volatile
 {
     std::atomic_fetch_and((atomic_val)(&value), (atomic_t)0);
+}
+
+atomic_t Atomic::counter::fetch_retain() volatile
+{
+    return std::atomic_fetch_add_explicit((atomic_val)(&value), (atomic_t)1, std::memory_order_relaxed);
+}
+
+atomic_t Atomic::counter::fetch_release() volatile
+{
+    return std::atomic_fetch_sub_explicit((atomic_val)(&value), (atomic_t)1, std::memory_order_release);
 }
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
@@ -173,6 +193,16 @@ void Atomic::counter::clear() volatile
     __c11_atomic_fetch_and((atomic_val)(&value), (atomic_t)0, __ATOMIC_SEQ_CST);
 }
 
+atomic_t Atomic::counter::fetch_retain() volatile
+{
+    return __c11_atomic_fetch_add((atomic_val)(&value), (atomic_t)1, __ATOMIC_RELAXED);
+}
+
+atomic_t Atomic::counter::fetch_release() volatile
+{
+    return __c11_atomic_fetch_sub((atomic_val)(&value), (atomic_t)1, __ATOMIC_RELEASE);
+}
+
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
     return __c11_atomic_fetch_add((atomic_val)(&value), change, __ATOMIC_SEQ_CST);
@@ -207,6 +237,16 @@ void Atomic::spinlock::release(void) volatile
 bool Atomic::is_lockfree(void)
 {
     return true;
+}
+
+atomic_t Atomic::counter::fetch_retain() volatile
+{
+    return __atomic_fetch_add(&value, (atomic_t)1, __ATOMIC_RELAXED);
+}
+
+atomic_t Atomic::counter::fetch_release() volatile
+{
+    return __atomic_fetch_sub(&value, (atomic_t)1, __ATOMIC_RELEASE);
 }
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
@@ -253,6 +293,16 @@ void Atomic::spinlock::release(void) volatile
 bool Atomic::is_lockfree(void)
 {
     return true;
+}
+
+atomic_t Atomic::counter::fetch_retain() volatile
+{
+    return __sync_fetch_and_add(&value, (atomic_t)1);
+}
+
+atomic_t Atomic::counter::fetch_release() volatile
+{
+    return __sync_fetch_and_sub(&value, (atomic_t)1);
 }
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
@@ -335,6 +385,16 @@ atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
     value -= change;
     Mutex::release((void *)&value);
     return rval;
+}
+
+atomic_t Atomic::counter::fetch_retain() volatile
+{
+    return fetch_add(1);
+}
+
+atomic_t Atomic::counter::fetch_release() volatile
+{
+    return fetch_sub(1);
 }
 
 bool Atomic::spinlock::acquire(void) volatile

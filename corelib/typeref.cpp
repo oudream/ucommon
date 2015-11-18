@@ -43,12 +43,12 @@ void TypeRef::Counted::operator delete(void *addr)
 
 void TypeRef::Counted::retain(void)
 {
-    count.fetch_add();
+    count.fetch_retain();
 }
 
 void TypeRef::Counted::release(void)
 {
-    if(count.fetch_sub() < 2) {
+    if(count.fetch_release() < 2) {
 	    dealloc();
     }
 }

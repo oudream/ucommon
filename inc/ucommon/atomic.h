@@ -67,6 +67,10 @@ public:
     public:
         counter(atomic_t initial = 0);
 
+        // optimized reference count semantics
+        atomic_t fetch_retain() volatile;
+        atomic_t fetch_release() volatile;
+
         // fetch add/sub optimized semantics
         atomic_t fetch_add(atomic_t offset = 1) volatile;
         atomic_t fetch_sub(atomic_t offset = 1) volatile;
