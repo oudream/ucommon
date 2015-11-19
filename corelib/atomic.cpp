@@ -128,12 +128,12 @@ bool Atomic::is_lockfree(void)
 
 atomic_t Atomic::counter::get() volatile
 {
-    return std::atomic_load((atomic_val)(&value), std::memory_order_acquire);
+    return std::atomic_load_explicit((atomic_val)(&value), std::memory_order_acquire);
 }
 
 void Atomic::counter::clear() volatile
 {
-    std::atomic_fetch_and((atomic_val)(&value), (atomic_t)0, std::memory_order_release);
+    std::atomic_fetch_and_explicit((atomic_val)(&value), (atomic_t)0, std::memory_order_release);
 }
 
 atomic_t Atomic::counter::fetch_retain() volatile
@@ -148,23 +148,23 @@ atomic_t Atomic::counter::fetch_release() volatile
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
-    return std::atomic_fetch_add((atomic_val)(&value), (atomic_t)change, std::memory_order_release);
+    return std::atomic_fetch_add_explicit((atomic_val)(&value), (atomic_t)change, std::memory_order_release);
 }
 
 atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
-    return std::atomic_fetch_sub((atomic_val)(&value), (atomic_t)change, std::memory_order_release);
+    return std::atomic_fetch_sub_explicit((atomic_val)(&value), (atomic_t)change, std::memory_order_release);
 }
 
 bool Atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
-    return (!std::atomic_exchange((atomic_val)(&value), (atomic_t)1));
+    return (!std::atomic_exchange_explicit((atomic_val)(&value), (atomic_t)1, std::memory_order_acquire));
 }
 
 void Atomic::spinlock::wait(void) volatile
 {
-    while (std::atomic_exchange((atomic_val)(&value), (atomic_t)1)) {
+    while (std::atomic_exchange_explicit((atomic_val)(&value), (atomic_t)1, std::memory_order_acquire)) {
         while (value)
             ;
     }
@@ -172,7 +172,7 @@ void Atomic::spinlock::wait(void) volatile
 
 void Atomic::spinlock::release(void) volatile
 {
-    std::atomic_store((atomic_val)(&value), (atomic_t)0);
+    std::atomic_store_explicit((atomic_val)(&value), (atomic_t)0, std::memory_order_release);
 }
 
 #elif defined(__CLANG_ATOMICS) && defined(HAVE_ATOMICS)
@@ -216,12 +216,12 @@ atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 bool Atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
-    return (!__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST));
+    return (!__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_ACQUIRE));
 }
 
 void Atomic::spinlock::wait(void) volatile
 {
-    while (__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_SEQ_CST)) {
+    while (__c11_atomic_exchange((atomic_val)(&value), 1, __ATOMIC_ACQUIRE)) {
         while (value)
             ;
     }
@@ -229,7 +229,7 @@ void Atomic::spinlock::wait(void) volatile
 
 void Atomic::spinlock::release(void) volatile
 {
-    __c11_atomic_store((atomic_val)(&value), 0, __ATOMIC_SEQ_CST);
+    __c11_atomic_store((atomic_val)(&value), 0, __ATOMIC_RELEASE);
 }
 
 #elif __GNUC_PREREQ__(4, 7) && defined(HAVE_ATOMICS)
@@ -266,18 +266,18 @@ atomic_t Atomic::counter::get() volatile
 
 void Atomic::counter::clear() volatile
 {
-    __atomic_fetch_and(&value, (atomic_t)0, __ATOMIC_SEQ_CST);
+    __atomic_fetch_and(&value, (atomic_t)0, __ATOMIC_RELEASE);
 }
 
 bool Atomic::spinlock::acquire(void) volatile
 {
     // if not locked by another already, then we acquired it...
-    return (!__atomic_test_and_set(&value, __ATOMIC_SEQ_CST));
+    return (!__atomic_test_and_set(&value, __ATOMIC_ACQUIRE));
 }
 
 void Atomic::spinlock::wait(void) volatile
 {
-    while (__atomic_test_and_set(&value, __ATOMIC_SEQ_CST)) {
+    while (__atomic_test_and_set(&value, __ATOMIC_ACQUIRE)) {
         while (value)
             ;
     }
@@ -285,7 +285,7 @@ void Atomic::spinlock::wait(void) volatile
 
 void Atomic::spinlock::release(void) volatile
 {
-    __atomic_clear(&value, __ATOMIC_SEQ_CST);
+    __atomic_clear(&value, __ATOMIC_RELEASE);
 }
 
 #elif __GNUC_PREREQ__(4, 1) && defined(HAVE_ATOMICS)
