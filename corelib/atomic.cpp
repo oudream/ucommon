@@ -128,12 +128,12 @@ bool Atomic::is_lockfree(void)
 
 atomic_t Atomic::counter::get() volatile
 {
-    return std::atomic_load((atomic_val)(&value));
+    return std::atomic_load((atomic_val)(&value), std::memory_order_acquire);
 }
 
 void Atomic::counter::clear() volatile
 {
-    std::atomic_fetch_and((atomic_val)(&value), (atomic_t)0);
+    std::atomic_fetch_and((atomic_val)(&value), (atomic_t)0, std::memory_order_release);
 }
 
 atomic_t Atomic::counter::fetch_retain() volatile
@@ -148,12 +148,12 @@ atomic_t Atomic::counter::fetch_release() volatile
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
-    return std::atomic_fetch_add((atomic_val)(&value), (atomic_t)change);
+    return std::atomic_fetch_add((atomic_val)(&value), (atomic_t)change, std::memory_order_release);
 }
 
 atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
-    return std::atomic_fetch_sub((atomic_val)(&value), (atomic_t)change);
+    return std::atomic_fetch_sub((atomic_val)(&value), (atomic_t)change, std::memory_order_release);
 }
 
 bool Atomic::spinlock::acquire(void) volatile
@@ -185,12 +185,12 @@ bool Atomic::is_lockfree(void)
 
 atomic_t Atomic::counter::get() volatile
 {
-    return __c11_atomic_load((atomic_val)(&value), __ATOMIC_SEQ_CST);
+    return __c11_atomic_load((atomic_val)(&value), __ATOMIC_ACQUIRE);
 }
 
 void Atomic::counter::clear() volatile
 {
-    __c11_atomic_fetch_and((atomic_val)(&value), (atomic_t)0, __ATOMIC_SEQ_CST);
+    __c11_atomic_fetch_and((atomic_val)(&value), (atomic_t)0, __ATOMIC_RELEASE);
 }
 
 atomic_t Atomic::counter::fetch_retain() volatile
@@ -251,17 +251,17 @@ atomic_t Atomic::counter::fetch_release() volatile
 
 atomic_t Atomic::counter::fetch_add(atomic_t change) volatile
 {
-    return __atomic_fetch_add(&value, change, __ATOMIC_SEQ_CST);
+    return __atomic_fetch_add(&value, change, __ATOMIC_RELEASE);
 }
 
 atomic_t Atomic::counter::fetch_sub(atomic_t change) volatile
 {
-    return __atomic_fetch_sub(&value, change, __ATOMIC_SEQ_CST);
+    return __atomic_fetch_sub(&value, change, __ATOMIC_RELEASE);
 }
 
 atomic_t Atomic::counter::get() volatile
 {
-    return fetch_add(0);
+    return __atomic_fetch_add(&value, 0, __ATOMIC_ACQUIRE);
 }
 
 void Atomic::counter::clear() volatile
