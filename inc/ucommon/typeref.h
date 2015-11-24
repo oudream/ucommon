@@ -80,9 +80,10 @@ protected:
 	protected:
 		friend class TypeRef;
 
+		void *autorelease;				// future use, non-atomic need
 		mutable Atomic::counter count;
+		unsigned offset;
 		size_t size;
-		void *memory;
 
 		/**
 		 * Construction of aligned container.  This is used to inform the

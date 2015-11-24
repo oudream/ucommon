@@ -27,12 +27,13 @@ namespace ucommon {
 TypeRef::Counted::Counted(void *addr, size_t objsize) : 
 ObjectProtocol()
 {
-    this->memory = addr;
+    this->offset = (unsigned)((char *)this - (char *)addr);
     this->size = objsize;
 }
 
 void TypeRef::Counted::dealloc()
 {
+    void *memory = (void *)((char *)this - offset);
     delete this;
     ::free(memory);
 }
