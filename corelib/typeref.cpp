@@ -29,10 +29,18 @@ ObjectProtocol()
 {
     this->offset = (unsigned)((char *)this - (char *)addr);
     this->size = objsize;
+    this->autorelease = nullptr;
 }
 
 void TypeRef::Counted::dealloc()
 {
+    TypeRelease *rel = autorelease;
+    if(rel) {
+        autorelease = nullptr;
+        rel->post(this);
+        return;
+    }
+        
     void *memory = (void *)((char *)this - offset);
     delete this;
     ::free(memory);
@@ -83,6 +91,16 @@ void TypeRef::clear(void)
     if(ref)
     	ref->release();
     ref = NULL;
+}
+
+TypeRelease *TypeRef::autorelease(TypeRelease *rel)
+{
+    if(!ref)
+        return nullptr;
+
+    TypeRelease *tmp = ref->autorelease;
+    ref->autorelease = rel;
+    return tmp;
 }
 
 void TypeRef::set(const TypeRef& ptr)

@@ -50,6 +50,8 @@
 
 namespace ucommon {
 
+class TypeRelease;
+
 /**
  * Smart pointer base class for auto-retained objects.  The underlying
  * container is heap allocated and page aligned.  A heap object is
@@ -64,6 +66,9 @@ protected:
 	friend class ArrayRef;
 	friend class SharedRef;
 	friend class MapRef;
+	friend class TypeRelease;
+
+	class Release;
 
     /**
 	 * Heap base-class container for typeref objects.  This uses atomic
@@ -79,8 +84,9 @@ protected:
 
 	protected:
 		friend class TypeRef;
+		friend class TypeRelease;
 
-		void *autorelease;				// future use, non-atomic need
+		TypeRelease *autorelease;			
 		mutable Atomic::counter count;
 		unsigned offset;
 		size_t size;
@@ -240,6 +246,16 @@ public:
 	inline static void put(TypeRef& target, Counted *object) {
 		target.set(object);
 	}
+
+	TypeRelease *autorelease(TypeRelease *to);
+};
+
+class __EXPORT TypeRelease
+{
+protected:
+	friend class TypeRef::Counted;
+
+	virtual void post(TypeRef::Counted *obj) = 0;
 };
 
 template<typename T>

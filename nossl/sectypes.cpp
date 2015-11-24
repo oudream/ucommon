@@ -39,6 +39,7 @@ TypeRef::Counted(addr, objsize)
 void typeref<Type::SecChars>::storage::dealloc(void)
 {
 	memset(&mem[0], 0, size);
+    autorelease = nullptr;
 	Counted::dealloc();
 }
 
@@ -218,6 +219,7 @@ TypeRef::Counted(addr, objsize)
 void typeref<Type::KeyBytes>::storage::dealloc(void)
 {
 	memset(&mem[0], 0, size);
+    autorelease = nullptr;
 	Counted::dealloc();
 }
 
