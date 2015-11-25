@@ -259,12 +259,15 @@ public:
 
 class __EXPORT TypeRelease
 {
+public:
+	static TypeRelease release;
+
 protected:
 	friend class TypeRef::Counted;
 
 	inline TypeRelease() {}
 
-	virtual void post(TypeRef::Counted *obj) = 0;
+	virtual void dealloc(TypeRef::Counted *obj);
 
 	inline size_t size(TypeRef::Counted *obj) {
 		return obj->size;
@@ -282,20 +285,27 @@ protected:
 		obj->link = nullptr;
 	}
 
-	inline void dealloc(TypeRef::Counted *obj) {
-		obj->autorelease = nullptr;
-		return obj->dealloc();
-	}
-
 private:
 	__DELETE_COPY(TypeRelease);
 
 };
 
+class __EXPORT TypeDefault : private TypeRelease
+{
+private:
+	virtual void dealloc(TypeRef::Counted *obj) __FINAL;
+
+public:
+	inline TypeDefault() {}
+
+	static TypeDefault release;
+};
+
+
 class __EXPORT TypeSecure : private TypeRelease
 {
 private:
-	virtual void post(TypeRef::Counted *obj) __FINAL;
+	virtual void dealloc(TypeRef::Counted *obj) __FINAL;
 
 public:
 	inline TypeSecure() {}
@@ -303,7 +313,7 @@ public:
 	static TypeSecure release;
 };
 
-template<typename T>
+template<typename T, TypeRelease *R = &TypeRelease::release>
 class typeref : public TypeRef
 {
 private:
@@ -315,7 +325,7 @@ private:
 	public:
 		T data;
 
-		inline value(caddr_t mem, const T& object, TypeRelease *ar = nullptr) : 
+		inline value(caddr_t mem, const T& object, TypeRelease *ar = R) : 
 		Counted(mem, sizeof(value), ar) {
 			data = object;
 		}
@@ -326,7 +336,7 @@ public:
 
 	inline typeref(const typeref& copy) : TypeRef(copy) {};
 
-	inline typeref(const T& object, TypeRelease *ar = nullptr) : TypeRef() {
+	inline typeref(const T& object, TypeRelease *ar = R) : TypeRef() {
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object, ar)); 
 	}
@@ -349,7 +359,7 @@ public:
 	inline const T* operator()() const {
 		value *v = polystatic_cast<value*>(ref);
 		if(!v)
-			return NULL;
+			return nullptr;
 
 		return &(v->data);
 	}
@@ -388,7 +398,7 @@ public:
 		return !(*this == obj);
 	}
 
-	inline void set(T& object, TypeRelease *pool = nullptr) {
+	inline void set(T& object, TypeRelease *pool = R) {
 		clear();
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object, pool));

@@ -37,7 +37,7 @@ void TypeRef::Counted::dealloc()
     TypeRelease *rel = autorelease;
     if(rel) {
         autorelease = nullptr;
-        rel->post(this);
+        rel->dealloc(this);
         return;
     }
         
@@ -626,14 +626,21 @@ size_t typeref<const uint8_t *>::set(bool mode, size_t offset, size_t bits)
     return total;
 }
 
-void TypeSecure::post(TypeRef::Counted *obj)
+void TypeRelease::dealloc(TypeRef::Counted *obj)
+{
+    obj->autorelease = nullptr;
+    obj->dealloc();
+}
+
+void TypeSecure::dealloc(TypeRef::Counted *obj)
 {
     char *addr = (char *)obj + sizeof(TypeRef::Counted);
     size_t size = TypeRelease::size(obj);
     memset(addr, 0, size);
-    dealloc(obj);
+    TypeRelease::dealloc(obj);
 }
 
+TypeRelease TypeRelease::release;
 TypeSecure TypeSecure::release;
 
 } // namespace
