@@ -24,12 +24,12 @@
 
 namespace ucommon {
 
-TypeRef::Counted::Counted(void *addr, size_t objsize) : 
+TypeRef::Counted::Counted(void *addr, size_t objsize, TypeRelease *ar) : 
 ObjectProtocol()
 {
     this->offset = (unsigned)((char *)this - (char *)addr);
     this->size = objsize;
-    this->autorelease = nullptr;
+    this->autorelease = ar;
 }
 
 void TypeRef::Counted::dealloc()
@@ -132,8 +132,8 @@ caddr_t TypeRef::mem(caddr_t addr)
     return addr;
 }
 
-typeref<const char *>::value::value(caddr_t addr, size_t objsize, const char *str) : 
-TypeRef::Counted(addr, objsize)
+typeref<const char *>::value::value(caddr_t addr, size_t objsize, const char *str, TypeRelease *ar) : 
+TypeRef::Counted(addr, objsize, ar)
 {
     if(str)
     	String::set(mem, objsize + 1, str);
@@ -153,7 +153,7 @@ TypeRef() {}
 typeref<const char *>::typeref(const typeref<const char *>& copy) :
 TypeRef(copy) {}
 
-typeref<const char *>::typeref(const char *str) :
+typeref<const char *>::typeref(const char *str, TypeRelease *ar) :
 TypeRef()
 {
     size_t size = 0;
@@ -162,14 +162,14 @@ TypeRef()
         size = strlen(str);
 
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, str));
+    TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
-typeref<const char *>::typeref(size_t size) :
+typeref<const char *>::typeref(size_t size, TypeRelease *ar) :
 TypeRef()
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, ""));
+    TypeRef::set(new(mem(p)) value(p, size, "", ar));
 }
 
 const char *typeref<const char *>::operator()(ssize_t offset) const
@@ -240,7 +240,7 @@ typeref<const char *>& typeref<const char *>::operator=(const char *str)
     return *this;
 }
 
-void typeref<const char *>::set(const char *str)
+void typeref<const char *>::set(const char *str, TypeRelease *ar)
 {
     clear();
     size_t size = 0;
@@ -249,7 +249,7 @@ void typeref<const char *>::set(const char *str)
         size = strlen(str);
 
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, str));
+    TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
 void typeref<const char *>::b64(const uint8_t *bytes, size_t bsize)
@@ -291,10 +291,10 @@ typeref<const char *>& typeref<const char *>::operator=(value *chars)
     return *this;
 }
 
-typeref<const char *>::value *typeref<const char *>::create(size_t size)
+typeref<const char *>::value *typeref<const char *>::create(size_t size, TypeRelease *ar)
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    return new(mem(p)) value(p, size, NULL);
+    return new(mem(p)) value(p, size, NULL, ar);
 }
 
 void typeref<const char *>::destroy(typeref<const char *>::value *chars)
@@ -361,16 +361,11 @@ bool typeref<const char *>::operator<(const typeref<const char *>& ptr) const
 #endif
 }
     
-typeref<const uint8_t *>::value::value(caddr_t addr, size_t objsize, const uint8_t *str) : 
-TypeRef::Counted(addr, objsize)
+typeref<const uint8_t *>::value::value(caddr_t addr, size_t objsize, const uint8_t *str, TypeRelease *ar) : 
+TypeRef::Counted(addr, objsize, ar)
 {
     if(objsize && str)
         memcpy(mem, str, objsize);
-}
-
-typeref<const uint8_t *>::value::value(caddr_t addr, size_t size) : 
-TypeRef::Counted(addr, size)
-{
 }
 
 typeref<const uint8_t *>::typeref() :
@@ -379,14 +374,14 @@ TypeRef() {}
 typeref<const uint8_t *>::typeref(const typeref<const uint8_t *>& copy) :
 TypeRef(copy) {}
 
-typeref<const uint8_t *>::typeref(uint8_t *str, size_t size) :
+typeref<const uint8_t *>::typeref(uint8_t *str, size_t size, TypeRelease *ar) :
 TypeRef()
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, str));
+    TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
-typeref<const uint8_t *>::typeref(bool mode, size_t bits) :
+typeref<const uint8_t *>::typeref(bool mode, size_t bits, TypeRelease *ar) :
 TypeRef()
 {
     size_t size = (bits / 8);
@@ -394,7 +389,7 @@ TypeRef()
         ++size;
 
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, NULL));
+    TypeRef::set(new(mem(p)) value(p, size, nullptr, ar));
     set(mode, 0, bits);
 }
 
@@ -416,14 +411,14 @@ typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(value *bytes)
     return *this;
 }
 
-void typeref<const uint8_t *>::set(const uint8_t *str, size_t size)
+void typeref<const uint8_t *>::set(const uint8_t *str, size_t size, TypeRelease *ar)
 {
     clear();
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, str));
+    TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
-size_t typeref<const uint8_t *>::hex(const char *str, bool ws)
+size_t typeref<const uint8_t *>::hex(const char *str, bool ws, TypeRelease *ar)
 {
     clear();
     size_t size = String::hexcount(str, ws);
@@ -431,12 +426,12 @@ size_t typeref<const uint8_t *>::hex(const char *str, bool ws)
         return 0;
 
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, NULL));
+    TypeRef::set(new(mem(p)) value(p, size, nullptr, ar));
     String::hex2bin(str, data(), size, ws);
     return size;
 }
 
-size_t typeref<const uint8_t *>::b64(const char *str, bool ws)
+size_t typeref<const uint8_t *>::b64(const char *str, bool ws, TypeRelease *ar)
 {
     clear();
     size_t size = String::b64count(str, ws);
@@ -444,7 +439,7 @@ size_t typeref<const uint8_t *>::b64(const char *str, bool ws)
         return 0;
 
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    TypeRef::set(new(mem(p)) value(p, size, NULL));
+    TypeRef::set(new(mem(p)) value(p, size, nullptr, ar));
     String::b64decode(data(), str, size, ws);
     return size;
 }
@@ -471,10 +466,10 @@ void typeref<const uint8_t *>::assign(value *bytes)
     TypeRef::set(bytes);
 }
 
-typeref<const uint8_t *>::value *typeref<const uint8_t *>::create(size_t size)
+typeref<const uint8_t *>::value *typeref<const uint8_t *>::create(size_t size, TypeRelease *ar)
 {
     caddr_t p = TypeRef::alloc(sizeof(value) + size);
-    return new(mem(p)) value(p, size);
+    return new(mem(p)) value(p, size, nullptr, ar);
 }
 
 void typeref<const uint8_t *>::destroy(typeref<const uint8_t *>::value *bytes)
