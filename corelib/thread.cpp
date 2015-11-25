@@ -1309,7 +1309,7 @@ size_t Thread::cache(void)
     }
 
     free(buffer);
-    return line_size
+    return line_size;
 #elif defined(__APPLE__)
     size_t line_size = 0;
     size_t sizeof_line_size = sizeof(line_size);
