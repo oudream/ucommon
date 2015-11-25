@@ -640,7 +640,7 @@ void TypeSecure::dealloc(TypeRef::Counted *obj)
     TypeRelease::dealloc(obj);
 }
 
-TypeRelease TypeRelease::release;
-TypeSecure TypeSecure::release;
+TypeRelease auto_release;
+TypeSecure secure_release;
 
 } // namespace

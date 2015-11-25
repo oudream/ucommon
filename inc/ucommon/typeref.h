@@ -260,12 +260,10 @@ public:
 class __EXPORT TypeRelease
 {
 public:
-	static TypeRelease release;
+	inline TypeRelease() {}
 
 protected:
 	friend class TypeRef::Counted;
-
-	inline TypeRelease() {}
 
 	virtual void dealloc(TypeRef::Counted *obj);
 
@@ -290,18 +288,6 @@ private:
 
 };
 
-class __EXPORT TypeDefault : private TypeRelease
-{
-private:
-	virtual void dealloc(TypeRef::Counted *obj) __FINAL;
-
-public:
-	inline TypeDefault() {}
-
-	static TypeDefault release;
-};
-
-
 class __EXPORT TypeSecure : private TypeRelease
 {
 private:
@@ -309,11 +295,12 @@ private:
 
 public:
 	inline TypeSecure() {}
-
-	static TypeSecure release;
 };
 
-template<typename T, TypeRelease *R = &TypeRelease::release>
+extern __EXPORT TypeRelease auto_release;
+extern __EXPORT TypeSecure secure_release;
+
+template<typename T, TypeRelease *R = &auto_release>
 class typeref : public TypeRef
 {
 private:
