@@ -626,4 +626,14 @@ size_t typeref<const uint8_t *>::set(bool mode, size_t offset, size_t bits)
     return total;
 }
 
+void TypeSecure::post(TypeRef::Counted *obj)
+{
+    char *addr = (char *)obj + sizeof(TypeRef::Counted);
+    size_t size = TypeRelease::size(obj);
+    memset(addr, 0, size);
+    dealloc(obj);
+}
+
+TypeSecure TypeSecure::release;
+
 } // namespace

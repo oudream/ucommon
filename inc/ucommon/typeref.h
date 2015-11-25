@@ -70,7 +70,8 @@ protected:
 
 	class Release;
 
-    /**
+public:
+	/**
 	 * Heap base-class container for typeref objects.  This uses atomic
 	 * reference counters for thread safety with maximal performance.  This
 	 * is used as a protected base class used for strongly typed heap
@@ -86,7 +87,11 @@ protected:
 		friend class TypeRef;
 		friend class TypeRelease;
 
-		TypeRelease *autorelease;			
+		union {
+			TypeRelease *autorelease;			
+			Counted *link;
+		};
+
 		mutable Atomic::counter count;
 		unsigned offset;
 		size_t size;
@@ -144,8 +149,9 @@ protected:
 		 * count reaches 0 is it destroyed. 
 		 */
 		void release();
-	};
+	};		
 
+protected:
 	Counted *ref;		// heap reference...
 
 	/**
@@ -256,7 +262,45 @@ class __EXPORT TypeRelease
 protected:
 	friend class TypeRef::Counted;
 
+	inline TypeRelease() {}
+
 	virtual void post(TypeRef::Counted *obj) = 0;
+
+	inline size_t size(TypeRef::Counted *obj) {
+		return obj->size;
+	}
+
+	inline void set(TypeRef::Counted *obj, TypeRef::Counted *ptr) {
+		obj->link = ptr;
+	}
+
+	inline TypeRef::Counted *get(TypeRef::Counted *obj) {
+		return obj->link;
+	}
+
+	inline void clear(TypeRef::Counted *obj) {
+		obj->link = nullptr;
+	}
+
+	inline void dealloc(TypeRef::Counted *obj) {
+		obj->autorelease = nullptr;
+		return obj->dealloc();
+	}
+
+private:
+	__DELETE_COPY(TypeRelease);
+
+};
+
+class __EXPORT TypeSecure : private TypeRelease
+{
+private:
+	virtual void post(TypeRef::Counted *obj) __FINAL;
+
+public:
+	inline TypeSecure() {}
+
+	static TypeSecure release;
 };
 
 template<typename T>
