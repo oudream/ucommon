@@ -300,7 +300,7 @@ public:
 extern __EXPORT TypeRelease auto_release;
 extern __EXPORT TypeSecure secure_release;
 
-template<typename T, TypeRelease *R = &auto_release>
+template<typename T, TypeRelease& R = auto_release>
 class typeref : public TypeRef
 {
 private:
@@ -312,7 +312,7 @@ private:
 	public:
 		T data;
 
-		inline value(caddr_t mem, const T& object, TypeRelease *ar = R) : 
+		inline value(caddr_t mem, const T& object, TypeRelease *ar = &R) : 
 		Counted(mem, sizeof(value), ar) {
 			data = object;
 		}
@@ -323,7 +323,7 @@ public:
 
 	inline typeref(const typeref& copy) : TypeRef(copy) {};
 
-	inline typeref(const T& object, TypeRelease *ar = R) : TypeRef() {
+	inline typeref(const T& object, TypeRelease *ar = &R) : TypeRef() {
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object, ar)); 
 	}
@@ -385,7 +385,7 @@ public:
 		return !(*this == obj);
 	}
 
-	inline void set(T& object, TypeRelease *pool = R) {
+	inline void set(T& object, TypeRelease *pool = &R) {
 		clear();
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object, pool));
@@ -396,6 +396,11 @@ public:
 		return *this;
 	}
 };
+
+// The specializations are done as simple template specializations so that the
+// hard parts can be hard-coded rather than inline members.  This means we do
+// not pass the autorelease as a specialization here, but we can do a secondary
+// template that does use releases with a lot less overhead.
 
 template<>
 class __EXPORT typeref<const char *> : public TypeRef
