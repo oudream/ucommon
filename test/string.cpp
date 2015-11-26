@@ -105,11 +105,11 @@ extern "C" int main()
     strfree(cdup);
 
     stringref_t cvs;
-    charvalues_t cv1 = stringref::create(64);
+    charvalues_t cv1 = stringref<auto_release>::create(64);
     charvalues_t cv2 = cv1;
 
     snprintf(*cv1, cv1->max(), "test %d\n", 1);
-    stringref::expand(&cv1, 64);
+    stringref<auto_release>::expand(&cv1, 64);
     assert(cv1->max() == 128);
     assert(cv2 != cv1);
     assert(eq(*cv1, "test 1\n"));

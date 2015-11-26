@@ -1988,13 +1988,13 @@ size_t Socket::readline(String& s)
 
 stringref_t Socket::readline(size_t size)
 {
-	charvalues_t buf = stringref::create(size);
+	charvalues_t buf = stringref<auto_release>::create(size);
 	if(!buf)
-		return stringref();
+		return stringref_t();
 
 	ssize_t result = Socket::readline(so, buf->get(), buf->max() + 1, iowait);
 	if(result < 0)
-		return stringref();
+		return stringref_t();
 
 	stringref_t out;
 	out.assign(buf);

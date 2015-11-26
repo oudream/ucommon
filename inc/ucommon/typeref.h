@@ -130,6 +130,10 @@ public:
 			return ((unsigned)count.get());
 		}
 
+		inline TypeRelease *getRelease() const {
+			return autorelease;
+		}
+
 		/**
 		 * Override delete to de-allocate actual heap.  This
 		 * is used because the object is atomically aligned, but
@@ -319,16 +323,16 @@ private:
 	};
  
 public:
-	inline typeref() :	TypeRef() {};
+	inline typeref() :	TypeRef() {}
 
-	inline typeref(const typeref& copy) : TypeRef(copy) {};
+	inline typeref(const typeref& copy) : TypeRef(copy) {}
 
 	inline typeref(const T& object, TypeRelease *ar = &R) : TypeRef() {
 		caddr_t p = TypeRef::alloc(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object, ar)); 
 	}
 
-	inline explicit typeref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {}
 
 	inline const T* operator->() const {
 		if(!ref)
@@ -446,7 +450,9 @@ public:
 
 	typeref(size_t size, TypeRelease *ar = nullptr);
 
-	inline explicit typeref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {}
+
+	inline explicit typeref(value *value) : TypeRef(value) {}
 
 	const char *operator*() const;
 
@@ -502,9 +508,9 @@ public:
 
 	void set(const char *str, TypeRelease *ar = nullptr);
 
-	void hex(const uint8_t *mem, size_t size);
+	void hex(const uint8_t *mem, size_t size, TypeRelease *ar = nullptr);
 
-	void b64(const uint8_t *mem, size_t size);
+	void b64(const uint8_t *mem, size_t size, TypeRelease *ar = nullptr);
 
 	void assign(value *chars);
 
@@ -555,7 +561,7 @@ public:
 
 	typeref(bool mode, size_t bits, TypeRelease *ar = nullptr);
 
-	inline explicit typeref(Counted *object) : TypeRef(object) {};
+	inline explicit typeref(Counted *object) : TypeRef(object) {}
 
 	const uint8_t *operator*() const;
 
@@ -606,6 +612,75 @@ public:
 	static void destroy(value *bytes);
 };
 
+// convenience classes that roll up autorelease behavior for strings and
+// byte arrays into templates.
+
+template<TypeRelease& R>
+class stringref : public typeref<const char *>
+{
+public:
+	inline stringref() : typeref<const char *>() {} 
+	
+	inline stringref(const stringref& copy) : typeref<const char *>(copy) {}
+
+	inline stringref(const char *str) : typeref<const char *>(str, &R) {}
+
+	inline stringref(size_t size) : typeref<const char *>(size, &R) {}
+
+	inline explicit stringref(Counted *object) : typeref<const char *>(object) {}
+
+	inline void set(const char *str) {
+		typeref<const char *>::set(str, &R);
+	}
+
+	inline static value *create(size_t size) {
+		return typeref<const char *>::create(size, &R);
+	}
+};
+
+template<TypeRelease& R>
+class byteref : public typeref<const uint8_t *>
+{
+public:
+	inline byteref() : typeref<const uint8_t *>() {}
+
+	inline byteref(uint8_t *str, size_t size) : typeref<const uint8_t *>(str, size, R) {}
+
+	inline byteref(bool mode, size_t bits) : typeref<const uint8_t *>(mode, bits, R) {}
+
+	inline explicit byteref(Counted *object) : typeref<const uint8_t *>(object) {}
+
+	inline void set(const uint8_t *str, size_t size) {
+		typeref<const uint8_t *>::set(str, size, &R);
+	}
+
+	inline size_t hex(const char *str, bool ws = false) {
+		return typeref<const uint8_t *>::hex(str, ws, &R);
+	}
+
+	inline size_t b64(const char *str, bool ws = false) {
+		return typeref<const uint8_t *>::b64(str, ws, &R);
+	}
+
+	inline stringref<R> hex() {
+		typeref<const char *> str = typeref<const uint8_t *>::hex();
+		stringref<R> result = *str;
+		return result;
+	}
+
+	inline stringref<R> b64() {
+		typeref<const char *> str = typeref<const uint8_t *>::b64();
+		stringref<R> result = *str;
+		return result;
+	}
+
+	inline static value *create(size_t size) {
+		return typeref<const uint8_t *>::create(size, &R);
+	}
+};
+
+// a namespace for aliasing things we may typically use as a typeref
+
 namespace Type {
 	typedef int32_t Integer;
 	typedef double Real;
@@ -617,9 +692,7 @@ namespace Type {
 typedef typeref<Type::Chars>::value *charvalues_t;
 typedef	typeref<Type::Bytes>::value *bytevalues_t;
 typedef	typeref<Type::Chars> stringref_t;
-typedef typeref<Type::Chars> stringref;
 typedef typeref<Type::Bytes> byteref_t;
-typedef typeref<Type::Bytes> byteref;
 typedef typeref<Type::Bools> boolref_t;
 
 template<typename T>

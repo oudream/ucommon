@@ -104,8 +104,8 @@ extern "C" int main()
     xptr.clear();
     assert(dval == 1);
 
-    stringref sref = "this is a test";
-    stringref xref = sref;
+    stringref<auto_release> sref = "this is a test";
+    stringref<auto_release> xref = sref;
     assert(*sref == *xref);
     assert(!strcmp((const char *)sref, "this is a test"));
     assert(sref.size() == 14);
@@ -244,14 +244,14 @@ extern "C" int main()
     clear(a);
     assert(a == 0);
 
-    stringref s1, s2;
+    stringref<auto_release> s1, s2;
     s1.hex(memdata, sizeof(memdata));
     s2.b64(memdata, 4);
 
     assert(eq(s1, "20557778336655"));
     assert(eq(s2, "IFV3eA=="));
 
-    byteref bin;
+    byteref<auto_release> bin;
     bin.hex(*s1);
     s2 = bin.hex();
     assert(eq(s2, "20557778336655"));

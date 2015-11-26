@@ -212,16 +212,19 @@ const typeref<const char *> typeref<const char *>::operator+(const char *str2) c
 {
     value *v1 = polystatic_cast<value *>(ref);
     const char *str1 = "";
+    TypeRelease *ar = nullptr;
 
-    if(v1)
+    if(v1) {
         str1 = &v1->mem[0];
+        ar = v1->autorelease;
+    }
 
     if(!str2)
         str2 = "";
 
     size_t ss = strlen(str1);
     ss += strlen(str2);
-    charvalues_t results = stringref::create(ss);
+    charvalues_t results = create(ss, ar);
     snprintf(results->get(), results->max() + 1, "%s%s", str1, str2);
     stringref_t result;
     result.assign(results);
@@ -252,24 +255,24 @@ void typeref<const char *>::set(const char *str, TypeRelease *ar)
     TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
-void typeref<const char *>::b64(const uint8_t *bytes, size_t bsize)
+void typeref<const char *>::b64(const uint8_t *bytes, size_t bsize, TypeRelease *ar)
 {
     clear();
     size_t len = String::b64size(bsize);
 
     caddr_t p = TypeRef::alloc(sizeof(value) + len);
-    value *s = new(mem(p)) value(p, len, NULL);
+    value *s = new(mem(p)) value(p, len, "", ar);
     String::b64encode(&s->mem[0], bytes, bsize);
     TypeRef::set(s);
 }
 
-void typeref<const char *>::hex(const uint8_t *bytes, size_t bsize)
+void typeref<const char *>::hex(const uint8_t *bytes, size_t bsize, TypeRelease *ar)
 {
     clear();
     size_t len = bsize * 2;
 
     caddr_t p = TypeRef::alloc(sizeof(value) + len);
-    value *s = new(mem(p)) value(p, len, NULL);
+    value *s = new(mem(p)) value(p, len, "", ar);
 
     for(size_t index = 0; index < bsize; ++index) {
         snprintf(&s->mem[index * 2], 3, "%2.2x", bytes[index]);
@@ -399,7 +402,7 @@ void typeref<const uint8_t *>::value::destroy(void)
 	release();
 }
 
-typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(const byteref& objref)
+typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(const typeref<const uint8_t *>& objref)
 {
     TypeRef::set(objref);
     return *this;
@@ -498,7 +501,7 @@ typeref<const char *> typeref<const uint8_t *>::hex()
     typeref<const char *>str;
     if(ref) {
         value *v = polystatic_cast<value*>(ref);
-        str.hex(&v->mem[0], v->size);
+        str.hex(&v->mem[0], v->size, ref->getRelease());
     }
     return str;
 }
@@ -508,7 +511,7 @@ typeref<const char *> typeref<const uint8_t *>::b64()
     typeref<const char *>str;
     if(ref) {
         value *v = polystatic_cast<value*>(ref);
-        str.b64(&v->mem[0], v->size);
+        str.b64(&v->mem[0], v->size, ref->getRelease());
     }
     return str;
 }
@@ -538,10 +541,12 @@ const typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref
     uint8_t *out;
     size_t s1 = 0, s2 = 0, max;
     typeref<const uint8_t*> result;
+    TypeRelease *ar = nullptr;
 
     if(v1) {
         s1 = v1->max();
         b1 = v1->get();
+        ar = v1->autorelease;
     }
 
     if(v2) {
@@ -553,7 +558,7 @@ const typeref<const uint8_t *> typeref<const uint8_t *>::operator+(const typeref
     if(!max)
         return result;
 
-    bytevalues_t bytes = byteref::create(max);
+    bytevalues_t bytes = create(max, ar);
     out = const_cast<uint8_t *>(bytes->get());
     if(s1)
         memcpy(out, b1, s1);

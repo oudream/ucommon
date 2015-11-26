@@ -1803,7 +1803,7 @@ stringref_t fsys::prefix(void)
 stringref_t fsys::prefix(void)
 {
     size_t size = 40;
-    charvalues_t buf = stringref::create(40);
+    charvalues_t buf = stringref<auto_release>::create(40);
     stringref_t out;
     for(;;) {
         if(NULL != (getcwd(buf->get(), buf->max())))
@@ -1812,7 +1812,7 @@ stringref_t fsys::prefix(void)
             *(buf->get()) = 0;
             break;
         }
-        stringref::expand(&buf, size);
+        stringref<auto_release>::expand(&buf, size);
         size += 40;
     }
     out.assign(buf);

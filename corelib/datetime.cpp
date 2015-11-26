@@ -301,7 +301,7 @@ stringref_t Date::operator()() const
     char buf[11];
 
     put(buf);
-    return stringref(buf);
+    return stringref_t(buf);
 }
 
 long Date::get(void) const
@@ -546,7 +546,7 @@ stringref_t Time::operator()() const
     char buf[9];
 
     put(buf);
-    return stringref(buf);
+    return stringref_t(buf);
 }
 
 long Time::get(void) const
@@ -881,7 +881,7 @@ stringref_t DateTime::format(const char *text) const
     release(tbp);
 
     buffer[last] = '\0';
-    return stringref(buffer);
+    return stringref_t(buffer);
 }
 
 long DateTime::operator-(const DateTime &dt)
