@@ -263,5 +263,7 @@ extern "C" int main()
     al((int)3);
     assert(*al == 3);
 
+    stringref<secure_release> s4 = "abc";
+
     return 0;
 }

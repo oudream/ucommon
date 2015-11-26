@@ -631,21 +631,40 @@ size_t typeref<const uint8_t *>::set(bool mode, size_t offset, size_t bits)
     return total;
 }
 
-void TypeRelease::dealloc(TypeRef::Counted *obj)
+void TypeRelease::release(TypeRef::Counted *obj)
 {
     obj->autorelease = nullptr;
     obj->dealloc();
 }
 
-void TypeSecure::dealloc(TypeRef::Counted *obj)
+void TypeRelease::dealloc(TypeRef::Counted *obj)
+{
+    if(delegate)
+        delegate->release(obj);
+    else
+        release(obj);
+} 
+
+class __EXPORT TypeSecure : public TypeRelease
+{
+private:
+	void release(TypeRef::Counted *obj) __FINAL;
+
+public:
+	inline TypeSecure() {}
+};
+
+void TypeSecure::release(TypeRef::Counted *obj)
 {
     char *addr = (char *)obj + sizeof(TypeRef::Counted);
     size_t size = TypeRelease::size(obj);
     memset(addr, 0, size);
-    TypeRelease::dealloc(obj);
+    TypeRelease::release(obj);
 }
 
+static TypeSecure _secure_release;
+
 TypeRelease auto_release;
-TypeSecure secure_release;
+TypeRelease secure_release(&_secure_release);
 
 } // namespace

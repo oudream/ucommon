@@ -264,12 +264,22 @@ public:
 class __EXPORT TypeRelease
 {
 public:
-	inline TypeRelease() {}
+	inline TypeRelease() {
+		delegate = nullptr;
+	}
+
+	inline TypeRelease(TypeRelease *target) {
+		delegate = target;
+	}
 
 protected:
 	friend class TypeRef::Counted;
 
-	virtual void dealloc(TypeRef::Counted *obj);
+	TypeRelease *delegate;
+
+	virtual void release(TypeRef::Counted *obj);
+
+	void dealloc(TypeRef::Counted *obj);
 
 	inline size_t size(TypeRef::Counted *obj) {
 		return obj->size;
@@ -286,23 +296,10 @@ protected:
 	inline void clear(TypeRef::Counted *obj) {
 		obj->link = nullptr;
 	}
-
-private:
-	__DELETE_COPY(TypeRelease);
-
-};
-
-class __EXPORT TypeSecure : private TypeRelease
-{
-private:
-	virtual void dealloc(TypeRef::Counted *obj) __FINAL;
-
-public:
-	inline TypeSecure() {}
 };
 
 extern __EXPORT TypeRelease auto_release;
-extern __EXPORT TypeSecure secure_release;
+extern __EXPORT TypeRelease secure_release;
 
 template<typename T, TypeRelease& R = auto_release>
 class typeref : public TypeRef
