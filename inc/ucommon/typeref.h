@@ -636,6 +636,11 @@ public:
 	inline static value *create(size_t size) {
 		return typeref<const char *>::create(size, &R);
 	}
+
+	inline static stringref promote(typeref<const char *>& str) {
+		stringref result = *str;
+		return result;
+	}
 };
 
 template<TypeRelease& R>
@@ -676,6 +681,11 @@ public:
 
 	inline static value *create(size_t size) {
 		return typeref<const uint8_t *>::create(size, &R);
+	}
+
+	inline static byteref promote(typeref<const uint8_t *>& str) {
+		byteref result = *str;
+		return result;
 	}
 };
 
