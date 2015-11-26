@@ -644,9 +644,9 @@ class byteref : public typeref<const uint8_t *>
 public:
 	inline byteref() : typeref<const uint8_t *>() {}
 
-	inline byteref(uint8_t *str, size_t size) : typeref<const uint8_t *>(str, size, R) {}
+	inline byteref(uint8_t *str, size_t size) : typeref<const uint8_t *>(str, size, &R) {}
 
-	inline byteref(bool mode, size_t bits) : typeref<const uint8_t *>(mode, bits, R) {}
+	inline byteref(bool mode, size_t bits) : typeref<const uint8_t *>(mode, bits, &R) {}
 
 	inline explicit byteref(Counted *object) : typeref<const uint8_t *>(object) {}
 
