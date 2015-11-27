@@ -1792,7 +1792,7 @@ int fsys::exec(const char *path, char **argv, char **envp)
 stringref_t fsys::prefix(void)
 {
     char *cp = _getcwd(NULL, 0);
-    stringref result(cp);
+    stringref_t result(cp);
     if(cp)
         ::free(cp);
     return result;
