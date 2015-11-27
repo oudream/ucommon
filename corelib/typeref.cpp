@@ -643,6 +643,22 @@ void TypeRelease::purge()
         delegate->purge();
 }
 
+void TypeRelease::enlist(TypeRef::Counted **root, TypeRef::Counted *obj)
+{
+    obj->link = *root;
+    *root = obj;
+}
+
+TypeRef::Counted *TypeRelease::delist(TypeRef::Counted **root)
+{
+    TypeRef::Counted *obj = *root;
+    if(obj)
+        *root = obj->link;
+    else
+        *root = nullptr;
+    return obj;
+}
+
 void TypeRelease::dealloc(TypeRef::Counted *obj)
 {
     if(delegate)
@@ -651,7 +667,7 @@ void TypeRelease::dealloc(TypeRef::Counted *obj)
         release(obj);
 } 
 
-class __LOCAL TypeSecure : public TypeRelease
+class __LOCAL TypeSecure __FINAL : public TypeRelease
 {
 private:
 	void release(TypeRef::Counted *obj) __FINAL;

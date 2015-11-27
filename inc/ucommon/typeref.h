@@ -273,24 +273,16 @@ protected:
 
 	TypeRelease *delegate;
 
+	void enlist(TypeRef::Counted **root, TypeRef::Counted *obj);
+	
+	TypeRef::Counted *delist(TypeRef::Counted **root);
+
 	virtual void release(TypeRef::Counted *obj);
 
 	void dealloc(TypeRef::Counted *obj);
 
 	inline size_t size(TypeRef::Counted *obj) {
 		return obj->size;
-	}
-
-	inline void set(TypeRef::Counted *obj, TypeRef::Counted *ptr) {
-		obj->link = ptr;
-	}
-
-	inline TypeRef::Counted *get(TypeRef::Counted *obj) {
-		return obj->link;
-	}
-
-	inline void clear(TypeRef::Counted *obj) {
-		obj->link = nullptr;
 	}
 };
 
