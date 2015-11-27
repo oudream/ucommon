@@ -645,15 +645,17 @@ void TypeRelease::purge()
 
 void TypeRelease::enlist(TypeRef::Counted **root, TypeRef::Counted *obj)
 {
-    obj->link = *root;
+    obj->linkrelease = *root;
     *root = obj;
 }
 
 TypeRef::Counted *TypeRelease::delist(TypeRef::Counted **root)
 {
     TypeRef::Counted *obj = *root;
-    if(obj)
-        *root = obj->link;
+    if(obj) {
+        *root = obj->linkrelease;
+        obj->autorelease = nullptr;
+    }
     else
         *root = nullptr;
     return obj;

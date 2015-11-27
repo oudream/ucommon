@@ -89,7 +89,7 @@ public:
 
 		union {
 			TypeRelease *autorelease;			
-			Counted *link;
+			Counted *linkrelease;
 		};
 
 		mutable Atomic::counter count;
