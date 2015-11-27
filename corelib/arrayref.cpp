@@ -221,7 +221,7 @@ ArrayRef::Array *ArrayRef::create(arraytype_t mode, size_t size)
         return NULL;
 
     size_t s = sizeof(Array) + (size * sizeof(Counted *));
-    caddr_t p = TypeRef::alloc(s);
+    caddr_t p = auto_release.allocate(s);
     return new(mem(p)) Array(mode, p, size);
 }
 

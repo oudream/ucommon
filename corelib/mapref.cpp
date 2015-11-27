@@ -357,7 +357,7 @@ MapRef::Map *MapRef::create(size_t indexes, size_t paging)
         return NULL;
 
     size_t s = sizeof(Map) + (indexes * sizeof(Index *));
-    caddr_t p = TypeRef::alloc(s);
+    caddr_t p = auto_release.allocate(s);
     return new(mem(p)) Map(p, indexes, paging);
 }
 

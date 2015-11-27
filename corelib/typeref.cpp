@@ -119,11 +119,6 @@ void TypeRef::set(TypeRef::Counted *object)
     ref = object;
 }
 
-caddr_t TypeRef::alloc(size_t size)
-{
-    return (caddr_t)::malloc(size + Thread::cache());
-}
-
 caddr_t TypeRef::mem(caddr_t addr)
 {
     size_t mask = (Thread::cache() - 1);
@@ -161,14 +156,14 @@ TypeRef()
     if(str)
         size = strlen(str);
 
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
 typeref<const char *>::typeref(size_t size, TypeRelease *ar) :
 TypeRef()
 {
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, "", ar));
 }
 
@@ -251,7 +246,7 @@ void typeref<const char *>::set(const char *str, TypeRelease *ar)
     if(str)
         size = strlen(str);
 
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
@@ -260,7 +255,7 @@ void typeref<const char *>::b64(const uint8_t *bytes, size_t bsize, TypeRelease 
     clear();
     size_t len = String::b64size(bsize);
 
-    caddr_t p = TypeRef::alloc(sizeof(value) + len);
+    caddr_t p = ar->allocate(sizeof(value) + len);
     value *s = new(mem(p)) value(p, len, "", ar);
     String::b64encode(&s->mem[0], bytes, bsize);
     TypeRef::set(s);
@@ -271,7 +266,7 @@ void typeref<const char *>::hex(const uint8_t *bytes, size_t bsize, TypeRelease 
     clear();
     size_t len = bsize * 2;
 
-    caddr_t p = TypeRef::alloc(sizeof(value) + len);
+    caddr_t p = ar->allocate(sizeof(value) + len);
     value *s = new(mem(p)) value(p, len, "", ar);
 
     for(size_t index = 0; index < bsize; ++index) {
@@ -296,7 +291,7 @@ typeref<const char *>& typeref<const char *>::operator=(value *chars)
 
 typeref<const char *>::value *typeref<const char *>::create(size_t size, TypeRelease *ar)
 {
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     return new(mem(p)) value(p, size, NULL, ar);
 }
 
@@ -380,7 +375,7 @@ TypeRef(copy) {}
 typeref<const uint8_t *>::typeref(uint8_t *str, size_t size, TypeRelease *ar) :
 TypeRef()
 {
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
@@ -391,7 +386,7 @@ TypeRef()
     if(bits % 8)
         ++size;
 
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, nullptr, ar));
     set(mode, 0, bits);
 }
@@ -417,7 +412,7 @@ typeref<const uint8_t *>& typeref<const uint8_t *>::operator=(value *bytes)
 void typeref<const uint8_t *>::set(const uint8_t *str, size_t size, TypeRelease *ar)
 {
     clear();
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
@@ -428,7 +423,7 @@ size_t typeref<const uint8_t *>::hex(const char *str, bool ws, TypeRelease *ar)
     if(!size)
         return 0;
 
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, nullptr, ar));
     String::hex2bin(str, data(), size, ws);
     return size;
@@ -441,7 +436,7 @@ size_t typeref<const uint8_t *>::b64(const char *str, bool ws, TypeRelease *ar)
     if(!size)
         return 0;
 
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     TypeRef::set(new(mem(p)) value(p, size, nullptr, ar));
     String::b64decode(data(), str, size, ws);
     return size;
@@ -471,7 +466,7 @@ void typeref<const uint8_t *>::assign(value *bytes)
 
 typeref<const uint8_t *>::value *typeref<const uint8_t *>::create(size_t size, TypeRelease *ar)
 {
-    caddr_t p = TypeRef::alloc(sizeof(value) + size);
+    caddr_t p = ar->allocate(sizeof(value) + size);
     return new(mem(p)) value(p, size, nullptr, ar);
 }
 
@@ -631,10 +626,21 @@ size_t typeref<const uint8_t *>::set(bool mode, size_t offset, size_t bits)
     return total;
 }
 
+caddr_t TypeRelease::allocate(size_t size)
+{
+    return (caddr_t)::malloc(size + Thread::cache());
+}
+
 void TypeRelease::release(TypeRef::Counted *obj)
 {
     obj->autorelease = nullptr;
     obj->dealloc();
+}
+
+void TypeRelease::purge()
+{
+    if(delegate)
+        delegate->purge();
 }
 
 void TypeRelease::dealloc(TypeRef::Counted *obj)
@@ -645,7 +651,7 @@ void TypeRelease::dealloc(TypeRef::Counted *obj)
         release(obj);
 } 
 
-class __EXPORT TypeSecure : public TypeRelease
+class __LOCAL TypeSecure : public TypeRelease
 {
 private:
 	void release(TypeRef::Counted *obj) __FINAL;

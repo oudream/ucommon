@@ -104,7 +104,7 @@ public:
 		 * @param size of object allocated.
 		 * @param ar pool to use
 		 */
-		explicit Counted(void *address, size_t size, TypeRelease *ar = nullptr);
+		explicit Counted(void *address, size_t size, TypeRelease *ar = NULL);
 
 		/**
 		 * Release memory and delete object when no longer referenced.
@@ -182,14 +182,6 @@ protected:
 	 * @param object to reference.
 	 */
 	void set(Counted *object);
-
-	/**
-	 * Allocate memory from heap.  This may not be atomically aligned.
-	 * The underlying alloc is larger to account for alignment.
-	 * @param size of object to allocate.
-	 * @return memory address allocated.
-	 */
-	static caddr_t alloc(size_t size);
 
 	/**
 	 * Adjust memory pointer to atomic boundry.
@@ -272,6 +264,10 @@ public:
 		delegate = target;
 	}
 
+	virtual void purge();
+
+	virtual caddr_t allocate(size_t size);
+
 protected:
 	friend class TypeRef::Counted;
 
@@ -325,7 +321,7 @@ public:
 	inline typeref(const typeref& copy) : TypeRef(copy) {}
 
 	inline typeref(const T& object, TypeRelease *ar = &R) : TypeRef() {
-		caddr_t p = TypeRef::alloc(sizeof(value));
+		caddr_t p = R.allocate(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object, ar)); 
 	}
 
@@ -388,7 +384,7 @@ public:
 
 	inline void set(T& object, TypeRelease *pool = &R) {
 		clear();
-		caddr_t p = TypeRef::alloc(sizeof(value));
+		caddr_t p = R.allocate(sizeof(value));
 		TypeRef::set(new(mem(p)) value(p, object, pool));
 	}
 
@@ -417,7 +413,7 @@ public:
 
 		char mem[1];
 
-		value(caddr_t addr, size_t size, const char *str, TypeRelease *ar = nullptr);
+		value(caddr_t addr, size_t size, const char *str, TypeRelease *ar = &auto_release);
 
 		void destroy(void);
 
@@ -443,9 +439,9 @@ public:
 	
 	typeref(const typeref& copy);
 
-	typeref(const char *str, TypeRelease *ar = nullptr);
+	typeref(const char *str, TypeRelease *ar = &auto_release);
 
-	typeref(size_t size, TypeRelease *ar = nullptr);
+	typeref(size_t size, TypeRelease *ar = &auto_release);
 
 	inline explicit typeref(Counted *object) : TypeRef(object) {}
 
@@ -503,17 +499,17 @@ public:
 
 	const char *operator()(ssize_t offset) const;
 
-	void set(const char *str, TypeRelease *ar = nullptr);
+	void set(const char *str, TypeRelease *ar = &auto_release);
 
-	void hex(const uint8_t *mem, size_t size, TypeRelease *ar = nullptr);
+	void hex(const uint8_t *mem, size_t size, TypeRelease *ar = &auto_release);
 
-	void b64(const uint8_t *mem, size_t size, TypeRelease *ar = nullptr);
+	void b64(const uint8_t *mem, size_t size, TypeRelease *ar = &auto_release);
 
 	void assign(value *chars);
 
 	static void expand(value **handle, size_t size);
 
-	static value *create(size_t size, TypeRelease *ar = nullptr);
+	static value *create(size_t size, TypeRelease *ar = &auto_release);
 
 	static void destroy(value *bytes);
 };
@@ -532,7 +528,7 @@ public:
 
 		uint8_t mem[1];
 
-		value(caddr_t addr, size_t size, const uint8_t *data = nullptr, TypeRelease *ar = nullptr);
+		value(caddr_t addr, size_t size, const uint8_t *data = nullptr, TypeRelease *ar = &auto_release);
 
 		void destroy(void);
 
@@ -554,9 +550,9 @@ public:
 	
 	typeref(const typeref& copy);
 
-	typeref(uint8_t *str, size_t size, TypeRelease *ar = nullptr);
+	typeref(uint8_t *str, size_t size, TypeRelease *ar = &auto_release);
 
-	typeref(bool mode, size_t bits, TypeRelease *ar = nullptr);
+	typeref(bool mode, size_t bits, TypeRelease *ar = &auto_release);
 
 	inline explicit typeref(Counted *object) : TypeRef(object) {}
 
@@ -584,13 +580,13 @@ public:
 
 	const typeref operator+(const typeref& ptr) const;
 
-	void set(const uint8_t *str, size_t size, TypeRelease *ar = nullptr);
+	void set(const uint8_t *str, size_t size, TypeRelease *ar = &auto_release);
 
 	size_t set(bool bit, size_t offset, size_t bits = 1);
 
-	size_t hex(const char *str, bool ws = false, TypeRelease *ar = nullptr);
+	size_t hex(const char *str, bool ws = false, TypeRelease *ar = &auto_release);
 
-	size_t b64(const char *str, bool ws = false, TypeRelease *ar = nullptr);
+	size_t b64(const char *str, bool ws = false, TypeRelease *ar = &auto_release);
 
 	uint8_t *data(void);
 
@@ -604,7 +600,7 @@ public:
 
 	typeref<const char *> b64();
 
-	static value *create(size_t size, TypeRelease *ar = nullptr);
+	static value *create(size_t size, TypeRelease *ar = &auto_release);
 
 	static void destroy(value *bytes);
 };

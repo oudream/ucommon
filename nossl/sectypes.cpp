@@ -57,14 +57,14 @@ TypeRef()
     if(str)
         size = fix(strlen(str));
 
-    caddr_t p = TypeRef::alloc(sizeof(storage) + size);
+    caddr_t p = auto_release.allocate(sizeof(storage) + size);
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
 typeref<Type::SecChars>::typeref(size_t size, const char *str, strtype_t strtype) :
 TypeRef()
 {
-    caddr_t p = TypeRef::alloc(sizeof(storage) + size);
+    caddr_t p = auto_release.allocate(sizeof(storage) + size);
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
@@ -128,7 +128,7 @@ void typeref<Type::SecChars>::set(const char *str, strtype_t strtype)
     if(str)
         size = fix(strlen(str));
 
-    caddr_t p = TypeRef::alloc(sizeof(storage) + size);
+    caddr_t p = auto_release.allocate(sizeof(storage) + size);
     TypeRef::set(new(mem(p)) storage(p, size, str, strtype));
 }
 
@@ -184,7 +184,7 @@ void typeref<Type::SecChars>::b64(const uint8_t *bytes, size_t bsize)
     clear();
     size_t len = String::b64size(bsize);
 
-    caddr_t p = TypeRef::alloc(sizeof(storage) + len);
+    caddr_t p = auto_release.allocate(sizeof(storage) + len);
     storage *s = new(mem(p)) storage(p, len, NULL, secure::B64_STRING);
     String::b64encode(&s->mem[0], bytes, bsize);
     TypeRef::set(s);
@@ -195,7 +195,7 @@ void typeref<Type::SecChars>::hex(const uint8_t *bytes, size_t bsize)
     clear();
     size_t len = bsize * 2;
 
-    caddr_t p = TypeRef::alloc(sizeof(storage) + len);
+    caddr_t p = auto_release.allocate(sizeof(storage) + len);
     storage *s = new(mem(p)) storage(p, len, NULL, secure::HEX_STRING);
 
     for(size_t index = 0; index < bsize; ++index) {
@@ -232,14 +232,14 @@ TypeRef(copy) {}
 typeref<Type::KeyBytes>::typeref(const uint8_t *key, size_t keysize, keytype_t keytype) :
 TypeRef()
 {
-    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    caddr_t p = auto_release.allocate(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
 
 typeref<Type::KeyBytes>::typeref(size_t keysize, keytype_t keytype) :
 TypeRef()
 {
-    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    caddr_t p = auto_release.allocate(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }
 
@@ -273,7 +273,7 @@ size_t typeref<Type::KeyBytes>::size(void) const
 void typeref<Type::KeyBytes>::set(const uint8_t *key, size_t keysize, keytype_t keytype)
 {
     clear();
-    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    caddr_t p = auto_release.allocate(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, key, keytype));
 }
 
@@ -284,7 +284,7 @@ size_t typeref<Type::KeyBytes>::hex(const char *str, bool ws)
     if(!size)
         return 0;
 
-    caddr_t p = TypeRef::alloc(sizeof(storage) + size);
+    caddr_t p = auto_release.allocate(sizeof(storage) + size);
     TypeRef::set(new(mem(p)) storage(p, size, NULL));
     String::hex2bin(str, data(), size, ws);
     return size;
@@ -297,7 +297,7 @@ size_t typeref<Type::KeyBytes>::b64(const char *str, bool ws)
     if(!size)
         return 0;
 
-    caddr_t p = TypeRef::alloc(sizeof(storage) + size);
+    caddr_t p = auto_release.allocate(sizeof(storage) + size);
     TypeRef::set(new(mem(p)) storage(p, size, NULL));
     String::b64decode(data(), str, size, ws);
     return size;
@@ -306,7 +306,7 @@ size_t typeref<Type::KeyBytes>::b64(const char *str, bool ws)
 void typeref<Type::KeyBytes>::generate(size_t keysize, keytype_t keytype)
 {
     clear();
-    caddr_t p = TypeRef::alloc(sizeof(storage) + keysize);
+    caddr_t p = auto_release.allocate(sizeof(storage) + keysize);
     TypeRef::set(new(mem(p)) storage(p, keysize, NULL, keytype));
 }
 
