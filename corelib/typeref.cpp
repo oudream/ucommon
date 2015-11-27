@@ -379,6 +379,13 @@ TypeRef()
     TypeRef::set(new(mem(p)) value(p, size, str, ar));
 }
 
+typeref<const uint8_t *>::typeref(size_t size, TypeRelease *ar) :
+TypeRef()
+{
+    caddr_t p = ar->allocate(sizeof(value) + size);
+    TypeRef::set(new(mem(p)) value(p, size, nullptr, ar));
+}
+
 typeref<const uint8_t *>::typeref(bool mode, size_t bits, TypeRelease *ar) :
 TypeRef()
 {

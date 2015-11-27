@@ -544,6 +544,8 @@ public:
 
 	typeref(uint8_t *str, size_t size, TypeRelease *ar = &auto_release);
 
+	typeref(size_t size, TypeRelease *ar = &auto_release);
+
 	typeref(bool mode, size_t bits, TypeRelease *ar = &auto_release);
 
 	inline explicit typeref(Counted *object) : TypeRef(object) {}
@@ -635,6 +637,8 @@ public:
 	inline byteref() : typeref<const uint8_t *>() {}
 
 	inline byteref(uint8_t *str, size_t size) : typeref<const uint8_t *>(str, size, &R) {}
+
+	inline byteref(size_t size) : typeref<const uint8_t *>(size, &R) {}
 
 	inline byteref(bool mode, size_t bits) : typeref<const uint8_t *>(mode, bits, &R) {}
 
