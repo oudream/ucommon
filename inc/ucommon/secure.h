@@ -55,22 +55,6 @@
 
 namespace ucommon {
 
-namespace Type {
-
-    class SecChars 
-    {
-    public:
-        typedef enum {GENERIC_STRING, B64_STRING, HEX_STRING, MD5_DIGEST, SHA_DIGEST, PEM_PUBLIC, PEM_PRIVATE} strtype_t;  
-    };
-
-    class KeyBytes
-    {
-    public:
-        typedef enum {UNDEFINED_KEYTYPE, IV_BUFFER, UNPAIRED_KEYTYPE, RSA_KEYTYPE, KEY_DIGEST} keytype_t;
-    };
-
-}
-
 class __SHARED AutoClear
 {
 private:
@@ -136,178 +120,12 @@ public:
     }
 };
 
-template <>
-class __SHARED typeref<Type::SecChars> : protected TypeRef, public Type::SecChars
-{
-public:
-    class storage : public Counted
-    {
-    private:
-        friend class typeref;
-
-        strtype_t type;
-        char mem[1];
-
-        __DELETE_COPY(storage);
-
-        storage(caddr_t addr, size_t size, const char *str, strtype_t strtype = GENERIC_STRING);
-
-        virtual void dealloc() __FINAL;
-
-        inline const char *get() {
-            return &mem[0];
-        }
-
-        inline size_t len() {
-            return strlen(mem);
-        }
-
-        inline size_t max() {
-            return size;
-        }
-
-        inline operator const char *() {
-            return &mem[0];
-        }
-    };
-
-    typeref();
-    
-    typeref(const typeref& copy);
-
-    typeref(const char *str, strtype_t strtype = GENERIC_STRING);
-
-    typeref(size_t alloc, const char *str = "", strtype_t strtype = GENERIC_STRING);
-
-    const char *operator*() const;
-
-    inline operator const char *() const {
-        return operator*();
-    }
-
-    bool operator==(const typeref& ptr) const;
-
-    bool operator==(const char *obj) const;
-
-    inline bool operator!=(const typeref& ptr) const {
-        return !(*this == ptr);
-    }
-
-    inline bool operator!=(const char *obj) const {
-        return !(*this == obj);
-    }
-
-    typeref& operator=(const typeref& objref);
-
-    typeref& operator=(const char *str);
-
-    void set(const char *str, strtype_t strtype = GENERIC_STRING);
-
-    void b64(const uint8_t *bytes, size_t bsize);
-
-    void hex(const uint8_t *bytes, size_t bsize);
-
-    strtype_t type(void) const;
-
-    char *data();
-
-    size_t size(void) const;
-
-    size_t bits(void) const;
-
-    size_t len(void) const;
-};
-
-template <>
-class __SHARED typeref<Type::KeyBytes> : protected TypeRef, public Type::KeyBytes
-{
-public:
-    class storage : public Counted
-    {
-    private:
-        friend class typeref;
-
-        __DELETE_COPY(storage);
-
-        keytype_t type;
-        uint8_t mem[1];
-
-        storage(caddr_t addr, size_t size, const uint8_t *key = NULL, keytype_t keytype = UNPAIRED_KEYTYPE);
-
-        virtual void dealloc() __FINAL;
-
-        inline const uint8_t *get() {
-            return &mem[0];
-        }
-
-        inline operator const uint8_t *() {
-            return &mem[0];
-        }
-    };
-
-    typeref();
-    
-    typeref(const typeref& copy);
-
-    typeref(size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
-
-    typeref(const uint8_t *key, size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
-
-    const uint8_t *operator*() const;
-
-    inline operator const uint8_t *() const {
-        return operator*();
-    }
-
-    bool operator==(const typeref& ptr) const;
-
-    inline bool operator!=(const typeref& ptr) const {
-        return !(*this == ptr);
-    }
-
-    typeref& operator=(const typeref& objref);
-
-    void set(const uint8_t *str, size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
-
-    void generate(size_t keysize, keytype_t keytype = UNPAIRED_KEYTYPE);
-
-    keytype_t type(void) const;
-
-    size_t bits(void) const;
-
-    size_t size(void) const;
-
-    uint8_t *data();
-
-    size_t hex(const char *text, bool ws = false);
-
-    size_t b64(const char *text, bool ws = false);
-
-    typeref<Type::SecChars> hex();
-
-    typeref<Type::SecChars> b64();
-};
-
-template<>
-inline size_t mapkeypath<Type::SecChars>(typeref<Type::SecChars>& object)
-{
-	size_t path = 1;
-	return MapRef::index(path, (const uint8_t *)(*object), object.len());
-}
-
-template<>
-inline size_t mapkeypath<Type::KeyBytes>(typeref<Type::KeyBytes>& object)
-{
-	size_t path = object.size();
-	return MapRef::index(path, *object, object.size() / 8);
-}
-
 /**
  * Common secure socket support.  This offers common routines needed for
  * secure/ssl socket support code.
  * @author David Sugar <dyfet@gnutelephony.org>
  */
-class __SHARED secure : public Type::SecChars, public Type::KeyBytes
+class __SHARED secure 
 {
 public:
     /**
@@ -317,17 +135,9 @@ public:
 
     typedef enum {NONE, SIGNED, VERIFIED} verify_t;
 
-    typedef typeref<Type::SecChars> string;
+    typedef stringref<secure_release> string;
 
-    typedef arrayref<Type::SecChars> strarray;
-
-    typedef queueref<Type::SecChars> strqueue;
-
-    typedef typeref<Type::KeyBytes> keybytes;
-    
-    typedef arrayref<Type::KeyBytes> keyarray;
-
-    typedef queueref<Type::KeyBytes> keyqueue;
+    typedef byteref<secure_release> keybytes;
 
 private:
     __DELETE_COPY(secure);
@@ -535,7 +345,7 @@ public:
         }
 
         inline secure::keybytes iv() {
-            return secure::keybytes(ivbuf, blksize, secure::IV_BUFFER);
+            return secure::keybytes(ivbuf, blksize);
         }
 
         bool set(const secure::keybytes& key);

@@ -116,7 +116,7 @@ secure::keybytes Digest::md5(const uint8_t *mem, size_t size)
     digest_t digest("md5");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size());
 }
 
 secure::keybytes Digest::sha1(const uint8_t *mem, size_t size)
@@ -127,7 +127,7 @@ secure::keybytes Digest::sha1(const uint8_t *mem, size_t size)
     digest_t digest("sha1");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size());
 }
 
 secure::keybytes Digest::sha256(const uint8_t *mem, size_t size)
@@ -138,7 +138,7 @@ secure::keybytes Digest::sha256(const uint8_t *mem, size_t size)
     digest_t digest("sha256");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size());
 }
 
 secure::keybytes Digest::sha384(const uint8_t *mem, size_t size)
@@ -149,7 +149,7 @@ secure::keybytes Digest::sha384(const uint8_t *mem, size_t size)
     digest_t digest("sha384");
     digest.put(mem, size);
     mem = digest.get();
-    return secure::keybytes(mem, digest.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, digest.size());
 }
 
 secure::string Digest::md5(const char *text)
@@ -159,7 +159,7 @@ secure::string Digest::md5(const char *text)
 
     digest_t digest("md5");
     digest.puts(text);
-    return secure::string(*digest, secure::MD5_DIGEST);
+    return secure::string(*digest);
 }
 
 secure::string Digest::sha1(const char *text)
@@ -169,7 +169,7 @@ secure::string Digest::sha1(const char *text)
 
     digest_t digest("sha1");
     digest.puts(text);
-    return secure::string(*digest, secure::SHA_DIGEST);
+    return secure::string(*digest);
 }
 
 secure::string Digest::sha256(const char *text)
@@ -179,7 +179,7 @@ secure::string Digest::sha256(const char *text)
 
     digest_t digest("sha256");
     digest.puts(text);
-    return secure::string(*digest, secure::SHA_DIGEST);
+    return secure::string(*digest);
 }
 
 secure::string Digest::sha384(const char *text)
@@ -189,7 +189,7 @@ secure::string Digest::sha384(const char *text)
 
     digest_t digest("sha384");
     digest.puts(text);
-    return secure::string(*digest, secure::SHA_DIGEST);
+    return secure::string(*digest);
 }
 
 secure::keybytes HMAC::sha256(secure::keybytes key, const uint8_t *mem, size_t size)
@@ -200,7 +200,7 @@ secure::keybytes HMAC::sha256(secure::keybytes key, const uint8_t *mem, size_t s
 	hmac_t hmac("sha256", key);
     hmac.put(mem, size);
     mem = hmac.get();
-    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, hmac.size());
 }
 
 secure::keybytes HMAC::sha384(secure::keybytes key, const uint8_t *mem, size_t size)
@@ -211,7 +211,7 @@ secure::keybytes HMAC::sha384(secure::keybytes key, const uint8_t *mem, size_t s
 	hmac_t hmac("sha384", key);
     hmac.put(mem, size);
     mem = hmac.get();
-    return secure::keybytes(mem, hmac.size(), secure::KEY_DIGEST);
+    return secure::keybytes(mem, hmac.size());
 }
 
 #if defined(_MSWINDOWS_)
@@ -446,11 +446,7 @@ Cipher::Key::Key(const char *cipher, secure::keybytes& iv)
     hashid = algoid = 0;
 
     secure::init();
-
-    if(iv.type() == secure::IV_BUFFER)
-        set(cipher, *iv, iv.size() / 8);
-    else
-        set(cipher);
+    set(cipher, *iv, iv.size());
 }
 
 Cipher::Key::Key(const char *cipher, const char *digest)
@@ -538,30 +534,23 @@ size_t Cipher::Key::get(uint8_t *keyout, uint8_t *ivout)
 bool Cipher::Key::set(const char *cipher, const secure::keybytes& iv)
 {
     const uint8_t *ivp = *iv;
-    size_t size = iv.size() / 8;
 
     if(!ivp)
         return false;
 
-    if(iv.type() != secure::IV_BUFFER)
+    if(iv.size() != blksize)
         return false;
 
-    if(size != blksize)
-        return false;
-
-    set(cipher, ivp, size);
+    set(cipher, ivp, iv.size());
     return true;
 }
 
 bool Cipher::Key::set(const secure::keybytes& key) 
 {
     const uint8_t *kvp = *key;
-    size_t size = key.size() / 8;
+    size_t size = key.size();
 
     if(!kvp)
-        return false;
-
-    if(key.type() != secure::UNPAIRED_KEYTYPE)
         return false;
 
     if(size != keysize)

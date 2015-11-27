@@ -18,5 +18,5 @@ lib_LTLIBRARIES = libusecure.la
 
 libusecure_la_LDFLAGS = ../corelib/libucommon.la @SECURE_LIBS@ @UCOMMON_LIBS@ $(RELEASE)
 libusecure_la_SOURCES = secure.cpp digest.cpp random.cpp cipher.cpp hmac.cpp \
-	sstream.cpp md5.cpp sha1.cpp sha2.cpp common.cpp sectypes.cpp
+	sstream.cpp md5.cpp sha1.cpp sha2.cpp common.cpp 
 
